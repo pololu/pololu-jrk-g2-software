@@ -18,33 +18,32 @@ MainWindow::MainWindow(QWidget * parent)
 {
 	setupUi();
         pauseRunButton->setChecked(false);
-
-        customPlot->addGraph(); // blue line
+        minY->setValue(-100);
+        maxY->setValue(100);
+        domain->setValue(1);
+        customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // blue line
         customPlot->graph(0)->setPen(QPen(Qt::blue));
         customPlot->graph(0)->setBrush(QBrush(QColor(240, 255, 200)));
         customPlot->graph(0)->setAntialiasedFill(false);
-        customPlot->addGraph(); // red line
-        customPlot->graph(1)->setPen(QPen(Qt::red));
-        customPlot->graph(0)->setChannelFillGraph(customPlot->graph(1));
-
-        customPlot->addGraph(); // blue dot
-        customPlot->graph(2)->setPen(QPen(Qt::blue));
-        customPlot->graph(2)->setLineStyle(QCPGraph::lsNone);
-        customPlot->graph(2)->setScatterStyle(QCPScatterStyle::ssDisc);
-        customPlot->addGraph(); // red dot
-        customPlot->graph(3)->setPen(QPen(Qt::red));
-        customPlot->graph(3)->setLineStyle(QCPGraph::lsNone);
-        customPlot->graph(3)->setScatterStyle(QCPScatterStyle::ssDisc);
-
-        customPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
-        customPlot->xAxis->setDateTimeFormat("hh:mm:ss");
+        
+        customPlot->xAxis->setRange(0,1);
+        customPlot->xAxis->QCPAxis::setRangeReversed(true);
+        customPlot->yAxis->setRange(-100,100);
+        //customPlot->yAxis2->setRange(-1,1);
+        customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
         customPlot->xAxis->setAutoTickStep(false);
-        customPlot->xAxis->setTickStep(2);
-        customPlot->axisRect()->setupFullAxesBox();
+        customPlot->xAxis->setTickStep(1000);
 
-        // make left and bottom axes transfer their ranges to right and top axes:
-        connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->xAxis2, SLOT(setRange(QCPRange)));
-        connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->yAxis2, SLOT(setRange(QCPRange)));
+
+        // this is used to see the x-axis to see accurate time.
+
+        // customPlot->xAxis2->setVisible(true);
+        // customPlot->xAxis2->setTickLabelType(QCPAxis::ltDateTime);
+        // customPlot->xAxis2->setDateTimeFormat("hh:mm:ss");
+        // customPlot->xAxis2->setAutoTickStep(true);
+        // customPlot->xAxis2->setTickStep(2);
+
+        
 
         // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
         connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
@@ -82,12 +81,21 @@ void MainWindow::setupUi()
         label3->setObjectName(QStringLiteral("label3"));
         label3->setGeometry(QRect(314,482,13,13));
         label3->setFont(font2);
-        minY = new QSpinBox(centralWidget);
+        minY = new QDoubleSpinBox(centralWidget);
         minY->setObjectName(QStringLiteral("minY"));
         minY->setGeometry(QRect(263, 481, 50, 20));
-        maxY = new QSpinBox(centralWidget);
-        minY->setObjectName(QStringLiteral("maxY"));
+        minY->setRange(-100,0);
+        minY->setDecimals(0);
+        minY->setSingleStep(1.0);
+        maxY = new QDoubleSpinBox(centralWidget);
+        maxY->setObjectName(QStringLiteral("maxY"));
         maxY->setGeometry(QRect(326, 481, 50, 20));
+        maxY->setRange(0,100);
+        maxY->setDecimals(0);
+        maxY->setSingleStep(1.0);
+        domain = new QSpinBox(centralWidget);
+        domain->setObjectName(QStringLiteral("domain"));
+        domain->setGeometry(QRect(436,481,32,20));
 
         retranslateUi();	
 
@@ -119,37 +127,32 @@ void MainWindow::Receivedata()
 
 void MainWindow::realtimeDataSlot()
 {
-	#if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
-  double key = 0;
-#else
-  double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-#endif
-  static double lastPointKey = 0;
-  if (key-lastPointKey > 0.01) // at most add point every 10 ms
-  {
-    double value0 = tan(key);  
-    double value1 = -tan(key); 
-    // add data to lines:
-    customPlot->graph(0)->addData(key, value0);
-    customPlot->graph(1)->addData(key, value1);
-    // set data of dots:
-    customPlot->graph(2)->clearData();
-    customPlot->graph(2)->addData(key, value0);
-    customPlot->graph(3)->clearData();
-    customPlot->graph(3)->addData(key, value1);
-    // remove data of lines that's outside visible range:
-    customPlot->graph(0)->removeDataBefore(key-8);
-    customPlot->graph(1)->removeDataBefore(key-8);
-    // rescale value (vertical) axis to fit the current data:
-    customPlot->graph(0)->rescaleValueAxis();
-    customPlot->graph(1)->rescaleValueAxis(true);
-    lastPointKey = key;
-  }
-  // make key axis range scroll with the data (at a constant range size of 8):
-    customPlot->xAxis->setRange(key+0.25, 8, Qt::AlignRight);
+    
+    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    static double lastPointKey = 0;
+    if (key-lastPointKey > 0.01) // at most add point every 10 ms
+    {
+        double value0 = sin(key);  
+        customPlot->graph(0)->addData(key, value0);
+        
+        // remove data of lines that's outside visible range:
+        customPlot->graph(0)->removeDataBefore(key-(domain->value()));
+        
+        lastPointKey = key;
+    } 
+
+    customPlot->xAxis->setRange(0, domain->value()*1000);
+
+    // make key axis range scroll with the data at a rate of the time value obtained from QSpinBox
+    customPlot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
+    customPlot->yAxis->setRange((minY->value()), (maxY->value()));
+    
+    // these range values are divided by 100 just for the sample data in order to draw sine curve
+    customPlot->yAxis2->setRange((minY->value())/100, (maxY->value())/100);
     customPlot->replot();
 }
 void MainWindow::setupPlayground(QCustomPlot * customPlot)
 {
 	  Q_UNUSED(customPlot)
 }
+

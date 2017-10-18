@@ -21,8 +21,9 @@ private:
     QCustomPlot *customPlot;
     QPushButton *pauseRunButton;
     QPushButton *runButton;
-    QSpinBox *minY;
-    QSpinBox *maxY;
+    QDoubleSpinBox *minY;
+    QDoubleSpinBox *maxY;
+    QSpinBox *domain;
     QLabel *label1;
     QLabel *label2;
     QLabel *label3;
