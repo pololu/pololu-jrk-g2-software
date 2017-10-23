@@ -25,27 +25,39 @@ MainWindow::MainWindow(QWidget * parent)
         minY->setValue(-100);
         maxY->setValue(100);
         domain->setValue(10);
-        blueLineRange->setValue(5);
-        greenLineRange->setValue(5);
+        blueLineRange->setValue(1);
+        greenLineRange->setValue(3);
         redLineRange->setValue(5);
+
         
+        QCPAxis *blueLineAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
+        blueLineAxis->setRange(-1,1);
+        blueLineAxis->setTickLabelColor(Qt::blue);
+        QCPAxis *greenLineAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
+        greenLineAxis->setRange(1,3);
+        greenLineAxis->setTickLabelColor(Qt::green);
+        QCPAxis *redLineAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
+        redLineAxis->setRange(3,5);
+        redLineAxis->setTickLabelColor(Qt::red);
 
-        customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // blue line
+        customPlot->addGraph(customPlot->xAxis2,blueLineAxis); // blue line
         customPlot->graph(0)->setPen(QPen(Qt::blue));
-        customPlot->graph(0)->setValueAxis(customPlot->yAxis2);
+        customPlot->graph(0)->setValueAxis(blueLineAxis);
 
-        customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // green line
+        customPlot->addGraph(customPlot->xAxis2,greenLineAxis); // green line
         customPlot->graph(1)->setPen(QPen(Qt::green));
-        customPlot->graph(1)->setValueAxis(customPlot->yAxis2);
+        customPlot->graph(1)->setValueAxis(greenLineAxis);
 
-        customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // red line
+        customPlot->addGraph(customPlot->xAxis2,redLineAxis); // red line
         customPlot->graph(2)->setPen(QPen(Qt::red));
-        customPlot->graph(2)->setValueAxis(customPlot->yAxis2);
+        customPlot->graph(2)->setValueAxis(redLineAxis);
 
         
         customPlot->xAxis->setRange(0,1);
         customPlot->xAxis->QCPAxis::setRangeReversed(true);
         customPlot->yAxis->setRange(-100,100);
+        //customPlot->yAxis2->setRange(-5,5);
+        //customPlot->yAxis2->setRange(-1,1);
         customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
         customPlot->xAxis->setAutoTickStep(false);
         customPlot->xAxis->setTickStep(1000);
@@ -62,15 +74,18 @@ MainWindow::MainWindow(QWidget * parent)
 
         connect(blueLineRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         [=](double d){
-            change_upper_y_range(d);
+            blueLineAxis->setRangeUpper(d);
+            customPlot->replot();
         });
         connect(greenLineRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         [=](double d){
-            change_upper_y_range(d);
+            greenLineAxis->setRangeUpper(d);
+            customPlot->replot();
         });
         connect(redLineRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         [=](double d){
-            change_upper_y_range(d);
+            redLineAxis->setRangeUpper(d);
+            customPlot->replot();
         });
         connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         [=](double d){
@@ -238,23 +253,32 @@ void MainWindow::realtimeDataSlot()
     lastPointKey = 0;
     
     double value0 = sin(key);  
-    double value1 = sin(key) + 2;  
-    double value2 = sin(key) + 4;  
+    double value1 = sin(key+1) + 2;  
+    double value2 = sin(key+2) + 4;  
 
     if (blueLineDisplay->isChecked())
     {
-        customPlot->graph(0)->addData(key, value0);
+        customPlot->graph(0)->setVisible(true);        
     }
+    else
+        customPlot->graph(0)->setVisible(false);
+    customPlot->graph(0)->addData(key, value0);
     
     if (greenLineDisplay->isChecked())
     {
-        customPlot->graph(1)->addData(key, value1);
+        customPlot->graph(1)->setVisible(true);        
     }
+    else
+        customPlot->graph(1)->setVisible(false);
+    customPlot->graph(1)->addData(key, value1);
 
     if (redLineDisplay->isChecked())
     {
-        customPlot->graph(2)->addData(key, value2);
+        customPlot->graph(2)->setVisible(true);        
     }
+    else
+        customPlot->graph(2)->setVisible(false);
+    customPlot->graph(2)->addData(key, value2);
     
     remove_data_to_scroll();
 }

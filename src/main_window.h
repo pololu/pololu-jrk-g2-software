@@ -42,4 +42,8 @@ private:
     QCheckBox *greenLineDisplay;
     QCheckBox *redLineDisplay;
 
+    QCPAxis *blueLineAxis;
+    QCPAxis *greenLineAxis;
+    QCPAxis *redLineAxis;
+
 };
