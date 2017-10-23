@@ -1,6 +1,6 @@
 #include "main_window.h"
 #include "qcustomplot.h"
-
+#include <time.h>
 #include <QApplication>
 #include <QWidget>
 #include <QPushButton>
@@ -18,22 +18,39 @@ MainWindow::MainWindow(QWidget * parent)
 {
 	setupUi();
         pauseRunButton->setChecked(false);
+        blueLineDisplay->setChecked(true);
+        greenLineDisplay->setChecked(true);
+        redLineDisplay->setChecked(true);
+
         minY->setValue(-100);
         maxY->setValue(100);
-        domain->setValue(1);
+        domain->setValue(10);
+        blueLineRange->setValue(5);
+        greenLineRange->setValue(5);
+        redLineRange->setValue(5);
+        
+
         customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // blue line
         customPlot->graph(0)->setPen(QPen(Qt::blue));
-        customPlot->graph(0)->setBrush(QBrush(QColor(240, 255, 200)));
-        customPlot->graph(0)->setAntialiasedFill(false);
+        customPlot->graph(0)->setValueAxis(customPlot->yAxis2);
+
+        customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // green line
+        customPlot->graph(1)->setPen(QPen(Qt::green));
+        customPlot->graph(1)->setValueAxis(customPlot->yAxis2);
+
+        customPlot->addGraph(customPlot->xAxis2,customPlot->yAxis2); // red line
+        customPlot->graph(2)->setPen(QPen(Qt::red));
+        customPlot->graph(2)->setValueAxis(customPlot->yAxis2);
+
         
         customPlot->xAxis->setRange(0,1);
         customPlot->xAxis->QCPAxis::setRangeReversed(true);
         customPlot->yAxis->setRange(-100,100);
-        //customPlot->yAxis2->setRange(-1,1);
         customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
         customPlot->xAxis->setAutoTickStep(false);
         customPlot->xAxis->setTickStep(1000);
-
+        customPlot->yAxis2->setRange(minY->value()/20, maxY->value()/20);
+        customPlot->yAxis2->setVisible(true);
 
         // this is used to see the x-axis to see accurate time.
 
@@ -43,7 +60,37 @@ MainWindow::MainWindow(QWidget * parent)
         // customPlot->xAxis2->setAutoTickStep(true);
         // customPlot->xAxis2->setTickStep(2);
 
-        
+        connect(blueLineRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        [=](double d){
+            change_upper_y_range(d);
+        });
+        connect(greenLineRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        [=](double d){
+            change_upper_y_range(d);
+        });
+        connect(redLineRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        [=](double d){
+            change_upper_y_range(d);
+        });
+        connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        [=](double d){
+
+            customPlot->yAxis2->setRangeUpper(d/20);
+            customPlot->replot();
+            customPlot->yAxis->setRangeUpper(d);
+            customPlot->replot();
+        });
+        connect(minY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        [=](double d){
+            customPlot->yAxis2->setRangeLower(d/20);
+            customPlot->replot();
+            customPlot->yAxis->setRangeLower(d);
+            customPlot->replot();
+        });
+        connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+        [=](int d){
+            remove_data_to_scroll();
+        });
 
         // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
         connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
@@ -96,6 +143,33 @@ void MainWindow::setupUi()
         domain = new QSpinBox(centralWidget);
         domain->setObjectName(QStringLiteral("domain"));
         domain->setGeometry(QRect(436,481,32,20));
+        blueLineRange = new QDoubleSpinBox(centralWidget);
+        blueLineRange->setObjectName(QStringLiteral("blueLineRange"));
+        blueLineRange->setGeometry(QRect(580,12,63,20));
+        blueLineRange->setDecimals(1);
+        blueLineRange->setSingleStep(0.5);
+        greenLineRange = new QDoubleSpinBox(centralWidget);
+        greenLineRange->setObjectName(QStringLiteral("greenLineRange"));
+        greenLineRange->setGeometry(QRect(580,38,63,20));
+        greenLineRange->setDecimals(1);
+        greenLineRange->setSingleStep(0.5);
+        redLineRange = new QDoubleSpinBox(centralWidget);
+        redLineRange->setObjectName(QStringLiteral("redLineRange"));
+        redLineRange->setGeometry(QRect(580,63,63,20));
+        redLineRange->setDecimals(1);
+        redLineRange->setSingleStep(0.5);
+        blueLineDisplay = new QCheckBox(centralWidget);
+        blueLineDisplay->setObjectName(QStringLiteral("blueLineDisplay"));
+        blueLineDisplay->setGeometry(QRect(650,12,87,17));
+        blueLineDisplay->setCheckable(true);
+        greenLineDisplay = new QCheckBox(centralWidget);
+        greenLineDisplay->setObjectName(QStringLiteral("greenLineDisplay"));
+        greenLineDisplay->setGeometry(QRect(650,38,87,17));
+        greenLineDisplay->setCheckable(true);
+        redLineDisplay = new QCheckBox(centralWidget);
+        redLineDisplay->setObjectName(QStringLiteral("redLineDisplay"));
+        redLineDisplay->setGeometry(QRect(650,63,87,17));
+        redLineDisplay->setCheckable(true);
 
         retranslateUi();	
 
@@ -113,43 +187,76 @@ void MainWindow::retranslateUi()
 
 void MainWindow::on_pauseRunButton_clicked()
 {
-	connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     pauseRunButton->setText(pauseRunButton->isChecked() ? "R&un" : "&Pause");
-    pauseRunButton->isChecked() ? dataTimer.stop() : dataTimer.start();
+    pauseRunButton->isChecked() ? dataTimer.stop() : dataTimer.start(25);
 }
 
-void MainWindow::Receivedata()
+
+void MainWindow::set_line_range()
 {
-	QByteArray ba;
-    ba=serial->readAll();
-    label1->setText(ba);
+    customPlot->replot();
 }
 
-void MainWindow::realtimeDataSlot()
+void MainWindow::set_line_visible()
 {
+}
+
+void MainWindow::change_upper_y_range(double d)
+{
+    customPlot->yAxis2->setRangeUpper(d);
+    customPlot->replot();
+}
+
+void MainWindow::change_lower_y_range(double d)
+{
+    customPlot->yAxis2->setRangeLower(d);
+    customPlot->replot();
+}
+
+void MainWindow::remove_data_to_scroll()
+{
+    // remove data of lines that's outside visible range:
+    customPlot->graph(0)->removeDataBefore(key-(domain->value()));
+    customPlot->graph(1)->removeDataBefore(key-(domain->value()));
+    customPlot->graph(2)->removeDataBefore(key-(domain->value()));
     
-    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
-    static double lastPointKey = 0;
-    if (key-lastPointKey > 0.01) // at most add point every 10 ms
-    {
-        double value0 = sin(key);  
-        customPlot->graph(0)->addData(key, value0);
-        
-        // remove data of lines that's outside visible range:
-        customPlot->graph(0)->removeDataBefore(key-(domain->value()));
-        
-        lastPointKey = key;
-    } 
+    lastPointKey = key;
 
     customPlot->xAxis->setRange(0, domain->value()*1000);
 
     // make key axis range scroll with the data at a rate of the time value obtained from QSpinBox
     customPlot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
-    customPlot->yAxis->setRange((minY->value()), (maxY->value()));
     
     // these range values are divided by 100 just for the sample data in order to draw sine curve
-    customPlot->yAxis2->setRange((minY->value())/100, (maxY->value())/100);
     customPlot->replot();
+}
+
+void MainWindow::realtimeDataSlot()
+{
+    
+    key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    lastPointKey = 0;
+    
+    double value0 = sin(key);  
+    double value1 = sin(key) + 2;  
+    double value2 = sin(key) + 4;  
+
+    if (blueLineDisplay->isChecked())
+    {
+        customPlot->graph(0)->addData(key, value0);
+    }
+    
+    if (greenLineDisplay->isChecked())
+    {
+        customPlot->graph(1)->addData(key, value1);
+    }
+
+    if (redLineDisplay->isChecked())
+    {
+        customPlot->graph(2)->addData(key, value2);
+    }
+    
+    remove_data_to_scroll();
 }
 void MainWindow::setupPlayground(QCustomPlot * customPlot)
 {
