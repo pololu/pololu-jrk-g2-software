@@ -1,6 +1,6 @@
 #include "main_window.h"
 #include "qcustomplot.h"
-#include <time.h>
+#include <ctime>
 #include <QApplication>
 #include <QWidget>
 #include <QPushButton>
@@ -56,13 +56,9 @@ MainWindow::MainWindow(QWidget * parent)
         customPlot->xAxis->setRange(0,1);
         customPlot->xAxis->QCPAxis::setRangeReversed(true);
         customPlot->yAxis->setRange(-100,100);
-        //customPlot->yAxis2->setRange(-5,5);
-        //customPlot->yAxis2->setRange(-1,1);
         customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
         customPlot->xAxis->setAutoTickStep(false);
         customPlot->xAxis->setTickStep(1000);
-        customPlot->yAxis2->setRange(minY->value()/20, maxY->value()/20);
-        customPlot->yAxis2->setVisible(true);
 
         // this is used to see the x-axis to see accurate time.
 
@@ -105,7 +101,11 @@ MainWindow::MainWindow(QWidget * parent)
         connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
         [=](int d){
             remove_data_to_scroll();
-        });
+        }); 
+
+        connect(blueLineDisplay, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+        connect(greenLineDisplay, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+        connect(redLineDisplay, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
         // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
         connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
@@ -204,6 +204,7 @@ void MainWindow::on_pauseRunButton_clicked()
 {
     pauseRunButton->setText(pauseRunButton->isChecked() ? "R&un" : "&Pause");
     pauseRunButton->isChecked() ? dataTimer.stop() : dataTimer.start(25);
+    customPlot->replot();
 }
 
 
@@ -214,6 +215,10 @@ void MainWindow::set_line_range()
 
 void MainWindow::set_line_visible()
 {
+    blueLineDisplay->isChecked() ? customPlot->graph(0)->setVisible(true) : customPlot->graph(0)->setVisible(false);
+    greenLineDisplay->isChecked() ? customPlot->graph(1)->setVisible(true) : customPlot->graph(1)->setVisible(false);
+    redLineDisplay->isChecked() ? customPlot->graph(2)->setVisible(true) : customPlot->graph(2)->setVisible(false);
+    customPlot->replot();
 }
 
 void MainWindow::change_upper_y_range(double d)
@@ -248,7 +253,6 @@ void MainWindow::remove_data_to_scroll()
 
 void MainWindow::realtimeDataSlot()
 {
-    
     key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
     lastPointKey = 0;
     
@@ -256,28 +260,10 @@ void MainWindow::realtimeDataSlot()
     double value1 = sin(key+1) + 2;  
     double value2 = sin(key+2) + 4;  
 
-    if (blueLineDisplay->isChecked())
-    {
-        customPlot->graph(0)->setVisible(true);        
-    }
-    else
-        customPlot->graph(0)->setVisible(false);
-    customPlot->graph(0)->addData(key, value0);
-    
-    if (greenLineDisplay->isChecked())
-    {
-        customPlot->graph(1)->setVisible(true);        
-    }
-    else
-        customPlot->graph(1)->setVisible(false);
-    customPlot->graph(1)->addData(key, value1);
+    set_line_visible();
 
-    if (redLineDisplay->isChecked())
-    {
-        customPlot->graph(2)->setVisible(true);        
-    }
-    else
-        customPlot->graph(2)->setVisible(false);
+    customPlot->graph(0)->addData(key, value0);
+    customPlot->graph(1)->addData(key, value1);
     customPlot->graph(2)->addData(key, value2);
     
     remove_data_to_scroll();
