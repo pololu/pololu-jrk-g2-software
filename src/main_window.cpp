@@ -8,6 +8,8 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QSerialPort>
+#include <QVector>
+#include <array>
 
 QSerialPort *serial;
 QString comport="";
@@ -29,20 +31,27 @@ MainWindow::MainWindow(QWidget * parent)
         greenLineRange->setValue(3);
         redLineRange->setValue(5);
 
-        
+        double upperRanges[] = {1.0,3.0,5.0,100.0};
+        double lowerRanges[] = {-1.0,1.0,3.0,-100.0};
+
+
         QCPAxis *blueLineAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
-        blueLineAxis->setRange(-1,1);
+        blueLineAxis->setRange(lowerRanges[0], upperRanges[0]);
         blueLineAxis->setTickLabelColor(Qt::blue);
+        
         QCPAxis *greenLineAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
-        greenLineAxis->setRange(1,3);
+        greenLineAxis->setRange(lowerRanges[1], upperRanges[1]);
         greenLineAxis->setTickLabelColor(Qt::green);
+
         QCPAxis *redLineAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
-        redLineAxis->setRange(3,5);
+        redLineAxis->setRange(lowerRanges[2], upperRanges[2]);
         redLineAxis->setTickLabelColor(Qt::red);
 
+        QList<QCPAxis*> axes = {blueLineAxis,greenLineAxis,redLineAxis,customPlot->yAxis};
         customPlot->addGraph(customPlot->xAxis2,blueLineAxis); // blue line
         customPlot->graph(0)->setPen(QPen(Qt::blue));
         customPlot->graph(0)->setValueAxis(blueLineAxis);
+        customPlot->graph(0)->rescaleValueAxis(false);
 
         customPlot->addGraph(customPlot->xAxis2,greenLineAxis); // green line
         customPlot->graph(1)->setPen(QPen(Qt::green));
@@ -55,7 +64,7 @@ MainWindow::MainWindow(QWidget * parent)
         
         customPlot->xAxis->setRange(0,1);
         customPlot->xAxis->QCPAxis::setRangeReversed(true);
-        customPlot->yAxis->setRange(-100,100);
+        customPlot->yAxis->setRange(lowerRanges[3],upperRanges[3]);
         customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
         customPlot->xAxis->setAutoTickStep(false);
         customPlot->xAxis->setTickStep(1000);
@@ -83,19 +92,22 @@ MainWindow::MainWindow(QWidget * parent)
             redLineAxis->setRangeUpper(d);
             customPlot->replot();
         });
-        connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-        [=](double d){
 
-            customPlot->yAxis2->setRangeUpper(d/20);
-            customPlot->replot();
-            customPlot->yAxis->setRangeUpper(d);
+
+        connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+        [=](double d) mutable {
+            for (int i = 0; i < axes.size(); ++i)
+            {
+                axes.value(i)->setRangeUpper((upperRanges[i])*(d/100));
+            }
             customPlot->replot();
         });
         connect(minY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-        [=](double d){
-            customPlot->yAxis2->setRangeLower(d/20);
-            customPlot->replot();
-            customPlot->yAxis->setRangeLower(d);
+        [=](double d) mutable {
+            for (int i = 0; i < axes.size(); ++i)
+            {
+                axes.value(i)->setRangeLower(-(lowerRanges[i])*(d/100));
+            }
             customPlot->replot();
         });
         connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -221,10 +233,9 @@ void MainWindow::set_line_visible()
     customPlot->replot();
 }
 
-void MainWindow::change_upper_y_range(double d)
+void MainWindow::change_upper_y_range()
 {
-    customPlot->yAxis2->setRangeUpper(d);
-    customPlot->replot();
+    
 }
 
 void MainWindow::change_lower_y_range(double d)

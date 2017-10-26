@@ -16,7 +16,7 @@ private slots:
 	void retranslateUi();
 	void set_line_range();
 	void set_line_visible();
-	void change_upper_y_range(double);
+	void change_upper_y_range();
 	void change_lower_y_range(double);
 
 private:
@@ -41,9 +41,5 @@ private:
     QCheckBox *blueLineDisplay;
     QCheckBox *greenLineDisplay;
     QCheckBox *redLineDisplay;
-
-    QCPAxis *blueLineAxis;
-    QCPAxis *greenLineAxis;
-    QCPAxis *redLineAxis;
 
 };
