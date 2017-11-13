@@ -2,31 +2,6 @@
 #include <QList>
 #include "qcustomplot.h"
 
-class GraphWindow;
-
-class OtherWindow : public QWidget
-{
-	Q_OBJECT
-
-public:
-	OtherWindow(QWidget * parent = 0);
-
-	
-    QPushButton *openOther;
-	QWidget *centralWidget;   
-    GraphWindow *newWindow;
-    GraphWindow *previewWindow;
-   	QTimer dataTimer; 
-   
-
-public slots:
-	
-	void on_openOther_clicked();
-
-private:
-	
-};
-
 class GraphWindow : public QWidget
 {
 	Q_OBJECT

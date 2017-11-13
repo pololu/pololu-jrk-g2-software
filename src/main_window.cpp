@@ -217,41 +217,4 @@ void GraphWindow::realtimeDataSlot()
     remove_data_to_scroll();
 }
 
-OtherWindow::OtherWindow(QWidget * parent)
-   
-{
-    centralWidget = new QWidget(this);
-    centralWidget->resize(802,508);
-    
-    previewWindow = new GraphWindow();
-    previewWindow->setObjectName(("previewWindow"));
-    previewWindow->setParent(centralWidget);
 
-    previewWindow->customPlot = new QCustomPlot(centralWidget);
-    previewWindow->customPlot->setGeometry(QRect(13, 12, 561, 460));
-
-
-    openOther = new QPushButton(centralWidget);
-    openOther->setObjectName(tr("openOther"));
-    openOther->setGeometry(QRect(580, 478, 82, 22));
-    openOther->setCheckable(true);
-    openOther->setChecked(false);
-    openOther->setText(tr("&Open"));
-
-    QPropertyAnimation *animation = new QPropertyAnimation(openOther, "geometry");
-    animation->setTargetObject(openOther);
-    animation->start();
-    
-    connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-    dataTimer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
-
-
-    QMetaObject::connectSlotsByName(this);   
-}
-
-void OtherWindow::on_openOther_clicked()
-{
-    
-    newWindow = new GraphWindow();
-    newWindow->show();
-}
