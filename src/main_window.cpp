@@ -10,52 +10,30 @@
 #include <QSerialPort>
 #include <QVector>
 #include <array>
+#include <QtCore>
+#include <QPropertyAnimation>
 
 double refreshTimer = 30; // used as a constant for both places the refresh rate is used
 
-GraphWindow::GraphWindow(QMainWindow * parent)
-    : QMainWindow(parent)
+GraphWindow::GraphWindow(QWidget *parent)
+   
 {
     setupUi(); 
-    setRanges();
+    setupPlots();
     
     allPlots[0].plotGraph->setPen(QPen(Qt::yellow));
     allPlots[1].plotGraph->setPen(QPen(Qt::blue));
     allPlots[2].plotGraph->setPen(QPen(Qt::green));
     allPlots[3].plotGraph->setPen(QPen(Qt::red));
 
-    // lambda expression used to connect signal from maxY QDoubleSpinBox so that when it is changed
-    // throughout the program the range of the positive y-axis is decreased to the percent displayed.
-    connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-    [=](double d) mutable {
-        for (auto &x: allPlots)
-        {
-            x.plotAxis->setRangeUpper((x.plotRange->value())*(d/100));
-        }
-        customPlot->replot();
-    });
+    connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
 
-    // lambda expression used to connect signal from minY QDoubleSpinBox so that when it is changed
-    // throughout the program the range of the negative y-axis is decreased to the percent displayed.
-    connect(minY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-    [=](double d) mutable {
-        for (auto &x: allPlots)
-        {
-            x.plotAxis->setRangeLower((x.plotRange->value())*(d/100));
-        }
-        customPlot->replot();
-    });
+    connect(minY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
 
-    // lambda expression used to connect signal from domain QSpinBox to the visible x-axis and hidded x-axis2
-    // this expands or contracts the axis to show data for the desired number of seconds displayed in the domain QSpinBox.
-    connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    [=](int d){
-        remove_data_to_scroll();
-    }); 
+    connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, remove_data_to_scroll);
 
     // connect the signal from the dataTime to call realtimeDataSlot() using the refresh interval "refreshTimer"
     // set as a constant to be used throughout the class
-
     connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     dataTimer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
 }
@@ -63,9 +41,6 @@ GraphWindow::GraphWindow(QMainWindow * parent)
 void GraphWindow::setupUi()
 // sets the gui objects in the graph window
 {
-    this->resize(818, 547);
-    this->setWindowTitle(tr("jrk graph", 0));
-    
     centralWidget = new QWidget(this);
     centralWidget->resize(802,508);
     
@@ -114,35 +89,35 @@ void GraphWindow::setupUi()
     domain = new QSpinBox(centralWidget);
     domain->setGeometry(QRect(456,481,42,20));
     domain->setValue(10); // initialized the graph to show 10 seconds of data
+
+    yellowLine.plotRange = new QDoubleSpinBox(centralWidget);
+    yellowLine.plotRange->setGeometry(QRect(580,88,63,20));
     
+    blueLine.plotRange = new QDoubleSpinBox(centralWidget);
+    blueLine.plotRange->setGeometry(QRect(580,12,63,20));
+
+    greenLine.plotRange = new QDoubleSpinBox(centralWidget);
+    greenLine.plotRange->setGeometry(QRect(580,38,63,20));
+
+    redLine.plotRange = new QDoubleSpinBox(centralWidget);
+    redLine.plotRange->setGeometry(QRect(580,63,63,20));
+
+    yellowLine.plotDisplay = new QCheckBox("YELLOW", centralWidget);
+    yellowLine.plotDisplay->setGeometry(QRect(650,88,87,17));
+
+    blueLine.plotDisplay = new QCheckBox("BLUE", centralWidget);
+    blueLine.plotDisplay->setGeometry(QRect(650,12,87,17));
+
+    greenLine.plotDisplay = new QCheckBox("GREEN", centralWidget);
+    greenLine.plotDisplay->setGeometry(QRect(650,38,87,17));
+
+    redLine.plotDisplay = new QCheckBox("RED", centralWidget);
+    redLine.plotDisplay->setGeometry(QRect(650,63,87,17));
+
     allPlots.push_front(yellowLine);
     allPlots.push_front(blueLine);
     allPlots.push_front(greenLine);
     allPlots.push_front(redLine);
-
-    allPlots[0].plotRange = new QDoubleSpinBox(centralWidget);
-    allPlots[0].plotRange->setGeometry(QRect(580,88,63,20));
-    
-    allPlots[1].plotRange = new QDoubleSpinBox(centralWidget);
-    allPlots[1].plotRange->setGeometry(QRect(580,12,63,20));
-
-    allPlots[2].plotRange = new QDoubleSpinBox(centralWidget);
-    allPlots[2].plotRange->setGeometry(QRect(580,38,63,20));
-
-    allPlots[3].plotRange = new QDoubleSpinBox(centralWidget);
-    allPlots[3].plotRange->setGeometry(QRect(580,63,63,20));
-
-    allPlots[0].plotDisplay = new QCheckBox("YELLOW", centralWidget);
-    allPlots[0].plotDisplay->setGeometry(QRect(650,88,87,17));
-
-    allPlots[1].plotDisplay = new QCheckBox("BLUE", centralWidget);
-    allPlots[1].plotDisplay->setGeometry(QRect(650,12,87,17));
-
-    allPlots[2].plotDisplay = new QCheckBox("GREEN", centralWidget);
-    allPlots[2].plotDisplay->setGeometry(QRect(650,38,87,17));
-
-    allPlots[3].plotDisplay = new QCheckBox("RED", centralWidget);
-    allPlots[3].plotDisplay->setGeometry(QRect(650,63,87,17));
 
     customPlot->xAxis->QCPAxis::setRangeReversed(true);
     customPlot->yAxis->setRange(-100,100);
@@ -159,7 +134,7 @@ void GraphWindow::setupUi()
     QMetaObject::connectSlotsByName(this);
 }
 
-void GraphWindow::setRanges()
+void GraphWindow::setupPlots()
 // sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot. 
 // connects the valueChanged signal of the plotRange to change the ranges of the plots.
 {
@@ -178,23 +153,28 @@ void GraphWindow::setRanges()
 
         x.plotGraph = new QCPGraph(customPlot->xAxis2,x.plotAxis); // yellow line
 
-        connect(x.plotRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-        [=](double d) mutable {
-            
-            x.plotAxis->setRangeUpper(d * ((maxY->value())/100));
-            x.plotAxis->setRangeLower(d * ((minY->value())/100));
-            customPlot->replot();
-        });
+        connect(x.plotRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
 
         connect(x.plotDisplay, SIGNAL(clicked()), this, SLOT(set_line_visible()));
     }
+}
+
+void GraphWindow::changeRanges()
+{
+    for(auto &x: allPlots)
+    {
+        x.plotAxis->setRangeUpper((x.plotRange->value()) * ((maxY->value())/100));
+        x.plotAxis->setRangeLower((x.plotRange->value()) * ((minY->value())/100));
+    }
+    customPlot->yAxis->setRange(minY->value(), maxY->value());
+    customPlot->replot();
 }
 
 void GraphWindow::on_pauseRunButton_clicked()
 // used the QMetaObject class to parse the function name and send the signal to the function.
 {
     pauseRunButton->setText(pauseRunButton->isChecked() ? "R&un" : "&Pause");
-    pauseRunButton->isChecked() ? dataTimer.stop() : dataTimer.start(25);
+    pauseRunButton->isChecked() ? dataTimer.stop() : dataTimer.start(refreshTimer);
     customPlot->replot();
 }
 
@@ -205,19 +185,12 @@ void GraphWindow::set_line_visible()
     {
         x.plotDisplay->isChecked() ? x.plotGraph->setVisible(true) : x.plotGraph->setVisible(false);
         customPlot->replot();
-    }
-    
+    }    
 }
 
 void GraphWindow::remove_data_to_scroll()
 // modifies the x-axis based on the domain value and removes data outside of visible range
-{
-    // remove data of lines that's outside visible range:
-    for(auto &x: allPlots)
-    {
-        x.plotGraph->removeDataBefore(key-(domain->value()));
-    }
-    
+{ 
     customPlot->xAxis->setRange(0, domain->value()*1000);
 
     // make key axis range scroll with the data at a rate of the time value obtained from QSpinBox
@@ -238,7 +211,47 @@ void GraphWindow::realtimeDataSlot()
     for(int i=0; i<allPlots.size(); i++)
     {
         allPlots[i].plotGraph->addData(key, value[i]);
+        allPlots[i].plotGraph->removeDataBefore(key-(domain->value()));
     }
     
     remove_data_to_scroll();
+}
+
+OtherWindow::OtherWindow(QWidget * parent)
+   
+{
+    centralWidget = new QWidget(this);
+    centralWidget->resize(802,508);
+    
+    previewWindow = new GraphWindow();
+    previewWindow->setObjectName(("previewWindow"));
+    previewWindow->setParent(centralWidget);
+
+    previewWindow->customPlot = new QCustomPlot(centralWidget);
+    previewWindow->customPlot->setGeometry(QRect(13, 12, 561, 460));
+
+
+    openOther = new QPushButton(centralWidget);
+    openOther->setObjectName(tr("openOther"));
+    openOther->setGeometry(QRect(580, 478, 82, 22));
+    openOther->setCheckable(true);
+    openOther->setChecked(false);
+    openOther->setText(tr("&Open"));
+
+    QPropertyAnimation *animation = new QPropertyAnimation(openOther, "geometry");
+    animation->setTargetObject(openOther);
+    animation->start();
+    
+    connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
+    dataTimer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
+
+
+    QMetaObject::connectSlotsByName(this);   
+}
+
+void OtherWindow::on_openOther_clicked()
+{
+    
+    newWindow = new GraphWindow();
+    newWindow->show();
 }

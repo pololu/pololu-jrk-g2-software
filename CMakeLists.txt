@@ -21,7 +21,7 @@ fix_project_version()
 set(SOURCE_FILES
     src/main.cpp
 	src/main_window.cpp
-	src/qcustomplot.cpp
+	src/qcustomplot.cpp	
 )
 
 
