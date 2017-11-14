@@ -11,11 +11,58 @@
 #include <QVector>
 #include <array>
 #include <QtCore>
-#include <QPropertyAnimation>
+#include <QCloseEvent>
+
 
 double refreshTimer = 30; // used as a constant for both places the refresh rate is used
 
-GraphWindow::GraphWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget * parent)
+{
+    main_window_ui();
+
+}
+
+MainWindow::~MainWindow()
+{
+
+}
+
+void MainWindow::main_window_ui()
+{
+    setWindowTitle("jrk main window");
+
+    resize(818,547);
+   
+    QWidget *central = new QWidget(this);
+    central->resize(150,150);
+    QGridLayout *layout = new QGridLayout(central);
+    // layout->setColumnMinimumWidth(1,150);
+    // layout->setRowMinimumHeight(1,150);
+
+    previewWindow = new GraphWindow(this);
+    previewWindow->setObjectName(("previewWindow"));
+    previewWindow->customPlot->xAxis->setTicks(false);
+    previewWindow->customPlot->yAxis->setTicks(false);
+    previewWindow->customPlot->setInteraction(QCP::iSelectOther);
+    connect(previewWindow->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
+    layout->addWidget(previewWindow->customPlot,0,0);
+  
+}
+
+void MainWindow::on_launchGraph_clicked(QMouseEvent * event)
+{
+    previewWindow->customPlot->setParent(previewWindow->centralWidget);
+    
+    previewWindow->customPlot->resize(561, 460);
+    previewWindow->customPlot->xAxis->setTicks(true);
+    previewWindow->customPlot->yAxis->setTicks(true);
+    previewWindow->setWindowTitle("jrk Graph");
+    //previewWindow->resize(QSize(818,547));
+    //previewWindow->setWindowFlags(Qt::FramelessWindowHint);
+    previewWindow->show();
+}
+
+GraphWindow::GraphWindow(QWidget * parent)
    
 {
     setupUi(); 

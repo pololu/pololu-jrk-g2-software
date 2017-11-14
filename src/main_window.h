@@ -2,6 +2,24 @@
 #include <QList>
 #include "qcustomplot.h"
 
+class GraphWindow;
+
+class MainWindow : public QMainWindow
+{
+	Q_OBJECT
+
+public:
+	explicit MainWindow(QWidget * parent = 0);
+	~MainWindow();
+	void main_window_ui();
+
+	QTimer DataTimer;
+	GraphWindow *previewWindow;
+
+public slots:
+	void on_launchGraph_clicked(QMouseEvent * event);
+};
+
 class GraphWindow : public QWidget
 {
 	Q_OBJECT
@@ -47,6 +65,7 @@ public slots:
 	void setupPlots();
 	void changeRanges();
 
-private:
+protected:
+	
 	
 };

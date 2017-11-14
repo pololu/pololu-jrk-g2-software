@@ -39,6 +39,7 @@ add_executable(${PROJECT_NAME} ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE d
 qt5_use_modules(${PROJECT_NAME} Widgets)
 qt5_use_modules(${PROJECT_NAME} PrintSupport)
 qt5_use_modules(${PROJECT_NAME} SerialPort)
+qt5_use_modules(${PROJECT_NAME} Concurrent)
 
 
 
