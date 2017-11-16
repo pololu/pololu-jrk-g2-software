@@ -1,7 +1,8 @@
 #include <QApplication>
 #include <QtCore>
 #include "qcustomplot.h"
-#include "main_window.h"
+//#include "graphwindow.h"
+#include "mainwindow.h"
 
 int main(int argc, char ** argv)
 {

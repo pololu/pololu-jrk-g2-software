@@ -20,9 +20,13 @@ fix_project_version()
 
 set(SOURCE_FILES
     src/main.cpp
-	src/main_window.cpp
+	src/graphwindow.cpp
+	src/mainwindow.cpp
 	src/qcustomplot.cpp	
+	src/altwindow.cpp
 )
+
+
 
 
 

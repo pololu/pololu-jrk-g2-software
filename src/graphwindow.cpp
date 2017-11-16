@@ -1,4 +1,4 @@
-#include "main_window.h"
+#include "graphwindow.h"
 #include "mainwindow.h"
 #include "qcustomplot.h"
 #include <ctime>
@@ -41,34 +41,34 @@ double refreshTimer = 30; // used as a constant for both places the refresh rate
 //     // layout->setColumnMinimumWidth(1,150);
 //     // layout->setRowMinimumHeight(1,150);
 
-//     previewWindow = new GraphWindow(central);
-//     previewWindow->setObjectName(("previewWindow"));
-//     previewWindow->customPlot->xAxis->setTicks(false);
-//     previewWindow->customPlot->yAxis->setTicks(false);
-//     previewWindow->customPlot->setInteraction(QCP::iSelectOther);
-//     connect(previewWindow->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
-//     layout->addWidget(previewWindow->customPlot,0,0);
+//     altw = new GraphWindow(central);
+//     altw->setObjectName(("altw"));
+//     altw->customPlot->xAxis->setTicks(false);
+//     altw->customPlot->yAxis->setTicks(false);
+//     altw->customPlot->setInteraction(QCP::iSelectOther);
+//     connect(altw->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
+//     layout->addWidget(altw->customPlot,0,0);
   
 // }
 
 // void MainWindow::on_launchGraph_clicked(QMouseEvent * event)
 // {
-//     previewWindow->customPlot->setParent(previewWindow->centralWidget);
+//     altw->customPlot->setParent(altw->centralWidget);
     
-//     previewWindow->customPlot->resize(561, 460);
-//     previewWindow->customPlot->xAxis->setTicks(true);
-//     previewWindow->customPlot->yAxis->setTicks(true);
-//     previewWindow->setWindowTitle("jrk Graph");
-//     //previewWindow->resize(QSize(818,547));
-//     //previewWindow->setWindowFlags(Qt::FramelessWindowHint);
-//     previewWindow->show();
+//     altw->customPlot->resize(561, 460);
+//     altw->customPlot->xAxis->setTicks(true);
+//     altw->customPlot->yAxis->setTicks(true);
+//     altw->setWindowTitle("jrk Graph");
+//     //altw->resize(QSize(818,547));
+//     //altw->setWindowFlags(Qt::FramelessWindowHint);
+//     altw->show();
 //     hide();
 // }
 
 GraphWindow::GraphWindow(QWidget * parent)
+    : QMainWindow(parent)
 {
     setupUi(this); 
-    grabbedWidget = 0;
     setupPlots();
     
     allPlots[0].plotGraph->setPen(QPen(Qt::yellow));
@@ -102,13 +102,8 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
     centralWidget->setObjectName(tr("centralWidget"));
     centralWidget->resize(802,508);
 
-    verticalLayout = new QVBoxLayout(centralWidget);
-    verticalLayout->setObjectName(tr("verticalLayout"));
 
-    horizontalLayout = new QHBoxLayout();
-    horizontalLayout->setObjectName(tr("horizontalLayout"));
 
-    verticalLayout->addLayout(horizontalLayout);
 
     GraphWindow->setCentralWidget(centralWidget);
     
@@ -285,19 +280,3 @@ void GraphWindow::realtimeDataSlot()
     remove_data_to_scroll();
 }
 
-void GraphWindow::closeEvent(QCloseEvent *event)
-{
-   event->accept();
-   MainWindow *newWindow = new MainWindow();
-   newWindow->show();
-}
-
-void GraphWindow::receiveWidget(QWidget *widget)
-{
-    if (grabbedWidget != 0)
-    {
-        qWarning() << "You might have lost a widget just now.";
-    }
-    grabbedWidget = widget;
-    horizontalLayout->addWidget(grabbedWidget);
-}
