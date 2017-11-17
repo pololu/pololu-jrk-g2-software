@@ -17,64 +17,16 @@
 
 double refreshTimer = 30; // used as a constant for both places the refresh rate is used
 
-// MainWindow::MainWindow(QWidget * parent)
-//     : QMainWindow(parent)
-// {
-//     main_window_ui();
-
-// }
-
-// MainWindow::~MainWindow()
-// {
-
-// }
-
-// void MainWindow::main_window_ui()
-// {
-//     setWindowTitle("jrk main window");
-
-//     resize(818,547);
-   
-//     QWidget *central = new QWidget(this);
-//     central->resize(150,150);
-//     QGridLayout *layout = new QGridLayout(central);
-//     // layout->setColumnMinimumWidth(1,150);
-//     // layout->setRowMinimumHeight(1,150);
-
-//     altw = new GraphWindow(central);
-//     altw->setObjectName(("altw"));
-//     altw->customPlot->xAxis->setTicks(false);
-//     altw->customPlot->yAxis->setTicks(false);
-//     altw->customPlot->setInteraction(QCP::iSelectOther);
-//     connect(altw->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
-//     layout->addWidget(altw->customPlot,0,0);
-  
-// }
-
-// void MainWindow::on_launchGraph_clicked(QMouseEvent * event)
-// {
-//     altw->customPlot->setParent(altw->centralWidget);
-    
-//     altw->customPlot->resize(561, 460);
-//     altw->customPlot->xAxis->setTicks(true);
-//     altw->customPlot->yAxis->setTicks(true);
-//     altw->setWindowTitle("jrk Graph");
-//     //altw->resize(QSize(818,547));
-//     //altw->setWindowFlags(Qt::FramelessWindowHint);
-//     altw->show();
-//     hide();
-// }
-
 GraphWindow::GraphWindow(QWidget * parent)
     : QMainWindow(parent)
 {
     setupUi(this); 
     setupPlots();
     
-    allPlots[0].plotGraph->setPen(QPen(Qt::yellow));
-    allPlots[1].plotGraph->setPen(QPen(Qt::blue));
-    allPlots[2].plotGraph->setPen(QPen(Qt::green));
-    allPlots[3].plotGraph->setPen(QPen(Qt::red));
+    allPlots[0].plotGraph->setPen(QPen(Qt::blue));
+    allPlots[1].plotGraph->setPen(QPen(Qt::green));
+    allPlots[2].plotGraph->setPen(QPen(Qt::red));
+    allPlots[3].plotGraph->setPen(QPen(Qt::yellow));
 
     connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
 
@@ -102,91 +54,131 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
     centralWidget->setObjectName(tr("centralWidget"));
     centralWidget->resize(802,508);
 
+    // centralLayout = new QHBoxLayout(centralWidget);
+    // centralLayout->setGeometry(QRect(0,0,802,508));
 
+    // mainLayout = new QVBoxLayout;
 
+    // plotLayout = new QHBoxLayout;
 
-    GraphWindow->setCentralWidget(centralWidget);
+    // bottomControlLayout = new QHBoxLayout;
+
+    // plotRangeLayout = new QVBoxLayout;
+
+    // plotVisibleLayout = new QVBoxLayout;
+
+    // GraphWindow->setCentralWidget(centralWidget);
     
-    pauseRunButton = new QPushButton(centralWidget);
+    pauseRunButton = new QPushButton();
     pauseRunButton->setObjectName(tr("pauseRunButton"));
-    pauseRunButton->setGeometry(QRect(13, 478, 82, 22));
+    pauseRunButton->setMinimumSize(82, 22);
     pauseRunButton->setCheckable(true);
     pauseRunButton->setChecked(false);
     pauseRunButton->setText(tr("&Pause"));
     
+    connect(pauseRunButton, SIGNAL(clicked()), this, SLOT(on_pauseRunButton_clicked()));
+    
     QFont font;
     font.setPointSize(8);
 
-    label1 = new QLabel(centralWidget);
-    label1->setGeometry(QRect(199,482,59,13));
+    label1 = new QLabel();
+    label1->resize(59,13);
     label1->setFont(font);
     label1->setText(tr("Range (%)"));
     
-    customPlot = new QCustomPlot(centralWidget);
-    customPlot->setGeometry(QRect(13, 12, 561, 460));
     
-    label2 = new QLabel(centralWidget);
-    label2->setGeometry(QRect(405,482,47,13));
+    customPlot = new QCustomPlot();
+    customPlot->setMinimumSize(561,460);
+    
+    label2 = new QLabel();
+    label2->resize(47,13);
     label2->setFont(font);
     label2->setText(tr("Time (s)"));
+
     
-    label3 = new QLabel(centralWidget);
-    label3->setGeometry(QRect(329,482,13,13));
+    label3 = new QLabel();
+    label3->resize(13,13);
     label3->setFont(font);
     label3->setText(tr("-"));
     
-    minY = new QDoubleSpinBox(centralWidget);
-    minY->setGeometry(QRect(263, 481, 60, 20));
+    minY = new QDoubleSpinBox();
+    minY->resize(60,20);
     minY->setRange(-100,0);
     minY->setDecimals(0);
     minY->setSingleStep(1.0);
     minY->setValue(-100);
     
-    maxY = new QDoubleSpinBox(centralWidget);
-    maxY->setGeometry(QRect(336, 481, 60, 20));
+    maxY = new QDoubleSpinBox();
+    maxY->resize(60,20);
     maxY->setRange(0,100);
     maxY->setDecimals(0);
     maxY->setSingleStep(1.0);
     maxY->setValue(100);
     
-    domain = new QSpinBox(centralWidget);
-    domain->setGeometry(QRect(456,481,42,20));
+    domain = new QSpinBox();
+    domain->resize(42,20);
     domain->setValue(10); // initialized the graph to show 10 seconds of data
 
-    yellowLine.plotRange = new QDoubleSpinBox(centralWidget);
-    yellowLine.plotRange->setGeometry(QRect(580,88,63,20));
+    yellowLine.plotRange = new QDoubleSpinBox();
+    yellowLine.plotRange->resize(63,20);
     
-    blueLine.plotRange = new QDoubleSpinBox(centralWidget);
-    blueLine.plotRange->setGeometry(QRect(580,12,63,20));
+    blueLine.plotRange = new QDoubleSpinBox();
+    blueLine.plotRange->resize(63,20);
 
-    greenLine.plotRange = new QDoubleSpinBox(centralWidget);
-    greenLine.plotRange->setGeometry(QRect(580,38,63,20));
+    greenLine.plotRange = new QDoubleSpinBox();
+    greenLine.plotRange->resize(63,20);
 
-    redLine.plotRange = new QDoubleSpinBox(centralWidget);
-    redLine.plotRange->setGeometry(QRect(580,63,63,20));
+    redLine.plotRange = new QDoubleSpinBox();
+    redLine.plotRange->resize(63,20);
 
-    yellowLine.plotDisplay = new QCheckBox("YELLOW", centralWidget);
-    yellowLine.plotDisplay->setGeometry(QRect(650,88,87,17));
+    yellowLine.plotDisplay = new QCheckBox("YELLOW");
+    yellowLine.plotDisplay->resize(87,17);
 
-    blueLine.plotDisplay = new QCheckBox("BLUE", centralWidget);
-    blueLine.plotDisplay->setGeometry(QRect(650,12,87,17));
+    blueLine.plotDisplay = new QCheckBox("BLUE");
+    blueLine.plotDisplay->resize(87,17);
 
-    greenLine.plotDisplay = new QCheckBox("GREEN", centralWidget);
-    greenLine.plotDisplay->setGeometry(QRect(650,38,87,17));
+    greenLine.plotDisplay = new QCheckBox("GREEN");
+    greenLine.plotDisplay->resize(87,17);
 
-    redLine.plotDisplay = new QCheckBox("RED", centralWidget);
-    redLine.plotDisplay->setGeometry(QRect(650,63,87,17));
+    redLine.plotDisplay = new QCheckBox("RED");
+    redLine.plotDisplay->resize(87,17);
 
     allPlots.push_front(yellowLine);
-    allPlots.push_front(blueLine);
-    allPlots.push_front(greenLine);
     allPlots.push_front(redLine);
+    allPlots.push_front(greenLine);
+    allPlots.push_front(blueLine);
 
     customPlot->xAxis->QCPAxis::setRangeReversed(true);
     customPlot->yAxis->setRange(-100,100);
     customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
     customPlot->xAxis->setAutoTickStep(false);
     customPlot->xAxis->setTickStep(1000);
+
+    // bottomControlLayout->addWidget(pauseRunButton);
+    // bottomControlLayout->addWidget(label1);
+    // bottomControlLayout->addWidget(minY);
+    // bottomControlLayout->addWidget(label3);
+    // bottomControlLayout->addWidget(maxY);
+    // bottomControlLayout->addWidget(label2);
+    // bottomControlLayout->addWidget(domain);
+
+    // plotLayout->addWidget(customPlot);
+
+    // plotRangeLayout->addWidget(blueLine.plotRange);
+    // plotRangeLayout->addWidget(greenLine.plotRange);
+    // plotRangeLayout->addWidget(redLine.plotRange);
+    // plotRangeLayout->addWidget(yellowLine.plotRange);
+
+    // plotVisibleLayout->addWidget(blueLine.plotDisplay);
+    // plotVisibleLayout->addWidget(greenLine.plotDisplay);
+    // plotVisibleLayout->addWidget(redLine.plotDisplay);
+    // plotVisibleLayout->addWidget(yellowLine.plotDisplay);
+
+    // mainLayout->addLayout(plotLayout);
+    // mainLayout->addLayout(bottomControlLayout);
+    // centralLayout->addLayout(mainLayout);
+    // centralLayout->addLayout(plotRangeLayout);
+    // centralLayout->addLayout(plotVisibleLayout);
 
     // this is used to see the x-axis to see accurate time.
     // customPlot->xAxis2->setVisible(true);

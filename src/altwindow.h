@@ -10,19 +10,27 @@ public:
     AltWindow(QWidget *parent = 0);
     ~AltWindow();
 
+
+
+
+    void setupUi(QMainWindow *AltWindow);
+    GraphWindow *grabbedWidget;
+    void closeEvent(QCloseEvent *);
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QPushButton *backBtn;
     QHBoxLayout *horizontalLayout;
+    QHBoxLayout *centralLayout;
+    QVBoxLayout *mainLayout;
+    QHBoxLayout *plotLayout;
+    QHBoxLayout *bottomControlLayout;
+    QVBoxLayout *plotRangeLayout;
+    QVBoxLayout *plotVisibleLayout;
+    void retranslateUi(QMainWindow *AltWindow);
 
-private:
-    void setupUi(QMainWindow *);
-    GraphWindow *grabbedWidget;
-    void closeEvent(QCloseEvent *);
 signals:
     void passWidget(GraphWindow* widget);
 
 public slots:
     void receiveWidget(GraphWindow *widget);
-
 };

@@ -18,25 +18,30 @@ public:
 	~MainWindow();
 	QTimer DataTimer;
 	QGridLayout *layout;
-	QWidget *central;
+	QWidget *centralWidget;
 	QVBoxLayout *verticalLayout;
 	QHBoxLayout *horizontalLayout;
 	GraphWindow *previewWindow;
 	QPushButton *separateBtn;
 	AltWindow *altw;
+	QWidget *redWidget;
+	QWidget *previewPlot;
+	
 
 	QAction *sepAct;
 	bool widgetAtHome;
 	
 
-	void main_window_ui(QMainWindow *MainWindow);
+	void setupUi(QMainWindow *MainWindow);
+	void retranslateUi(QMainWindow *MainWindow);
 
 signals:
 	void passWidget(GraphWindow *widget);
 
 private slots:
-	void on_launchGraph_clicked();
+	void on_separateBtn_clicked();
 	void receiveWidget(GraphWindow *widget);
+	void on_launchGraph_clicked(QMouseEvent*);
 
 	
 

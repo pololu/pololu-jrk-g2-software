@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QList>
 #include "qcustomplot.h"
+#include "graphdataselectionbar.h"
 
 class GraphWindow : public QMainWindow
 {
@@ -39,7 +40,12 @@ public:
     QLabel *label3;
     
 
-    QGridLayout *controlLayout;
+    // QHBoxLayout *centralLayout;
+    // QVBoxLayout *mainLayout;
+    // QHBoxLayout *plotLayout;
+    // QHBoxLayout *bottomControlLayout;
+    // QVBoxLayout *plotRangeLayout;
+    // QVBoxLayout *plotVisibleLayout;
 
     QList<Plot> allPlots;
 
