@@ -38,7 +38,6 @@ public:
     QLabel *label2;
     QLabel *label3;
     
-    GraphDataSelectionBar *blackBar;
 
     QList<Plot> allPlots;
 

@@ -58,7 +58,6 @@ void MainWindow::setupUi(QMainWindow *MainWindow)
     previewWindow->setObjectName(QStringLiteral("previewWindow"));
     previewWindow->customPlot->xAxis->setTicks(false);
     previewWindow->customPlot->yAxis->setTicks(false);
-    previewWindow->customPlot->setInteraction(QCP::iSelectOther);
     QWidget *previewPlot = previewWindow->customPlot;
     previewPlot->setFixedSize(150,150);
 
