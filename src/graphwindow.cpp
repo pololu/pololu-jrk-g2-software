@@ -1,7 +1,6 @@
 #include "graphwindow.h"
 #include "mainwindow.h"
 #include "qcustomplot.h"
-#include "graphdataselectionbar.h"
 #include <ctime>
 #include <QApplication>
 #include <QWidget>

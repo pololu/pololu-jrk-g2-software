@@ -3,7 +3,6 @@
 #include <QMainWindow>
 #include <QList>
 #include "qcustomplot.h"
-#include "graphdataselectionbar.h"
 
 class GraphWindow : public QMainWindow
 {
