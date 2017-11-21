@@ -1,6 +1,7 @@
 #include "graphwindow.h"
 #include "mainwindow.h"
 #include "qcustomplot.h"
+#include "graphdataselectionbar.h"
 #include <ctime>
 #include <QApplication>
 #include <QWidget>
@@ -15,7 +16,7 @@
 #include <QCloseEvent>
 
 
-double refreshTimer = 30; // used as a constant for both places the refresh rate is used
+double refreshTimer = 25; // used as a constant for both places the refresh rate is used
 
 GraphWindow::GraphWindow(QWidget * parent)
     : QMainWindow(parent)
@@ -48,27 +49,12 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
 // sets the gui objects in the graph window
 {
     GraphWindow->setObjectName(tr("GraphWindow"));
-    GraphWindow->resize(818,547);
+    GraphWindow->setMinimumSize(818,547);
 
     centralWidget = new QWidget(GraphWindow);
     centralWidget->setObjectName(tr("centralWidget"));
-    centralWidget->resize(802,508);
+    // centralWidget->setMinimumSize(802,508);
 
-    // centralLayout = new QHBoxLayout(centralWidget);
-    // centralLayout->setGeometry(QRect(0,0,802,508));
-
-    // mainLayout = new QVBoxLayout;
-
-    // plotLayout = new QHBoxLayout;
-
-    // bottomControlLayout = new QHBoxLayout;
-
-    // plotRangeLayout = new QVBoxLayout;
-
-    // plotVisibleLayout = new QVBoxLayout;
-
-    // GraphWindow->setCentralWidget(centralWidget);
-    
     pauseRunButton = new QPushButton();
     pauseRunButton->setObjectName(tr("pauseRunButton"));
     pauseRunButton->setMinimumSize(82, 22);
@@ -82,66 +68,68 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
     font.setPointSize(8);
 
     label1 = new QLabel();
-    label1->resize(59,13);
+    label1->setMinimumSize(59,13);
     label1->setFont(font);
     label1->setText(tr("Range (%)"));
     
-    
     customPlot = new QCustomPlot();
-    customPlot->setMinimumSize(561,460);
     
     label2 = new QLabel();
-    label2->resize(47,13);
+    label2->setMinimumSize(47,13);
     label2->setFont(font);
     label2->setText(tr("Time (s)"));
-
-    
+ 
     label3 = new QLabel();
-    label3->resize(13,13);
+    label3->setMinimumSize(0,0);
     label3->setFont(font);
+    label3->setAlignment(Qt::AlignCenter);
     label3->setText(tr("-"));
     
     minY = new QDoubleSpinBox();
-    minY->resize(60,20);
+    minY->setMinimumSize(60,20);
     minY->setRange(-100,0);
     minY->setDecimals(0);
     minY->setSingleStep(1.0);
     minY->setValue(-100);
     
     maxY = new QDoubleSpinBox();
-    maxY->resize(60,20);
+    maxY->setMinimumSize(60,20);
     maxY->setRange(0,100);
     maxY->setDecimals(0);
     maxY->setSingleStep(1.0);
     maxY->setValue(100);
     
     domain = new QSpinBox();
-    domain->resize(42,20);
+    domain->setMinimumSize(42,20);
     domain->setValue(10); // initialized the graph to show 10 seconds of data
 
     yellowLine.plotRange = new QDoubleSpinBox();
-    yellowLine.plotRange->resize(63,20);
+    yellowLine.plotRange->setMinimumSize(63,20);
     
     blueLine.plotRange = new QDoubleSpinBox();
-    blueLine.plotRange->resize(63,20);
+    blueLine.plotRange->setMinimumSize(63,20);
 
     greenLine.plotRange = new QDoubleSpinBox();
-    greenLine.plotRange->resize(63,20);
+    greenLine.plotRange->setMinimumSize(63,20);
 
     redLine.plotRange = new QDoubleSpinBox();
-    redLine.plotRange->resize(63,20);
+    redLine.plotRange->setMinimumSize(63,20);
 
     yellowLine.plotDisplay = new QCheckBox("YELLOW");
-    yellowLine.plotDisplay->resize(87,17);
+    yellowLine.plotDisplay->setMinimumSize(87,17);
+    yellowLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:yellow"));
 
     blueLine.plotDisplay = new QCheckBox("BLUE");
-    blueLine.plotDisplay->resize(87,17);
+    blueLine.plotDisplay->setMinimumSize(87,17);
+    blueLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:blue"));
 
     greenLine.plotDisplay = new QCheckBox("GREEN");
-    greenLine.plotDisplay->resize(87,17);
+    greenLine.plotDisplay->setMinimumSize(87,17);
+    greenLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:green"));
 
     redLine.plotDisplay = new QCheckBox("RED");
-    redLine.plotDisplay->resize(87,17);
+    redLine.plotDisplay->setMinimumSize(87,17);
+    redLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:red"));
 
     allPlots.push_front(yellowLine);
     allPlots.push_front(redLine);
@@ -153,32 +141,6 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
     customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
     customPlot->xAxis->setAutoTickStep(false);
     customPlot->xAxis->setTickStep(1000);
-
-    // bottomControlLayout->addWidget(pauseRunButton);
-    // bottomControlLayout->addWidget(label1);
-    // bottomControlLayout->addWidget(minY);
-    // bottomControlLayout->addWidget(label3);
-    // bottomControlLayout->addWidget(maxY);
-    // bottomControlLayout->addWidget(label2);
-    // bottomControlLayout->addWidget(domain);
-
-    // plotLayout->addWidget(customPlot);
-
-    // plotRangeLayout->addWidget(blueLine.plotRange);
-    // plotRangeLayout->addWidget(greenLine.plotRange);
-    // plotRangeLayout->addWidget(redLine.plotRange);
-    // plotRangeLayout->addWidget(yellowLine.plotRange);
-
-    // plotVisibleLayout->addWidget(blueLine.plotDisplay);
-    // plotVisibleLayout->addWidget(greenLine.plotDisplay);
-    // plotVisibleLayout->addWidget(redLine.plotDisplay);
-    // plotVisibleLayout->addWidget(yellowLine.plotDisplay);
-
-    // mainLayout->addLayout(plotLayout);
-    // mainLayout->addLayout(bottomControlLayout);
-    // centralLayout->addLayout(mainLayout);
-    // centralLayout->addLayout(plotRangeLayout);
-    // centralLayout->addLayout(plotVisibleLayout);
 
     // this is used to see the x-axis to see accurate time.
     // customPlot->xAxis2->setVisible(true);

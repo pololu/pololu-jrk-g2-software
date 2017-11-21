@@ -11,8 +11,6 @@ int main(int argc, char ** argv)
 
 	QApplication app(argc, argv);
   	MainWindow window;
-  	// GraphWindow window2;
 	window.show();
-	// window2.show();
   	return app.exec();
 }

@@ -20,8 +20,8 @@ public:
     QVBoxLayout *verticalLayout;
     QPushButton *backBtn;
     QHBoxLayout *horizontalLayout;
-    QHBoxLayout *centralLayout;
-    QVBoxLayout *mainLayout;
+    QGridLayout *centralLayout;
+    QGridLayout *mainLayout;
     QHBoxLayout *plotLayout;
     QHBoxLayout *bottomControlLayout;
     QVBoxLayout *plotRangeLayout;

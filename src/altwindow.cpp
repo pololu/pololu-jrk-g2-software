@@ -28,10 +28,9 @@ void AltWindow::setupUi(QMainWindow *AltWindow)
     backBtn = new QPushButton(centralwidget);
     backBtn->setObjectName(QStringLiteral("backBtn"));
 
-    centralLayout = new QHBoxLayout(centralwidget);
-    centralLayout->setGeometry(QRect(0,0,802,508));
+    centralLayout = new QGridLayout(this);
 
-    mainLayout = new QVBoxLayout;
+    mainLayout = new QGridLayout;
 
     plotLayout = new QHBoxLayout;
 
@@ -77,32 +76,28 @@ void AltWindow::receiveWidget(GraphWindow *widget)
     bottomControlLayout->addWidget(grabbedWidget->maxY);
     bottomControlLayout->addWidget(grabbedWidget->label2);
     bottomControlLayout->addWidget(grabbedWidget->domain);
-    grabbedWidget->customPlot->resize(561, 460);
     grabbedWidget->customPlot->xAxis->setTicks(true);
     grabbedWidget->customPlot->yAxis->setTicks(true);
-    plotLayout->addWidget(grabbedWidget->customPlot);
+    grabbedWidget->customPlot->setFixedSize(561,460);
+    plotLayout->addWidget(grabbedWidget->customPlot,Qt::AlignTop);
 
-    plotRangeLayout->addWidget(grabbedWidget->blueLine.plotRange);
-    plotRangeLayout->addWidget(grabbedWidget->greenLine.plotRange);
-    plotRangeLayout->addWidget(grabbedWidget->redLine.plotRange);
-    plotRangeLayout->addWidget(grabbedWidget->yellowLine.plotRange);
+    for(auto &x: grabbedWidget->allPlots)
+    {
+        plotRangeLayout->addWidget(x.plotRange);
+        plotVisibleLayout->addWidget(x.plotDisplay);
+    }
 
-    plotVisibleLayout->addWidget(grabbedWidget->blueLine.plotDisplay);
-    plotVisibleLayout->addWidget(grabbedWidget->greenLine.plotDisplay);
-    plotVisibleLayout->addWidget(grabbedWidget->redLine.plotDisplay);
-    plotVisibleLayout->addWidget(grabbedWidget->yellowLine.plotDisplay);
-
-    mainLayout->addLayout(plotLayout);
-    mainLayout->addLayout(bottomControlLayout);
-    centralLayout->addLayout(mainLayout);
-    centralLayout->addLayout(plotRangeLayout);
-    centralLayout->addLayout(plotVisibleLayout);
+    mainLayout->addLayout(plotLayout,0,0,Qt::AlignTop);
+    mainLayout->addLayout(bottomControlLayout,1,0);
+    centralLayout->addLayout(mainLayout,0,0);
+    centralLayout->addLayout(plotRangeLayout,0,1);
+    centralLayout->addLayout(plotVisibleLayout,0,2);
 
     horizontalLayout->addLayout(centralLayout);
 }
 
 void AltWindow::retranslateUi(QMainWindow *AltWindow)
 {
-    AltWindow->setWindowTitle(QApplication::translate("AltWindow", "Alternative Window", Q_NULLPTR));
+    AltWindow->setWindowTitle(QApplication::translate("AltWindow", "Graph Popout Window", Q_NULLPTR));
     backBtn->setText(QApplication::translate("AltWindow", "Back", Q_NULLPTR));
 }

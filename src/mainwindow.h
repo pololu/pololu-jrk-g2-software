@@ -16,15 +16,12 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget * parent = 0);
 	~MainWindow();
-	QTimer DataTimer;
-	QGridLayout *layout;
 	QWidget *centralWidget;
-	QVBoxLayout *verticalLayout;
+	QGridLayout *gridLayout;
 	QHBoxLayout *horizontalLayout;
 	GraphWindow *previewWindow;
 	QPushButton *separateBtn;
 	AltWindow *altw;
-	QWidget *redWidget;
 	QWidget *previewPlot;
 	
 
@@ -39,7 +36,6 @@ signals:
 	void passWidget(GraphWindow *widget);
 
 private slots:
-	void on_separateBtn_clicked();
 	void receiveWidget(GraphWindow *widget);
 	void on_launchGraph_clicked(QMouseEvent*);
 

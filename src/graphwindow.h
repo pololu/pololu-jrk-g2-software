@@ -39,13 +39,7 @@ public:
     QLabel *label2;
     QLabel *label3;
     
-
-    // QHBoxLayout *centralLayout;
-    // QVBoxLayout *mainLayout;
-    // QHBoxLayout *plotLayout;
-    // QHBoxLayout *bottomControlLayout;
-    // QVBoxLayout *plotRangeLayout;
-    // QVBoxLayout *plotVisibleLayout;
+    GraphDataSelectionBar *blackBar;
 
     QList<Plot> allPlots;
 
