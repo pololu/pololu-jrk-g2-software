@@ -23,10 +23,10 @@ GraphWindow::GraphWindow(QWidget * parent)
     setupUi(this); 
     setupPlots();
     
-    allPlots[0].plotGraph->setPen(QPen(Qt::blue));
-    allPlots[1].plotGraph->setPen(QPen(Qt::green));
-    allPlots[2].plotGraph->setPen(QPen(Qt::red));
-    allPlots[3].plotGraph->setPen(QPen(Qt::yellow));
+    allPlots[0].plotGraph->setPen(QPen(Qt::cyan));
+    allPlots[1].plotGraph->setPen(QPen(Qt::blue));
+    allPlots[2].plotGraph->setPen(QPen("#ffc0cb"));
+    allPlots[3].plotGraph->setPen(QPen(Qt::red));
 
     connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
 
@@ -72,7 +72,7 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
     label1->setText(tr("Range (%)"));
     
     customPlot = new QCustomPlot();
-    
+
     label2 = new QLabel();
     label2->setMinimumSize(47,13);
     label2->setFont(font);
@@ -102,38 +102,38 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
     domain->setMinimumSize(42,20);
     domain->setValue(10); // initialized the graph to show 10 seconds of data
 
-    yellowLine.plotRange = new QDoubleSpinBox();
-    yellowLine.plotRange->setMinimumSize(63,20);
+    input.plotRange = new QDoubleSpinBox();
+    input.plotRange->setMinimumSize(63,20);
     
-    blueLine.plotRange = new QDoubleSpinBox();
-    blueLine.plotRange->setMinimumSize(63,20);
+    target.plotRange = new QDoubleSpinBox();
+    target.plotRange->setMinimumSize(63,20);
 
-    greenLine.plotRange = new QDoubleSpinBox();
-    greenLine.plotRange->setMinimumSize(63,20);
+    feedback.plotRange = new QDoubleSpinBox();
+    feedback.plotRange->setMinimumSize(63,20);
 
-    redLine.plotRange = new QDoubleSpinBox();
-    redLine.plotRange->setMinimumSize(63,20);
+    scaledFeedback.plotRange = new QDoubleSpinBox();
+    scaledFeedback.plotRange->setMinimumSize(63,20);
 
-    yellowLine.plotDisplay = new QCheckBox("YELLOW");
-    yellowLine.plotDisplay->setMinimumSize(87,17);
-    yellowLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:yellow"));
+    input.plotDisplay = new QCheckBox("Input");
+    input.plotDisplay->setMinimumSize(87,17);
+    input.plotDisplay->setStyleSheet(QStringLiteral("background-color:cyan"));
 
-    blueLine.plotDisplay = new QCheckBox("BLUE");
-    blueLine.plotDisplay->setMinimumSize(87,17);
-    blueLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:blue"));
+    target.plotDisplay = new QCheckBox("Target");
+    target.plotDisplay->setMinimumSize(87,17);
+    target.plotDisplay->setStyleSheet(QStringLiteral("background-color:blue"));
 
-    greenLine.plotDisplay = new QCheckBox("GREEN");
-    greenLine.plotDisplay->setMinimumSize(87,17);
-    greenLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:green"));
+    feedback.plotDisplay = new QCheckBox("Feedback");
+    feedback.plotDisplay->setMinimumSize(87,17);
+    feedback.plotDisplay->setStyleSheet(QStringLiteral("background-color:#ffc0cb"));
 
-    redLine.plotDisplay = new QCheckBox("RED");
-    redLine.plotDisplay->setMinimumSize(87,17);
-    redLine.plotDisplay->setStyleSheet(QStringLiteral("background-color:red"));
+    scaledFeedback.plotDisplay = new QCheckBox("Scaled Feedback");
+    scaledFeedback.plotDisplay->setMinimumSize(87,17);
+    scaledFeedback.plotDisplay->setStyleSheet(QStringLiteral("background-color:red"));
 
-    allPlots.push_front(yellowLine);
-    allPlots.push_front(redLine);
-    allPlots.push_front(greenLine);
-    allPlots.push_front(blueLine);
+    allPlots.push_front(scaledFeedback);
+    allPlots.push_front(feedback);
+    allPlots.push_front(target);
+    allPlots.push_front(input);
 
     customPlot->xAxis->QCPAxis::setRangeReversed(true);
     customPlot->yAxis->setRange(-100,100);

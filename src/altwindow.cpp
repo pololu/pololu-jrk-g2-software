@@ -79,6 +79,8 @@ void AltWindow::receiveWidget(GraphWindow *widget)
     grabbedWidget->customPlot->xAxis->setTicks(true);
     grabbedWidget->customPlot->yAxis->setTicks(true);
     grabbedWidget->customPlot->setFixedSize(561,460);
+    grabbedWidget->customPlot->setCursor(Qt::ArrowCursor);
+    grabbedWidget->customPlot->setToolTip("");
     plotLayout->addWidget(grabbedWidget->customPlot,Qt::AlignTop);
 
     for(auto &x: grabbedWidget->allPlots)

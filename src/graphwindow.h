@@ -20,10 +20,15 @@ public:
     	QCPGraph *plotGraph;
     };
 
-    Plot yellowLine;
-    Plot blueLine;
-    Plot greenLine;
-    Plot redLine;
+    Plot input;
+    Plot target;
+    Plot feedback;
+    Plot scaledFeedback;
+    Plot error;
+    Plot integral;
+    Plot dutyCycleTarget;
+    Plot dutyCycle;
+    Plot current;
 
     double key = 0;
 	QTimer dataTimer;
