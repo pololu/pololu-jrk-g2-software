@@ -20,11 +20,11 @@ if (POLICY CMP0065)
   cmake_policy(SET CMP0065 NEW)
 endif ()
 
-project (jrk)
+project (jrk2)
 
-set (CLI_NAME "jrkcmd")
-set (GUI_NAME "jrkgui")
-set (LIB_NAME "pololu-jrk")
+set (CLI_NAME "jrk2cmd")
+set (GUI_NAME "jrk2gui")
+set (LIB_NAME "pololu-jrk2")
 set (DOCUMENTATION_URL "https://www.pololu.com/docs/0J73")
 
 set (SOFTWARE_VERSION_MAJOR 1)
