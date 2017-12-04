@@ -223,6 +223,8 @@ void jrk_settings_set_product(jrk_settings *, uint32_t product);
 JRK_API
 uint32_t jrk_settings_get_product(const jrk_settings *);
 
+// Beginning of auto-generated jrk_settings accessor prototypes.
+// End of auto-generated jrk_settings accessor prototypes.
 
 
 // jrk_variables ////////////////////////////////////////////////////////////////

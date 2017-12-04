@@ -285,6 +285,9 @@ namespace jrk
           settings_string.c_str(), r.get_pointer_to_pointer()));
       return r;
     }
+
+    // Beginning of auto-generated jrk::settings accessors.
+    // End of auto-generated jrk::settings accessors.
   };
 
   /// Represents the variables read from a jrk.  This object just stores plain

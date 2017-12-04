@@ -4,8 +4,8 @@ struct jrk_settings
 {
   uint32_t product;
 
-  // Beginning of auto-generated setting struct members
-  // End of auto-generated setting struct members
+  // Beginning of auto-generated setting struct members.
+  // End of auto-generated setting struct members.
 };
 
 void jrk_settings_fill_with_defaults(jrk_settings * settings)
@@ -111,3 +111,6 @@ uint32_t jrk_settings_get_product(const jrk_settings * settings)
   if (!settings) { return 0; }
   return settings->product;
 }
+
+// Beginning of auto-generated jrk_settings accessors.
+// End of auto-generated jrk_settings accessors.
