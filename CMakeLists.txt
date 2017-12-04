@@ -24,7 +24,8 @@ project (jrk)
 
 set (CLI_NAME "jrkcmd")
 set (GUI_NAME "jrkgui")
-set (DOCUMENTATION_URL "https://www.pololu.com/docs/0J71")
+set (LIB_NAME "pololu-jrk")
+set (DOCUMENTATION_URL "https://www.pololu.com/docs/0J73")
 
 set (SOFTWARE_VERSION_MAJOR 1)
 set (SOFTWARE_VERSION_MINOR 0)
@@ -92,7 +93,6 @@ if (WIN32)
   add_definitions (-D_WIN32_WINNT=0x0600 -DNTDDI_VERSION=0x06000000)
 endif ()
 
-
 # Detect Linux.
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set (LINUX TRUE)
@@ -110,8 +110,8 @@ configure_file (
 
 file(WRITE "${CMAKE_BINARY_DIR}/version.txt" "${SOFTWARE_VERSION}")
 
-# TODO: add_subdirectory (lib)
-# TODO: add_subdirectory (cli)
+add_subdirectory (lib)
+add_subdirectory (cli)
 # TODO: add_subdirectory (bootloader)
 
 if (ENABLE_GUI)

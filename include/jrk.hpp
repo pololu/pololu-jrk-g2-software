@@ -392,6 +392,17 @@ namespace jrk
       return jrk_get_firmware_version_string(pointer);
     }
 
+    /// Wrapper for jrk_get_variables().
+    variables get_variables(
+      bool clear_error_flags_halting = false,
+      bool clear_error_flags_occurred = false)
+    {
+      jrk_variables * v;
+      throw_if_needed(jrk_get_variables(pointer, &v,
+          clear_error_flags_halting, clear_error_flags_occurred));
+      return variables(v);
+    }
+
     /// Wrapper for jrk_get_settings().
     settings get_settings()
     {
@@ -416,12 +427,6 @@ namespace jrk
     void reinitialize()
     {
       throw_if_needed(jrk_reinitialize(pointer));
-    }
-
-    /// Wrapper for jrk_start_bootloader().
-    void start_bootloader()
-    {
-      throw_if_needed(jrk_start_bootloader(pointer));
     }
 
     /// \cond

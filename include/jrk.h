@@ -338,6 +338,28 @@ const jrk_device * jrk_handle_get_device(const jrk_handle *);
 JRK_API JRK_WARN_UNUSED
 const char * jrk_get_firmware_version_string(jrk_handle *);
 
+/// Reads the jrk's status variables and returns them as an object.
+///
+/// This function sends a "Get variables" command.
+///
+/// The variables parameter should be a non-null pointer to a jrk_variables
+/// pointer, which will receive a pointer to a new variables object if and only
+/// if this function is successful.  The caller must free the variables later by
+/// calling jrk_variables_free().
+///
+/// To read information from the variables object, see the jrk_variables_get_*
+/// functions.
+///
+/// The clear_errors_halting option should be true if you want to clear the
+/// error bits in the device's "Error flags halting" variable (except for the
+/// Awaiting Command error bit).
+///
+/// The clear_errors_occurred option should be true if you want to clear the
+/// bits in the device's "Error flags occurred" variable as a side effect.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
+  bool clear_error_flags_halting, bool clear_error_flags_occurred);
+
 /// Reads all of the jrk's non-volatile settings and returns them as an object.
 ///
 /// The settings parameter should be a non-null pointer to a jrk_settings
