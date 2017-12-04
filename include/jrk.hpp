@@ -310,7 +310,7 @@ namespace jrk
     {
     }
 
-    uint8_t get_product() const noexcept
+    uint32_t get_product() const noexcept
     {
       return jrk_device_get_product(pointer);
     }

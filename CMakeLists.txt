@@ -120,4 +120,4 @@ endif ()
 
 # Install the header files into include/
 install(FILES include/jrk.h include/jrk.hpp include/jrk_protocol.h
-  DESTINATION "include/libpololu-jrk-${SOFTWARE_VERSION_MAJOR}")
+  DESTINATION "include/lib${LIB_NAME}-${SOFTWARE_VERSION_MAJOR}")

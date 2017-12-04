@@ -1,12 +1,6 @@
 #ifndef _JRK_PROTOCOL_H
 #define _JRK_PROTOCOL_H
 
-#define JRK_VENDOR_ID 0x1FFB
-// TODO: use a more real product name here when we decide it
-#define JRK_PRODUCT_ID_2017 0x00B7
-
-#define JRK_MAX_USB_RESPONSE_SIZE 128
-
 #define JRK_CMD_REINITIALIZE 0x10
 #define JRK_CMD_SET_SETTING 0x13
 #define JRK_CMD_GET_DEBUG_DATA 0x20
@@ -24,6 +18,20 @@
 #define JRK_CMD_OVERRIDE_DUTY_CYCLE 0xE9
 #define JRK_CMD_MOTOR_OFF_SERIAL 0xFF
 #define JRK_CMD_START_BOOTLOADER 0xFF
+
+#define JRK_VARIABLES_SIZE 128  // TODO
+
+#define JRK_SETTING_NOT_INITIALIZED 0
+
+#define JRK_SETTINGS_SIZE 128  // TODO
+
+#define JRK_VENDOR_ID 0x1FFB
+// TODO: use a more real product name here when we decide it
+#define JRK_PRODUCT_ID_2017 0x00B7
+
+#define JRK_FIRMWARE_MODIFICATION_STRING_INDEX 6
+
+#define JRK_MAX_USB_RESPONSE_SIZE 128
 
 #define JRK_RESET_POWER_UP 0
 #define JRK_RESET_BROWNOUT 1

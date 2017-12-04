@@ -35,7 +35,18 @@ endif ()
 set (os_src ${CMAKE_CURRENT_BINARY_DIR}/lib_info.rc)
 
 add_library (lib
+  jrk_device.c
+  jrk_error.c
+  jrk_get_settings.c
   jrk_handle.c
+  jrk_names.c
+  jrk_set_settings.c
+  jrk_settings.c
+  jrk_settings_fix.c
+  jrk_settings_read_from_string.c
+  jrk_settings_to_string.c
+  jrk_string.c
+  jrk_variables.c
   ${os_src}
   ${LIBYAML_SRC}
 )

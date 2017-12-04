@@ -77,7 +77,7 @@ void print_status(const jrk::variables & vars,
 
   // TODO: print last device reset
   // std::cout << left_column << "Last reset: "
-  //   << tic_look_up_device_reset_name_ui(vars.get_device_reset())
+  //   << jrk_look_up_device_reset_name_ui(vars.get_device_reset())
   //   << std::endl;
 
   std::cout << std::endl;

@@ -59,13 +59,13 @@ void jrk_string_free(char *);
 /// not, this function returns an empty string.  The returned string will be
 /// valid indefinitely and should not be freed.
 JRK_API
-const char * jrk_look_up_product_name_short(uint8_t product);
+const char * jrk_look_up_product_name_short(uint32_t product);
 
 /// Looks up a user-friendly string for the product name.  The product argument
 /// should be one of the JRK_PRODUCT_* macros, but if it is not, this function
 /// returns "(Unknown)".
 JRK_API
-const char * jrk_look_up_product_name_ui(uint8_t product);
+const char * jrk_look_up_product_name_ui(uint32_t product);
 
 /// Looks up a user-friendly string corresponding to the specified error bit,
 /// e.g. "Awaiting command".  The error argument should be of the form (1 <<
@@ -217,11 +217,11 @@ jrk_error * jrk_settings_read_from_string(const char * string,
 /// Sets the product, which specifies what jrk product these settings are for.
 /// The value should be one of the JRK_PRODUCT_* macros.
 JRK_API
-void jrk_settings_set_product(jrk_settings *, uint8_t product);
+void jrk_settings_set_product(jrk_settings *, uint32_t product);
 
-/// Gets the product described in jrk_settings_set_product().
+/// Gets the product, as described in jrk_settings_set_product().
 JRK_API
-uint8_t jrk_settings_get_product(const jrk_settings *);
+uint32_t jrk_settings_get_product(const jrk_settings *);
 
 
 
