@@ -238,9 +238,9 @@ def generate_settings_file_printing_code(stream)
     if type == :enum
       stream.puts "  const char * value_str = \"\";"
       stream.puts "  jrk_code_to_name(jrk_#{name}_names_short, #{name}, &value_str);"
-      stream.puts "  jrk_sprintf(&str, \"#{name}: %s\", value_str);";
+      stream.puts "  jrk_sprintf(&str, \"#{name}: %s\\n\", value_str);";
     else
-      stream.puts "  jrk_sprintf(&str, \"#{name}: %#{pf}\", #{name});"
+      stream.puts "  jrk_sprintf(&str, \"#{name}: %#{pf}\\n\", #{name});"
     end
     stream.puts "}"
     stream.puts

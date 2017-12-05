@@ -35,12 +35,12 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     uint8_t input_mode = jrk_settings_get_input_mode(settings);
     const char * value_str = "";
     jrk_code_to_name(jrk_input_mode_names_short, input_mode, &value_str);
-    jrk_sprintf(&str, "input_mode: %s", value_str);
+    jrk_sprintf(&str, "input_mode: %s\n", value_str);
   }
 
   {
     uint16_t input_minimum = jrk_settings_get_input_minimum(settings);
-    jrk_sprintf(&str, "input_minimum: %u", input_minimum);
+    jrk_sprintf(&str, "input_minimum: %u\n", input_minimum);
   }
 
   // End of auto-generated settings file printing code.
