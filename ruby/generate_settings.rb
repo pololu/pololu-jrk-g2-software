@@ -12,6 +12,7 @@ Settings = [
     range: 0..4095,
   },
 ]
+# TODO: comments for all these settings (for jrk.h)
 
 def setting_integer_type(setting_info)
   if setting_info[:type] == :enum
