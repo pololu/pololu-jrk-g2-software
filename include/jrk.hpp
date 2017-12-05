@@ -277,7 +277,7 @@ namespace jrk
       return std::string(str);
     }
 
-    /// Wrapper for jrk_settings_read_from_string.
+    /// Wrapper for jrk_settings_read_from_string().
     static settings read_from_string(const std::string & settings_string)
     {
       settings r;
@@ -286,16 +286,42 @@ namespace jrk
       return r;
     }
 
+    /// Wrapper for jrk_settings_set_product().
+    void set_product(uint32_t product) noexcept
+    {
+      jrk_settings_set_product(pointer, product);
+    }
+
+    /// Wrapper for jrk_settings_get_product().
+    uint32_t get_product() const noexcept
+    {
+      return jrk_settings_get_product(pointer);
+    }
+
     // Beginning of auto-generated settings C++ accessors.
 
-    void jrk_settings_set_input_mode(uint8_t input_mode)
+    /// Wrapper for jrk_settings_set_input_mode().
+    void set_input_mode(uint8_t input_mode) noexcept
     {
       jrk_settings_set_input_mode(pointer, input_mode);
     }
 
-    void jrk_settings_set_input_minimum(uint16_t input_minimum)
+    /// Wrapper for jrk_settings_get_input_mode().
+    uint8_t get_input_mode() const noexcept
+    {
+      return jrk_settings_get_input_mode(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_minimum().
+    void set_input_minimum(uint16_t input_minimum) noexcept
     {
       jrk_settings_set_input_minimum(pointer, input_minimum);
+    }
+
+    /// Wrapper for jrk_settings_get_input_minimum().
+    uint16_t get_input_minimum() const noexcept
+    {
+      return jrk_settings_get_input_minimum(pointer);
     }
 
     // End of auto-generated settings C++ accessors.

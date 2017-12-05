@@ -31,7 +31,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
   else if (!strcmp(key, "input_mode"))
   {
     uint32_t input_mode;
-    if (!jrk_name_to_code(jrk_input_mode_names, value, &input_mode))
+    if (!jrk_name_to_code(jrk_input_mode_names_short, value, &input_mode))
     {
       return jrk_error_create("Unrecognized input_mode value.");
     }
@@ -40,7 +40,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
   else if (!strcmp(key, "input_minimum"))
   {
     int64_t input_minimum;
-    if (tic_string_to_i64(value, &input_minimum))
+    if (jrk_string_to_i64(value, &input_minimum))
     {
       return jrk_error_create("Invalid input_minimum value.");
     }

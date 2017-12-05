@@ -118,20 +118,28 @@ uint32_t jrk_settings_get_product(const jrk_settings * settings)
 
 // Beginning of auto-generated settings accessors.
 
-void jrk_settings_set_input_mode(jrk_settings * settings, uint8_t input_mode);
+void jrk_settings_set_input_mode(jrk_settings * settings, uint8_t input_mode)
 {
   if (settings == NULL) { return; }
   settings->input_mode = input_mode;
 }
 
-uint8_t jrk_settings_get_input_mode(jrk_settings *);
+uint8_t jrk_settings_get_input_mode(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->input_mode;
+}
 
-void jrk_settings_set_input_minimum(jrk_settings * settings, uint16_t input_minimum);
+void jrk_settings_set_input_minimum(jrk_settings * settings, uint16_t input_minimum)
 {
   if (settings == NULL) { return; }
   settings->input_minimum = input_minimum;
 }
 
-uint16_t jrk_settings_get_input_minimum(jrk_settings *);
+uint16_t jrk_settings_get_input_minimum(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->input_minimum;
+}
 
 // End of auto-generated settings accessors.

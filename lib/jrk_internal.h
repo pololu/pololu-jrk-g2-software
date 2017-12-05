@@ -63,12 +63,7 @@ bool jrk_code_to_name(const jrk_name * table, uint32_t code, const char ** name)
 
 extern const jrk_name jrk_bool_names[];
 extern const jrk_name jrk_product_names_short[];
-extern const jrk_name jrk_step_mode_names[];
-extern const jrk_name jrk_control_mode_names[];
-extern const jrk_name jrk_response_names[];
-extern const jrk_name jrk_scaling_degree_names[];
-extern const jrk_name jrk_pin_func_names[];
-
+extern const jrk_name jrk_input_mode_names_short[];
 
 // Intenral variables functions.
 
@@ -119,7 +114,13 @@ extern jrk_error jrk_error_no_memory;
 
 // Static helper functions
 
-static inline uint32_t read_u16(const uint8_t * p)
+static inline uint16_t read_uint16_t(const uint8_t * p)
 {
   return p[0] + (p[1] << 8);
+}
+
+static inline void write_uint16_t(uint8_t * p, uint16_t value)
+{
+  p[0] = value & 0xFF;
+  p[1] = value >> 8 & 0xFF;
 }

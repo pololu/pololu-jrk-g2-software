@@ -8,12 +8,12 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   // Beginning of auto-generated settings-to-buffer code.
 
   {
-    uint8_t input_mode = jrk_settings_get_input_mode(settings, input_mode);
-    write_uint8_t(buf + JRK_SETTING_INPUT_MODE, input_mode);
+    uint8_t input_mode = jrk_settings_get_input_mode(settings);
+    buf[JRK_SETTING_INPUT_MODE] = input_mode;
   }
 
   {
-    uint16_t input_minimum = jrk_settings_get_input_minimum(settings, input_minimum);
+    uint16_t input_minimum = jrk_settings_get_input_minimum(settings);
     write_uint16_t(buf + JRK_SETTING_INPUT_MINIMUM, input_minimum);
   }
 
