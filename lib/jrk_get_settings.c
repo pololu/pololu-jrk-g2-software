@@ -5,6 +5,17 @@
 static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * settings)
 {
   // Beginning of auto-generated buffer-to-settings code.
+
+  {
+    uint8_t input_mode = read_uint8_t(buf, JRK_SETTING_INPUT_MODE);
+    jrk_setting_set_input_mode(settings, input_mode);
+  }
+
+  {
+    uint16_t input_minimum = read_uint16_t(buf, JRK_SETTING_INPUT_MINIMUM);
+    jrk_setting_set_input_minimum(settings, input_minimum);
+  }
+
   // End of auto-generated buffer-to-settings code.
 }
 

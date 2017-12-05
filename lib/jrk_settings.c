@@ -4,8 +4,12 @@ struct jrk_settings
 {
   uint32_t product;
 
-  // Beginning of auto-generated setting struct members.
-  // End of auto-generated setting struct members.
+  // Beginning of auto-generated settings struct members.
+
+  uint8_t input_mode;
+  uint16_t input_minimum;
+
+  // End of auto-generated settings struct members.
 };
 
 void jrk_settings_fill_with_defaults(jrk_settings * settings)
@@ -112,5 +116,22 @@ uint32_t jrk_settings_get_product(const jrk_settings * settings)
   return settings->product;
 }
 
-// Beginning of auto-generated jrk_settings accessors.
-// End of auto-generated jrk_settings accessors.
+// Beginning of auto-generated settings accessors.
+
+void jrk_settings_set_input_mode(jrk_settings * settings, uint8_t input_mode);
+{
+  if (settings == NULL) { return; }
+  settings->input_mode = input_mode;
+}
+
+uint8_t jrk_settings_get_input_mode(jrk_settings *);
+
+void jrk_settings_set_input_minimum(jrk_settings * settings, uint16_t input_minimum);
+{
+  if (settings == NULL) { return; }
+  settings->input_minimum = input_minimum;
+}
+
+uint16_t jrk_settings_get_input_minimum(jrk_settings *);
+
+// End of auto-generated settings accessors.

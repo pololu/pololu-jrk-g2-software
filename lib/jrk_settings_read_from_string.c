@@ -25,8 +25,35 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
   {
     // We already processed the product field separately.
   }
+
   // Beginning of auto-generated settings file parsing code.
+
+  else if (!strcmp(key, "input_mode"))
+  {
+    uint32_t input_mode;
+    if (!jrk_name_to_code(jrk_input_mode_names, value, &input_mode))
+    {
+      return jrk_error_create("Unrecognized input_mode value.");
+    }
+    jrk_settings_set_input_mode(settings, input_mode);
+  }
+  else if (!strcmp(key, "input_minimum"))
+  {
+    int64_t input_minimum;
+    if (tic_string_to_i64(value, &input_minimum))
+    {
+      return jrk_error_create("Invalid input_minimum value.");
+    }
+    if (input_minimum < 0 || input_minimum > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The input_minimum value is out of range.");
+    }
+    jrk_settings_set_input_minimum(settings, input_minimum);
+  }
+
   // End of auto-generated settings file parsing code.
+
   else
   {
     return jrk_error_create("Unrecognized key on line %d: \"%s\".", line, key);

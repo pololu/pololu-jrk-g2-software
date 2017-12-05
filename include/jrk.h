@@ -223,8 +223,27 @@ void jrk_settings_set_product(jrk_settings *, uint32_t product);
 JRK_API
 uint32_t jrk_settings_get_product(const jrk_settings *);
 
-// Beginning of auto-generated jrk_settings accessor prototypes.
-// End of auto-generated jrk_settings accessor prototypes.
+// Beginning of auto-generated settings accessor prototypes.
+
+// Sets the input_mode setting.
+TIC_API
+void jrk_settings_set_input_mode(jrk_settings *, uint8_t input_mode);
+
+// Gets the input_mode setting, which is described in
+// jrk_settings_set_input_mode.
+TIC_API
+uint8_t jrk_settings_get_input_mode(jrk_settings *);
+
+// Sets the input_minimum setting.
+TIC_API
+void jrk_settings_set_input_minimum(jrk_settings *, uint16_t input_minimum);
+
+// Gets the input_minimum setting, which is described in
+// jrk_settings_set_input_minimum.
+TIC_API
+uint16_t jrk_settings_get_input_minimum(jrk_settings *);
+
+// End of auto-generated settings accessor prototypes.
 
 
 // jrk_variables ////////////////////////////////////////////////////////////////

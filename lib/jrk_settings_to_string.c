@@ -29,8 +29,21 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "product: %s\n", product_str);
   }
 
-  // Begin auto-generated settings file printing code.
-  // End auto-generated settings file printing code.
+  // Beginning of auto-generated settings file printing code.
+
+  {
+    uint8_t input_mode = tic_settings_get_input_mode(settings);
+    const char * str = "";
+    jrk_code_to_name(jrk_input_mode_names, input_mode, &str);
+    tic_sprintf(&str, "input_mode: %s", str);
+  }
+
+  {
+    uint16_t input_minimum = tic_settings_get_input_minimum(settings);
+    tic_sprintf(&str, "input_minimum: %u", input_minimum);
+  }
+
+  // End of auto-generated settings file printing code.
 
   if (error == NULL && str.data == NULL)
   {

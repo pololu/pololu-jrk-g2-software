@@ -286,8 +286,19 @@ namespace jrk
       return r;
     }
 
-    // Beginning of auto-generated jrk::settings accessors.
-    // End of auto-generated jrk::settings accessors.
+    // Beginning of auto-generated settings C++ accessors.
+
+    void jrk_settings_set_input_mode(uint8_t input_mode)
+    {
+      jrk_settings_set_input_mode(pointer, input_mode);
+    }
+
+    void jrk_settings_set_input_minimum(uint16_t input_minimum)
+    {
+      jrk_settings_set_input_minimum(pointer, input_minimum);
+    }
+
+    // End of auto-generated settings C++ accessors.
   };
 
   /// Represents the variables read from a jrk.  This object just stores plain
