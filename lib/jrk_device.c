@@ -70,7 +70,7 @@ jrk_error * jrk_list_connected_devices(
     libusbp_generic_interface * usb_interface = NULL;
     {
       uint8_t interface_number = 0;
-      bool composite = false;
+      bool composite = true;
       libusbp_error * usb_error = libusbp_generic_interface_create(
         usb_device, interface_number, composite, &usb_interface);
       if (usb_error)
