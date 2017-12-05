@@ -28,6 +28,8 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   // Reset all fields to zero.
   memset(settings, 0, sizeof(jrk_settings));
 
+  tic_settings_set_product(settings, product);
+
   // TODO: finish filling in the default settings
 }
 
