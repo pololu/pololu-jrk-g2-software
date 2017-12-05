@@ -183,7 +183,9 @@ static jrk_error * read_from_yaml_doc(
   memcpy(product_str, product_value->data.scalar.value,
     product_value->data.scalar.length);
   product_str[product_value->data.scalar.length] = 0;
-  apply_product_name(settings, product_str);
+  jrk_error * error;
+  error = apply_product_name(settings, product_str);
+  if (error) { return error; }
 
   // Iterate over the pairs in the YAML mapping and process each one.
   for (yaml_node_pair_t * pair = root->data.mapping.pairs.start;
@@ -191,7 +193,7 @@ static jrk_error * read_from_yaml_doc(
   {
     yaml_node_t * key = yaml_document_get_node(doc, pair->key);
     yaml_node_t * value = yaml_document_get_node(doc, pair->value);
-    jrk_error * error = apply_yaml_pair(settings, key, value);
+    error = apply_yaml_pair(settings, key, value);
     if (error) { return error; }
   }
 
