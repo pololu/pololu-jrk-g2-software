@@ -227,23 +227,602 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 
 // Sets the input_mode setting.
 JRK_API
-void jrk_settings_set_input_mode(jrk_settings *, uint8_t input_mode);
+void jrk_settings_set_input_mode(jrk_settings *,
+  uint8_t input_mode);
 
 // Gets the input_mode setting, which is described in
 // jrk_settings_set_input_mode.
 JRK_API
 uint8_t jrk_settings_get_input_mode(const jrk_settings *);
 
+// Sets the input_disconnect_minimum setting.
+JRK_API
+void jrk_settings_set_input_disconnect_minimum(jrk_settings *,
+  uint16_t input_disconnect_minimum);
+
+// Gets the input_disconnect_minimum setting, which is described in
+// jrk_settings_set_input_disconnect_minimum.
+JRK_API
+uint16_t jrk_settings_get_input_disconnect_minimum(const jrk_settings *);
+
+// Sets the input_disconnect_maximum setting.
+JRK_API
+void jrk_settings_set_input_disconnect_maximum(jrk_settings *,
+  uint16_t input_disconnect_maximum);
+
+// Gets the input_disconnect_maximum setting, which is described in
+// jrk_settings_set_input_disconnect_maximum.
+JRK_API
+uint16_t jrk_settings_get_input_disconnect_maximum(const jrk_settings *);
+
 // Sets the input_minimum setting.
 JRK_API
-void jrk_settings_set_input_minimum(jrk_settings *, uint16_t input_minimum);
+void jrk_settings_set_input_minimum(jrk_settings *,
+  uint16_t input_minimum);
 
 // Gets the input_minimum setting, which is described in
 // jrk_settings_set_input_minimum.
 JRK_API
 uint16_t jrk_settings_get_input_minimum(const jrk_settings *);
 
+// Sets the input_maximum setting.
+JRK_API
+void jrk_settings_set_input_maximum(jrk_settings *,
+  uint16_t input_maximum);
+
+// Gets the input_maximum setting, which is described in
+// jrk_settings_set_input_maximum.
+JRK_API
+uint16_t jrk_settings_get_input_maximum(const jrk_settings *);
+
+// Sets the input_neutral_minimum setting.
+JRK_API
+void jrk_settings_set_input_neutral_minimum(jrk_settings *,
+  uint16_t input_neutral_minimum);
+
+// Gets the input_neutral_minimum setting, which is described in
+// jrk_settings_set_input_neutral_minimum.
+JRK_API
+uint16_t jrk_settings_get_input_neutral_minimum(const jrk_settings *);
+
+// Sets the input_neutral_maximum setting.
+JRK_API
+void jrk_settings_set_input_neutral_maximum(jrk_settings *,
+  uint16_t input_neutral_maximum);
+
+// Gets the input_neutral_maximum setting, which is described in
+// jrk_settings_set_input_neutral_maximum.
+JRK_API
+uint16_t jrk_settings_get_input_neutral_maximum(const jrk_settings *);
+
+// Sets the output_minimum setting.
+JRK_API
+void jrk_settings_set_output_minimum(jrk_settings *,
+  uint16_t output_minimum);
+
+// Gets the output_minimum setting, which is described in
+// jrk_settings_set_output_minimum.
+JRK_API
+uint16_t jrk_settings_get_output_minimum(const jrk_settings *);
+
+// Sets the output_neutral setting.
+JRK_API
+void jrk_settings_set_output_neutral(jrk_settings *,
+  uint16_t output_neutral);
+
+// Gets the output_neutral setting, which is described in
+// jrk_settings_set_output_neutral.
+JRK_API
+uint16_t jrk_settings_get_output_neutral(const jrk_settings *);
+
+// Sets the output_maximum setting.
+JRK_API
+void jrk_settings_set_output_maximum(jrk_settings *,
+  uint16_t output_maximum);
+
+// Gets the output_maximum setting, which is described in
+// jrk_settings_set_output_maximum.
+JRK_API
+uint16_t jrk_settings_get_output_maximum(const jrk_settings *);
+
+// Sets the input_invert setting.
+JRK_API
+void jrk_settings_set_input_invert(jrk_settings *,
+  bool input_invert);
+
+// Gets the input_invert setting, which is described in
+// jrk_settings_set_input_invert.
+JRK_API
+bool jrk_settings_get_input_invert(const jrk_settings *);
+
+// Sets the input_scaling_degree setting.
+JRK_API
+void jrk_settings_set_input_scaling_degree(jrk_settings *,
+  uint8_t input_scaling_degree);
+
+// Gets the input_scaling_degree setting, which is described in
+// jrk_settings_set_input_scaling_degree.
+JRK_API
+uint8_t jrk_settings_get_input_scaling_degree(const jrk_settings *);
+
+// Sets the input_power_with_aux setting.
+JRK_API
+void jrk_settings_set_input_power_with_aux(jrk_settings *,
+  bool input_power_with_aux);
+
+// Gets the input_power_with_aux setting, which is described in
+// jrk_settings_set_input_power_with_aux.
+JRK_API
+bool jrk_settings_get_input_power_with_aux(const jrk_settings *);
+
+// Sets the input_analog_samples_exponent setting.
+//
+// This setting specifies how many analog samples to take if the input mode
+// is analog.  The number of samples will be 4*(2^x), where x is this setting.
+JRK_API
+void jrk_settings_set_input_analog_samples_exponent(jrk_settings *,
+  uint8_t input_analog_samples_exponent);
+
+// Gets the input_analog_samples_exponent setting, which is described in
+// jrk_settings_set_input_analog_samples_exponent.
+JRK_API
+uint8_t jrk_settings_get_input_analog_samples_exponent(const jrk_settings *);
+
+// Sets the feedback_mode setting.
+JRK_API
+void jrk_settings_set_feedback_mode(jrk_settings *,
+  uint8_t feedback_mode);
+
+// Gets the feedback_mode setting, which is described in
+// jrk_settings_set_feedback_mode.
+JRK_API
+uint8_t jrk_settings_get_feedback_mode(const jrk_settings *);
+
+// Sets the feedback_disconnect_minimum setting.
+JRK_API
+void jrk_settings_set_feedback_disconnect_minimum(jrk_settings *,
+  uint16_t feedback_disconnect_minimum);
+
+// Gets the feedback_disconnect_minimum setting, which is described in
+// jrk_settings_set_feedback_disconnect_minimum.
+JRK_API
+uint16_t jrk_settings_get_feedback_disconnect_minimum(const jrk_settings *);
+
+// Sets the feedback_disconnect_maximum setting.
+JRK_API
+void jrk_settings_set_feedback_disconnect_maximum(jrk_settings *,
+  uint16_t feedback_disconnect_maximum);
+
+// Gets the feedback_disconnect_maximum setting, which is described in
+// jrk_settings_set_feedback_disconnect_maximum.
+JRK_API
+uint16_t jrk_settings_get_feedback_disconnect_maximum(const jrk_settings *);
+
+// Sets the feedback_minimum setting.
+JRK_API
+void jrk_settings_set_feedback_minimum(jrk_settings *,
+  uint16_t feedback_minimum);
+
+// Gets the feedback_minimum setting, which is described in
+// jrk_settings_set_feedback_minimum.
+JRK_API
+uint16_t jrk_settings_get_feedback_minimum(const jrk_settings *);
+
+// Sets the feedback_maximum setting.
+JRK_API
+void jrk_settings_set_feedback_maximum(jrk_settings *,
+  uint16_t feedback_maximum);
+
+// Gets the feedback_maximum setting, which is described in
+// jrk_settings_set_feedback_maximum.
+JRK_API
+uint16_t jrk_settings_get_feedback_maximum(const jrk_settings *);
+
+// Sets the feedback_invert setting.
+JRK_API
+void jrk_settings_set_feedback_invert(jrk_settings *,
+  bool feedback_invert);
+
+// Gets the feedback_invert setting, which is described in
+// jrk_settings_set_feedback_invert.
+JRK_API
+bool jrk_settings_get_feedback_invert(const jrk_settings *);
+
+// Sets the feedback_power_with_aux setting.
+JRK_API
+void jrk_settings_set_feedback_power_with_aux(jrk_settings *,
+  bool feedback_power_with_aux);
+
+// Gets the feedback_power_with_aux setting, which is described in
+// jrk_settings_set_feedback_power_with_aux.
+JRK_API
+bool jrk_settings_get_feedback_power_with_aux(const jrk_settings *);
+
+// Sets the feedback_dead_zone setting.
+JRK_API
+void jrk_settings_set_feedback_dead_zone(jrk_settings *,
+  uint8_t feedback_dead_zone);
+
+// Gets the feedback_dead_zone setting, which is described in
+// jrk_settings_set_feedback_dead_zone.
+JRK_API
+uint8_t jrk_settings_get_feedback_dead_zone(const jrk_settings *);
+
+// Sets the feedback_analog_samples_exponent setting.
+//
+// This setting specifies how many analog samples to take if the feedback mode
+// is analog.  The number of samples will be 4*(2^x), where x is this setting.
+JRK_API
+void jrk_settings_set_feedback_analog_samples_exponent(jrk_settings *,
+  uint8_t feedback_analog_samples_exponent);
+
+// Gets the feedback_analog_samples_exponent setting, which is described in
+// jrk_settings_set_feedback_analog_samples_exponent.
+JRK_API
+uint8_t jrk_settings_get_feedback_analog_samples_exponent(const jrk_settings *);
+
+// Sets the feedback_wraparound setting.
+JRK_API
+void jrk_settings_set_feedback_wraparound(jrk_settings *,
+  bool feedback_wraparound);
+
+// Gets the feedback_wraparound setting, which is described in
+// jrk_settings_set_feedback_wraparound.
+JRK_API
+bool jrk_settings_get_feedback_wraparound(const jrk_settings *);
+
+// Sets the serial_mode setting.
+JRK_API
+void jrk_settings_set_serial_mode(jrk_settings *,
+  uint8_t serial_mode);
+
+// Gets the serial_mode setting, which is described in
+// jrk_settings_set_serial_mode.
+JRK_API
+uint8_t jrk_settings_get_serial_mode(const jrk_settings *);
+
+// Sets the serial_baud_rate setting.
+//
+// This setting specifies the baud rate to use on the RX and TX pins
+// when the serial mode is UART.  It should be between
+// JRK_MIN_ALLOWED_BAUD_RATE and JRK_MAX_ALLOWED_BAUD_RATE.
+JRK_API
+void jrk_settings_set_serial_baud_rate(jrk_settings *,
+  uint32_t serial_baud_rate);
+
+// Gets the serial_baud_rate setting, which is described in
+// jrk_settings_set_serial_baud_rate.
+JRK_API
+uint32_t jrk_settings_get_serial_baud_rate(const jrk_settings *);
+
+// Sets the serial_timeout setting.
+//
+// This is the time in units of 10 milliseconds before the device considers
+// it to be an error if it has not received certain commands.  A value of 0
+// disables the command timeout feature.
+JRK_API
+void jrk_settings_set_serial_timeout(jrk_settings *,
+  uint16_t serial_timeout);
+
+// Gets the serial_timeout setting, which is described in
+// jrk_settings_set_serial_timeout.
+JRK_API
+uint16_t jrk_settings_get_serial_timeout(const jrk_settings *);
+
+// Sets the serial_enable_crc setting.
+JRK_API
+void jrk_settings_set_serial_enable_crc(jrk_settings *,
+  bool serial_enable_crc);
+
+// Gets the serial_enable_crc setting, which is described in
+// jrk_settings_set_serial_enable_crc.
+JRK_API
+bool jrk_settings_get_serial_enable_crc(const jrk_settings *);
+
+// Sets the serial_device_number setting.
+JRK_API
+void jrk_settings_set_serial_device_number(jrk_settings *,
+  uint8_t serial_device_number);
+
+// Gets the serial_device_number setting, which is described in
+// jrk_settings_set_serial_device_number.
+JRK_API
+uint8_t jrk_settings_get_serial_device_number(const jrk_settings *);
+
+// Sets the never_sleep setting.
+JRK_API
+void jrk_settings_set_never_sleep(jrk_settings *,
+  bool never_sleep);
+
+// Gets the never_sleep setting, which is described in
+// jrk_settings_set_never_sleep.
+JRK_API
+bool jrk_settings_get_never_sleep(const jrk_settings *);
+
+// Sets the proportional_multiplier setting.
+JRK_API
+void jrk_settings_set_proportional_multiplier(jrk_settings *,
+  uint16_t proportional_multiplier);
+
+// Gets the proportional_multiplier setting, which is described in
+// jrk_settings_set_proportional_multiplier.
+JRK_API
+uint16_t jrk_settings_get_proportional_multiplier(const jrk_settings *);
+
+// Sets the proportional_exponent setting.
+JRK_API
+void jrk_settings_set_proportional_exponent(jrk_settings *,
+  uint8_t proportional_exponent);
+
+// Gets the proportional_exponent setting, which is described in
+// jrk_settings_set_proportional_exponent.
+JRK_API
+uint8_t jrk_settings_get_proportional_exponent(const jrk_settings *);
+
+// Sets the integral_multiplier setting.
+JRK_API
+void jrk_settings_set_integral_multiplier(jrk_settings *,
+  uint16_t integral_multiplier);
+
+// Gets the integral_multiplier setting, which is described in
+// jrk_settings_set_integral_multiplier.
+JRK_API
+uint16_t jrk_settings_get_integral_multiplier(const jrk_settings *);
+
+// Sets the integral_exponent setting.
+JRK_API
+void jrk_settings_set_integral_exponent(jrk_settings *,
+  uint8_t integral_exponent);
+
+// Gets the integral_exponent setting, which is described in
+// jrk_settings_set_integral_exponent.
+JRK_API
+uint8_t jrk_settings_get_integral_exponent(const jrk_settings *);
+
+// Sets the derivative_multiplier setting.
+JRK_API
+void jrk_settings_set_derivative_multiplier(jrk_settings *,
+  uint16_t derivative_multiplier);
+
+// Gets the derivative_multiplier setting, which is described in
+// jrk_settings_set_derivative_multiplier.
+JRK_API
+uint16_t jrk_settings_get_derivative_multiplier(const jrk_settings *);
+
+// Sets the derivative_exponent setting.
+JRK_API
+void jrk_settings_set_derivative_exponent(jrk_settings *,
+  uint8_t derivative_exponent);
+
+// Gets the derivative_exponent setting, which is described in
+// jrk_settings_set_derivative_exponent.
+JRK_API
+uint8_t jrk_settings_get_derivative_exponent(const jrk_settings *);
+
+// Sets the pid_period setting.
+JRK_API
+void jrk_settings_set_pid_period(jrk_settings *,
+  uint16_t pid_period);
+
+// Gets the pid_period setting, which is described in
+// jrk_settings_set_pid_period.
+JRK_API
+uint16_t jrk_settings_get_pid_period(const jrk_settings *);
+
+// Sets the pid_integral_limit setting.
+JRK_API
+void jrk_settings_set_pid_integral_limit(jrk_settings *,
+  uint16_t pid_integral_limit);
+
+// Gets the pid_integral_limit setting, which is described in
+// jrk_settings_set_pid_integral_limit.
+JRK_API
+uint16_t jrk_settings_get_pid_integral_limit(const jrk_settings *);
+
+// Sets the pid_reset_integral setting.
+JRK_API
+void jrk_settings_set_pid_reset_integral(jrk_settings *,
+  bool pid_reset_integral);
+
+// Gets the pid_reset_integral setting, which is described in
+// jrk_settings_set_pid_reset_integral.
+JRK_API
+bool jrk_settings_get_pid_reset_integral(const jrk_settings *);
+
+// Sets the motor_pwm_frequency setting.
+JRK_API
+void jrk_settings_set_motor_pwm_frequency(jrk_settings *,
+  uint8_t motor_pwm_frequency);
+
+// Gets the motor_pwm_frequency setting, which is described in
+// jrk_settings_set_motor_pwm_frequency.
+JRK_API
+uint8_t jrk_settings_get_motor_pwm_frequency(const jrk_settings *);
+
+// Sets the motor_invert setting.
+JRK_API
+void jrk_settings_set_motor_invert(jrk_settings *,
+  bool motor_invert);
+
+// Gets the motor_invert setting, which is described in
+// jrk_settings_set_motor_invert.
+JRK_API
+bool jrk_settings_get_motor_invert(const jrk_settings *);
+
+// Sets the motor_max_duty_cycle_while_feedback_out_of_range setting.
+JRK_API
+void jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(jrk_settings *,
+  uint16_t motor_max_duty_cycle_while_feedback_out_of_range);
+
+// Gets the motor_max_duty_cycle_while_feedback_out_of_range setting, which is described in
+// jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range.
+JRK_API
+uint16_t jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(const jrk_settings *);
+
+// Sets the motor_max_acceleration_forward setting.
+JRK_API
+void jrk_settings_set_motor_max_acceleration_forward(jrk_settings *,
+  uint16_t motor_max_acceleration_forward);
+
+// Gets the motor_max_acceleration_forward setting, which is described in
+// jrk_settings_set_motor_max_acceleration_forward.
+JRK_API
+uint16_t jrk_settings_get_motor_max_acceleration_forward(const jrk_settings *);
+
+// Sets the motor_max_acceleration_reverse setting.
+JRK_API
+void jrk_settings_set_motor_max_acceleration_reverse(jrk_settings *,
+  uint16_t motor_max_acceleration_reverse);
+
+// Gets the motor_max_acceleration_reverse setting, which is described in
+// jrk_settings_set_motor_max_acceleration_reverse.
+JRK_API
+uint16_t jrk_settings_get_motor_max_acceleration_reverse(const jrk_settings *);
+
+// Sets the motor_max_deceleration_forward setting.
+JRK_API
+void jrk_settings_set_motor_max_deceleration_forward(jrk_settings *,
+  uint16_t motor_max_deceleration_forward);
+
+// Gets the motor_max_deceleration_forward setting, which is described in
+// jrk_settings_set_motor_max_deceleration_forward.
+JRK_API
+uint16_t jrk_settings_get_motor_max_deceleration_forward(const jrk_settings *);
+
+// Sets the motor_max_deceleration_reverse setting.
+JRK_API
+void jrk_settings_set_motor_max_deceleration_reverse(jrk_settings *,
+  uint16_t motor_max_deceleration_reverse);
+
+// Gets the motor_max_deceleration_reverse setting, which is described in
+// jrk_settings_set_motor_max_deceleration_reverse.
+JRK_API
+uint16_t jrk_settings_get_motor_max_deceleration_reverse(const jrk_settings *);
+
+// Sets the motor_max_duty_cycle_forward setting.
+JRK_API
+void jrk_settings_set_motor_max_duty_cycle_forward(jrk_settings *,
+  uint16_t motor_max_duty_cycle_forward);
+
+// Gets the motor_max_duty_cycle_forward setting, which is described in
+// jrk_settings_set_motor_max_duty_cycle_forward.
+JRK_API
+uint16_t jrk_settings_get_motor_max_duty_cycle_forward(const jrk_settings *);
+
+// Sets the motor_max_duty_cycle_reverse setting.
+JRK_API
+void jrk_settings_set_motor_max_duty_cycle_reverse(jrk_settings *,
+  uint16_t motor_max_duty_cycle_reverse);
+
+// Gets the motor_max_duty_cycle_reverse setting, which is described in
+// jrk_settings_set_motor_max_duty_cycle_reverse.
+JRK_API
+uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings *);
+
+// Sets the motor_max_current_forward setting.
+JRK_API
+void jrk_settings_set_motor_max_current_forward(jrk_settings *,
+  uint8_t motor_max_current_forward);
+
+// Gets the motor_max_current_forward setting, which is described in
+// jrk_settings_set_motor_max_current_forward.
+JRK_API
+uint8_t jrk_settings_get_motor_max_current_forward(const jrk_settings *);
+
+// Sets the motor_max_current_reverse setting.
+JRK_API
+void jrk_settings_set_motor_max_current_reverse(jrk_settings *,
+  uint8_t motor_max_current_reverse);
+
+// Gets the motor_max_current_reverse setting, which is described in
+// jrk_settings_set_motor_max_current_reverse.
+JRK_API
+uint8_t jrk_settings_get_motor_max_current_reverse(const jrk_settings *);
+
+// Sets the motor_current_calibration_forward setting.
+JRK_API
+void jrk_settings_set_motor_current_calibration_forward(jrk_settings *,
+  int8_t motor_current_calibration_forward);
+
+// Gets the motor_current_calibration_forward setting, which is described in
+// jrk_settings_set_motor_current_calibration_forward.
+JRK_API
+int8_t jrk_settings_get_motor_current_calibration_forward(const jrk_settings *);
+
+// Sets the motor_current_calibration_reverse setting.
+JRK_API
+void jrk_settings_set_motor_current_calibration_reverse(jrk_settings *,
+  int8_t motor_current_calibration_reverse);
+
+// Gets the motor_current_calibration_reverse setting, which is described in
+// jrk_settings_set_motor_current_calibration_reverse.
+JRK_API
+int8_t jrk_settings_get_motor_current_calibration_reverse(const jrk_settings *);
+
+// Sets the motor_brake_duration_forward setting.
+//
+// Units of 5 ms.
+JRK_API
+void jrk_settings_set_motor_brake_duration_forward(jrk_settings *,
+  uint8_t motor_brake_duration_forward);
+
+// Gets the motor_brake_duration_forward setting, which is described in
+// jrk_settings_set_motor_brake_duration_forward.
+JRK_API
+uint8_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
+
+// Sets the motor_brake_duration_reverse setting.
+//
+// Units of 5 ms.
+JRK_API
+void jrk_settings_set_motor_brake_duration_reverse(jrk_settings *,
+  uint8_t motor_brake_duration_reverse);
+
+// Gets the motor_brake_duration_reverse setting, which is described in
+// jrk_settings_set_motor_brake_duration_reverse.
+JRK_API
+uint8_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
+
+// Sets the motor_coast_when_off setting.
+JRK_API
+void jrk_settings_set_motor_coast_when_off(jrk_settings *,
+  bool motor_coast_when_off);
+
+// Gets the motor_coast_when_off setting, which is described in
+// jrk_settings_set_motor_coast_when_off.
+JRK_API
+bool jrk_settings_get_motor_coast_when_off(const jrk_settings *);
+
+// Sets the error_enable setting.
+//
+// This setting is a bitmask for errors that are enabled.
+JRK_API
+void jrk_settings_set_error_enable(jrk_settings *,
+  uint16_t error_enable);
+
+// Gets the error_enable setting, which is described in
+// jrk_settings_set_error_enable.
+JRK_API
+uint16_t jrk_settings_get_error_enable(const jrk_settings *);
+
+// Sets the error_latch setting.
+//
+// This setting is a bitmask for errors that are enabled and latched.
+JRK_API
+void jrk_settings_set_error_latch(jrk_settings *,
+  uint16_t error_latch);
+
+// Gets the error_latch setting, which is described in
+// jrk_settings_set_error_latch.
+JRK_API
+uint16_t jrk_settings_get_error_latch(const jrk_settings *);
+
 // End of auto-generated settings accessor prototypes.
+
+/// Returns an acheivable baud rate corresponding to the specified baud rate.
+/// Does not modify the settings object.
+JRK_API
+uint32_t jrk_settings_achievable_serial_baud_rate(const jrk_settings *, uint32_t);
 
 
 // jrk_variables ////////////////////////////////////////////////////////////////

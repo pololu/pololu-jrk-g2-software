@@ -64,6 +64,11 @@ bool jrk_code_to_name(const jrk_name * table, uint32_t code, const char ** name)
 extern const jrk_name jrk_bool_names[];
 extern const jrk_name jrk_product_names_short[];
 extern const jrk_name jrk_input_mode_names_short[];
+extern const jrk_name jrk_input_scaling_degree_names_short[];
+extern const jrk_name jrk_feedback_mode_names_short[];
+extern const jrk_name jrk_serial_mode_names_short[];
+extern const jrk_name jrk_motor_pwm_frequency_names_short[];
+
 
 // Intenral variables functions.
 
@@ -74,8 +79,6 @@ void jrk_variables_set_from_device(jrk_variables *, const uint8_t * buffer);
 
 uint32_t jrk_baud_rate_from_brg(uint16_t brg);
 uint16_t jrk_baud_rate_to_brg(uint32_t baud_rate);
-uint32_t jrk_current_limit_from_code(uint8_t product, uint8_t code);
-uint16_t jrk_current_limit_to_code(uint8_t product, uint32_t current_limit);
 
 
 // Internal jrk_device functions.

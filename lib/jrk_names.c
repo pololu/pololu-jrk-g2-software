@@ -26,6 +26,40 @@ const jrk_name jrk_input_mode_names_short[] =
   { "serial", JRK_INPUT_MODE_SERIAL },
   { "analog", JRK_INPUT_MODE_ANALOG },
   { "pulse_width", JRK_INPUT_MODE_PULSE_WIDTH },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_input_scaling_degree_names_short[] =
+{
+  { "linear", JRK_SCALING_DEGREE_LINEAR },
+  { "quadratic", JRK_SCALING_DEGREE_QUADRATIC },
+  { "cubic", JRK_SCALING_DEGREE_CUBIC },
+  { "quartic", JRK_SCALING_DEGREE_QUARTIC },
+  { "quintic", JRK_SCALING_DEGREE_QUINTIC },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_feedback_mode_names_short[] =
+{
+  { "none", JRK_FEEDBACK_MODE_NONE },
+  { "analog", JRK_FEEDBACK_MODE_ANALOG },
+  { "tachometer", JRK_FEEDBACK_MODE_FREQUENCY },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_serial_mode_names_short[] =
+{
+  { "usb_dual_port", JRK_SERIAL_MODE_USB_DUAL_PORT },
+  { "usb_chained", JRK_SERIAL_MODE_USB_CHAINED },
+  { "uart", JRK_SERIAL_MODE_UART },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_motor_pwm_frequency_names_short[] =
+{
+  { "20", JRK_MOTOR_PWM_FREQUENCY_20 },
+  { "5", JRK_MOTOR_PWM_FREQUENCY_5 },
+  { NULL, 0 },
 };
 
 const jrk_name jrk_error_names_ui[] =  // TODO
