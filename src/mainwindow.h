@@ -9,6 +9,9 @@
 #include "graphwindow.h"
 #include "altwindow.h"
 
+class PIDConstantControl;
+class ErrorsControl;
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -120,14 +123,111 @@ private:
 	QRadioButton *input_uart_fixed_baud_radio;
 	QDoubleSpinBox *input_timeout_spinbox;
 
-
-
-
+	// feedback tab
 
 	QWidget *feedback_page_widget;
+	QGridLayout *feedback_page_layout;
+	QLabel *feedback_mode_label;
+	QComboBox *feedback_mode_combobox;
+
+	// feedback tab "Scaling (Analog and Tachometer mode only)" groupbox
+
+	QGroupBox *feedback_scaling_groupbox;
+	QCheckBox *feedback_invert_feedback_checkbox;
+	QLabel *feedback_absolute_max_label;
+	QLabel *feedback_maximum_label;
+	QLabel *feedback_minimum_label;
+	QLabel *feedback_absolute_min_label;
+	QLabel *feedback_calibration_label;
+	QLabel *feedback_scaling_order_warning_label;
+	QDoubleSpinBox *feedback_absolute_max_spinbox;
+	QDoubleSpinBox *feedback_maximum_spinbox;
+	QDoubleSpinBox *feedback_minimum_spinbox;
+	QDoubleSpinBox *feedback_absolute_min_spinbox;
+	QPushButton *feedback_learn_button;
+	QPushButton *feedback_reset_range_button;
+
+	// feedback tab "Analog to digital conversion" groupbox
+
+	QGroupBox *feedback_analog_groupbox;
+	QLabel *feedback_analog_samples_label;
+	QComboBox *feedback_analog_samples_combobox;
+	QCheckBox *feedback_disconnect_with_aux_checkbox;
+
+	// pid tab
+
 	QWidget *pid_page_widget;
+	QGridLayout *pid_page_layout;
+	QLabel *pid_period_label;
+	QDoubleSpinBox *pid_period_spinbox;
+	QLabel *pid_integral_limit_label;
+	QDoubleSpinBox *pid_integral_limit_spinbox;
+	QCheckBox *pid_reset_integral_checkbox;
+	QLabel *pid_deadzone_label;
+	QDoubleSpinBox *pid_deadzone_spinbox;
+
+	// pid tab constant controls
+
+	PIDConstantControl *pid_proportional_coefficient;
+	PIDConstantControl *pid_integral_coefficient;
+	PIDConstantControl *pid_derivative_coefficient;
+	
+	// motor tab
+
 	QWidget *motor_page_widget;
+	QGridLayout *motor_page_layout;
+	QLabel *motor_frequency_label;
+	QComboBox *motor_frequency_combobox;
+	QCheckBox *motor_invert_checkbox;
+	QPushButton *motor_detect_motor_button;
+	QCheckBox *motor_asymmetric_checkbox;
+	QLabel *motor_forward_label;
+	QLabel *motor_reverse_label;
+	QLabel *motor_duty_label;
+	QDoubleSpinBox *motor_duty_forward_spinbox;
+	QDoubleSpinBox *motor_duty_reverse_spinbox;
+	QLabel *motor_duty_means_label;
+	QLabel *motor_acceleration_label;
+	QDoubleSpinBox *motor_acceleration_forward_spinbox;
+	QDoubleSpinBox *motor_acceleration_reverse_spinbox;
+	QLabel *motor_acceleration_means_label;
+	QLabel *motor_duration_label;
+	QDoubleSpinBox *motor_duration_forward_spinbox;
+	QDoubleSpinBox *motor_duration_reverse_spinbox;
+	QLabel *motor_current_label;
+	QDoubleSpinBox *motor_current_forward_spinbox;
+	QDoubleSpinBox *motor_current_reverse_spinbox;
+	QLabel *motor_current_means_label;
+	QLabel *motor_calibration_label;
+	QDoubleSpinBox *motor_calibration_forward_spinbox;
+	QDoubleSpinBox *motor_calibration_reverse_spinbox;
+	QLabel *motor_outofrange_label;
+	QDoubleSpinBox *motor_outofrange_spinbox;
+	QLabel *motor_outofrange_means_label;
+	QLabel *motor_off_label;
+	QRadioButton *motor_brake_radio;
+	QRadioButton *motor_coast_radio;
+
 	QWidget *errors_page_widget;
+	QVBoxLayout *errors_page_layout;
+	QLabel *errors_bit_mask_label;
+	QLabel *errors_error_label;
+	QLabel *errors_setting_label;
+	QLabel *errors_stopping_motor_label;
+	QLabel *errors_occurence_count_label;
+	ErrorsControl *awaiting_command;
+	ErrorsControl *no_power;
+	ErrorsControl *motor_driven_error;
+	ErrorsControl *input_invalid;
+	ErrorsControl *input_disconnect;
+	ErrorsControl *feedback_disconnect;
+	ErrorsControl *max_current_exceeded;
+	ErrorsControl *serial_signal_error;
+	ErrorsControl *serial_overrun;
+	ErrorsControl *serial_rx_buffer_full;
+	ErrorsControl *serial_crc_error;
+	ErrorsControl *serial_protocol_error;
+	ErrorsControl *serial_timeout_error;
 
 	QHBoxLayout *footer_layout;
 	QPushButton *motorOffButton;
@@ -139,8 +239,49 @@ private:
 	bool widgetAtHome;
 	
 	QWidget * setup_input_tab();
+	QWidget * setup_feedback_tab();
+	QWidget * setup_pid_tab();
+	QWidget * setup_motor_tab();
+	QWidget * setup_errors_tab();
 	void setupUi(QMainWindow *MainWindow);
 	void retranslateUi(QMainWindow *MainWindow);
 
 	
+};
+
+class PIDConstantControl : public QGroupBox
+{
+	Q_OBJECT
+public:
+	PIDConstantControl(QWidget *parent = 0);
+	~PIDConstantControl();
+
+private:
+	QWidget *centralWidget;
+	QFrame *pid_control_frame;
+	QFrame *pid_proportion_frame;
+	QTextEdit *pid_constant_control_textbox;
+	QLabel *pid_equal_label;
+	QSpinBox *pid_multiplier_spinbox;
+	QLabel *pid_base_label;
+	QSpinBox *pid_exponent_spinbox;	
+};
+
+class ErrorsControl : public QGridLayout
+{
+	Q_OBJECT
+public:
+	ErrorsControl(QWidget *parent = 0);
+	~ErrorsControl();
+	
+	QWidget *centralWidget;
+	QLabel *bit_mask_label;
+	QLabel *error_label;
+	QRadioButton *disabled_radio;
+	QRadioButton *enabled_radio;
+	QRadioButton *latched_radio;
+	QLabel *stopping_motor_label;
+	QLabel *count_label;
+	QLabel *errors_disabled_spacer;
+	QLabel *errors_enabled_spacer;
 };
