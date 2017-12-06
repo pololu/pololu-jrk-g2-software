@@ -316,6 +316,15 @@ Settings = [
     type: :uint16_t,
     comment: 'This setting is a bitmask for errors that are enabled and latched.'
   },
+  {
+    name: 'vin_calibration',
+    english_name: 'VIN calibration',
+    type: :int16_t,
+    range: -500..500,
+    comment:
+      "A higher number gives you higher VIN readings, while a lower number gives\n" \
+      "you lower VIN readings.",
+  },
 ]
 # TODO: comments for all these settings (for jrk.h)
 
@@ -489,7 +498,7 @@ def generate_settings_fixing_code(stream)
         stream.puts "    #{name} = #{max};"
         stream.puts "    jrk_sprintf(warnings,"
         stream.puts "      \"Warning: The #{english_name} was too high \""
-        stream.puts "      \"so it will be changed to %#{pf}.\\n\", #{max});"
+        stream.puts "      \"so it will be changed to %#{pf}.\\n\", #{name});"
         stream.puts "  }"
       end
     end

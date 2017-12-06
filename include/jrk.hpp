@@ -984,6 +984,18 @@ namespace jrk
       return jrk_settings_get_error_latch(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_vin_calibration().
+    void set_vin_calibration(int16_t value) noexcept
+    {
+      jrk_settings_set_vin_calibration(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_vin_calibration().
+    int16_t get_vin_calibration() const noexcept
+    {
+      return jrk_settings_get_vin_calibration(pointer);
+    }
+
     // End of auto-generated settings C++ accessors.
   };
 

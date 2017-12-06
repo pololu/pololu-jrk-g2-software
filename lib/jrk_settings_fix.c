@@ -23,7 +23,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_disconnect_minimum = 4095;
       jrk_sprintf(warnings,
         "Warning: The input disconnect minimum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", input_disconnect_minimum);
     }
     jrk_settings_set_input_disconnect_minimum(settings, input_disconnect_minimum);
   }
@@ -35,7 +35,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_disconnect_maximum = 4095;
       jrk_sprintf(warnings,
         "Warning: The input disconnect maximum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", input_disconnect_maximum);
     }
     jrk_settings_set_input_disconnect_maximum(settings, input_disconnect_maximum);
   }
@@ -47,7 +47,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_minimum = 4095;
       jrk_sprintf(warnings,
         "Warning: The input minimum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", input_minimum);
     }
     jrk_settings_set_input_minimum(settings, input_minimum);
   }
@@ -59,7 +59,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_maximum = 4095;
       jrk_sprintf(warnings,
         "Warning: The input maximum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", input_maximum);
     }
     jrk_settings_set_input_maximum(settings, input_maximum);
   }
@@ -71,7 +71,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_neutral_minimum = 4095;
       jrk_sprintf(warnings,
         "Warning: The input neutral minimum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", input_neutral_minimum);
     }
     jrk_settings_set_input_neutral_minimum(settings, input_neutral_minimum);
   }
@@ -83,7 +83,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_neutral_maximum = 4095;
       jrk_sprintf(warnings,
         "Warning: The input neutral maximum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", input_neutral_maximum);
     }
     jrk_settings_set_input_neutral_maximum(settings, input_neutral_maximum);
   }
@@ -95,7 +95,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       output_minimum = 4095;
       jrk_sprintf(warnings,
         "Warning: The output minimum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", output_minimum);
     }
     jrk_settings_set_output_minimum(settings, output_minimum);
   }
@@ -107,7 +107,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       output_neutral = 4095;
       jrk_sprintf(warnings,
         "Warning: The output neutral was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", output_neutral);
     }
     jrk_settings_set_output_neutral(settings, output_neutral);
   }
@@ -119,7 +119,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       output_maximum = 4095;
       jrk_sprintf(warnings,
         "Warning: The output maximum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", output_maximum);
     }
     jrk_settings_set_output_maximum(settings, output_maximum);
   }
@@ -143,7 +143,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_analog_samples_exponent = 8;
       jrk_sprintf(warnings,
         "Warning: The input analog samples exponent was too high "
-        "so it will be changed to %u.\n", 8);
+        "so it will be changed to %u.\n", input_analog_samples_exponent);
     }
     jrk_settings_set_input_analog_samples_exponent(settings, input_analog_samples_exponent);
   }
@@ -167,7 +167,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       feedback_disconnect_minimum = 4095;
       jrk_sprintf(warnings,
         "Warning: The feedback disconnect minimum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", feedback_disconnect_minimum);
     }
     jrk_settings_set_feedback_disconnect_minimum(settings, feedback_disconnect_minimum);
   }
@@ -179,7 +179,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       feedback_disconnect_maximum = 4095;
       jrk_sprintf(warnings,
         "Warning: The feedback disconnect maximum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", feedback_disconnect_maximum);
     }
     jrk_settings_set_feedback_disconnect_maximum(settings, feedback_disconnect_maximum);
   }
@@ -191,7 +191,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       feedback_minimum = 4095;
       jrk_sprintf(warnings,
         "Warning: The feedback minimum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", feedback_minimum);
     }
     jrk_settings_set_feedback_minimum(settings, feedback_minimum);
   }
@@ -203,7 +203,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       feedback_maximum = 4095;
       jrk_sprintf(warnings,
         "Warning: The feedback maximum was too high "
-        "so it will be changed to %u.\n", 4095);
+        "so it will be changed to %u.\n", feedback_maximum);
     }
     jrk_settings_set_feedback_maximum(settings, feedback_maximum);
   }
@@ -220,7 +220,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       feedback_analog_samples_exponent = 8;
       jrk_sprintf(warnings,
         "Warning: The feedback analog samples exponent was too high "
-        "so it will be changed to %u.\n", 8);
+        "so it will be changed to %u.\n", feedback_analog_samples_exponent);
     }
     jrk_settings_set_feedback_analog_samples_exponent(settings, feedback_analog_samples_exponent);
   }
@@ -249,7 +249,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       serial_device_number = 127;
       jrk_sprintf(warnings,
         "Warning: The serial device number was too high "
-        "so it will be changed to %u.\n", 127);
+        "so it will be changed to %u.\n", serial_device_number);
     }
     jrk_settings_set_serial_device_number(settings, serial_device_number);
   }
@@ -261,7 +261,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       proportional_multiplier = 1023;
       jrk_sprintf(warnings,
         "Warning: The proportional multiplier was too high "
-        "so it will be changed to %u.\n", 1023);
+        "so it will be changed to %u.\n", proportional_multiplier);
     }
     jrk_settings_set_proportional_multiplier(settings, proportional_multiplier);
   }
@@ -273,7 +273,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       proportional_exponent = 15;
       jrk_sprintf(warnings,
         "Warning: The proportional exponent was too high "
-        "so it will be changed to %u.\n", 15);
+        "so it will be changed to %u.\n", proportional_exponent);
     }
     jrk_settings_set_proportional_exponent(settings, proportional_exponent);
   }
@@ -285,7 +285,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       integral_multiplier = 1023;
       jrk_sprintf(warnings,
         "Warning: The integral multiplier was too high "
-        "so it will be changed to %u.\n", 1023);
+        "so it will be changed to %u.\n", integral_multiplier);
     }
     jrk_settings_set_integral_multiplier(settings, integral_multiplier);
   }
@@ -297,7 +297,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       integral_exponent = 15;
       jrk_sprintf(warnings,
         "Warning: The integral exponent was too high "
-        "so it will be changed to %u.\n", 15);
+        "so it will be changed to %u.\n", integral_exponent);
     }
     jrk_settings_set_integral_exponent(settings, integral_exponent);
   }
@@ -309,7 +309,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       derivative_multiplier = 1023;
       jrk_sprintf(warnings,
         "Warning: The derivative multiplier was too high "
-        "so it will be changed to %u.\n", 1023);
+        "so it will be changed to %u.\n", derivative_multiplier);
     }
     jrk_settings_set_derivative_multiplier(settings, derivative_multiplier);
   }
@@ -321,7 +321,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       derivative_exponent = 15;
       jrk_sprintf(warnings,
         "Warning: The derivative exponent was too high "
-        "so it will be changed to %u.\n", 15);
+        "so it will be changed to %u.\n", derivative_exponent);
     }
     jrk_settings_set_derivative_exponent(settings, derivative_exponent);
   }
@@ -340,7 +340,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       pid_period = 8191;
       jrk_sprintf(warnings,
         "Warning: The pid period was too high "
-        "so it will be changed to %u.\n", 8191);
+        "so it will be changed to %u.\n", pid_period);
     }
     jrk_settings_set_pid_period(settings, pid_period);
   }
@@ -376,7 +376,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_duty_cycle_while_feedback_out_of_range = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max duty cycle while feedback out of range was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_duty_cycle_while_feedback_out_of_range);
     }
     jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, motor_max_duty_cycle_while_feedback_out_of_range);
   }
@@ -395,7 +395,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_acceleration_forward = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max acceleration forward was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_acceleration_forward);
     }
     jrk_settings_set_motor_max_acceleration_forward(settings, motor_max_acceleration_forward);
   }
@@ -414,7 +414,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_acceleration_reverse = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max acceleration reverse was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_acceleration_reverse);
     }
     jrk_settings_set_motor_max_acceleration_reverse(settings, motor_max_acceleration_reverse);
   }
@@ -433,7 +433,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_deceleration_forward = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max deceleration forward was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_deceleration_forward);
     }
     jrk_settings_set_motor_max_deceleration_forward(settings, motor_max_deceleration_forward);
   }
@@ -452,7 +452,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_deceleration_reverse = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max deceleration reverse was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_deceleration_reverse);
     }
     jrk_settings_set_motor_max_deceleration_reverse(settings, motor_max_deceleration_reverse);
   }
@@ -464,7 +464,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_duty_cycle_forward = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max duty cycle forward was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_duty_cycle_forward);
     }
     jrk_settings_set_motor_max_duty_cycle_forward(settings, motor_max_duty_cycle_forward);
   }
@@ -476,7 +476,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_max_duty_cycle_reverse = 600;
       jrk_sprintf(warnings,
         "Warning: The motor max duty cycle reverse was too high "
-        "so it will be changed to %u.\n", 600);
+        "so it will be changed to %u.\n", motor_max_duty_cycle_reverse);
     }
     jrk_settings_set_motor_max_duty_cycle_reverse(settings, motor_max_duty_cycle_reverse);
   }
@@ -519,6 +519,25 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   {
     uint16_t error_latch = jrk_settings_get_error_latch(settings);
     jrk_settings_set_error_latch(settings, error_latch);
+  }
+
+  {
+    int16_t vin_calibration = jrk_settings_get_vin_calibration(settings);
+    if (vin_calibration < -500)
+    {
+      vin_calibration = -500;
+      jrk_sprintf(warnings,
+        "Warning: The VIN calibration was too low "
+        "so it will be changed to %d.\n", vin_calibration);
+    }
+    if (vin_calibration > 500)
+    {
+      vin_calibration = 500;
+      jrk_sprintf(warnings,
+        "Warning: The VIN calibration was too high "
+        "so it will be changed to %d.\n", vin_calibration);
+    }
+    jrk_settings_set_vin_calibration(settings, vin_calibration);
   }
 
   // End of auto-generated settings fixing code.
