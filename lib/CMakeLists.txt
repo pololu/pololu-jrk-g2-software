@@ -1,0 +1,80 @@
+use_c99()
+
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
+
+# Find libusbp using pkg-config and use it.
+pkg_check_modules(LIBUSBP REQUIRED libusbp-1)
+string (REPLACE ";" " " LIBUSBP_CFLAGS "${LIBUSBP_CFLAGS}")
+string (REPLACE ";" " " LIBUSBP_LDFLAGS "${LIBUSBP_LDFLAGS}")
+if (NOT BUILD_SHARED_LIBS)
+  set (PC_REQUIRES "${PC_REQUIRES} libusbp-1")
+endif ()
+
+if (USE_SYSTEM_LIBYAML)
+  pkg_check_modules(YAML REQUIRED yaml)
+  string (REPLACE ";" " " LIBYAML_CFLAGS "${LIBYAML_CFLAGS}")
+  string (REPLACE ";" " " LIBYAML_LDFLAGS "${LIBYAML_LDFLAGS}")
+  if (NOT BUILD_SHARED_LIBS)
+    set (PC_REQUIRES "${PC_REQUIRES} yaml")
+  endif ()
+else ()
+  set (LIBYAML_SRC libyaml/yaml.c)
+  include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/libyaml")
+  set (LIBYAML_CFLAGS "-DYAML_DECLARE_STATIC")
+endif ()
+
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LIBUSBP_CFLAGS} ${LIBYAML_CFLAGS}")
+
+# Settings for GCC
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+  # By default, symbols are not visible outside of the library.
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
+endif ()
+
+# If we are building a DLL, put version and name information in it.
+set (os_src ${CMAKE_CURRENT_BINARY_DIR}/lib_info.rc)
+
+add_library (lib
+  jrk_device.c
+  jrk_error.c
+  jrk_get_settings.c
+  jrk_handle.c
+  jrk_names.c
+  jrk_set_settings.c
+  jrk_settings.c
+  jrk_settings_fix.c
+  jrk_settings_read_from_string.c
+  jrk_settings_to_string.c
+  jrk_string.c
+  jrk_variables.c
+  ${os_src}
+  ${LIBYAML_SRC}
+)
+
+configure_file (
+  "lib_info.rc.in"
+  "lib_info.rc"
+)
+
+set_target_properties(lib PROPERTIES
+  OUTPUT_NAME ${LIB_NAME}-${SOFTWARE_VERSION_MAJOR}
+  SOVERSION ${SOFTWARE_VERSION}
+  VERSION ${SOFTWARE_VERSION}
+  DEFINE_SYMBOL JRK_EXPORTS
+)
+
+target_link_libraries (lib "${LIBUSBP_LDFLAGS}" "${LIBYAML_LDFLAGS}")
+
+configure_file (
+  "lib.pc.in"
+  "lib${LIB_NAME}-${SOFTWARE_VERSION_MAJOR}.pc"
+  @ONLY
+)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lib${LIB_NAME}-${SOFTWARE_VERSION_MAJOR}.pc"
+  DESTINATION lib/pkgconfig)
+
+install(TARGETS lib
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)

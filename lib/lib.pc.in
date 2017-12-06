@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: lib@LIB_NAME@
+Version: @SOFTWARE_VERSION@
+Description: Pololu Jrk Library
+Requires: @PC_REQUIRES@
+Libs: -L${libdir} -l@LIB_NAME@-@SOFTWARE_VERSION_MAJOR@ @PC_LIBS@
+Cflags: -I${includedir}/lib@LIB_NAME@-@SOFTWARE_VERSION_MAJOR@ @PC_CFLAGS@

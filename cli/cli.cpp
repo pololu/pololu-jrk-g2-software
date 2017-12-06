@@ -1,0 +1,390 @@
+#include "cli.h"
+
+static const char help[] =
+  CLI_NAME ": Pololu Jrk Command-line Utility\n"
+  "Version " SOFTWARE_VERSION_STRING "\n"
+  "Usage: " CLI_NAME " OPTIONS\n"
+  "\n"
+  "General options:\n"
+  "  -s, --status                 Show device settings and info.\n"
+  "  -d SERIALNUMBER              Specifies the serial number of the device.\n"
+  "  --list                       List devices connected to computer.\n"
+  "  --pause                      Pause program at the end.\n"
+  "  --pause-on-error             Pause program at the end if an error happens.\n"
+  "  -h, --help                   Show this help screen.\n"
+  "\n"
+  //"Control commands:\n"
+  //"Temporary settings:\n"
+  //"Permanent settings:\n"
+  "  --restore-defaults           Restore device's factory settings\n"
+  "  --settings FILE              Load settings file into device.\n"
+  "  --get-settings FILE          Read device settings and write to file.\n"
+  "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
+  "For more help, see: " DOCUMENTATION_URL "\n"
+  "\n";
+
+struct arguments
+{
+  bool show_status = false;
+
+  bool serial_number_specified = false;
+  std::string serial_number;
+
+  bool show_list = false;
+
+  bool pause = false;
+
+  bool pause_on_error = false;
+
+  bool show_help = false;
+
+  bool restore_defaults = false;
+
+  bool set_settings = false;
+  std::string set_settings_filename;
+
+  bool get_settings = false;
+  std::string get_settings_filename;
+
+  bool fix_settings = false;
+  std::string fix_settings_input_filename;
+  std::string fix_settings_output_filename;
+
+  bool get_debug_data = false;
+
+  uint32_t test_procedure = 0;
+
+  bool action_specified() const
+  {
+    return show_status ||
+      show_list ||
+      show_help ||
+      restore_defaults ||
+      set_settings ||
+      get_settings ||
+      fix_settings ||
+      get_debug_data ||
+      test_procedure;
+  }
+};
+
+template <typename T>
+static T parse_arg_int(arg_reader & arg_reader)
+{
+  const char * value_c = arg_reader.next();
+  if (value_c == NULL)
+  {
+    throw exception_with_exit_code(EXIT_BAD_ARGS,
+      "Expected a number after '" + std::string(arg_reader.last()) + "'.");
+  }
+
+  T result;
+  uint8_t error = string_to_int(value_c, &result);
+  if (error == STRING_TO_INT_ERR_SMALL)
+  {
+    throw exception_with_exit_code(EXIT_BAD_ARGS,
+      "The number after '" + std::string(arg_reader.last()) + "' is too small.");
+  }
+  if (error == STRING_TO_INT_ERR_LARGE)
+  {
+    throw exception_with_exit_code(EXIT_BAD_ARGS,
+      "The number after '" + std::string(arg_reader.last()) + "' is too large.");
+  }
+  if (error)
+  {
+    throw exception_with_exit_code(EXIT_BAD_ARGS,
+      "The number after '" + std::string(arg_reader.last()) + "' is invalid.");
+  }
+
+  return result;
+}
+
+static std::string parse_arg_string(arg_reader & arg_reader)
+{
+    const char * value_c = arg_reader.next();
+    if (value_c == NULL)
+    {
+      throw exception_with_exit_code(EXIT_BAD_ARGS,
+        "Expected an argument after '" +
+        std::string(arg_reader.last()) + "'.");
+    }
+    if (value_c[0] == 0)
+    {
+      throw exception_with_exit_code(EXIT_BAD_ARGS,
+        "Expected a non-empty argument after '" +
+        std::string(arg_reader.last()) + "'.");
+    }
+    return std::string(value_c);
+}
+
+static arguments parse_args(int argc, char ** argv)
+{
+  arg_reader arg_reader(argc, argv);
+  arguments args;
+
+  while (1)
+  {
+    const char * arg_c = arg_reader.next();
+    if (arg_c == NULL)
+    {
+      break;  // Done reading arguments.
+    }
+
+    std::string arg = arg_c;
+
+    if (arg == "-s" || arg == "--status")
+    {
+      args.show_status = true;
+    }
+    else if (arg == "-d" || arg == "--serial")
+    {
+      args.serial_number_specified = true;
+      args.serial_number = parse_arg_string(arg_reader);
+
+      // Remove a pound sign at the beginning of the string because people might
+      // copy that from the GUI.
+      if (args.serial_number[0] == '#')
+      {
+        args.serial_number.erase(0, 1);
+      }
+    }
+    else if (arg == "--list")
+    {
+      args.show_list = true;
+    }
+    else if (arg == "--pause")
+    {
+      args.pause = true;
+    }
+    else if (arg == "--pause-on-error")
+    {
+      args.pause_on_error = true;
+    }
+    else if (arg == "-h" || arg == "--help" ||
+      arg == "--h" || arg == "-help" || arg == "/help" || arg == "/h")
+    {
+      args.show_help = true;
+    }
+    else if (arg == "--restore-defaults" || arg == "--restoredefaults")
+    {
+      args.restore_defaults = true;
+    }
+    else if (arg == "--settings" || arg == "--set-settings" || arg == "--configure")
+    {
+      args.set_settings = true;
+      args.set_settings_filename = parse_arg_string(arg_reader);
+    }
+    else if (arg == "--get-settings" || arg == "--getconf")
+    {
+      args.get_settings = true;
+      args.get_settings_filename = parse_arg_string(arg_reader);
+    }
+    else if (arg == "--fix-settings")
+    {
+      args.fix_settings = true;
+      args.fix_settings_input_filename = parse_arg_string(arg_reader);
+      args.fix_settings_output_filename = parse_arg_string(arg_reader);
+    }
+    else if (arg == "--debug")
+    {
+      // This is an unadvertized option for helping customers troubleshoot
+      // issues with their device.
+      args.get_debug_data = true;
+    }
+    else
+    {
+      throw exception_with_exit_code(EXIT_BAD_ARGS,
+        std::string("Unknown option: '") + arg + "'.");
+    }
+  }
+  return args;
+}
+
+static jrk::handle handle(device_selector & selector)
+{
+  jrk::device device = selector.select_device();
+  return jrk::handle(device);
+}
+
+static void print_list(device_selector & selector)
+{
+  for (const jrk::device & device : selector.list_devices())
+  {
+    std::cout << std::left << std::setfill(' ');
+    std::cout << std::setw(17) << device.get_serial_number() + "," << " ";
+    std::cout << std::setw(45) << jrk_look_up_product_name_ui(device.get_product());
+    std::cout << std::endl;
+  }
+}
+
+// TODO: either implement --full or get rid of the `full_output` argument here
+static void get_status(device_selector & selector, bool full_output)
+{
+  jrk::device device = selector.select_device();
+  jrk::handle handle(device);
+
+  // TODO: maybe we don't need the settings to print the status?
+  jrk::settings settings = handle.get_settings();
+  jrk::variables vars = handle.get_variables(false, true);
+
+  std::string name = jrk_look_up_product_name_ui(device.get_product());
+  std::string serial_number = device.get_serial_number();
+  std::string firmware_version = handle.get_firmware_version_string();
+  print_status(vars, settings, name, serial_number, firmware_version, full_output);
+}
+
+static void restore_defaults(device_selector & selector)
+{
+  handle(selector).restore_defaults();
+}
+
+static void get_settings(device_selector & selector,
+  const std::string & filename)
+{
+  jrk::settings settings = handle(selector).get_settings();
+
+  std::string warnings;
+  settings.fix(&warnings);
+  std::cerr << warnings;
+
+  std::string settings_string = settings.to_string();
+
+  write_string_to_file_or_pipe(filename, settings_string);
+}
+
+static void set_settings(device_selector & selector,
+  const std::string & filename)
+{
+  std::string settings_string = read_string_from_file_or_pipe(filename);
+  jrk::settings settings = jrk::settings::read_from_string(settings_string);
+
+  jrk::device device = selector.select_device();
+
+  // Set the product of the settings object to match that of the device so we
+  // can fix it properly.
+  uint8_t product = device.get_product();
+  jrk_settings_set_product(settings.get_pointer(), product);
+
+  std::string warnings;
+  settings.fix(&warnings);
+  std::cerr << warnings;
+
+  jrk::handle handle(device);
+  handle.set_settings(settings);
+  handle.reinitialize();
+}
+
+static void fix_settings(const std::string & input_filename,
+  const std::string & output_filename)
+{
+  std::string in_str = read_string_from_file_or_pipe(input_filename);
+  jrk::settings settings = jrk::settings::read_from_string(in_str);
+
+  std::string warnings;
+  settings.fix(&warnings);
+  std::cerr << warnings;
+
+  write_string_to_file_or_pipe(output_filename, settings.to_string());
+}
+
+static void print_debug_data(device_selector & selector)
+{
+  jrk::device device = selector.select_device();
+  jrk::handle handle(device);
+
+  std::vector<uint8_t> data(4096, 0);
+  handle.get_debug_data(data);
+
+  for (const uint8_t & byte : data)
+  {
+    std::cout << std::setfill('0') << std::setw(2) << std::hex
+              << (unsigned int)byte << ' ';
+  }
+  std::cout << std::endl;
+}
+
+// A note about ordering: We want to do all the setting stuff first because it
+// could affect subsequent options.  We want to show the status last, because it
+// could be affected by options before it.
+static void run(const arguments & args)
+{
+  if (args.show_help || !args.action_specified())
+  {
+    std::cout << help;
+    return;
+  }
+
+  device_selector selector;
+  if (args.serial_number_specified)
+  {
+    selector.specify_serial_number(args.serial_number);
+  }
+
+  if (args.show_list)
+  {
+    print_list(selector);
+    return;
+  }
+
+  if (args.fix_settings)
+  {
+    fix_settings(args.fix_settings_input_filename,
+      args.fix_settings_output_filename);
+  }
+
+  if (args.get_settings)
+  {
+    get_settings(selector, args.get_settings_filename);
+  }
+
+  if (args.restore_defaults)
+  {
+    restore_defaults(selector);
+  }
+
+  if (args.set_settings)
+  {
+    set_settings(selector, args.set_settings_filename);
+  }
+
+  if (args.get_debug_data)
+  {
+    print_debug_data(selector);
+  }
+
+  if (args.show_status)
+  {
+    get_status(selector, false);
+  }
+}
+
+int main(int argc, char ** argv)
+{
+  int exit_code = 0;
+
+  arguments args;
+  try
+  {
+    args = parse_args(argc, argv);
+    run(args);
+  }
+  catch (const exception_with_exit_code & error)
+  {
+    std::cerr << "Error: " << error.what() << std::endl;
+    exit_code = error.get_code();
+  }
+  catch (const std::exception & error)
+  {
+    std::cerr << "Error: " << error.what() << std::endl;
+    exit_code = EXIT_OPERATION_FAILED;
+  }
+
+  if (args.pause || (args.pause_on_error && exit_code))
+  {
+    std::cout << "Press enter to continue." << std::endl;
+    char input;
+    std::cin.get(input);
+  }
+
+  return exit_code;
+}
