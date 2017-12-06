@@ -301,9 +301,9 @@ namespace jrk
     // Beginning of auto-generated settings C++ accessors.
 
     /// Wrapper for jrk_settings_set_input_mode().
-    void set_input_mode(uint8_t input_mode) noexcept
+    void set_input_mode(uint8_t value) noexcept
     {
-      jrk_settings_set_input_mode(pointer, input_mode);
+      jrk_settings_set_input_mode(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_input_mode().
@@ -312,16 +312,676 @@ namespace jrk
       return jrk_settings_get_input_mode(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_input_minimum().
-    void set_input_minimum(uint16_t input_minimum) noexcept
+    /// Wrapper for jrk_settings_set_input_disconnect_minimum().
+    void set_input_disconnect_minimum(uint16_t value) noexcept
     {
-      jrk_settings_set_input_minimum(pointer, input_minimum);
+      jrk_settings_set_input_disconnect_minimum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_disconnect_minimum().
+    uint16_t get_input_disconnect_minimum() const noexcept
+    {
+      return jrk_settings_get_input_disconnect_minimum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_disconnect_maximum().
+    void set_input_disconnect_maximum(uint16_t value) noexcept
+    {
+      jrk_settings_set_input_disconnect_maximum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_disconnect_maximum().
+    uint16_t get_input_disconnect_maximum() const noexcept
+    {
+      return jrk_settings_get_input_disconnect_maximum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_minimum().
+    void set_input_minimum(uint16_t value) noexcept
+    {
+      jrk_settings_set_input_minimum(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_input_minimum().
     uint16_t get_input_minimum() const noexcept
     {
       return jrk_settings_get_input_minimum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_maximum().
+    void set_input_maximum(uint16_t value) noexcept
+    {
+      jrk_settings_set_input_maximum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_maximum().
+    uint16_t get_input_maximum() const noexcept
+    {
+      return jrk_settings_get_input_maximum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_neutral_minimum().
+    void set_input_neutral_minimum(uint16_t value) noexcept
+    {
+      jrk_settings_set_input_neutral_minimum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_neutral_minimum().
+    uint16_t get_input_neutral_minimum() const noexcept
+    {
+      return jrk_settings_get_input_neutral_minimum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_neutral_maximum().
+    void set_input_neutral_maximum(uint16_t value) noexcept
+    {
+      jrk_settings_set_input_neutral_maximum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_neutral_maximum().
+    uint16_t get_input_neutral_maximum() const noexcept
+    {
+      return jrk_settings_get_input_neutral_maximum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_output_minimum().
+    void set_output_minimum(uint16_t value) noexcept
+    {
+      jrk_settings_set_output_minimum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_output_minimum().
+    uint16_t get_output_minimum() const noexcept
+    {
+      return jrk_settings_get_output_minimum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_output_neutral().
+    void set_output_neutral(uint16_t value) noexcept
+    {
+      jrk_settings_set_output_neutral(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_output_neutral().
+    uint16_t get_output_neutral() const noexcept
+    {
+      return jrk_settings_get_output_neutral(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_output_maximum().
+    void set_output_maximum(uint16_t value) noexcept
+    {
+      jrk_settings_set_output_maximum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_output_maximum().
+    uint16_t get_output_maximum() const noexcept
+    {
+      return jrk_settings_get_output_maximum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_invert().
+    void set_input_invert(bool value) noexcept
+    {
+      jrk_settings_set_input_invert(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_invert().
+    bool get_input_invert() const noexcept
+    {
+      return jrk_settings_get_input_invert(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_scaling_degree().
+    void set_input_scaling_degree(uint8_t value) noexcept
+    {
+      jrk_settings_set_input_scaling_degree(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_scaling_degree().
+    uint8_t get_input_scaling_degree() const noexcept
+    {
+      return jrk_settings_get_input_scaling_degree(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_power_with_aux().
+    void set_input_power_with_aux(bool value) noexcept
+    {
+      jrk_settings_set_input_power_with_aux(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_power_with_aux().
+    bool get_input_power_with_aux() const noexcept
+    {
+      return jrk_settings_get_input_power_with_aux(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_input_analog_samples_exponent().
+    void set_input_analog_samples_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_input_analog_samples_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_input_analog_samples_exponent().
+    uint8_t get_input_analog_samples_exponent() const noexcept
+    {
+      return jrk_settings_get_input_analog_samples_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_mode().
+    void set_feedback_mode(uint8_t value) noexcept
+    {
+      jrk_settings_set_feedback_mode(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_mode().
+    uint8_t get_feedback_mode() const noexcept
+    {
+      return jrk_settings_get_feedback_mode(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_disconnect_minimum().
+    void set_feedback_disconnect_minimum(uint16_t value) noexcept
+    {
+      jrk_settings_set_feedback_disconnect_minimum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_disconnect_minimum().
+    uint16_t get_feedback_disconnect_minimum() const noexcept
+    {
+      return jrk_settings_get_feedback_disconnect_minimum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_disconnect_maximum().
+    void set_feedback_disconnect_maximum(uint16_t value) noexcept
+    {
+      jrk_settings_set_feedback_disconnect_maximum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_disconnect_maximum().
+    uint16_t get_feedback_disconnect_maximum() const noexcept
+    {
+      return jrk_settings_get_feedback_disconnect_maximum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_minimum().
+    void set_feedback_minimum(uint16_t value) noexcept
+    {
+      jrk_settings_set_feedback_minimum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_minimum().
+    uint16_t get_feedback_minimum() const noexcept
+    {
+      return jrk_settings_get_feedback_minimum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_maximum().
+    void set_feedback_maximum(uint16_t value) noexcept
+    {
+      jrk_settings_set_feedback_maximum(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_maximum().
+    uint16_t get_feedback_maximum() const noexcept
+    {
+      return jrk_settings_get_feedback_maximum(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_invert().
+    void set_feedback_invert(bool value) noexcept
+    {
+      jrk_settings_set_feedback_invert(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_invert().
+    bool get_feedback_invert() const noexcept
+    {
+      return jrk_settings_get_feedback_invert(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_power_with_aux().
+    void set_feedback_power_with_aux(bool value) noexcept
+    {
+      jrk_settings_set_feedback_power_with_aux(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_power_with_aux().
+    bool get_feedback_power_with_aux() const noexcept
+    {
+      return jrk_settings_get_feedback_power_with_aux(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_dead_zone().
+    void set_feedback_dead_zone(uint8_t value) noexcept
+    {
+      jrk_settings_set_feedback_dead_zone(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_dead_zone().
+    uint8_t get_feedback_dead_zone() const noexcept
+    {
+      return jrk_settings_get_feedback_dead_zone(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_analog_samples_exponent().
+    void set_feedback_analog_samples_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_feedback_analog_samples_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_analog_samples_exponent().
+    uint8_t get_feedback_analog_samples_exponent() const noexcept
+    {
+      return jrk_settings_get_feedback_analog_samples_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_feedback_wraparound().
+    void set_feedback_wraparound(bool value) noexcept
+    {
+      jrk_settings_set_feedback_wraparound(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_feedback_wraparound().
+    bool get_feedback_wraparound() const noexcept
+    {
+      return jrk_settings_get_feedback_wraparound(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_mode().
+    void set_serial_mode(uint8_t value) noexcept
+    {
+      jrk_settings_set_serial_mode(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_mode().
+    uint8_t get_serial_mode() const noexcept
+    {
+      return jrk_settings_get_serial_mode(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_baud_rate().
+    void set_serial_baud_rate(uint32_t value) noexcept
+    {
+      jrk_settings_set_serial_baud_rate(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_baud_rate().
+    uint32_t get_serial_baud_rate() const noexcept
+    {
+      return jrk_settings_get_serial_baud_rate(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_timeout().
+    void set_serial_timeout(uint16_t value) noexcept
+    {
+      jrk_settings_set_serial_timeout(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_timeout().
+    uint16_t get_serial_timeout() const noexcept
+    {
+      return jrk_settings_get_serial_timeout(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_enable_crc().
+    void set_serial_enable_crc(bool value) noexcept
+    {
+      jrk_settings_set_serial_enable_crc(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_enable_crc().
+    bool get_serial_enable_crc() const noexcept
+    {
+      return jrk_settings_get_serial_enable_crc(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_device_number().
+    void set_serial_device_number(uint8_t value) noexcept
+    {
+      jrk_settings_set_serial_device_number(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_device_number().
+    uint8_t get_serial_device_number() const noexcept
+    {
+      return jrk_settings_get_serial_device_number(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_never_sleep().
+    void set_never_sleep(bool value) noexcept
+    {
+      jrk_settings_set_never_sleep(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_never_sleep().
+    bool get_never_sleep() const noexcept
+    {
+      return jrk_settings_get_never_sleep(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_proportional_multiplier().
+    void set_proportional_multiplier(uint16_t value) noexcept
+    {
+      jrk_settings_set_proportional_multiplier(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_proportional_multiplier().
+    uint16_t get_proportional_multiplier() const noexcept
+    {
+      return jrk_settings_get_proportional_multiplier(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_proportional_exponent().
+    void set_proportional_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_proportional_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_proportional_exponent().
+    uint8_t get_proportional_exponent() const noexcept
+    {
+      return jrk_settings_get_proportional_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_integral_multiplier().
+    void set_integral_multiplier(uint16_t value) noexcept
+    {
+      jrk_settings_set_integral_multiplier(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_integral_multiplier().
+    uint16_t get_integral_multiplier() const noexcept
+    {
+      return jrk_settings_get_integral_multiplier(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_integral_exponent().
+    void set_integral_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_integral_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_integral_exponent().
+    uint8_t get_integral_exponent() const noexcept
+    {
+      return jrk_settings_get_integral_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_derivative_multiplier().
+    void set_derivative_multiplier(uint16_t value) noexcept
+    {
+      jrk_settings_set_derivative_multiplier(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_derivative_multiplier().
+    uint16_t get_derivative_multiplier() const noexcept
+    {
+      return jrk_settings_get_derivative_multiplier(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_derivative_exponent().
+    void set_derivative_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_derivative_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_derivative_exponent().
+    uint8_t get_derivative_exponent() const noexcept
+    {
+      return jrk_settings_get_derivative_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_pid_period().
+    void set_pid_period(uint16_t value) noexcept
+    {
+      jrk_settings_set_pid_period(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_pid_period().
+    uint16_t get_pid_period() const noexcept
+    {
+      return jrk_settings_get_pid_period(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_pid_integral_limit().
+    void set_pid_integral_limit(uint16_t value) noexcept
+    {
+      jrk_settings_set_pid_integral_limit(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_pid_integral_limit().
+    uint16_t get_pid_integral_limit() const noexcept
+    {
+      return jrk_settings_get_pid_integral_limit(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_pid_reset_integral().
+    void set_pid_reset_integral(bool value) noexcept
+    {
+      jrk_settings_set_pid_reset_integral(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_pid_reset_integral().
+    bool get_pid_reset_integral() const noexcept
+    {
+      return jrk_settings_get_pid_reset_integral(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_pwm_frequency().
+    void set_motor_pwm_frequency(uint8_t value) noexcept
+    {
+      jrk_settings_set_motor_pwm_frequency(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_pwm_frequency().
+    uint8_t get_motor_pwm_frequency() const noexcept
+    {
+      return jrk_settings_get_motor_pwm_frequency(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_invert().
+    void set_motor_invert(bool value) noexcept
+    {
+      jrk_settings_set_motor_invert(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_invert().
+    bool get_motor_invert() const noexcept
+    {
+      return jrk_settings_get_motor_invert(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range().
+    void set_motor_max_duty_cycle_while_feedback_out_of_range(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range().
+    uint16_t get_motor_max_duty_cycle_while_feedback_out_of_range() const noexcept
+    {
+      return jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_acceleration_forward().
+    void set_motor_max_acceleration_forward(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_acceleration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_acceleration_forward().
+    uint16_t get_motor_max_acceleration_forward() const noexcept
+    {
+      return jrk_settings_get_motor_max_acceleration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_acceleration_reverse().
+    void set_motor_max_acceleration_reverse(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_acceleration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_acceleration_reverse().
+    uint16_t get_motor_max_acceleration_reverse() const noexcept
+    {
+      return jrk_settings_get_motor_max_acceleration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_deceleration_forward().
+    void set_motor_max_deceleration_forward(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_deceleration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_deceleration_forward().
+    uint16_t get_motor_max_deceleration_forward() const noexcept
+    {
+      return jrk_settings_get_motor_max_deceleration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_deceleration_reverse().
+    void set_motor_max_deceleration_reverse(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_deceleration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_deceleration_reverse().
+    uint16_t get_motor_max_deceleration_reverse() const noexcept
+    {
+      return jrk_settings_get_motor_max_deceleration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_duty_cycle_forward().
+    void set_motor_max_duty_cycle_forward(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_duty_cycle_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_duty_cycle_forward().
+    uint16_t get_motor_max_duty_cycle_forward() const noexcept
+    {
+      return jrk_settings_get_motor_max_duty_cycle_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_duty_cycle_reverse().
+    void set_motor_max_duty_cycle_reverse(uint16_t value) noexcept
+    {
+      jrk_settings_set_motor_max_duty_cycle_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_duty_cycle_reverse().
+    uint16_t get_motor_max_duty_cycle_reverse() const noexcept
+    {
+      return jrk_settings_get_motor_max_duty_cycle_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_current_forward().
+    void set_motor_max_current_forward(uint8_t value) noexcept
+    {
+      jrk_settings_set_motor_max_current_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_current_forward().
+    uint8_t get_motor_max_current_forward() const noexcept
+    {
+      return jrk_settings_get_motor_max_current_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_max_current_reverse().
+    void set_motor_max_current_reverse(uint8_t value) noexcept
+    {
+      jrk_settings_set_motor_max_current_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_max_current_reverse().
+    uint8_t get_motor_max_current_reverse() const noexcept
+    {
+      return jrk_settings_get_motor_max_current_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_current_calibration_forward().
+    void set_motor_current_calibration_forward(int8_t value) noexcept
+    {
+      jrk_settings_set_motor_current_calibration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_current_calibration_forward().
+    int8_t get_motor_current_calibration_forward() const noexcept
+    {
+      return jrk_settings_get_motor_current_calibration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_current_calibration_reverse().
+    void set_motor_current_calibration_reverse(int8_t value) noexcept
+    {
+      jrk_settings_set_motor_current_calibration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_current_calibration_reverse().
+    int8_t get_motor_current_calibration_reverse() const noexcept
+    {
+      return jrk_settings_get_motor_current_calibration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_brake_duration_forward().
+    void set_motor_brake_duration_forward(uint8_t value) noexcept
+    {
+      jrk_settings_set_motor_brake_duration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_brake_duration_forward().
+    uint8_t get_motor_brake_duration_forward() const noexcept
+    {
+      return jrk_settings_get_motor_brake_duration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_brake_duration_reverse().
+    void set_motor_brake_duration_reverse(uint8_t value) noexcept
+    {
+      jrk_settings_set_motor_brake_duration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_brake_duration_reverse().
+    uint8_t get_motor_brake_duration_reverse() const noexcept
+    {
+      return jrk_settings_get_motor_brake_duration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_motor_coast_when_off().
+    void set_motor_coast_when_off(bool value) noexcept
+    {
+      jrk_settings_set_motor_coast_when_off(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_motor_coast_when_off().
+    bool get_motor_coast_when_off() const noexcept
+    {
+      return jrk_settings_get_motor_coast_when_off(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_error_enable().
+    void set_error_enable(uint16_t value) noexcept
+    {
+      jrk_settings_set_error_enable(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_error_enable().
+    uint16_t get_error_enable() const noexcept
+    {
+      return jrk_settings_get_error_enable(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_error_latch().
+    void set_error_latch(uint16_t value) noexcept
+    {
+      jrk_settings_set_error_latch(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_error_latch().
+    uint16_t get_error_latch() const noexcept
+    {
+      return jrk_settings_get_error_latch(pointer);
     }
 
     // End of auto-generated settings C++ accessors.
