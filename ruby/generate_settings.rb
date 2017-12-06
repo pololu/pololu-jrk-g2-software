@@ -16,6 +16,7 @@ Settings = [
     name: 'input_disconnect_maximum',
     type: :uint16_t,
     range: 0..4095,
+    default: 4095,
   },
   {
     name: 'input_minimum',
@@ -26,16 +27,19 @@ Settings = [
     name: 'input_maximum',
     type: :uint16_t,
     range: 0..4095,
+    default: 4095,
   },
   {
     name: 'input_neutral_minimum',
     type: :uint16_t,
     range: 0..4095,
+    default: 2048,
   },
   {
     name: 'input_neutral_maximum',
     type: :uint16_t,
     range: 0..4095,
+    default: 2048,
   },
   {
     name: 'output_minimum',
@@ -46,11 +50,13 @@ Settings = [
     name: 'output_neutral',
     type: :uint16_t,
     range: 0..4095,
+    default: 2048,
   },
   {
     name: 'output_maximum',
     type: :uint16_t,
     range: 0..4095,
+    default: 4095,
   },
   {
     name: 'input_invert',
@@ -163,6 +169,7 @@ Settings = [
     name: 'serial_device_number',
     type: :uint8_t,
     max: 127,
+    default: 11,
   },
   {
     name: 'never_sleep',
@@ -202,10 +209,12 @@ Settings = [
     name: 'pid_period',
     type: :uint16_t,
     range: 1..8191,
+    default: 10,
   },
   {
     name: 'pid_integral_limit',
     type: :uint16_t,
+    default: 1000,
   },
   {
     name: 'pid_reset_integral',

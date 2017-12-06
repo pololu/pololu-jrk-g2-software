@@ -87,9 +87,18 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
 
   // Beginning of auto-generated settings defaults.
 
+  jrk_settings_set_input_disconnect_maximum(settings, 4095);
+  jrk_settings_set_input_maximum(settings, 4095);
+  jrk_settings_set_input_neutral_minimum(settings, 2048);
+  jrk_settings_set_input_neutral_maximum(settings, 2048);
+  jrk_settings_set_output_neutral(settings, 2048);
+  jrk_settings_set_output_maximum(settings, 4095);
   jrk_settings_set_input_analog_samples_exponent(settings, 5);
   jrk_settings_set_feedback_mode(settings, JRK_FEEDBACK_MODE_ANALOG);
   jrk_settings_set_feedback_analog_samples_exponent(settings, 5);
+  jrk_settings_set_serial_device_number(settings, 11);
+  jrk_settings_set_pid_period(settings, 10);
+  jrk_settings_set_pid_integral_limit(settings, 1000);
   jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, 600);
   jrk_settings_set_motor_max_acceleration_forward(settings, 600);
   jrk_settings_set_motor_max_acceleration_reverse(settings, 600);
