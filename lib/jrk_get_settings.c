@@ -286,6 +286,11 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     jrk_settings_set_error_latch(settings, error_latch);
   }
 
+  {
+    int16_t vin_calibration = read_int16_t(buf + JRK_SETTING_VIN_CALIBRATION);
+    jrk_settings_set_vin_calibration(settings, vin_calibration);
+  }
+
   // End of auto-generated buffer-to-settings code.
 
   {

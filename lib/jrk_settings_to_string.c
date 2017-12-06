@@ -336,6 +336,11 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "error_latch: %u\n", error_latch);
   }
 
+  {
+    int16_t vin_calibration = jrk_settings_get_vin_calibration(settings);
+    jrk_sprintf(&str, "vin_calibration: %d\n", vin_calibration);
+  }
+
   // End of auto-generated settings file printing code.
 
   if (error == NULL && str.data == NULL)

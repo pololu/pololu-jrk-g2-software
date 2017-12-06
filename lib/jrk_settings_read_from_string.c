@@ -761,6 +761,20 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_error_latch(settings, error_latch);
   }
+  else if (!strcmp(key, "vin_calibration"))
+  {
+    int64_t vin_calibration;
+    if (jrk_string_to_i64(value, &vin_calibration))
+    {
+      return jrk_error_create("Invalid vin_calibration value.");
+    }
+    if (vin_calibration < INT16_MIN || vin_calibration > INT16_MAX)
+    {
+      return jrk_error_create(
+        "The vin_calibration value is out of range.");
+    }
+    jrk_settings_set_vin_calibration(settings, vin_calibration);
+  }
 
   // End of auto-generated settings file parsing code.
 

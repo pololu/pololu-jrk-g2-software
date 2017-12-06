@@ -817,6 +817,19 @@ void jrk_settings_set_error_latch(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_error_latch(const jrk_settings *);
 
+// Sets the vin_calibration setting.
+//
+// A higher number gives you higher VIN readings, while a lower number gives
+// you lower VIN readings.
+JRK_API
+void jrk_settings_set_vin_calibration(jrk_settings *,
+  int16_t vin_calibration);
+
+// Gets the vin_calibration setting, which is described in
+// jrk_settings_set_vin_calibration.
+JRK_API
+int16_t jrk_settings_get_vin_calibration(const jrk_settings *);
+
 // End of auto-generated settings accessor prototypes.
 
 /// Returns an acheivable baud rate corresponding to the specified baud rate.
