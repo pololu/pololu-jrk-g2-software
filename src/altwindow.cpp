@@ -56,7 +56,8 @@ void AltWindow::setupUi(QMainWindow *AltWindow)
 
 void AltWindow::closeEvent(QCloseEvent *event)
 {
-
+    grabbedWidget->customPlot->xAxis->setTicks(false);
+    grabbedWidget->customPlot->yAxis->setTicks(false);
     horizontalLayout->removeWidget(grabbedWidget);
     emit passWidget(grabbedWidget);
     grabbedWidget = 0;
