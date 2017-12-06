@@ -54,7 +54,12 @@ def autogenerate_file_fragments_core(file, &proc)
     end
 
     new_file << "\n"
+
     fragment = proc.call(fragment_name, indent, file)
+    until fragment.end_with?("\n\n")
+      fragment << "\n"
+    end
+
     new_file << fragment
     new_file << end_line
     lines_generated += fragment.split("\n").size
@@ -88,6 +93,8 @@ def generate_fragment(fragment_name, indent, filename)
     generate_settings_accessors(stream)
   when 'settings C++ accessors'
     generate_settings_cpp_accessors(stream)
+  when 'settings defaults'
+    generate_settings_defaults_code(stream)
   when 'settings fixing code'
     generate_settings_fixing_code(stream)
   when 'buffer-to-settings code'

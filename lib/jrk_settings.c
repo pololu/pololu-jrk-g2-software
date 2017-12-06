@@ -85,7 +85,22 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
 
   jrk_settings_set_product(settings, product);
 
-  // TODO: finish filling in the default settings
+  // Beginning of auto-generated settings defaults.
+
+  jrk_settings_set_input_analog_samples_exponent(settings, 5);
+  jrk_settings_set_feedback_mode(settings, JRK_FEEDBACK_MODE_ANALOG);
+  jrk_settings_set_feedback_analog_samples_exponent(settings, 5);
+  jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, 600);
+  jrk_settings_set_motor_max_acceleration_forward(settings, 600);
+  jrk_settings_set_motor_max_acceleration_reverse(settings, 600);
+  jrk_settings_set_motor_max_deceleration_forward(settings, 600);
+  jrk_settings_set_motor_max_deceleration_reverse(settings, 600);
+  jrk_settings_set_motor_max_duty_cycle_forward(settings, 600);
+  jrk_settings_set_motor_max_duty_cycle_reverse(settings, 600);
+  jrk_settings_set_motor_max_current_forward(settings, 81);
+  jrk_settings_set_motor_max_current_reverse(settings, 81);
+
+  // End of auto-generated settings defaults.
 }
 
 jrk_error * jrk_settings_create(jrk_settings ** settings)

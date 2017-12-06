@@ -4,6 +4,7 @@ Settings = [
     type: :enum,
     max: 'JRK_INPUT_MODE_PULSE_WIDTH',
     default: 'JRK_INPUT_MODE_SERIAL',
+    default_is_zero: true,
     english_default: 'serial',
   },
   {
@@ -59,6 +60,7 @@ Settings = [
     name: 'input_scaling_degree',
     type: :enum,
     default: 'JRK_SCALING_DEGREE_LINEAR',
+    default_is_zero: true,
     english_default: 'linear',
     max: 'JRK_SCALING_DEGREE_QUINTIC',
   },
@@ -131,6 +133,7 @@ Settings = [
     name: 'serial_mode',
     type: :enum,
     default: 'JRK_SERIAL_MODE_USB_DUAL_PORT',
+    default_is_zero: true,
     english_default: 'USB dual port',
     max: 'JRK_SERIAL_MODE_UART',
   },
@@ -212,6 +215,7 @@ Settings = [
     name: 'motor_pwm_frequency',
     type: :enum,
     default: 'JRK_MOTOR_PWM_FREQUENCY_20',
+    default_is_zero: true,
     english_default: '20 kHz',
     max: 'JRK_MOTOR_PWM_FREQUENCY_5',
   },
@@ -264,12 +268,12 @@ Settings = [
   {
     name: 'motor_max_current_forward',
     type: :uint8_t,
-    default: 81,
+    default: 81, # TODO: rethink this default
   },
   {
     name: 'motor_max_current_reverse',
     type: :uint8_t,
-    default: 81,
+    default: 81, # TODO: rethink this default
   },
   {
     name: 'motor_current_calibration_forward',
@@ -352,7 +356,6 @@ def generate_settings_struct_members(stream)
     type = setting_integer_type(setting_info)
     stream.puts "#{type} #{name};";
   end
-  stream.puts
 end
 
 def generate_settings_accessor_prototypes(stream)
@@ -411,6 +414,15 @@ def generate_settings_cpp_accessors(stream)
     stream.puts "  return jrk_settings_get_#{name}(pointer);"
     stream.puts "}"
     stream.puts
+  end
+end
+
+def generate_settings_defaults_code(stream)
+  Settings.each do |setting_info|
+    name = setting_info.fetch(:name)
+    default = setting_info[:default]
+    next unless default && default != 0 && !setting_info[:default_is_zero]
+    stream.puts "jrk_settings_set_#{name}(settings, #{default});"
   end
 end
 
@@ -553,7 +565,6 @@ def generate_settings_file_parsing_code(stream)
     stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
     stream.puts "}"
   end
-  stream.puts
 end
 
 def generate_settings_file_printing_code(stream)
