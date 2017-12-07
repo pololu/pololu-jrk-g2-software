@@ -20,6 +20,7 @@ static const char help[] =
   "  --settings FILE              Load settings file into device.\n"
   "  --get-settings FILE          Read device settings and write to file.\n"
   "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
+  "\n"
   "For more help, see: " DOCUMENTATION_URL "\n"
   "\n";
 
