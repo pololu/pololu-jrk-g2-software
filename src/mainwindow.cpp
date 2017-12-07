@@ -38,12 +38,11 @@ void MainWindow::setupUi(QMainWindow *MainWindow)
     font.setPointSizeF(8.25);
 
     MainWindow->setObjectName(QStringLiteral("MainWindow"));
-    MainWindow->resize(818,547);
+    MainWindow->resize(1000,700);
     MainWindow->setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
     centralWidget = new QWidget(MainWindow);
     centralWidget->setObjectName(QStringLiteral("centralWidget"));
-
 
     menu_bar = new QMenuBar();
 
@@ -128,21 +127,17 @@ void MainWindow::setupUi(QMainWindow *MainWindow)
     connection_status_value = new QLabel();
 
     // Make the device list wide enough to display the short name and serial
-    // number of the Tic.
+    // number of the Jrk.
     {
     QComboBox tmp_box;
     tmp_box.addItem("TXXXXX: #1234567890123456");
     device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
     }
 
-   
-
     gridLayout = new QGridLayout(centralWidget);
     gridLayout->setSpacing(6);
     gridLayout->setContentsMargins(11,11,11,11);
     gridLayout->setObjectName(QStringLiteral("gridLayout"));
-
-    
 
     horizontalLayout = new QHBoxLayout();
     horizontalLayout->setSpacing(6);
@@ -169,14 +164,14 @@ void MainWindow::setupUi(QMainWindow *MainWindow)
 
     tab_widget = new QTabWidget();
     status_page_widget = new QWidget();
-    // input_page_widget = new QWidget();
+    input_page_widget = new QWidget();
     feedback_page_widget = new QWidget();
     pid_page_widget = new QWidget();
     motor_page_widget = new QWidget();
     errors_page_widget = new QWidget();
 
 
-
+    tab_widget->setFixedSize(1000,700);
     tab_widget->addTab(status_page_widget, tr("Status"));
     tab_widget->addTab(setup_input_tab(), tr("Input"));
     tab_widget->addTab(setup_feedback_tab(), tr("Feedback"));
@@ -702,7 +697,7 @@ QWidget *MainWindow::setup_motor_tab()
 
 QWidget *MainWindow::setup_errors_tab()
 {
-    QVBoxLayout *layout = errors_page_layout = new QVBoxLayout();
+    QGridLayout *layout = errors_page_layout = new QGridLayout();
     QFont font;
     font.setBold(true);
     font.setWeight(75);
@@ -724,16 +719,19 @@ QWidget *MainWindow::setup_errors_tab()
     errors_occurence_count_label->setFont(font);
 
     QGridLayout *errors_column_labels = new QGridLayout();
+    QWidget *errors_column_labels_frame = new QWidget();
+    errors_column_labels_frame->setFixedWidth(1000);
     errors_column_labels->setColumnStretch(0,45);
     errors_column_labels->setColumnStretch(1,125);
-    errors_column_labels->setColumnStretch(2,330);
-    errors_column_labels->setColumnStretch(3,82);
+    errors_column_labels->setColumnStretch(2,320);
+    errors_column_labels->setColumnStretch(3,75);
     errors_column_labels->setColumnStretch(4,93);
-    errors_column_labels->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
+    errors_column_labels->addWidget(errors_bit_mask_label,0,0,Qt::AlignCenter);
     errors_column_labels->addWidget(errors_error_label,0,1,Qt::AlignCenter);
     errors_column_labels->addWidget(errors_setting_label,0,2,Qt::AlignCenter);
     errors_column_labels->addWidget(errors_stopping_motor_label,0,3,Qt::AlignCenter);
     errors_column_labels->addWidget(errors_occurence_count_label,0,4,Qt::AlignCenter);
+    errors_column_labels_frame->setLayout(errors_column_labels);
 
     awaiting_command = new ErrorsControl();
     awaiting_command->setObjectName("awaiting_command");
@@ -741,79 +739,109 @@ QWidget *MainWindow::setup_errors_tab()
     awaiting_command->error_label->setText(tr("Awaiting command"));
     awaiting_command->disabled_radio->setVisible(false);
     awaiting_command->enabled_radio->setVisible(false);
+    
     no_power = new ErrorsControl();
     no_power->setObjectName("no_power");
     no_power->bit_mask_label->setText(tr("0x0002"));
     no_power->error_label->setText(tr("No power"));
     no_power->disabled_radio->setVisible(false);
+    no_power->errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+
     motor_driven_error = new ErrorsControl();
     motor_driven_error->setObjectName("motor_driven_error");
     motor_driven_error->bit_mask_label->setText(tr("0x0004"));
     motor_driven_error->error_label->setText(tr("Motor driven error"));
     motor_driven_error->disabled_radio->setVisible(false);
+
     input_invalid = new ErrorsControl();
     input_invalid->setObjectName("input_invalid");
     input_invalid->bit_mask_label->setText(tr("0x0008"));
     input_invalid->error_label->setText(tr("Input invalid"));
     input_invalid->disabled_radio->setVisible(false);
+    input_invalid->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+
     input_disconnect = new ErrorsControl();
     input_disconnect->setObjectName("input_disconnect");
     input_disconnect->bit_mask_label->setText(tr("0x0010"));
     input_disconnect->error_label->setText(tr("Input disconnect"));
+
     feedback_disconnect = new ErrorsControl();
     feedback_disconnect->setObjectName("feedback_disconnect");
     feedback_disconnect->bit_mask_label->setText(tr("0x0020"));
     feedback_disconnect->error_label->setText(tr("Feedback disconnect"));
+    feedback_disconnect->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+
     max_current_exceeded = new ErrorsControl();
     max_current_exceeded->setObjectName("max_current_exceeded");
     max_current_exceeded->bit_mask_label->setText(tr("0x0040"));
     max_current_exceeded->error_label->setText(tr("Max. current exceeded"));
+
     serial_signal_error = new ErrorsControl();
     serial_signal_error->setObjectName("serial_signal_error");
     serial_signal_error->bit_mask_label->setText(tr("0x0080"));
     serial_signal_error->error_label->setText(tr("Serial signal error"));
     serial_signal_error->enabled_radio->setVisible(false);
+    serial_signal_error->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+
     serial_overrun = new ErrorsControl();
     serial_overrun->setObjectName("serial_overrun");
     serial_overrun->bit_mask_label->setText(tr("0x0100"));
     serial_overrun->error_label->setText(tr("Serial overrun"));
     serial_overrun->enabled_radio->setVisible(false);
+
     serial_rx_buffer_full = new ErrorsControl();
     serial_rx_buffer_full->setObjectName("serial_rx_buffer_full");
     serial_rx_buffer_full->bit_mask_label->setText(tr("0x0200"));
     serial_rx_buffer_full->error_label->setText(tr("Serial RX buffer full"));
     serial_rx_buffer_full->enabled_radio->setVisible(false);
+    serial_rx_buffer_full->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+
     serial_crc_error = new ErrorsControl();
     serial_crc_error->setObjectName("serial_crc_error");
     serial_crc_error->bit_mask_label->setText(tr("0x0400"));
     serial_crc_error->error_label->setText(tr("Serial CRC error"));
     serial_crc_error->enabled_radio->setVisible(false);
+
     serial_protocol_error = new ErrorsControl();
     serial_protocol_error->setObjectName("serial_protocol_error");
     serial_protocol_error->bit_mask_label->setText(tr("0x0800"));
     serial_protocol_error->error_label->setText(tr("Serial protocol error"));
     serial_protocol_error->enabled_radio->setVisible(false);
+    serial_protocol_error->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+
     serial_timeout_error = new ErrorsControl();
     serial_timeout_error->setObjectName("serial_timeout_error");
     serial_timeout_error->bit_mask_label->setText(tr("0x1000"));
     serial_timeout_error->error_label->setText(tr("Serial timeout error"));
     serial_timeout_error->enabled_radio->setVisible(false);
 
+    QHBoxLayout *errors_bottom_buttons = new QHBoxLayout();
+    errors_clear_errors = new QPushButton(tr("&Clear Errors"));
+    errors_clear_errors->setObjectName("errors_clear_errors");
+    errors_clear_errors->setFixedSize(100,40);
+    errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
+    errors_reset_counts->setObjectName("errors_reset_counts");
+    errors_reset_counts->setFixedSize(100,40);
+    errors_bottom_buttons->addSpacing(600);
+    errors_bottom_buttons->addWidget(errors_clear_errors);
+    errors_bottom_buttons->addWidget(errors_reset_counts);
 
-    layout->addLayout(errors_column_labels);
-    layout->addLayout(awaiting_command);
-    layout->addLayout(no_power);
-    layout->addLayout(motor_driven_error);
-    layout->addLayout(input_invalid);
-    layout->addLayout(input_disconnect);
-    layout->addLayout(feedback_disconnect);
-    layout->addLayout(max_current_exceeded);
-    layout->addLayout(serial_signal_error);
-    layout->addLayout(serial_overrun);
-    layout->addLayout(serial_rx_buffer_full);
-    layout->addLayout(serial_crc_error);
-    layout->addLayout(serial_protocol_error);
-    layout->addLayout(serial_timeout_error);
+    layout->setVerticalSpacing(0);
+    layout->addWidget(errors_column_labels_frame,0,0);
+    layout->addWidget(awaiting_command,1,0);
+    layout->addWidget(no_power,2,0);
+    layout->addWidget(motor_driven_error,3,0);
+    layout->addWidget(input_invalid,4,0);
+    layout->addWidget(input_disconnect,5,0);
+    layout->addWidget(feedback_disconnect,6,0);
+    layout->addWidget(max_current_exceeded,7,0);
+    layout->addWidget(serial_signal_error,8,0);
+    layout->addWidget(serial_overrun,9,0);
+    layout->addWidget(serial_rx_buffer_full,10,0);
+    layout->addWidget(serial_crc_error,11,0);
+    layout->addWidget(serial_protocol_error,12,0);
+    layout->addWidget(serial_timeout_error,13,0);
+    layout->addLayout(errors_bottom_buttons,14,0);
 
     errors_page_widget->setLayout(layout);
     return errors_page_widget;
@@ -874,17 +902,21 @@ PIDConstantControl::~PIDConstantControl()
 }
 
 ErrorsControl::ErrorsControl(QWidget *parent)
-    : QGridLayout(parent)
 {
+   
+    this->setFixedHeight(40);
+    errors_frame = new QWidget(this);
+    errors_frame->setFixedWidth(1000);
+    errors_central = new QGridLayout();
     bit_mask_label = new QLabel();
     bit_mask_label->setObjectName("bit_mask_label");
-    bit_mask_label->setFixedWidth(45);
+    bit_mask_label->setFixedWidth(55);
     error_label = new QLabel();
     error_label->setObjectName("error_label");
-    error_label->setFixedWidth(125);
+    error_label->setFixedWidth(150);
     disabled_radio = new QRadioButton(tr("Disabled"));
     disabled_radio->setObjectName("disabled_radio");
-    disabled_radio->setFixedWidth(75);
+    disabled_radio->setFixedWidth(100);
     errors_disabled_spacer = new QLabel(tr(""));
     errors_disabled_spacer->setObjectName("errors_disabled_spacer");
     errors_disabled_spacer->setFixedWidth(75);
@@ -893,10 +925,10 @@ ErrorsControl::ErrorsControl(QWidget *parent)
     errors_enabled_spacer->setFixedWidth(75);
     enabled_radio = new QRadioButton(tr("Enabled"));
     enabled_radio->setObjectName("enabled_radio");
-    enabled_radio->setFixedWidth(75);
+    enabled_radio->setFixedWidth(100);
     latched_radio = new QRadioButton(tr("Enabled and latched"));
     latched_radio->setObjectName("latched_radio");
-    latched_radio->setFixedWidth(150);
+    latched_radio->setFixedWidth(175);
     stopping_motor_label = new QLabel(tr("No"));
     stopping_motor_label->setObjectName("stopping_motor_label");
     stopping_motor_label->setFixedWidth(75);
@@ -904,16 +936,24 @@ ErrorsControl::ErrorsControl(QWidget *parent)
     count_label->setObjectName("count_label");
     count_label->setFixedWidth(93);
 
-    this->setSizeConstraint(QLayout::SetFixedSize);
-    this->addWidget(bit_mask_label,0,0);
-    this->addWidget(error_label,0,1,Qt::AlignLeft);
-    this->addWidget(disabled_radio,0,2,Qt::AlignCenter);
-    this->addWidget(errors_disabled_spacer,0,2,Qt::AlignCenter);
-    this->addWidget(enabled_radio,0,3,Qt::AlignCenter);
-    this->addWidget(errors_enabled_spacer,0,3,Qt::AlignCenter);
-    this->addWidget(latched_radio,0,4,Qt::AlignCenter);
-    this->addWidget(stopping_motor_label,0,5,Qt::AlignRight);
-    this->addWidget(count_label,0,6,Qt::AlignRight);
+    errors_central->setColumnStretch(0,55);
+    errors_central->setColumnStretch(1,125);
+    errors_central->setColumnStretch(2,65);
+    errors_central->setColumnStretch(3,65);
+    errors_central->setColumnStretch(4,150);
+    errors_central->setColumnStretch(5,75);
+    errors_central->setColumnStretch(6,93);
+
+
+    errors_central->addWidget(bit_mask_label,0,0);
+    errors_central->addWidget(error_label,0,1,Qt::AlignLeft);
+    errors_central->addWidget(disabled_radio,0,2);
+    errors_central->addWidget(enabled_radio,0,3);
+    errors_central->addWidget(latched_radio,0,4);
+    errors_central->addWidget(stopping_motor_label,0,5,Qt::AlignRight);
+    errors_central->addWidget(count_label,0,6,Qt::AlignRight);
+
+    errors_frame->setLayout(errors_central);
 
     QMetaObject::connectSlotsByName(this);
 }

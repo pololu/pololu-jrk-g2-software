@@ -6,8 +6,10 @@
 
 int main(int argc, char ** argv)
 {
-	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	//qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
+	// QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+	// qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
+
+	SetProcessDPIAware();
 
 	QApplication app(argc, argv);
   	MainWindow window;

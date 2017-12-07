@@ -209,7 +209,7 @@ private:
 	QRadioButton *motor_coast_radio;
 
 	QWidget *errors_page_widget;
-	QVBoxLayout *errors_page_layout;
+	QGridLayout *errors_page_layout;
 	QLabel *errors_bit_mask_label;
 	QLabel *errors_error_label;
 	QLabel *errors_setting_label;
@@ -228,6 +228,9 @@ private:
 	ErrorsControl *serial_crc_error;
 	ErrorsControl *serial_protocol_error;
 	ErrorsControl *serial_timeout_error;
+	QPushButton *errors_clear_errors;
+	QPushButton *errors_reset_counts;
+
 
 	QHBoxLayout *footer_layout;
 	QPushButton *motorOffButton;
@@ -267,14 +270,15 @@ private:
 	QSpinBox *pid_exponent_spinbox;	
 };
 
-class ErrorsControl : public QGridLayout
+class ErrorsControl : public QWidget
 {
 	Q_OBJECT
 public:
 	ErrorsControl(QWidget *parent = 0);
 	~ErrorsControl();
 	
-	QWidget *centralWidget;
+	QGridLayout *errors_central;
+	QWidget *errors_frame;
 	QLabel *bit_mask_label;
 	QLabel *error_label;
 	QRadioButton *disabled_radio;
