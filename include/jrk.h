@@ -226,6 +226,27 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 // Beginning of auto-generated settings accessor prototypes.
 
 // Sets the input_mode setting.
+//
+// The input mode setting specifies how you want to control the jrk.  It
+// determines the definition of the input and target variables.  The input
+// variable is raw measurement of the jrk's input.  The target variable is the
+// desired state of the system's output, and feeds into the PID feedback
+// algorithm.
+//
+// - If the input mode is JRK_INPUT_MODE_SERIAL, the jrk gets it input and
+//   target settings over its USB, serial, or I2C interfaces.  You would send
+//   Set Target commands to the jrk to set both the input and target variables.
+//
+// - If the input mode is JRK_INPUT_MODE_ANALOG, the jrk gets it input variable
+//   by reading the voltage on its SDA/AN pin.  A signal level of 0 V
+//   corresponds to an input value of 0, and a signal elvel of 5 V corresponds
+//   to an input value of 4092.  The jrk uses its input scaling feature to set
+//   the target variable.
+//
+// - If the input mode is JRK_INPUT_MODE_PULSE_WIDTH, the jrk gets it input
+//   variable by reading RC pulses on its RC pin.  The input value is the width
+//   of the most recent pulse, in units of 2/3 microseconds.  The jrk uses its
+//   input scaling feature to set the target variable.
 JRK_API
 void jrk_settings_set_input_mode(jrk_settings *,
   uint8_t input_mode);
@@ -256,6 +277,21 @@ JRK_API
 uint16_t jrk_settings_get_input_disconnect_maximum(const jrk_settings *);
 
 // Sets the input_minimum setting.
+//
+// This is one of the parameters of the input scaling feature, which is how the
+// jrk calculates its target value from its raw input.
+//
+// By default, the input scaling:
+//
+// 1. Maps all values less than the input_minimum to the output_minimum.
+// 2. Maps all values greater than the input_maximum to the output_maximum.
+// 3. Maps all values between the input_neutral_min and input_neutral_max to
+//    the output the output_neutral.
+// 4. Behaves linearly between those regions.
+//
+// The input_invert parameter can flip that correspondence, and the
+// input_scaling_degree parameter can change item 4 to use higher-order curves
+// that give you finer control of the output near the neutral region.
 JRK_API
 void jrk_settings_set_input_minimum(jrk_settings *,
   uint16_t input_minimum);
@@ -266,6 +302,9 @@ JRK_API
 uint16_t jrk_settings_get_input_minimum(const jrk_settings *);
 
 // Sets the input_maximum setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_input_maximum(jrk_settings *,
   uint16_t input_maximum);
@@ -276,6 +315,9 @@ JRK_API
 uint16_t jrk_settings_get_input_maximum(const jrk_settings *);
 
 // Sets the input_neutral_minimum setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_input_neutral_minimum(jrk_settings *,
   uint16_t input_neutral_minimum);
@@ -286,6 +328,9 @@ JRK_API
 uint16_t jrk_settings_get_input_neutral_minimum(const jrk_settings *);
 
 // Sets the input_neutral_maximum setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_input_neutral_maximum(jrk_settings *,
   uint16_t input_neutral_maximum);
@@ -296,6 +341,9 @@ JRK_API
 uint16_t jrk_settings_get_input_neutral_maximum(const jrk_settings *);
 
 // Sets the output_minimum setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_output_minimum(jrk_settings *,
   uint16_t output_minimum);
@@ -306,6 +354,9 @@ JRK_API
 uint16_t jrk_settings_get_output_minimum(const jrk_settings *);
 
 // Sets the output_neutral setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_output_neutral(jrk_settings *,
   uint16_t output_neutral);
@@ -316,6 +367,9 @@ JRK_API
 uint16_t jrk_settings_get_output_neutral(const jrk_settings *);
 
 // Sets the output_maximum setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_output_maximum(jrk_settings *,
   uint16_t output_maximum);
@@ -326,6 +380,9 @@ JRK_API
 uint16_t jrk_settings_get_output_maximum(const jrk_settings *);
 
 // Sets the input_invert setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_input_invert(jrk_settings *,
   bool input_invert);
@@ -336,6 +393,9 @@ JRK_API
 bool jrk_settings_get_input_invert(const jrk_settings *);
 
 // Sets the input_scaling_degree setting.
+//
+// This is one of the parameters of the input scaling, as described in the
+// input_minimum documentation.
 JRK_API
 void jrk_settings_set_input_scaling_degree(jrk_settings *,
   uint8_t input_scaling_degree);
@@ -369,6 +429,29 @@ JRK_API
 uint8_t jrk_settings_get_input_analog_samples_exponent(const jrk_settings *);
 
 // Sets the feedback_mode setting.
+//
+// The feedback mode setting specifies whether the jrk is using feedback from
+// the output of the system, and if so defines what interface is used to
+// measure that feedback.
+//
+// - If the feedback mode is JRK_FEEDBACK_MODE_NONE, feedback and PID
+//   calculations are disabled.  The duty cycle target variable is always equal
+//   to the target variable minus 2048, instead of being the result of a PID
+//   calculation.  This means that a target of 2648 corresponds to driving the
+//   motor full speed forward, 2048 is brake, and 1448 is full-speed reverse.
+//
+// - If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, the jrk gets its
+//   feedback by measuring the voltage on the FB_A pin.  A level of 0 V
+//   corresponds to a feedback value of 0, and a level of 5 V corresponds to a
+//   feedback value of 4092.  The feedback scaling algorithm computes the
+//   scaled feedback variable, and the PID algorithm uses the scaled feedback
+//   and the target to compute the duty cycle target.
+//
+// - If the feedback mode is JRK_FEEDBACK_MODE_FREQUENCY, the jrk gets it
+//   feedback by counting rising edges on its FB_T pin.  When the target is
+//   greater than 2048, the feedback value is 2048 plus the number of rising
+//   edges detected during the PID period.  Otherwise, the the feedback is
+//   2048 minus the the number of rising edges detected during the PID period.
 JRK_API
 void jrk_settings_set_feedback_mode(jrk_settings *,
   uint8_t feedback_mode);
@@ -399,6 +482,16 @@ JRK_API
 uint16_t jrk_settings_get_feedback_disconnect_maximum(const jrk_settings *);
 
 // Sets the feedback_minimum setting.
+//
+// This is one of the parameters of the feedback scaling feature.
+//
+// By default, the feedback scaling:
+//
+//   1. Maps values less than or equal to feedback_minimum to 0.
+//   2. Maps values less than or equal to feedback_maximum to 4095.
+//   3. Behaves linearly between those two regions.
+//
+// The feedback_invert parameter causes the mapping to be flipped.
 JRK_API
 void jrk_settings_set_feedback_minimum(jrk_settings *,
   uint16_t feedback_minimum);
@@ -409,6 +502,9 @@ JRK_API
 uint16_t jrk_settings_get_feedback_minimum(const jrk_settings *);
 
 // Sets the feedback_maximum setting.
+//
+// This is one of the parameters of the feedback scaling described in
+// the feedback_minimum documentation.
 JRK_API
 void jrk_settings_set_feedback_maximum(jrk_settings *,
   uint16_t feedback_maximum);
@@ -419,6 +515,9 @@ JRK_API
 uint16_t jrk_settings_get_feedback_maximum(const jrk_settings *);
 
 // Sets the feedback_invert setting.
+//
+// This is one of the parameters of the feedback scaling described in
+// the feedback_minimum documentation.
 JRK_API
 void jrk_settings_set_feedback_invert(jrk_settings *,
   bool feedback_invert);
@@ -462,6 +561,14 @@ JRK_API
 uint8_t jrk_settings_get_feedback_analog_samples_exponent(const jrk_settings *);
 
 // Sets the feedback_wraparound setting.
+//
+// Normally, the error variable used by the PID algorithm is simply the scaled
+// feedback minus the target.  With this setting enabled, the PID algorithm
+// will add or subtract 4096 from that error value to get it into the -2048 to
+// 2048 range.  This is useful for systems where the output of the system wraps
+// around, so that 0 is next to 4095.  The jrk will know how to take the
+// shortest path from one point to another even if it involves wrapping around
+// from 0 to 4095 or vice versa.
 JRK_API
 void jrk_settings_set_feedback_wraparound(jrk_settings *,
   bool feedback_wraparound);
@@ -540,6 +647,15 @@ JRK_API
 bool jrk_settings_get_never_sleep(const jrk_settings *);
 
 // Sets the proportional_multiplier setting.
+//
+// The allowed range of this setting is 0 to 1023.
+//
+// In the PID algorithm, the error (the difference between scaled feedback
+// and target) is multiplied by a number called the proportional coefficient to
+// determine its effect on the motor duty cycle.
+//
+// The proportional coefficient is defined by this mathematical expression:
+//   proportional_multiplier / 2^(proportional_exponent)
 JRK_API
 void jrk_settings_set_proportional_multiplier(jrk_settings *,
   uint16_t proportional_multiplier);
@@ -550,6 +666,9 @@ JRK_API
 uint16_t jrk_settings_get_proportional_multiplier(const jrk_settings *);
 
 // Sets the proportional_exponent setting.
+//
+// The allowed range of this setting is 0 to 18.
+// For more information, see the proportional_multiplier documentation.
 JRK_API
 void jrk_settings_set_proportional_exponent(jrk_settings *,
   uint8_t proportional_exponent);
@@ -560,6 +679,15 @@ JRK_API
 uint8_t jrk_settings_get_proportional_exponent(const jrk_settings *);
 
 // Sets the integral_multiplier setting.
+//
+// The allowed range of this setting is 0 to 1023.
+//
+// In the PID algorithm, the accumulated error (known as error sum)
+// is multiplied by a number called the integral coefficient to
+// determine its effect on the motor duty cycle.
+//
+// The integral coefficient is defined by this mathematical expression:
+//   integral_multiplier / 2^(integral_exponent)
 JRK_API
 void jrk_settings_set_integral_multiplier(jrk_settings *,
   uint16_t integral_multiplier);
@@ -570,6 +698,9 @@ JRK_API
 uint16_t jrk_settings_get_integral_multiplier(const jrk_settings *);
 
 // Sets the integral_exponent setting.
+//
+// The allowed range of this setting is 0 to 18.
+// For more information, see the integral_multiplier documentation.
 JRK_API
 void jrk_settings_set_integral_exponent(jrk_settings *,
   uint8_t integral_exponent);
@@ -580,6 +711,15 @@ JRK_API
 uint8_t jrk_settings_get_integral_exponent(const jrk_settings *);
 
 // Sets the derivative_multiplier setting.
+//
+// The allowed range of this setting is 0 to 1023.
+//
+// In the PID algorithm, the change in the error since the last PID period
+// is multiplied by a number called the derivative coefficient to
+// determine its effect on the motor duty cycle.
+//
+// The derivative coefficient is defined by this mathematical expression:
+//   derivative_multiplier / 2^(derivative_exponent)
 JRK_API
 void jrk_settings_set_derivative_multiplier(jrk_settings *,
   uint16_t derivative_multiplier);
@@ -590,6 +730,9 @@ JRK_API
 uint16_t jrk_settings_get_derivative_multiplier(const jrk_settings *);
 
 // Sets the derivative_exponent setting.
+//
+// The allowed range of this setting is 0 to 18.
+// For more information, see the derivative_multiplier documentation.
 JRK_API
 void jrk_settings_set_derivative_exponent(jrk_settings *,
   uint8_t derivative_exponent);
@@ -600,6 +743,9 @@ JRK_API
 uint8_t jrk_settings_get_derivative_exponent(const jrk_settings *);
 
 // Sets the pid_period setting.
+//
+// The PID period specifies how often the jrk should run its PID calculation
+// and update the motor speed, in units of milliseconds.
 JRK_API
 void jrk_settings_set_pid_period(jrk_settings *,
   uint16_t pid_period);
@@ -610,6 +756,9 @@ JRK_API
 uint16_t jrk_settings_get_pid_period(const jrk_settings *);
 
 // Sets the pid_integral_limit setting.
+//
+// The PID algorithm prevents the absolute value of the accumulated error
+// (known as error sum) from exceeding pid_integral_limit.
 JRK_API
 void jrk_settings_set_pid_integral_limit(jrk_settings *,
   uint16_t pid_integral_limit);
@@ -620,6 +769,10 @@ JRK_API
 uint16_t jrk_settings_get_pid_integral_limit(const jrk_settings *);
 
 // Sets the pid_reset_integral setting.
+//
+// If this setting is set to true, the PID algorithm will reset the accumulated
+// error (also known as error sum) whenever the absolute value of the
+// proportional term (see proportional_multiplier) exceeds 600.
 JRK_API
 void jrk_settings_set_pid_reset_integral(jrk_settings *,
   bool pid_reset_integral);
@@ -630,6 +783,10 @@ JRK_API
 bool jrk_settings_get_pid_reset_integral(const jrk_settings *);
 
 // Sets the motor_pwm_frequency setting.
+//
+// This setting specifies whether to use 20 kHz (the default) or 5 kHz for the
+// motor PWM signal.  This setting should be either
+// JRK_MOTOR_PWM_FREQUENCY_20 or JRK_MOTOR_PWM_FREQUENCY_5.
 JRK_API
 void jrk_settings_set_motor_pwm_frequency(jrk_settings *,
   uint8_t motor_pwm_frequency);
@@ -795,7 +952,9 @@ bool jrk_settings_get_motor_coast_when_off(const jrk_settings *);
 
 // Sets the error_enable setting.
 //
-// This setting is a bitmask for errors that are enabled.
+// This setting is a bitmap specifying which errors are enabled.
+// The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are
+// always enabled, so the jrk ignores the bits for those errors.
 JRK_API
 void jrk_settings_set_error_enable(jrk_settings *,
   uint16_t error_enable);
@@ -807,7 +966,10 @@ uint16_t jrk_settings_get_error_enable(const jrk_settings *);
 
 // Sets the error_latch setting.
 //
-// This setting is a bitmask for errors that are enabled and latched.
+// This setting is a bitmap specifying which errors are enabled and latched.
+// The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are
+// always latched if they are enabled, so the jrk ignores the bits for those
+// errors.
 JRK_API
 void jrk_settings_set_error_latch(jrk_settings *,
   uint16_t error_latch);
