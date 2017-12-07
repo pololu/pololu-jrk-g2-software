@@ -313,7 +313,10 @@ EOF
       "is multiplied by a number called the integral coefficient to\n" \
       "determine its effect on the motor duty cycle.\n\n" \
       "The integral coefficient is defined by this mathematical expression:\n" \
-      "  integral_multiplier / 2^(integral_exponent)\n"
+      "  integral_multiplier / 2^(integral_exponent)\n\n" \
+      "Note: On the original jrks (jrk 12v12 and jrk 21v3), the formula was\n" \
+      "different.  Those jrks added 3 to the integral_exponent before using\n" \
+      "it as a power of 2."
   },
   {
     name: 'integral_exponent',

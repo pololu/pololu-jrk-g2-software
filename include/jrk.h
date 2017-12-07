@@ -688,6 +688,10 @@ uint8_t jrk_settings_get_proportional_exponent(const jrk_settings *);
 //
 // The integral coefficient is defined by this mathematical expression:
 //   integral_multiplier / 2^(integral_exponent)
+//
+// Note: On the original jrks (jrk 12v12 and jrk 21v3), the formula was
+// different.  Those jrks added 3 to the integral_exponent before using
+// it as a power of 2.
 JRK_API
 void jrk_settings_set_integral_multiplier(jrk_settings *,
   uint16_t integral_multiplier);
