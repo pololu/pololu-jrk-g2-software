@@ -347,6 +347,13 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint16_t pid_integral_limit = jrk_settings_get_pid_integral_limit(settings);
+    if (pid_integral_limit > 32767)
+    {
+      pid_integral_limit = 32767;
+      jrk_sprintf(warnings,
+        "Warning: The pid integral limit was too high "
+        "so it will be changed to %u.\n", pid_integral_limit);
+    }
     jrk_settings_set_pid_integral_limit(settings, pid_integral_limit);
   }
 

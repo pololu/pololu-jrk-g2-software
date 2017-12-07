@@ -215,6 +215,7 @@ Settings = [
     name: 'pid_integral_limit',
     type: :uint16_t,
     default: 1000,
+    max: 0x7FFF,
   },
   {
     name: 'pid_reset_integral',
