@@ -387,6 +387,11 @@ EOF
   {
     name: 'motor_invert',
     type: :bool,
+    comment:
+      "By default, a positive duty cycle (which we call \"forward\") corresponds\n" \
+      "to current flowing from output A to output B.  If enabled, this setting flips\n" \
+      "the correspondence, so a positive duty cycle corresponds to current flowing\n" \
+      "from B to A."
   },
   {
     name: 'motor_max_duty_cycle_while_feedback_out_of_range',
@@ -461,6 +466,11 @@ EOF
   {
     name: 'motor_coast_when_off',
     type: :bool,
+    comment:
+      "By default, the jrk drives both motor outputs low when the motor is\n" \
+      "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \
+      "If enabled, this setting causes it to instead tri-state both inputs, making\n" \
+      "the motor coast."
   },
   {
     name: 'error_enable',

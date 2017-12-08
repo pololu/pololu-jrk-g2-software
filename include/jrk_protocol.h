@@ -1,3 +1,11 @@
+// This header file contains constants needed to use the USB, serial, and I2C
+// protocols for the Tic USB Stepper Motor Controller from Pololu.
+//
+// Note: Many of these definitions are not considered to be part of the public
+// API of libpololu-jrk2, so they could change or be removed in future versions
+// of the library.  The only definitions that are part of the public API are the
+// ones referred to in the comments in jrk.h.
+
 #ifndef _JRK_PROTOCOL_H
 #define _JRK_PROTOCOL_H
 
