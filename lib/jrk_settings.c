@@ -33,9 +33,11 @@ struct jrk_settings
   uint8_t serial_mode;
   uint32_t serial_baud_rate;
   uint16_t serial_timeout;
-  bool serial_enable_crc;
-  uint8_t serial_device_number;
+  uint16_t serial_device_number;
   bool never_sleep;
+  bool serial_enable_crc;
+  bool serial_enable_14bit_device_number;
+  bool serial_disable_compact_protocol;
   uint16_t proportional_multiplier;
   uint8_t proportional_exponent;
   uint16_t integral_multiplier;
@@ -524,25 +526,13 @@ uint16_t jrk_settings_get_serial_timeout(const jrk_settings * settings)
   return settings->serial_timeout;
 }
 
-void jrk_settings_set_serial_enable_crc(jrk_settings * settings, bool serial_enable_crc)
-{
-  if (settings == NULL) { return; }
-  settings->serial_enable_crc = serial_enable_crc;
-}
-
-bool jrk_settings_get_serial_enable_crc(const jrk_settings * settings)
-{
-  if (settings == NULL) { return 0; }
-  return settings->serial_enable_crc;
-}
-
-void jrk_settings_set_serial_device_number(jrk_settings * settings, uint8_t serial_device_number)
+void jrk_settings_set_serial_device_number(jrk_settings * settings, uint16_t serial_device_number)
 {
   if (settings == NULL) { return; }
   settings->serial_device_number = serial_device_number;
 }
 
-uint8_t jrk_settings_get_serial_device_number(const jrk_settings * settings)
+uint16_t jrk_settings_get_serial_device_number(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->serial_device_number;
@@ -558,6 +548,42 @@ bool jrk_settings_get_never_sleep(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->never_sleep;
+}
+
+void jrk_settings_set_serial_enable_crc(jrk_settings * settings, bool serial_enable_crc)
+{
+  if (settings == NULL) { return; }
+  settings->serial_enable_crc = serial_enable_crc;
+}
+
+bool jrk_settings_get_serial_enable_crc(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->serial_enable_crc;
+}
+
+void jrk_settings_set_serial_enable_14bit_device_number(jrk_settings * settings, bool serial_enable_14bit_device_number)
+{
+  if (settings == NULL) { return; }
+  settings->serial_enable_14bit_device_number = serial_enable_14bit_device_number;
+}
+
+bool jrk_settings_get_serial_enable_14bit_device_number(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->serial_enable_14bit_device_number;
+}
+
+void jrk_settings_set_serial_disable_compact_protocol(jrk_settings * settings, bool serial_disable_compact_protocol)
+{
+  if (settings == NULL) { return; }
+  settings->serial_disable_compact_protocol = serial_disable_compact_protocol;
+}
+
+bool jrk_settings_get_serial_disable_compact_protocol(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->serial_disable_compact_protocol;
 }
 
 void jrk_settings_set_proportional_multiplier(jrk_settings * settings, uint16_t proportional_multiplier)

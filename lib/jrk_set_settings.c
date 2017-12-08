@@ -59,7 +59,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool input_invert = jrk_settings_get_input_invert(settings);
-    buf[JRK_SETTING_INPUT_INVERT] = input_invert;
+    buf[JRK_SETTING_INPUT_INVERT] |= input_invert;
   }
 
   {
@@ -69,7 +69,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool input_power_with_aux = jrk_settings_get_input_power_with_aux(settings);
-    buf[JRK_SETTING_INPUT_POWER_WITH_AUX] = input_power_with_aux;
+    buf[JRK_SETTING_INPUT_POWER_WITH_AUX] |= input_power_with_aux;
   }
 
   {
@@ -104,12 +104,12 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool feedback_invert = jrk_settings_get_feedback_invert(settings);
-    buf[JRK_SETTING_FEEDBACK_INVERT] = feedback_invert;
+    buf[JRK_SETTING_FEEDBACK_INVERT] |= feedback_invert;
   }
 
   {
     bool feedback_power_with_aux = jrk_settings_get_feedback_power_with_aux(settings);
-    buf[JRK_SETTING_FEEDBACK_POWER_WITH_AUX] = feedback_power_with_aux;
+    buf[JRK_SETTING_FEEDBACK_POWER_WITH_AUX] |= feedback_power_with_aux;
   }
 
   {
@@ -124,7 +124,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool feedback_wraparound = jrk_settings_get_feedback_wraparound(settings);
-    buf[JRK_SETTING_FEEDBACK_WRAPAROUND] = feedback_wraparound;
+    buf[JRK_SETTING_FEEDBACK_WRAPAROUND] |= feedback_wraparound;
   }
 
   {
@@ -138,18 +138,28 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    bool serial_enable_crc = jrk_settings_get_serial_enable_crc(settings);
-    buf[JRK_SETTING_SERIAL_ENABLE_CRC] = serial_enable_crc;
-  }
-
-  {
-    uint8_t serial_device_number = jrk_settings_get_serial_device_number(settings);
-    buf[JRK_SETTING_SERIAL_DEVICE_NUMBER] = serial_device_number;
+    uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
+    write_uint16_t(buf + JRK_SETTING_SERIAL_DEVICE_NUMBER, serial_device_number);
   }
 
   {
     bool never_sleep = jrk_settings_get_never_sleep(settings);
-    buf[JRK_SETTING_NEVER_SLEEP] = never_sleep;
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= never_sleep << JRK_OPTIONS_BYTE1_NEVER_SLEEP;
+  }
+
+  {
+    bool serial_enable_crc = jrk_settings_get_serial_enable_crc(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= serial_enable_crc << JRK_OPTIONS_BYTE1_SERIAL_ENABLE_CRC;
+  }
+
+  {
+    bool serial_enable_14bit_device_number = jrk_settings_get_serial_enable_14bit_device_number(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= serial_enable_14bit_device_number << JRK_OPTIONS_BYTE1_SERIAL_ENABLE_14BIT_DEVICE_NUMBER;
+  }
+
+  {
+    bool serial_disable_compact_protocol = jrk_settings_get_serial_disable_compact_protocol(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= serial_disable_compact_protocol << JRK_OPTIONS_BYTE1_SERIAL_DISABLE_COMPACT_PROTOCOL;
   }
 
   {
@@ -194,7 +204,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool pid_reset_integral = jrk_settings_get_pid_reset_integral(settings);
-    buf[JRK_SETTING_PID_RESET_INTEGRAL] = pid_reset_integral;
+    buf[JRK_SETTING_PID_RESET_INTEGRAL] |= pid_reset_integral;
   }
 
   {
@@ -204,7 +214,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool motor_invert = jrk_settings_get_motor_invert(settings);
-    buf[JRK_SETTING_MOTOR_INVERT] = motor_invert;
+    buf[JRK_SETTING_MOTOR_INVERT] |= motor_invert;
   }
 
   {
@@ -274,7 +284,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool motor_coast_when_off = jrk_settings_get_motor_coast_when_off(settings);
-    buf[JRK_SETTING_MOTOR_COAST_WHEN_OFF] = motor_coast_when_off;
+    buf[JRK_SETTING_MOTOR_COAST_WHEN_OFF] |= motor_coast_when_off;
   }
 
   {

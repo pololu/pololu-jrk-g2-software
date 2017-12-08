@@ -1,3 +1,11 @@
+// This header file contains constants needed to use the USB, serial, and I2C
+// protocols for the Tic USB Stepper Motor Controller from Pololu.
+//
+// Note: Many of these definitions are not considered to be part of the public
+// API of libpololu-jrk2, so they could change or be removed in future versions
+// of the library.  The only definitions that are part of the public API are the
+// ones referred to in the comments in jrk.h.
+
 #ifndef _JRK_PROTOCOL_H
 #define _JRK_PROTOCOL_H
 
@@ -49,9 +57,8 @@
 #define JRK_SETTING_SERIAL_MODE 0x26
 #define JRK_SETTING_SERIAL_BAUD_RATE_GENERATOR 0x27
 #define JRK_SETTING_SERIAL_TIMEOUT 0x29
-#define JRK_SETTING_SERIAL_ENABLE_CRC 0x2B
-#define JRK_SETTING_SERIAL_DEVICE_NUMBER 0x2C
-#define JRK_SETTING_NEVER_SLEEP 0x2D
+#define JRK_SETTING_SERIAL_DEVICE_NUMBER 0x2B
+#define JRK_SETTING_OPTIONS_BYTE1 0x2D
 #define JRK_SETTING_PROPORTIONAL_MULTIPLIER 0x2E
 #define JRK_SETTING_PROPORTIONAL_EXPONENT 0x30
 #define JRK_SETTING_INTEGRAL_MULTIPLIER 0x31
@@ -104,6 +111,11 @@
 #define JRK_SERIAL_MODE_USB_DUAL_PORT 0
 #define JRK_SERIAL_MODE_USB_CHAINED 1
 #define JRK_SERIAL_MODE_UART 2
+
+#define JRK_OPTIONS_BYTE1_NEVER_SLEEP 0
+#define JRK_OPTIONS_BYTE1_SERIAL_ENABLE_CRC 1
+#define JRK_OPTIONS_BYTE1_SERIAL_ENABLE_14BIT_DEVICE_NUMBER 2
+#define JRK_OPTIONS_BYTE1_SERIAL_DISABLE_COMPACT_PROTOCOL 3
 
 #define JRK_MOTOR_PWM_FREQUENCY_20 0
 #define JRK_MOTOR_PWM_FREQUENCY_5 1

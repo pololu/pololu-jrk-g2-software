@@ -85,7 +85,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool input_invert = jrk_settings_get_input_invert(settings);
-    jrk_sprintf(&str, "input_invert: %s\n", 
+    jrk_sprintf(&str, "input_invert: %s\n",
       input_invert ? "true" : "false");
   }
 
@@ -98,7 +98,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool input_power_with_aux = jrk_settings_get_input_power_with_aux(settings);
-    jrk_sprintf(&str, "input_power_with_aux: %s\n", 
+    jrk_sprintf(&str, "input_power_with_aux: %s\n",
       input_power_with_aux ? "true" : "false");
   }
 
@@ -136,13 +136,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool feedback_invert = jrk_settings_get_feedback_invert(settings);
-    jrk_sprintf(&str, "feedback_invert: %s\n", 
+    jrk_sprintf(&str, "feedback_invert: %s\n",
       feedback_invert ? "true" : "false");
   }
 
   {
     bool feedback_power_with_aux = jrk_settings_get_feedback_power_with_aux(settings);
-    jrk_sprintf(&str, "feedback_power_with_aux: %s\n", 
+    jrk_sprintf(&str, "feedback_power_with_aux: %s\n",
       feedback_power_with_aux ? "true" : "false");
   }
 
@@ -158,7 +158,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool feedback_wraparound = jrk_settings_get_feedback_wraparound(settings);
-    jrk_sprintf(&str, "feedback_wraparound: %s\n", 
+    jrk_sprintf(&str, "feedback_wraparound: %s\n",
       feedback_wraparound ? "true" : "false");
   }
 
@@ -180,20 +180,32 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    bool serial_enable_crc = jrk_settings_get_serial_enable_crc(settings);
-    jrk_sprintf(&str, "serial_enable_crc: %s\n", 
-      serial_enable_crc ? "true" : "false");
-  }
-
-  {
-    uint8_t serial_device_number = jrk_settings_get_serial_device_number(settings);
+    uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
     jrk_sprintf(&str, "serial_device_number: %u\n", serial_device_number);
   }
 
   {
     bool never_sleep = jrk_settings_get_never_sleep(settings);
-    jrk_sprintf(&str, "never_sleep: %s\n", 
+    jrk_sprintf(&str, "never_sleep: %s\n",
       never_sleep ? "true" : "false");
+  }
+
+  {
+    bool serial_enable_crc = jrk_settings_get_serial_enable_crc(settings);
+    jrk_sprintf(&str, "serial_enable_crc: %s\n",
+      serial_enable_crc ? "true" : "false");
+  }
+
+  {
+    bool serial_enable_14bit_device_number = jrk_settings_get_serial_enable_14bit_device_number(settings);
+    jrk_sprintf(&str, "serial_enable_14bit_device_number: %s\n",
+      serial_enable_14bit_device_number ? "true" : "false");
+  }
+
+  {
+    bool serial_disable_compact_protocol = jrk_settings_get_serial_disable_compact_protocol(settings);
+    jrk_sprintf(&str, "serial_disable_compact_protocol: %s\n",
+      serial_disable_compact_protocol ? "true" : "false");
   }
 
   {
@@ -238,7 +250,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool pid_reset_integral = jrk_settings_get_pid_reset_integral(settings);
-    jrk_sprintf(&str, "pid_reset_integral: %s\n", 
+    jrk_sprintf(&str, "pid_reset_integral: %s\n",
       pid_reset_integral ? "true" : "false");
   }
 
@@ -251,7 +263,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool motor_invert = jrk_settings_get_motor_invert(settings);
-    jrk_sprintf(&str, "motor_invert: %s\n", 
+    jrk_sprintf(&str, "motor_invert: %s\n",
       motor_invert ? "true" : "false");
   }
 
@@ -322,7 +334,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
 
   {
     bool motor_coast_when_off = jrk_settings_get_motor_coast_when_off(settings);
-    jrk_sprintf(&str, "motor_coast_when_off: %s\n", 
+    jrk_sprintf(&str, "motor_coast_when_off: %s\n",
       motor_coast_when_off ? "true" : "false");
   }
 

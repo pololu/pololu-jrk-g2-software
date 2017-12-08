@@ -137,18 +137,28 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool serial_enable_crc = buf[JRK_SETTING_SERIAL_ENABLE_CRC] & 1;
-    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
-  }
-
-  {
-    uint8_t serial_device_number = buf[JRK_SETTING_SERIAL_DEVICE_NUMBER];
+    uint16_t serial_device_number = read_uint16_t(buf + JRK_SETTING_SERIAL_DEVICE_NUMBER);
     jrk_settings_set_serial_device_number(settings, serial_device_number);
   }
 
   {
-    bool never_sleep = buf[JRK_SETTING_NEVER_SLEEP] & 1;
+    bool never_sleep = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_NEVER_SLEEP & 1;
     jrk_settings_set_never_sleep(settings, never_sleep);
+  }
+
+  {
+    bool serial_enable_crc = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_SERIAL_ENABLE_CRC & 1;
+    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
+  }
+
+  {
+    bool serial_enable_14bit_device_number = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_SERIAL_ENABLE_14BIT_DEVICE_NUMBER & 1;
+    jrk_settings_set_serial_enable_14bit_device_number(settings, serial_enable_14bit_device_number);
+  }
+
+  {
+    bool serial_disable_compact_protocol = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_SERIAL_DISABLE_COMPACT_PROTOCOL & 1;
+    jrk_settings_set_serial_disable_compact_protocol(settings, serial_disable_compact_protocol);
   }
 
   {

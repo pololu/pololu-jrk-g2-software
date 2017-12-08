@@ -243,10 +243,10 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t serial_device_number = jrk_settings_get_serial_device_number(settings);
-    if (serial_device_number > 127)
+    uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
+    if (serial_device_number > 16383)
     {
-      serial_device_number = 127;
+      serial_device_number = 16383;
       jrk_sprintf(warnings,
         "Warning: The serial device number was too high "
         "so it will be changed to %u.\n", serial_device_number);
@@ -268,9 +268,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t proportional_exponent = jrk_settings_get_proportional_exponent(settings);
-    if (proportional_exponent > 15)
+    if (proportional_exponent > 18)
     {
-      proportional_exponent = 15;
+      proportional_exponent = 18;
       jrk_sprintf(warnings,
         "Warning: The proportional exponent was too high "
         "so it will be changed to %u.\n", proportional_exponent);
@@ -292,9 +292,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t integral_exponent = jrk_settings_get_integral_exponent(settings);
-    if (integral_exponent > 15)
+    if (integral_exponent > 18)
     {
-      integral_exponent = 15;
+      integral_exponent = 18;
       jrk_sprintf(warnings,
         "Warning: The integral exponent was too high "
         "so it will be changed to %u.\n", integral_exponent);
@@ -316,9 +316,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t derivative_exponent = jrk_settings_get_derivative_exponent(settings);
-    if (derivative_exponent > 15)
+    if (derivative_exponent > 18)
     {
-      derivative_exponent = 15;
+      derivative_exponent = 18;
       jrk_sprintf(warnings,
         "Warning: The derivative exponent was too high "
         "so it will be changed to %u.\n", derivative_exponent);
