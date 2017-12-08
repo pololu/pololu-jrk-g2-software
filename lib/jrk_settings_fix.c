@@ -243,10 +243,10 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t serial_device_number = jrk_settings_get_serial_device_number(settings);
-    if (serial_device_number > 127)
+    uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
+    if (serial_device_number > 16383)
     {
-      serial_device_number = 127;
+      serial_device_number = 16383;
       jrk_sprintf(warnings,
         "Warning: The serial device number was too high "
         "so it will be changed to %u.\n", serial_device_number);

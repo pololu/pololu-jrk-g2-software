@@ -366,16 +366,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_serial_timeout(settings, serial_timeout);
   }
-  else if (!strcmp(key, "serial_enable_crc"))
-  {
-    uint32_t serial_enable_crc;
-    if (!jrk_name_to_code(jrk_bool_names, value, &serial_enable_crc))
-    {
-      return jrk_error_create("Unrecognized serial_enable_crc value.");
-    }
-    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
-    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
-  }
   else if (!strcmp(key, "serial_device_number"))
   {
     int64_t serial_device_number;
@@ -383,7 +373,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Invalid serial_device_number value.");
     }
-    if (serial_device_number < 0 || serial_device_number > UINT8_MAX)
+    if (serial_device_number < 0 || serial_device_number > UINT16_MAX)
     {
       return jrk_error_create(
         "The serial_device_number value is out of range.");
@@ -399,6 +389,36 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_never_sleep(settings, never_sleep);
     jrk_settings_set_never_sleep(settings, never_sleep);
+  }
+  else if (!strcmp(key, "serial_enable_crc"))
+  {
+    uint32_t serial_enable_crc;
+    if (!jrk_name_to_code(jrk_bool_names, value, &serial_enable_crc))
+    {
+      return jrk_error_create("Unrecognized serial_enable_crc value.");
+    }
+    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
+    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
+  }
+  else if (!strcmp(key, "serial_enable_14bit_device_number"))
+  {
+    uint32_t serial_enable_14bit_device_number;
+    if (!jrk_name_to_code(jrk_bool_names, value, &serial_enable_14bit_device_number))
+    {
+      return jrk_error_create("Unrecognized serial_enable_14bit_device_number value.");
+    }
+    jrk_settings_set_serial_enable_14bit_device_number(settings, serial_enable_14bit_device_number);
+    jrk_settings_set_serial_enable_14bit_device_number(settings, serial_enable_14bit_device_number);
+  }
+  else if (!strcmp(key, "serial_disable_compact_protocol"))
+  {
+    uint32_t serial_disable_compact_protocol;
+    if (!jrk_name_to_code(jrk_bool_names, value, &serial_disable_compact_protocol))
+    {
+      return jrk_error_create("Unrecognized serial_disable_compact_protocol value.");
+    }
+    jrk_settings_set_serial_disable_compact_protocol(settings, serial_disable_compact_protocol);
+    jrk_settings_set_serial_disable_compact_protocol(settings, serial_disable_compact_protocol);
   }
   else if (!strcmp(key, "proportional_multiplier"))
   {

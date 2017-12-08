@@ -624,26 +624,14 @@ namespace jrk
       return jrk_settings_get_serial_timeout(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_serial_enable_crc().
-    void set_serial_enable_crc(bool value) noexcept
-    {
-      jrk_settings_set_serial_enable_crc(pointer, value);
-    }
-
-    /// Wrapper for jrk_settings_get_serial_enable_crc().
-    bool get_serial_enable_crc() const noexcept
-    {
-      return jrk_settings_get_serial_enable_crc(pointer);
-    }
-
     /// Wrapper for jrk_settings_set_serial_device_number().
-    void set_serial_device_number(uint8_t value) noexcept
+    void set_serial_device_number(uint16_t value) noexcept
     {
       jrk_settings_set_serial_device_number(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_serial_device_number().
-    uint8_t get_serial_device_number() const noexcept
+    uint16_t get_serial_device_number() const noexcept
     {
       return jrk_settings_get_serial_device_number(pointer);
     }
@@ -658,6 +646,42 @@ namespace jrk
     bool get_never_sleep() const noexcept
     {
       return jrk_settings_get_never_sleep(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_enable_crc().
+    void set_serial_enable_crc(bool value) noexcept
+    {
+      jrk_settings_set_serial_enable_crc(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_enable_crc().
+    bool get_serial_enable_crc() const noexcept
+    {
+      return jrk_settings_get_serial_enable_crc(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_enable_14bit_device_number().
+    void set_serial_enable_14bit_device_number(bool value) noexcept
+    {
+      jrk_settings_set_serial_enable_14bit_device_number(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_enable_14bit_device_number().
+    bool get_serial_enable_14bit_device_number() const noexcept
+    {
+      return jrk_settings_get_serial_enable_14bit_device_number(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_serial_disable_compact_protocol().
+    void set_serial_disable_compact_protocol(bool value) noexcept
+    {
+      jrk_settings_set_serial_disable_compact_protocol(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_serial_disable_compact_protocol().
+    bool get_serial_disable_compact_protocol() const noexcept
+    {
+      return jrk_settings_get_serial_disable_compact_protocol(pointer);
     }
 
     /// Wrapper for jrk_settings_set_proportional_multiplier().

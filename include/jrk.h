@@ -616,25 +616,15 @@ void jrk_settings_set_serial_timeout(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_serial_timeout(const jrk_settings *);
 
-// Sets the serial_enable_crc setting.
-JRK_API
-void jrk_settings_set_serial_enable_crc(jrk_settings *,
-  bool serial_enable_crc);
-
-// Gets the serial_enable_crc setting, which is described in
-// jrk_settings_set_serial_enable_crc.
-JRK_API
-bool jrk_settings_get_serial_enable_crc(const jrk_settings *);
-
 // Sets the serial_device_number setting.
 JRK_API
 void jrk_settings_set_serial_device_number(jrk_settings *,
-  uint8_t serial_device_number);
+  uint16_t serial_device_number);
 
 // Gets the serial_device_number setting, which is described in
 // jrk_settings_set_serial_device_number.
 JRK_API
-uint8_t jrk_settings_get_serial_device_number(const jrk_settings *);
+uint16_t jrk_settings_get_serial_device_number(const jrk_settings *);
 
 // Sets the never_sleep setting.
 JRK_API
@@ -645,6 +635,36 @@ void jrk_settings_set_never_sleep(jrk_settings *,
 // jrk_settings_set_never_sleep.
 JRK_API
 bool jrk_settings_get_never_sleep(const jrk_settings *);
+
+// Sets the serial_enable_crc setting.
+JRK_API
+void jrk_settings_set_serial_enable_crc(jrk_settings *,
+  bool serial_enable_crc);
+
+// Gets the serial_enable_crc setting, which is described in
+// jrk_settings_set_serial_enable_crc.
+JRK_API
+bool jrk_settings_get_serial_enable_crc(const jrk_settings *);
+
+// Sets the serial_enable_14bit_device_number setting.
+JRK_API
+void jrk_settings_set_serial_enable_14bit_device_number(jrk_settings *,
+  bool serial_enable_14bit_device_number);
+
+// Gets the serial_enable_14bit_device_number setting, which is described in
+// jrk_settings_set_serial_enable_14bit_device_number.
+JRK_API
+bool jrk_settings_get_serial_enable_14bit_device_number(const jrk_settings *);
+
+// Sets the serial_disable_compact_protocol setting.
+JRK_API
+void jrk_settings_set_serial_disable_compact_protocol(jrk_settings *,
+  bool serial_disable_compact_protocol);
+
+// Gets the serial_disable_compact_protocol setting, which is described in
+// jrk_settings_set_serial_disable_compact_protocol.
+JRK_API
+bool jrk_settings_get_serial_disable_compact_protocol(const jrk_settings *);
 
 // Sets the proportional_multiplier setting.
 //
@@ -801,6 +821,11 @@ JRK_API
 uint8_t jrk_settings_get_motor_pwm_frequency(const jrk_settings *);
 
 // Sets the motor_invert setting.
+//
+// By default, a positive duty cycle (which we call "forward") corresponds
+// to current flowing from output A to output B.  If enabled, this setting flips
+// the correspondence, so a positive duty cycle corresponds to current flowing
+// from B to A.
 JRK_API
 void jrk_settings_set_motor_invert(jrk_settings *,
   bool motor_invert);
@@ -945,6 +970,11 @@ JRK_API
 uint8_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
 
 // Sets the motor_coast_when_off setting.
+//
+// By default, the jrk drives both motor outputs low when the motor is
+// stopped (duty cycle is zero or there is an error), causing it to brake.
+// If enabled, this setting causes it to instead tri-state both inputs, making
+// the motor coast.
 JRK_API
 void jrk_settings_set_motor_coast_when_off(jrk_settings *,
   bool motor_coast_when_off);

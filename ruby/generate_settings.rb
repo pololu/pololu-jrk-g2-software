@@ -270,18 +270,34 @@ EOF
       "disables the command timeout feature.",
   },
   {
-    name: 'serial_enable_crc',
-    type: :bool,
-  },
-  {
     name: 'serial_device_number',
-    type: :uint8_t,
-    max: 127,
+    type: :uint16_t,
+    max: 16383,
     default: 11,
   },
   {
     name: 'never_sleep',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_NEVER_SLEEP',
+  },
+  {
+    name: 'serial_enable_crc',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_SERIAL_ENABLE_CRC',
+  },
+  {
+    name: 'serial_enable_14bit_device_number',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_SERIAL_ENABLE_14BIT_DEVICE_NUMBER',
+  },
+  {
+    name: 'serial_disable_compact_protocol',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_SERIAL_DISABLE_COMPACT_PROTOCOL',
   },
   {
     name: 'proportional_multiplier',
@@ -688,13 +704,17 @@ def generate_buffer_to_settings_code(stream)
 
     name = setting_info.fetch(:name)
     type = setting_integer_type(setting_info)
+    addr = setting_info.fetch(:address, "JRK_SETTING_#{name.upcase}")
+    bit_addr = setting_info.fetch(:bit_address, 0)
+
     stream.puts "{"
     if type == :bool
-      stream.puts "  bool #{name} = buf[JRK_SETTING_#{name.upcase}] & 1;"
+      shift = " >> #{bit_addr}" if bit_addr != 0
+      stream.puts "  bool #{name} = buf[#{addr}]#{shift} & 1;"
     elsif [:uint8_t, :int8_t].include?(type)
-      stream.puts "  #{type} #{name} = buf[JRK_SETTING_#{name.upcase}];"
+      stream.puts "  #{type} #{name} = buf[#{addr}];"
     else
-      stream.puts "  #{type} #{name} = read_#{type}(buf + JRK_SETTING_#{name.upcase});"
+      stream.puts "  #{type} #{name} = read_#{type}(buf + #{addr});"
     end
     stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
     stream.puts "}"
@@ -708,10 +728,16 @@ def generate_settings_to_buffer_code(stream)
 
     name = setting_info.fetch(:name)
     type = setting_integer_type(setting_info)
+    addr = setting_info.fetch(:address, "JRK_SETTING_#{name.upcase}")
+    bit_addr = setting_info.fetch(:bit_address, 0)
+
     stream.puts "{"
     stream.puts "  #{type} #{name} = jrk_settings_get_#{name}(settings);"
-    if [:uint8_t, :bool, :int8_t].include?(type)
-      stream.puts "  buf[JRK_SETTING_#{name.upcase}] = #{name};"
+    if type == :bool
+      shift = " << #{bit_addr}" if bit_addr != 0
+      stream.puts "  buf[#{addr}] |= #{name}#{shift};"
+    elsif [:uint8_t, :int8_t].include?(type)
+      stream.puts "  buf[#{addr}] = #{name};"
     else
       stream.puts "  write_#{type}(buf + JRK_SETTING_#{name.upcase}, #{name});"
     end
@@ -771,7 +797,7 @@ def generate_settings_file_printing_code(stream)
       stream.puts "  jrk_code_to_name(jrk_#{name}_names_short, #{name}, &value_str);"
       stream.puts "  jrk_sprintf(&str, \"#{name}: %s\\n\", value_str);"
     elsif type == :bool
-      stream.puts "  jrk_sprintf(&str, \"#{name}: %s\\n\", "
+      stream.puts "  jrk_sprintf(&str, \"#{name}: %s\\n\","
       stream.puts "    #{name} ? \"true\" : \"false\");"
     else
       stream.puts "  jrk_sprintf(&str, \"#{name}: %#{pf}\\n\", #{name});"
