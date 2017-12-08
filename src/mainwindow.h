@@ -209,7 +209,7 @@ private:
 	QRadioButton *motor_coast_radio;
 
 	QWidget *errors_page_widget;
-	QGridLayout *errors_page_layout;
+	QVBoxLayout *errors_page_layout;
 	QLabel *errors_bit_mask_label;
 	QLabel *errors_error_label;
 	QLabel *errors_setting_label;
@@ -256,7 +256,7 @@ class PIDConstantControl : public QGroupBox
 {
 	Q_OBJECT
 public:
-	PIDConstantControl(QWidget *parent = 0);
+	PIDConstantControl(const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
 	~PIDConstantControl();
 
 private:
@@ -274,7 +274,7 @@ class ErrorsControl : public QWidget
 {
 	Q_OBJECT
 public:
-	ErrorsControl(QWidget *parent = 0);
+	ErrorsControl(int row_number, QWidget *parent = 0);
 	~ErrorsControl();
 	
 	QGridLayout *errors_central;
