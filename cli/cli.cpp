@@ -28,6 +28,8 @@ struct arguments
 {
   bool show_status = false;
 
+  bool full_output = false;
+
   bool serial_number_specified = false;
   std::string serial_number;
 
@@ -137,6 +139,10 @@ static arguments parse_args(int argc, char ** argv)
     {
       args.show_status = true;
     }
+    else if (arg == "--full")
+    {
+      args.full_output = true;
+    }
     else if (arg == "-d" || arg == "--serial")
     {
       args.serial_number_specified = true;
@@ -218,7 +224,6 @@ static void print_list(device_selector & selector)
   }
 }
 
-// TODO: either implement --full or get rid of the `full_output` argument here
 static void get_status(device_selector & selector, bool full_output)
 {
   jrk::device device = selector.select_device();
@@ -355,7 +360,7 @@ static void run(const arguments & args)
 
   if (args.show_status)
   {
-    get_status(selector, false);
+    get_status(selector, args.full_output);
   }
 }
 

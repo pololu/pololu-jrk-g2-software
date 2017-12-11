@@ -58,7 +58,7 @@ def generate_variables_getters(stream)
   Variables.each do |info|
     name = info.fetch(:name)
     type = info.fetch(:type)
-    stream.puts "#{type} jrk_variable_get_#{name}(const jrk_variables * vars)\n"
+    stream.puts "#{type} jrk_variables_get_#{name}(const jrk_variables * vars)\n"
     stream.puts "{"
     stream.puts "  if (vars == NULL) { return 0; }"
     stream.puts "  return vars->#{name};"

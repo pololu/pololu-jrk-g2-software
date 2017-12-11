@@ -1123,6 +1123,10 @@ uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
 
 // End of auto-generated variables getter prototypes.
 
+// Gets the error, which is the scaled feedback minus the target.
+JRK_API
+int16_t jrk_variables_get_error(const jrk_variables *);
+
 
 // jrk_device ///////////////////////////////////////////////////////////////////
 

@@ -189,106 +189,112 @@ jrk_error * jrk_get_variables(jrk_handle * handle, jrk_variables ** variables,
 
 // Beginning of auto-generated variables getters.
 
-uint16_t jrk_variable_get_input(const jrk_variables * vars)
+uint16_t jrk_variables_get_input(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->input;
 }
 
-uint16_t jrk_variable_get_target(const jrk_variables * vars)
+uint16_t jrk_variables_get_target(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->target;
 }
 
-uint16_t jrk_variable_get_feedback(const jrk_variables * vars)
+uint16_t jrk_variables_get_feedback(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->feedback;
 }
 
-uint16_t jrk_variable_get_scaled_feedback(const jrk_variables * vars)
+uint16_t jrk_variables_get_scaled_feedback(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->scaled_feedback;
 }
 
-uint16_t jrk_variable_get_error_sum(const jrk_variables * vars)
+uint16_t jrk_variables_get_error_sum(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->error_sum;
 }
 
-int16_t jrk_variable_get_duty_cycle_target(const jrk_variables * vars)
+int16_t jrk_variables_get_duty_cycle_target(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->duty_cycle_target;
 }
 
-int16_t jrk_variable_get_duty_cycle(const jrk_variables * vars)
+int16_t jrk_variables_get_duty_cycle(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->duty_cycle;
 }
 
-uint8_t jrk_variable_get_current(const jrk_variables * vars)
+uint8_t jrk_variables_get_current(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->current;
 }
 
-bool jrk_variable_get_pid_period_exceeded(const jrk_variables * vars)
+bool jrk_variables_get_pid_period_exceeded(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->pid_period_exceeded;
 }
 
-uint16_t jrk_variable_get_pid_period_count(const jrk_variables * vars)
+uint16_t jrk_variables_get_pid_period_count(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->pid_period_count;
 }
 
-uint16_t jrk_variable_get_error_flags_halting(const jrk_variables * vars)
+uint16_t jrk_variables_get_error_flags_halting(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->error_flags_halting;
 }
 
-uint16_t jrk_variable_get_error_flags_occurred(const jrk_variables * vars)
+uint16_t jrk_variables_get_error_flags_occurred(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->error_flags_occurred;
 }
 
-uint16_t jrk_variable_get_vin_voltage(const jrk_variables * vars)
+uint16_t jrk_variables_get_vin_voltage(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->vin_voltage;
 }
 
-uint8_t jrk_variable_get_device_reset(const jrk_variables * vars)
+uint8_t jrk_variables_get_device_reset(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->device_reset;
 }
 
-uint32_t jrk_variable_get_up_time(const jrk_variables * vars)
+uint32_t jrk_variables_get_up_time(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->up_time;
 }
 
-uint16_t jrk_variable_get_rc_pulse_width(const jrk_variables * vars)
+uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->rc_pulse_width;
 }
 
-uint16_t jrk_variable_get_tachometer_reading(const jrk_variables * vars)
+uint16_t jrk_variables_get_tachometer_reading(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->tachometer_reading;
 }
 
 // End of auto-generated variables getters.
+
+int16_t jrk_variables_get_error(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->scaled_feedback - vars->target;
+}

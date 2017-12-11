@@ -1139,6 +1139,12 @@ namespace jrk
     }
 
     // End of auto-generated variables C++ getters.
+
+    /// Wrapper for jrk_variables_get_error().
+    uint16_t get_error() const noexcept
+    {
+      return jrk_variables_get_error(pointer);
+    }
   };
 
   /// Represents a jrk that is or was connected to the computer.  Can also be in

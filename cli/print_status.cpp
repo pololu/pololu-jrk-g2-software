@@ -62,8 +62,6 @@ void print_status(const jrk::variables & vars,
   // The output here is YAML so that people can more easily write scripts that
   // use it.
 
-  uint8_t product = jrk_settings_get_product(settings.get_pointer());
-
   std::cout << std::left << std::setfill(' ');
 
   std::cout << left_column << "Name: "
@@ -75,19 +73,81 @@ void print_status(const jrk::variables & vars,
   std::cout << left_column << "Firmware version: "
     << firmware_version << std::endl;
 
-  // TODO: print last device reset
-  // std::cout << left_column << "Last reset: "
-  //   << jrk_look_up_device_reset_name_ui(vars.get_device_reset())
-  //   << std::endl;
+  std::cout << left_column << "Last reset: "
+    << jrk_look_up_device_reset_name_ui(vars.get_device_reset())
+    << std::endl;
+
+  std::cout << left_column << "Up time: "
+    << pretty_up_time(vars.get_up_time())
+    << std::endl;
 
   std::cout << std::endl;
 
+  std::cout << left_column << "RC pulse width: "
+    << vars.get_rc_pulse_width()
+    << std::endl;
+
+  std::cout << left_column << "Tachometer reading: "
+    << vars.get_tachometer_reading()
+    << std::endl;
+
+  std::cout << left_column << "VIN voltage: "
+            << convert_mv_to_v_string(vars.get_vin_voltage(), full_output)
+    << std::endl;
+
   std::cout << std::endl;
 
-  // TODO: print error status
-  //print_errors(vars.get_error_flags_halting(),
-  //  "Errors currently stopping the motor");
-  //print_errors(vars.get_error_flags_occurred(),
-  //  "Errors that occurred since last check");
+  std::cout << left_column << "Input: "
+    << vars.get_input()
+    << std::endl;
+
+  std::cout << left_column << "Target: "
+    << vars.get_target()
+    << std::endl;
+
+  std::cout << left_column << "Feedback: "
+    << vars.get_feedback()
+    << std::endl;
+
+  std::cout << left_column << "Scaled feedback: "
+    << vars.get_scaled_feedback()
+    << std::endl;
+
+  std::cout << left_column << "Error: "
+    << vars.get_error()
+    << std::endl;
+
+  std::cout << left_column << "Error sum: "
+    << vars.get_error_sum()
+    << std::endl;
+
+  std::cout << left_column << "Duty cycle target: "
+    << vars.get_duty_cycle_target()
+    << std::endl;
+
+  std::cout << left_column << "Duty cycle: "
+    << vars.get_duty_cycle()
+    << std::endl;
+
+  std::cout << left_column << "Current: "
+    << vars.get_current()  // TODO: properly format this in mA or A
+    << std::endl;
+
+  std::cout << left_column << "PID period exceeded: "
+    << vars.get_pid_period_exceeded()
+    << std::endl;
+
+  std::cout << left_column << "PID period count: "
+    << vars.get_pid_period_count()
+    << std::endl;
+
   std::cout << std::endl;
+
+  print_errors(vars.get_error_flags_halting(),
+    "Errors currently stopping the motor");
+  print_errors(vars.get_error_flags_occurred(),
+    "Errors that occurred since last check");
+  std::cout << std::endl;
+
+  // TODO: print analog readings from pins and the pin states
 }
