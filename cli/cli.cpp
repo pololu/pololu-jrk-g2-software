@@ -7,6 +7,7 @@ static const char help[] =
   "\n"
   "General options:\n"
   "  -s, --status                 Show device settings and info.\n"
+  "  --full                       When used with --status, shows more.\n"
   "  -d SERIALNUMBER              Specifies the serial number of the device.\n"
   "  --list                       List devices connected to computer.\n"
   "  --pause                      Pause program at the end.\n"
@@ -23,6 +24,8 @@ static const char help[] =
   "\n"
   "For more help, see: " DOCUMENTATION_URL "\n"
   "\n";
+
+// TODO: add --stream, like the old jrkcmd, for streaming variables
 
 struct arguments
 {
