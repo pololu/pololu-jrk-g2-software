@@ -9,40 +9,40 @@
 #include "graphwindow.h"
 #include "altwindow.h"
 
-class PIDConstantControl;
-class ErrorsControl;
+class pid_constant_control;
+class errors_control;
 
-class MainWindow : public QMainWindow
+class main_window : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget * parent = 0);
-	~MainWindow();
+	main_window(QWidget * parent = 0);
+	~main_window();
 	
 signals:
-	void passWidget(GraphWindow *widget);
+	void pass_widget(graph_window *widget);
 
 private slots:
-	void receiveWidget(GraphWindow *widget);
+	void receive_widget(graph_window *widget);
 	void on_launchGraph_clicked(QMouseEvent*);
 
 	
 
 protected:
-	void contextMenuEvent(QContextMenuEvent *event);
+	void context_menu_event(QContextMenuEvent *event);
 
 
 private:
 	QFont font;
 
-	QWidget *centralWidget;
-	QGridLayout *gridLayout;
-	QHBoxLayout *horizontalLayout;
-	GraphWindow *previewWindow;
-	QPushButton *separateBtn;
+	QWidget *central_widget;
+	QGridLayout *grid_layout;
+	QHBoxLayout *horizontal_layout;
+	graph_window *preview_window;
+	QPushButton *separate_button;
 	AltWindow *altw;
-	QWidget *previewPlot;
+	QWidget *preview_plot;
 	QMenuBar * menu_bar;
 	QMenu * file_menu;
 	QAction * open_settings_action;
@@ -168,9 +168,9 @@ private:
 
 	// pid tab constant controls
 
-	PIDConstantControl *pid_proportional_coefficient;
-	PIDConstantControl *pid_integral_coefficient;
-	PIDConstantControl *pid_derivative_coefficient;
+	pid_constant_control *pid_proportional_coefficient;
+	pid_constant_control *pid_integral_coefficient;
+	pid_constant_control *pid_derivative_coefficient;
 	
 	// motor tab
 
@@ -215,19 +215,19 @@ private:
 	QLabel *errors_setting_label;
 	QLabel *errors_stopping_motor_label;
 	QLabel *errors_occurence_count_label;
-	ErrorsControl *awaiting_command;
-	ErrorsControl *no_power;
-	ErrorsControl *motor_driven_error;
-	ErrorsControl *input_invalid;
-	ErrorsControl *input_disconnect;
-	ErrorsControl *feedback_disconnect;
-	ErrorsControl *max_current_exceeded;
-	ErrorsControl *serial_signal_error;
-	ErrorsControl *serial_overrun;
-	ErrorsControl *serial_rx_buffer_full;
-	ErrorsControl *serial_crc_error;
-	ErrorsControl *serial_protocol_error;
-	ErrorsControl *serial_timeout_error;
+	errors_control *awaiting_command;
+	errors_control *no_power;
+	errors_control *motor_driven_error;
+	errors_control *input_invalid;
+	errors_control *input_disconnect;
+	errors_control *feedback_disconnect;
+	errors_control *max_current_exceeded;
+	errors_control *serial_signal_error;
+	errors_control *serial_overrun;
+	errors_control *serial_rx_buffer_full;
+	errors_control *serial_crc_error;
+	errors_control *serial_protocol_error;
+	errors_control *serial_timeout_error;
 	QPushButton *errors_clear_errors;
 	QPushButton *errors_reset_counts;
 
@@ -241,26 +241,27 @@ private:
 	QAction *sepAct;
 	bool widgetAtHome;
 	
-	QWidget * setup_input_tab();
+	QWidget * setup_status_tab();
+    QWidget * setup_input_tab();
 	QWidget * setup_feedback_tab();
 	QWidget * setup_pid_tab();
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
-	void setupUi(QMainWindow *MainWindow);
-	void retranslateUi(QMainWindow *MainWindow);
+	void setup_ui(QMainWindow *main_window);
+	void retranslate_ui(QMainWindow *main_window);
 
 	
 };
 
-class PIDConstantControl : public QGroupBox
+class pid_constant_control : public QGroupBox
 {
 	Q_OBJECT
 public:
-	PIDConstantControl(const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
-	~PIDConstantControl();
+	pid_constant_control(const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
+	~pid_constant_control();
 
 private:
-	QWidget *centralWidget;
+	QWidget *central_widget;
 	QFrame *pid_control_frame;
 	QFrame *pid_proportion_frame;
 	QTextEdit *pid_constant_control_textbox;
@@ -270,12 +271,12 @@ private:
 	QSpinBox *pid_exponent_spinbox;	
 };
 
-class ErrorsControl : public QWidget
+class errors_control : public QWidget
 {
 	Q_OBJECT
 public:
-	ErrorsControl(int row_number, QWidget *parent = 0);
-	~ErrorsControl();
+	errors_control(int row_number, QWidget *parent = 0);
+	~errors_control();
 	
 	QGridLayout *errors_central;
 	QWidget *errors_frame;

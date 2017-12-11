@@ -4,47 +4,46 @@
 #include <QList>
 #include "qcustomplot.h"
 
-class GraphWindow : public QMainWindow
+class graph_window : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	GraphWindow(QWidget * parent = 0);
-	~GraphWindow();
+	graph_window(QWidget * parent = 0);
+	~graph_window();
 	
-	struct Plot
+	struct plot
     {
-    	QDoubleSpinBox *plotRange;
-    	QCheckBox *plotDisplay;
-    	QCPAxis *plotAxis;
-    	QCPGraph *plotGraph;
+    	QDoubleSpinBox *plot_range;
+    	QCheckBox *plot_display;
+    	QCPAxis *plot_axis;
+    	QCPGraph *plot_graph;
     };
 
-  Plot input;
-  Plot target;
-  Plot feedback;
-  Plot scaledFeedback;
-  Plot error;
-  Plot integral;
-  Plot dutyCycleTarget;
-  Plot dutyCycle;
-  Plot current;
+  plot input;
+  plot target;
+  plot feedback;
+  plot scaled_feedback;
+  plot error;
+  plot integral;
+  plot duty_cycle_target;
+  plot duty_cycle;
+  plot current;
 
   double key = 0;
-	QTimer dataTimer;
-	QWidget *centralWidget;
-  QCustomPlot *customPlot;
+	QTimer data_timer;
+	QWidget *central_widget;
+  QCustomPlot *custom_plot;
   QPushButton *pauseRunButton;
-  QPushButton *runButton;
-  QDoubleSpinBox *minY;
-  QDoubleSpinBox *maxY;
+  QDoubleSpinBox *min_y;
+  QDoubleSpinBox *max_y;
   QSpinBox *domain;
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
     
 
-  QList<Plot> allPlots;
+  QList<plot> all_plots;
 
     
 
@@ -56,11 +55,11 @@ signals:
 public slots:
 	void on_pauseRunButton_clicked();
 	void remove_data_to_scroll();
-	void realtimeDataSlot();
-	void setupUi(QMainWindow *GraphWindow);
+	void realtime_data_slot();
+	void setup_ui(QMainWindow *graph_window);
 	void set_line_visible();
-	void setupPlots();
-	void changeRanges();
+	void setup_plots();
+	void change_ranges();
 	
 
 

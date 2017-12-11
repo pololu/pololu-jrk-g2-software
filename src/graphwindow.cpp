@@ -17,42 +17,42 @@
 
 double refreshTimer = 25; // used as a constant for both places the refresh rate is used
 
-GraphWindow::GraphWindow(QWidget * parent)
+graph_window::graph_window(QWidget * parent)
   : QMainWindow(parent)
 {
-  setupUi(this); 
-  setupPlots();
+  setup_ui(this); 
+  setup_plots();
   
-  allPlots[0].plotGraph->setPen(QPen(Qt::cyan));
-  allPlots[1].plotGraph->setPen(QPen(Qt::blue));
-  allPlots[2].plotGraph->setPen(QPen("#ffc0cb"));
-  allPlots[3].plotGraph->setPen(QPen(Qt::red));
+  all_plots[0].plot_graph->setPen(QPen(Qt::cyan));
+  all_plots[1].plot_graph->setPen(QPen(Qt::blue));
+  all_plots[2].plot_graph->setPen(QPen("#ffc0cb"));
+  all_plots[3].plot_graph->setPen(QPen(Qt::red));
 
-  connect(maxY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
+  connect(max_y, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
 
-  connect(minY, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
+  connect(min_y, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
 
   connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, remove_data_to_scroll);
 
-  // connect the signal from the dataTime to call realtimeDataSlot() using the refresh interval "refreshTimer"
+  // connect the signal from the dataTime to call realtime_data_slot() using the refresh interval "refreshTimer"
   // set as a constant to be used throughout the class
-  connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-  dataTimer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
+  connect(&data_timer, SIGNAL(timeout()), this, SLOT(realtime_data_slot()));
+  data_timer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
 }
 
-GraphWindow::~GraphWindow()
+graph_window::~graph_window()
 {
 }
 
-void GraphWindow::setupUi(QMainWindow *GraphWindow)
+void graph_window::setup_ui(QMainWindow *graph_window)
 // sets the gui objects in the graph window
 {
-  GraphWindow->setObjectName(tr("GraphWindow"));
-  // GraphWindow->setMinimumSize(818,547);
+  graph_window->setObjectName(tr("graph_window"));
+  // graph_window->setMinimumSize(818,547);
 
-  centralWidget = new QWidget(GraphWindow);
-  centralWidget->setObjectName(tr("centralWidget"));
-  // centralWidget->setMinimumSize(802,508);
+  central_widget = new QWidget(graph_window);
+  central_widget->setObjectName(tr("central_widget"));
+  // central_widget->setMinimumSize(802,508);
 
   pauseRunButton = new QPushButton();
   pauseRunButton->setObjectName(tr("pauseRunButton"));
@@ -71,7 +71,7 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
   label1->setFont(font);
   label1->setText(tr("Range (%)"));
   
-  customPlot = new QCustomPlot();
+  custom_plot = new QCustomPlot();
 
   label2 = new QLabel();
   // label2->setMinimumSize(47,13);
@@ -84,139 +84,139 @@ void GraphWindow::setupUi(QMainWindow *GraphWindow)
   label3->setAlignment(Qt::AlignCenter);
   label3->setText(tr("-"));
   
-  minY = new QDoubleSpinBox();
-  // minY->setMinimumSize(60,20);
-  minY->setRange(-100,0);
-  minY->setDecimals(0);
-  minY->setSingleStep(1.0);
-  minY->setValue(-100);
+  min_y = new QDoubleSpinBox();
+  // min_y->setMinimumSize(60,20);
+  min_y->setRange(-100,0);
+  min_y->setDecimals(0);
+  min_y->setSingleStep(1.0);
+  min_y->setValue(-100);
   
-  maxY = new QDoubleSpinBox();
-  // maxY->setMinimumSize(60,20);
-  maxY->setRange(0,100);
-  maxY->setDecimals(0);
-  maxY->setSingleStep(1.0);
-  maxY->setValue(100);
+  max_y = new QDoubleSpinBox();
+  // max_y->setMinimumSize(60,20);
+  max_y->setRange(0,100);
+  max_y->setDecimals(0);
+  max_y->setSingleStep(1.0);
+  max_y->setValue(100);
   
   domain = new QSpinBox();
   // domain->setMinimumSize(42,20);
   domain->setValue(10); // initialized the graph to show 10 seconds of data
 
-  input.plotRange = new QDoubleSpinBox();
-  // input.plotRange->setMinimumSize(63,20);
+  input.plot_range = new QDoubleSpinBox();
+  // input.plot_range->setMinimumSize(63,20);
   
-  target.plotRange = new QDoubleSpinBox();
-  // target.plotRange->setMinimumSize(63,20);
+  target.plot_range = new QDoubleSpinBox();
+  // target.plot_range->setMinimumSize(63,20);
 
-  feedback.plotRange = new QDoubleSpinBox();
-  // feedback.plotRange->setMinimumSize(63,20);
+  feedback.plot_range = new QDoubleSpinBox();
+  // feedback.plot_range->setMinimumSize(63,20);
 
-  scaledFeedback.plotRange = new QDoubleSpinBox();
-  // scaledFeedback.plotRange->setMinimumSize(63,20);
+  scaled_feedback.plot_range = new QDoubleSpinBox();
+  // scaled_feedback.plot_range->setMinimumSize(63,20);
 
-  input.plotDisplay = new QCheckBox("Input");
-  // input.plotDisplay->setMinimumSize(87,17);
-  input.plotDisplay->setStyleSheet(QStringLiteral("background-color:cyan"));
+  input.plot_display = new QCheckBox("Input");
+  // input.plot_display->setMinimumSize(87,17);
+  input.plot_display->setStyleSheet(QStringLiteral("background-color:cyan"));
 
-  target.plotDisplay = new QCheckBox("Target");
-  // target.plotDisplay->setMinimumSize(87,17);
-  target.plotDisplay->setStyleSheet(QStringLiteral("background-color:blue"));
+  target.plot_display = new QCheckBox("Target");
+  // target.plot_display->setMinimumSize(87,17);
+  target.plot_display->setStyleSheet(QStringLiteral("background-color:blue"));
 
-  feedback.plotDisplay = new QCheckBox("Feedback");
-  // feedback.plotDisplay->setMinimumSize(87,17);
-  feedback.plotDisplay->setStyleSheet(QStringLiteral("background-color:#ffc0cb"));
+  feedback.plot_display = new QCheckBox("Feedback");
+  // feedback.plot_display->setMinimumSize(87,17);
+  feedback.plot_display->setStyleSheet(QStringLiteral("background-color:#ffc0cb"));
 
-  scaledFeedback.plotDisplay = new QCheckBox("Scaled Feedback");
-  // scaledFeedback.plotDisplay->setMinimumSize(87,17);
-  scaledFeedback.plotDisplay->setStyleSheet(QStringLiteral("background-color:red"));
+  scaled_feedback.plot_display = new QCheckBox("Scaled Feedback");
+  // scaled_feedback.plot_display->setMinimumSize(87,17);
+  scaled_feedback.plot_display->setStyleSheet(QStringLiteral("background-color:red"));
 
-  allPlots.push_front(scaledFeedback);
-  allPlots.push_front(feedback);
-  allPlots.push_front(target);
-  allPlots.push_front(input);
+  all_plots.push_front(scaled_feedback);
+  all_plots.push_front(feedback);
+  all_plots.push_front(target);
+  all_plots.push_front(input);
 
-  customPlot->xAxis->QCPAxis::setRangeReversed(true);
-  customPlot->yAxis->setRange(-100,100);
-  customPlot->xAxis->setTickLabelType(QCPAxis::ltNumber);
-  customPlot->xAxis->setAutoTickStep(false);
-  customPlot->xAxis->setTickStep(1000);
+  custom_plot->xAxis->QCPAxis::setRangeReversed(true);
+  custom_plot->yAxis->setRange(-100,100);
+  custom_plot->xAxis->setTickLabelType(QCPAxis::ltNumber);
+  custom_plot->xAxis->setAutoTickStep(false);
+  custom_plot->xAxis->setTickStep(1000);
 
   // this is used to see the x-axis to see accurate time.
-  // customPlot->xAxis2->setVisible(true);
-  // customPlot->xAxis2->setTickLabelType(QCPAxis::ltNumber);
-  // customPlot->xAxis2->setAutoTickStep(true);
-  // customPlot->xAxis2->setTickStep(2);
+  // custom_plot->xAxis2->setVisible(true);
+  // custom_plot->xAxis2->setTickLabelType(QCPAxis::ltNumber);
+  // custom_plot->xAxis2->setAutoTickStep(true);
+  // custom_plot->xAxis2->setTickStep(2);
 
-  QMetaObject::connectSlotsByName(GraphWindow);
+  QMetaObject::connectSlotsByName(graph_window);
 }
 
-void GraphWindow::setupPlots()
+void graph_window::setup_plots()
 // sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot. 
-// connects the valueChanged signal of the plotRange to change the ranges of the plots.
+// connects the valueChanged signal of the plot_range to change the ranges of the plots.
 {
-  for(auto &x: allPlots)
+  for(auto &x: all_plots)
   {
-    x.plotRange->setDecimals(1);
-    x.plotRange->setSingleStep(0.1);
-    x.plotRange->setRange(0,1);
-    x.plotRange->setValue(1);
-    x.plotDisplay->setCheckable(true);
-    x.plotDisplay->setChecked(true);    
+    x.plot_range->setDecimals(1);
+    x.plot_range->setSingleStep(0.1);
+    x.plot_range->setRange(0,1);
+    x.plot_range->setValue(1);
+    x.plot_display->setCheckable(true);
+    x.plot_display->setChecked(true);    
 
-    x.plotAxis = customPlot->axisRect(0)->addAxis(QCPAxis::atRight);
-    x.plotAxis->setRange(-1,1);
-    x.plotAxis->setVisible(false);
+    x.plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+    x.plot_axis->setRange(-1,1);
+    x.plot_axis->setVisible(false);
 
-    x.plotGraph = new QCPGraph(customPlot->xAxis2,x.plotAxis); // yellow line
+    x.plot_graph = new QCPGraph(custom_plot->xAxis2,x.plot_axis); // yellow line
 
-    connect(x.plotRange, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, changeRanges);
+    connect(x.plot_range, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
 
-    connect(x.plotDisplay, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+    connect(x.plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
   }
 }
 
-void GraphWindow::changeRanges()
+void graph_window::change_ranges()
 {
-  for(auto &x: allPlots)
+  for(auto &x: all_plots)
   {
-    x.plotAxis->setRangeUpper((x.plotRange->value()) * ((maxY->value())/100));
-    x.plotAxis->setRangeLower((x.plotRange->value()) * ((minY->value())/100));
+    x.plot_axis->setRangeUpper((x.plot_range->value()) * ((max_y->value())/100));
+    x.plot_axis->setRangeLower((x.plot_range->value()) * ((min_y->value())/100));
   }
-  customPlot->yAxis->setRange(minY->value(), maxY->value());
-  customPlot->replot();
+  custom_plot->yAxis->setRange(min_y->value(), max_y->value());
+  custom_plot->replot();
 }
 
-void GraphWindow::on_pauseRunButton_clicked()
+void graph_window::on_pauseRunButton_clicked()
 // used the QMetaObject class to parse the function name and send the signal to the function.
 {
   pauseRunButton->setText(pauseRunButton->isChecked() ? "R&un" : "&Pause");
-  pauseRunButton->isChecked() ? dataTimer.stop() : dataTimer.start(refreshTimer);
-  customPlot->replot();
+  pauseRunButton->isChecked() ? data_timer.stop() : data_timer.start(refreshTimer);
+  custom_plot->replot();
 }
 
-void GraphWindow::set_line_visible()
+void graph_window::set_line_visible()
 // sets the visibility of the plot both when the plot is running and when it is paused.
 {
-  for(auto &x: allPlots)
+  for(auto &x: all_plots)
   {
-    x.plotDisplay->isChecked() ? x.plotGraph->setVisible(true) : x.plotGraph->setVisible(false);
-    customPlot->replot();
+    x.plot_display->isChecked() ? x.plot_graph->setVisible(true) : x.plot_graph->setVisible(false);
+    custom_plot->replot();
   }    
 }
 
-void GraphWindow::remove_data_to_scroll()
+void graph_window::remove_data_to_scroll()
 // modifies the x-axis based on the domain value and removes data outside of visible range
 { 
-  customPlot->xAxis->setRange(0, domain->value()*1000);
+  custom_plot->xAxis->setRange(0, domain->value()*1000);
 
   // make key axis range scroll with the data at a rate of the time value obtained from QSpinBox
-  customPlot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
+  custom_plot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
   
   // these range values are divided by 100 just for the sample data in order to draw sine curve
-  customPlot->replot();
+  custom_plot->replot();
 }
 
-void GraphWindow::realtimeDataSlot()
+void graph_window::realtime_data_slot()
 // plots data on graph
 {
   key += (refreshTimer/1000);
@@ -224,10 +224,10 @@ void GraphWindow::realtimeDataSlot()
   // this list is only used for demonstrations
   QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3))};
   
-  for(int i=0; i<allPlots.size(); i++)
+  for(int i=0; i<all_plots.size(); i++)
   {
-    allPlots[i].plotGraph->addData(key, value[i]);
-    allPlots[i].plotGraph->removeDataBefore(key-(domain->value()));
+    all_plots[i].plot_graph->addData(key, value[i]);
+    all_plots[i].plot_graph->removeDataBefore(key-(domain->value()));
   }
   
   remove_data_to_scroll();

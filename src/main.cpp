@@ -12,7 +12,7 @@ int main(int argc, char ** argv)
 	// SetProcessDPIAware();
 
 	QApplication app(argc, argv);
-  	MainWindow window;
+  	main_window window;
 	window.show();
   	return app.exec();
 }
