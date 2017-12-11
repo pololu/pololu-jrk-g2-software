@@ -13,10 +13,10 @@
 #include <QtCore>
 #include <QCloseEvent>
 
-MainWindow::MainWindow(QWidget * parent)
+main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
 {
-  setupUi(this);
+  setup_ui(this);
   altw = 0;
 
   sepAct = new QAction(tr("&Separate"), this);
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget * parent)
   widgetAtHome = true;
 }
 
-MainWindow::~MainWindow()
+main_window::~main_window()
 {
   if (altw != 0)
   {
@@ -33,15 +33,15 @@ MainWindow::~MainWindow()
   }
 }
 
-void MainWindow::setupUi(QMainWindow *MainWindow)
+void main_window::setup_ui(QMainWindow *main_window)
 {
   font.setPointSizeF(8.25);
 
-  MainWindow->setObjectName(QStringLiteral("MainWindow"));
-  MainWindow->setWindowTitle("Pololu Jrk G2 Configuration Utility");
+  main_window->setObjectName(QStringLiteral("main_window"));
+  main_window->setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
-  centralWidget = new QWidget(MainWindow);
-  centralWidget->setObjectName(QStringLiteral("centralWidget"));
+  central_widget = new QWidget(main_window);
+  central_widget->setObjectName(QStringLiteral("central_widget"));
 
   menu_bar = new QMenuBar();
 
@@ -133,23 +133,23 @@ void MainWindow::setupUi(QMainWindow *MainWindow)
   device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
-  gridLayout = new QGridLayout(centralWidget);
-  gridLayout->setSpacing(6);
-  gridLayout->setContentsMargins(11,11,11,11);
-  gridLayout->setObjectName(QStringLiteral("gridLayout"));
+  grid_layout = new QGridLayout(central_widget);
+  grid_layout->setSpacing(6);
+  grid_layout->setContentsMargins(11,11,11,11);
+  grid_layout->setObjectName(QStringLiteral("grid_layout"));
 
-  horizontalLayout = new QHBoxLayout();
-  horizontalLayout->setSpacing(6);
-  horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+  horizontal_layout = new QHBoxLayout();
+  horizontal_layout->setSpacing(6);
+  horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
 
-  previewWindow = new GraphWindow();
-  previewWindow->setObjectName(QStringLiteral("previewWindow"));
-  previewWindow->customPlot->xAxis->setTicks(false);
-  previewWindow->customPlot->yAxis->setTicks(false);
-  QWidget *previewPlot = previewWindow->customPlot;
-  previewPlot->setCursor(Qt::PointingHandCursor);
-  previewPlot->setToolTip("Click on preview to view full plot");
-  previewPlot->setFixedSize(150,150);
+  preview_window = new graph_window();
+  preview_window->setObjectName(QStringLiteral("preview_window"));
+  preview_window->custom_plot->xAxis->setTicks(false);
+  preview_window->custom_plot->yAxis->setTicks(false);
+  QWidget *preview_plot = preview_window->custom_plot;
+  preview_plot->setCursor(Qt::PointingHandCursor);
+  preview_plot->setToolTip("Click on preview to view full plot");
+  preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
 
@@ -157,91 +157,86 @@ void MainWindow::setupUi(QMainWindow *MainWindow)
   header_layout->addWidget(device_list_value);
   header_layout->addWidget(connection_status_value, 1, Qt::AlignLeft);
   header_layout->addWidget(stop_motor);
-  header_layout->addWidget(previewPlot);
+  header_layout->addWidget(preview_plot);
 
-  gridLayout->addLayout(header_layout,0,0);
+  grid_layout->addLayout(header_layout,0,0);
 
   tab_widget = new QTabWidget();
-  status_page_widget = new QWidget();
-  input_page_widget = new QWidget();
-  feedback_page_widget = new QWidget();
-  pid_page_widget = new QWidget();
-  motor_page_widget = new QWidget();
-  errors_page_widget = new QWidget();
 
-
-
-  tab_widget->addTab(status_page_widget, tr("Status"));
+  tab_widget->addTab(setup_status_tab(), tr("Status"));
   tab_widget->addTab(setup_input_tab(), tr("Input"));
   tab_widget->addTab(setup_feedback_tab(), tr("Feedback"));
   tab_widget->addTab(setup_pid_tab(), tr("PID"));
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
 
-  gridLayout->addWidget(tab_widget,1,0);
+  grid_layout->addWidget(tab_widget,1,0);
 
   motorOffButton = new QPushButton();
   motorOnButton = new QPushButton();
   apply_settings = new QPushButton();
   footer_layout = new QHBoxLayout();
 
-  motorOffButton->resize(75,23);
+  // motorOffButton->resize(75,23);
   motorOffButton->setObjectName("motorOffButton");
   motorOffButton->setText(tr("&Stop Motor"));
   motorOffButton->setStyleSheet(QStringLiteral("background-color:red"));
+  motorOffButton->setFixedSize(motorOffButton->sizeHint());
 
-  motorOnButton->resize(75,23);
+  // motorOnButton->resize(75,23);
   motorOnButton->setObjectName("motorOnButton");
   motorOnButton->setText(tr("&Run Motor"));
+  motorOnButton->setFixedSize(motorOnButton->sizeHint());
 
-  apply_settings->resize(148,23);
+  // apply_settings->resize(148,23);
   apply_settings->setObjectName("apply_settings");
   apply_settings->setText(tr("&Apply settings to device"));
+  apply_settings->setFixedSize(apply_settings->sizeHint());
 
-  footer_layout->addWidget(motorOffButton);
-  footer_layout->addWidget(motorOnButton);
+  footer_layout->addWidget(motorOffButton,Qt::AlignRight);
+  footer_layout->addWidget(motorOnButton,Qt::AlignLeft);
   footer_layout->addSpacing(200);
-  footer_layout->addWidget(apply_settings);
+  footer_layout->addWidget(apply_settings,Qt::AlignRight);
   footer_layout->setStretch(2,3);
 
-  gridLayout->addLayout(footer_layout,2,0);
+  grid_layout->addLayout(footer_layout,2,0);
   
-  connect(previewPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
+  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
-  MainWindow->setCentralWidget(centralWidget);
-  MainWindow->setMenuBar(menu_bar);
+  main_window->setCentralWidget(central_widget);
+  main_window->setMenuBar(menu_bar);
 
-  QMetaObject::connectSlotsByName(MainWindow);
+  QMetaObject::connectSlotsByName(main_window);
 
 }
 
-void MainWindow::on_launchGraph_clicked(QMouseEvent *event)
+void main_window::on_launchGraph_clicked(QMouseEvent *event)
 {
-  GraphWindow *red = previewWindow;
-  horizontalLayout->removeWidget(red);
+  graph_window *red = preview_window;
+  horizontal_layout->removeWidget(red);
   if(altw == 0)
   {
     altw = new AltWindow(this);
-    connect(altw, SIGNAL(passWidget(GraphWindow*)), this, SLOT(receiveWidget(GraphWindow*)));
+    connect(altw, SIGNAL(pass_widget(graph_window*)), this, SLOT(receive_widget(graph_window*)));
   }
 
-  altw->receiveWidget(red);
+  altw->receive_widget(red);
   altw->show();
   widgetAtHome = false;
 }
 
-void MainWindow::receiveWidget(GraphWindow *widget)
+void main_window::receive_widget(graph_window *widget)
 {
-  widget->customPlot->setFixedSize(150,150);
-  widget->customPlot->xAxis->setTicks(false);
-  widget->customPlot->yAxis->setTicks(false);
-  widget->customPlot->setCursor(Qt::PointingHandCursor);
-  widget->customPlot->setToolTip("Click on preview to view full plot");
-  header_layout->addWidget(widget->customPlot);
+  widget->custom_plot->setFixedSize(150,150);
+  widget->custom_plot->xAxis->setTicks(false);
+  widget->custom_plot->yAxis->setTicks(false);
+  widget->custom_plot->setCursor(Qt::PointingHandCursor);
+  widget->custom_plot->setToolTip("Click on preview to view full plot");
+  header_layout->addWidget(widget->custom_plot);
   widgetAtHome = true;
 }
 
-void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+void main_window::context_menu_event(QContextMenuEvent *event)
 {
   if (widgetAtHome)
   {
@@ -251,15 +246,22 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
   }
 }
 
-void MainWindow::retranslateUi(QMainWindow *MainWindow)
+void main_window::retranslate_ui(QMainWindow *main_window)
 {
-  MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", Q_NULLPTR));
+  main_window->setWindowTitle(QApplication::translate("main_window", "main_window", Q_NULLPTR));
 }
 
-QWidget * MainWindow::setup_input_tab()
+QWidget * main_window::setup_status_tab()
+{
+  status_page_widget = new QWidget();
+  return status_page_widget;
+}
+
+QWidget * main_window::setup_input_tab()
 {
   input_page_widget = new QWidget();
   QGridLayout *layout = input_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   QVBoxLayout *column1 = new QVBoxLayout();
   QVBoxLayout *column2 = new QVBoxLayout();
 
@@ -433,13 +435,15 @@ QWidget * MainWindow::setup_input_tab()
   layout->addLayout(column2,0,1);
 
   input_page_widget->setLayout(layout);
+  input_page_widget->setParent(tab_widget);
   return input_page_widget;
 }
 
-QWidget * MainWindow::setup_feedback_tab()
+QWidget * main_window::setup_feedback_tab()
 {
+  feedback_page_widget = new QWidget();
   QGridLayout *layout = feedback_page_layout = new QGridLayout();
-
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
   feedback_mode_label = new QLabel(tr("Feedback mode:"));
   feedback_mode_label->setObjectName("feedback_mode_label");
@@ -515,19 +519,18 @@ QWidget * MainWindow::setup_feedback_tab()
   return feedback_page_widget;
 }
 
-QWidget * MainWindow::setup_pid_tab()
+QWidget * main_window::setup_pid_tab()
 {
+  pid_page_widget = new QWidget();
   QGridLayout *layout = pid_page_layout = new QGridLayout();
-  pid_proportional_coefficient = new PIDConstantControl("Proportional Coefficient", "pid_proportional_coefficient");
-  pid_proportional_coefficient->setFixedSize(200,100);
-  pid_integral_coefficient = new PIDConstantControl("Integral Coefficient", "pid_integral_coefficient");
-  pid_integral_coefficient->setFixedSize(200,100);
-  pid_derivative_coefficient = new PIDConstantControl("Derivative Coefficient", "pid_derivative_coefficient");
-  pid_derivative_coefficient->setFixedSize(200,100);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  pid_proportional_coefficient = new pid_constant_control("Proportional Coefficient", "pid_proportional_coefficient");
+  pid_integral_coefficient = new pid_constant_control("Integral Coefficient", "pid_integral_coefficient");
+  pid_derivative_coefficient = new pid_constant_control("Derivative Coefficient", "pid_derivative_coefficient");
   QHBoxLayout *group_box_row = new QHBoxLayout();
-  group_box_row->addWidget(pid_proportional_coefficient);
-  group_box_row->addWidget(pid_integral_coefficient);
-  group_box_row->addWidget(pid_derivative_coefficient);
+  group_box_row->addWidget(pid_proportional_coefficient,1,Qt::AlignCenter);
+  group_box_row->addWidget(pid_integral_coefficient,1,Qt::AlignCenter);
+  group_box_row->addWidget(pid_derivative_coefficient,1,Qt::AlignCenter);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -552,6 +555,7 @@ QWidget * MainWindow::setup_pid_tab()
   QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
   deadzone_row_layout->addWidget(pid_deadzone_label);
   deadzone_row_layout->addWidget(pid_deadzone_spinbox);
+  layout->setRowMinimumHeight(0,100);
   layout->addLayout(group_box_row,0,0);
   layout->addLayout(period_row_layout,1,0,Qt::AlignLeft);
   layout->addLayout(integral_row_layout,2,0,Qt::AlignLeft);
@@ -562,9 +566,11 @@ QWidget * MainWindow::setup_pid_tab()
   return pid_page_widget;
 }
 
-QWidget *MainWindow::setup_motor_tab()
+QWidget *main_window::setup_motor_tab()
 {
+  motor_page_widget = new QWidget();
   QGridLayout *layout = motor_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   QHBoxLayout *frequency_layout = new QHBoxLayout();
   motor_frequency_label = new QLabel(tr("PVM frequency:"));
   motor_frequency_label->setObjectName("motor_frequency_label");
@@ -676,9 +682,11 @@ QWidget *MainWindow::setup_motor_tab()
   return motor_page_widget;
 }
 
-QWidget *MainWindow::setup_errors_tab()
+QWidget *main_window::setup_errors_tab()
 {
+  errors_page_widget = new QWidget();
   QVBoxLayout *layout = errors_page_layout = new QVBoxLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   QFont font;
   font.setBold(true);
   font.setWeight(75);
@@ -711,77 +719,77 @@ QWidget *MainWindow::setup_errors_tab()
 
   int row_number = 0;
 
-  awaiting_command = new ErrorsControl(row_number++);
+  awaiting_command = new errors_control(row_number++);
   awaiting_command->setObjectName("awaiting_command");
   awaiting_command->bit_mask_label->setText(tr("0x0001"));
   awaiting_command->error_label->setText(tr("Awaiting command"));
   awaiting_command->disabled_radio->setVisible(false);
   awaiting_command->enabled_radio->setVisible(false);
   
-  no_power = new ErrorsControl(row_number++);
+  no_power = new errors_control(row_number++);
   no_power->setObjectName("no_power");
   no_power->bit_mask_label->setText(tr("0x0002"));
   no_power->error_label->setText(tr("No power"));
   no_power->disabled_radio->setVisible(false);
 
-  motor_driven_error = new ErrorsControl(row_number++);
+  motor_driven_error = new errors_control(row_number++);
   motor_driven_error->setObjectName("motor_driven_error");
   motor_driven_error->bit_mask_label->setText(tr("0x0004"));
   motor_driven_error->error_label->setText(tr("Motor driven error"));
   motor_driven_error->disabled_radio->setVisible(false);
 
-  input_invalid = new ErrorsControl(row_number++);
+  input_invalid = new errors_control(row_number++);
   input_invalid->setObjectName("input_invalid");
   input_invalid->bit_mask_label->setText(tr("0x0008"));
   input_invalid->error_label->setText(tr("Input invalid"));
   input_invalid->disabled_radio->setVisible(false);
 
-  input_disconnect = new ErrorsControl(row_number++);
+  input_disconnect = new errors_control(row_number++);
   input_disconnect->setObjectName("input_disconnect");
   input_disconnect->bit_mask_label->setText(tr("0x0010"));
   input_disconnect->error_label->setText(tr("Input disconnect"));
 
-  feedback_disconnect = new ErrorsControl(row_number++);
+  feedback_disconnect = new errors_control(row_number++);
   feedback_disconnect->setObjectName("feedback_disconnect");
   feedback_disconnect->bit_mask_label->setText(tr("0x0020"));
   feedback_disconnect->error_label->setText(tr("Feedback disconnect"));
 
-  max_current_exceeded = new ErrorsControl(row_number++);
+  max_current_exceeded = new errors_control(row_number++);
   max_current_exceeded->setObjectName("max_current_exceeded");
   max_current_exceeded->bit_mask_label->setText(tr("0x0040"));
   max_current_exceeded->error_label->setText(tr("Max. current exceeded"));
 
-  serial_signal_error = new ErrorsControl(row_number++);
+  serial_signal_error = new errors_control(row_number++);
   serial_signal_error->setObjectName("serial_signal_error");
   serial_signal_error->bit_mask_label->setText(tr("0x0080"));
   serial_signal_error->error_label->setText(tr("Serial signal error"));
   serial_signal_error->enabled_radio->setVisible(false);
 
-  serial_overrun = new ErrorsControl(row_number++);
+  serial_overrun = new errors_control(row_number++);
   serial_overrun->setObjectName("serial_overrun");
   serial_overrun->bit_mask_label->setText(tr("0x0100"));
   serial_overrun->error_label->setText(tr("Serial overrun"));
   serial_overrun->enabled_radio->setVisible(false);
 
-  serial_rx_buffer_full = new ErrorsControl(row_number++);
+  serial_rx_buffer_full = new errors_control(row_number++);
   serial_rx_buffer_full->setObjectName("serial_rx_buffer_full");
   serial_rx_buffer_full->bit_mask_label->setText(tr("0x0200"));
   serial_rx_buffer_full->error_label->setText(tr("Serial RX buffer full"));
   serial_rx_buffer_full->enabled_radio->setVisible(false);
 
-  serial_crc_error = new ErrorsControl(row_number++);
+  serial_crc_error = new errors_control(row_number++);
   serial_crc_error->setObjectName("serial_crc_error");
   serial_crc_error->bit_mask_label->setText(tr("0x0400"));
   serial_crc_error->error_label->setText(tr("Serial CRC error"));
   serial_crc_error->enabled_radio->setVisible(false);
 
-  serial_protocol_error = new ErrorsControl(row_number++);
+  serial_protocol_error = new errors_control(row_number++);
   serial_protocol_error->setObjectName("serial_protocol_error");
   serial_protocol_error->bit_mask_label->setText(tr("0x0800"));
   serial_protocol_error->error_label->setText(tr("Serial protocol error"));
   serial_protocol_error->enabled_radio->setVisible(false);
 
-  serial_timeout_error = new ErrorsControl(row_number++);
+  serial_timeout_error = new errors_control(row_number++);
   serial_timeout_error->setObjectName("serial_timeout_error");
   serial_timeout_error->bit_mask_label->setText(tr("0x1000"));
   serial_timeout_error->error_label->setText(tr("Serial timeout error"));
@@ -816,13 +824,15 @@ QWidget *MainWindow::setup_errors_tab()
   return errors_page_widget;
 }
 
-PIDConstantControl::PIDConstantControl(const QString& group_box_title, const QString& object_name, QWidget *parent)
+pid_constant_control::pid_constant_control(const QString& group_box_title, const QString& object_name, QWidget *parent)
+  : QGroupBox(parent)
 {
   setObjectName(object_name);
   setTitle(group_box_title);
-  centralWidget = new QWidget(this);
-  centralWidget->setObjectName(tr("centralWidget"));
-  pid_base_label = new QLabel(centralWidget);
+  setMinimumSize(200,100);
+  central_widget = new QWidget(this);
+  central_widget->setObjectName(tr("central_widget"));
+  pid_base_label = new QLabel(central_widget);
   pid_base_label->setObjectName("pid_base_label");
   pid_base_label->setGeometry(QRect(13,64,16,27));
   QFont font;
@@ -834,21 +844,21 @@ PIDConstantControl::PIDConstantControl(const QString& group_box_title, const QSt
   pid_base_label->setLayoutDirection(Qt::LeftToRight);
   pid_base_label->setAlignment(Qt::AlignCenter);
   pid_base_label->setText(tr("2"));
-  pid_control_frame = new QFrame(centralWidget);
+  pid_control_frame = new QFrame(central_widget);
   pid_control_frame->setObjectName(QStringLiteral("pid_control_frame"));
   pid_control_frame->setGeometry(QRect(11, 36, 65, 27));
   pid_control_frame->setFrameShadow(QFrame::Plain);
   pid_control_frame->setLineWidth(4);
   pid_control_frame->setFrameShape(QFrame::HLine);
-  pid_multiplier_spinbox = new QSpinBox(centralWidget);
+  pid_multiplier_spinbox = new QSpinBox(central_widget);
   pid_multiplier_spinbox->setObjectName("pid_multiplier_spinbox");
   pid_multiplier_spinbox->setGeometry(QRect(14,21,58,20));
   pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
-  pid_exponent_spinbox = new QSpinBox(centralWidget);
+  pid_exponent_spinbox = new QSpinBox(central_widget);
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
   pid_exponent_spinbox->setGeometry(QRect(31,56,41,20));
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
-  pid_equal_label = new QLabel(centralWidget);
+  pid_equal_label = new QLabel(central_widget);
   pid_equal_label->setObjectName("pid_equal_label");
   pid_equal_label->setGeometry(QRect(87,32,21,31));
   pid_equal_label->setText(tr("="));
@@ -858,7 +868,7 @@ PIDConstantControl::PIDConstantControl(const QString& group_box_title, const QSt
   font1.setWeight(75);
   pid_equal_label->setFont(font1);
   pid_equal_label->setAlignment(Qt::AlignCenter);
-  pid_constant_control_textbox = new QTextEdit(centralWidget);
+  pid_constant_control_textbox = new QTextEdit(central_widget);
   pid_constant_control_textbox->setObjectName("pid_constant_control_textbox");
   pid_constant_control_textbox->setGeometry(QRect(122, 39, 70, 21));
   pid_constant_control_textbox->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -866,18 +876,18 @@ PIDConstantControl::PIDConstantControl(const QString& group_box_title, const QSt
   QMetaObject::connectSlotsByName(this);
 }
 
-PIDConstantControl::~PIDConstantControl()
+pid_constant_control::~pid_constant_control()
 {
 
 }
 
-ErrorsControl::ErrorsControl(int row_number, QWidget *parent)
+errors_control::errors_control(int row_number, QWidget *parent)
 { 
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
   errors_frame = new QWidget();
-  
+
   if(row_number % 2 == 0)
   {
     errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
@@ -942,7 +952,7 @@ ErrorsControl::ErrorsControl(int row_number, QWidget *parent)
   QMetaObject::connectSlotsByName(this);
 }
 
-ErrorsControl::~ErrorsControl()
+errors_control::~errors_control()
 {
 
 }

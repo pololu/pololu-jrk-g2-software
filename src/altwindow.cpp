@@ -7,7 +7,7 @@
 AltWindow::AltWindow(QWidget *parent) :
 	QMainWindow(parent)
 {
-	setupUi(this);
+	setup_ui(this);
 	grabbedWidget = 0;
 	connect(backBtn, SIGNAL(clicked()), this, SLOT(close()));
 }
@@ -17,7 +17,7 @@ AltWindow::~AltWindow()
 		
 }
 
-void AltWindow::setupUi(QMainWindow *AltWindow)
+void AltWindow::setup_ui(QMainWindow *AltWindow)
 {
 	AltWindow->setObjectName(QStringLiteral("AltWindow"));
 	AltWindow->resize(818,547);
@@ -42,29 +42,29 @@ void AltWindow::setupUi(QMainWindow *AltWindow)
 	
 	verticalLayout->addWidget(backBtn);
 
-	horizontalLayout = new QHBoxLayout();
-	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+	horizontal_layout = new QHBoxLayout();
+	horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
 
-	verticalLayout->addLayout(horizontalLayout);
+	verticalLayout->addLayout(horizontal_layout);
 
 	AltWindow->setCentralWidget(centralwidget);
 
-	retranslateUi(AltWindow);
+	retranslate_ui(AltWindow);
 
 	QMetaObject::connectSlotsByName(AltWindow);
 }
 
 void AltWindow::closeEvent(QCloseEvent *event)
 {
-	grabbedWidget->customPlot->xAxis->setTicks(false);
-	grabbedWidget->customPlot->yAxis->setTicks(false);
-	horizontalLayout->removeWidget(grabbedWidget);
-	emit passWidget(grabbedWidget);
+	grabbedWidget->custom_plot->xAxis->setTicks(false);
+	grabbedWidget->custom_plot->yAxis->setTicks(false);
+	horizontal_layout->removeWidget(grabbedWidget);
+	emit pass_widget(grabbedWidget);
 	grabbedWidget = 0;
 	QMainWindow::closeEvent(event);
 }
 
-void AltWindow::receiveWidget(GraphWindow *widget)
+void AltWindow::receive_widget(graph_window *widget)
 {
 	if(grabbedWidget != 0)
 		qWarning() << "You might have lost a widget just now.";
@@ -72,22 +72,22 @@ void AltWindow::receiveWidget(GraphWindow *widget)
 	grabbedWidget = widget;
 	bottomControlLayout->addWidget(grabbedWidget->pauseRunButton);
 	bottomControlLayout->addWidget(grabbedWidget->label1);
-	bottomControlLayout->addWidget(grabbedWidget->minY);
+	bottomControlLayout->addWidget(grabbedWidget->min_y);
 	bottomControlLayout->addWidget(grabbedWidget->label3);
-	bottomControlLayout->addWidget(grabbedWidget->maxY);
+	bottomControlLayout->addWidget(grabbedWidget->max_y);
 	bottomControlLayout->addWidget(grabbedWidget->label2);
 	bottomControlLayout->addWidget(grabbedWidget->domain);
-	grabbedWidget->customPlot->xAxis->setTicks(true);
-	grabbedWidget->customPlot->yAxis->setTicks(true);
-	grabbedWidget->customPlot->setFixedSize(561,460);
-	grabbedWidget->customPlot->setCursor(Qt::ArrowCursor);
-	grabbedWidget->customPlot->setToolTip("");
-	plotLayout->addWidget(grabbedWidget->customPlot,Qt::AlignTop);
+	grabbedWidget->custom_plot->xAxis->setTicks(true);
+	grabbedWidget->custom_plot->yAxis->setTicks(true);
+	grabbedWidget->custom_plot->setFixedSize(561,460);
+	grabbedWidget->custom_plot->setCursor(Qt::ArrowCursor);
+	grabbedWidget->custom_plot->setToolTip("");
+	plotLayout->addWidget(grabbedWidget->custom_plot,Qt::AlignTop);
 
-	for(auto &x: grabbedWidget->allPlots)
+	for(auto &x: grabbedWidget->all_plots)
 	{
-		plotRangeLayout->addWidget(x.plotRange);
-		plotVisibleLayout->addWidget(x.plotDisplay);
+		plotRangeLayout->addWidget(x.plot_range);
+		plotVisibleLayout->addWidget(x.plot_display);
 	}
 
 	mainLayout->addLayout(plotLayout,0,0,Qt::AlignTop);
@@ -96,10 +96,10 @@ void AltWindow::receiveWidget(GraphWindow *widget)
 	centralLayout->addLayout(plotRangeLayout,0,1);
 	centralLayout->addLayout(plotVisibleLayout,0,2);
 
-	horizontalLayout->addLayout(centralLayout);
+	horizontal_layout->addLayout(centralLayout);
 }
 
-void AltWindow::retranslateUi(QMainWindow *AltWindow)
+void AltWindow::retranslate_ui(QMainWindow *AltWindow)
 {
 	AltWindow->setWindowTitle(QApplication::translate("AltWindow", "Graph Popout Window", Q_NULLPTR));
 	backBtn->setText(QApplication::translate("AltWindow", "Back", Q_NULLPTR));
