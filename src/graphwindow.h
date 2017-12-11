@@ -20,31 +20,31 @@ public:
     	QCPGraph *plotGraph;
     };
 
-    Plot input;
-    Plot target;
-    Plot feedback;
-    Plot scaledFeedback;
-    Plot error;
-    Plot integral;
-    Plot dutyCycleTarget;
-    Plot dutyCycle;
-    Plot current;
+  Plot input;
+  Plot target;
+  Plot feedback;
+  Plot scaledFeedback;
+  Plot error;
+  Plot integral;
+  Plot dutyCycleTarget;
+  Plot dutyCycle;
+  Plot current;
 
-    double key = 0;
+  double key = 0;
 	QTimer dataTimer;
 	QWidget *centralWidget;
-    QCustomPlot *customPlot;
-    QPushButton *pauseRunButton;
-    QPushButton *runButton;
-    QDoubleSpinBox *minY;
-    QDoubleSpinBox *maxY;
-    QSpinBox *domain;
-    QLabel *label1;
-    QLabel *label2;
-    QLabel *label3;
+  QCustomPlot *customPlot;
+  QPushButton *pauseRunButton;
+  QPushButton *runButton;
+  QDoubleSpinBox *minY;
+  QDoubleSpinBox *maxY;
+  QSpinBox *domain;
+  QLabel *label1;
+  QLabel *label2;
+  QLabel *label3;
     
 
-    QList<Plot> allPlots;
+  QList<Plot> allPlots;
 
     
 
