@@ -1033,6 +1033,112 @@ namespace jrk
       unique_pointer_wrapper_with_copy(p)
     {
     }
+
+    // Beginning of auto-generated variables C++ getters.
+
+    /// Wrapper for jrk_variables_get_input().
+    uint16_t get_input() const noexcept
+    {
+      return jrk_variables_get_input(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_target().
+    uint16_t get_target() const noexcept
+    {
+      return jrk_variables_get_target(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_feedback().
+    uint16_t get_feedback() const noexcept
+    {
+      return jrk_variables_get_feedback(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_scaled_feedback().
+    uint16_t get_scaled_feedback() const noexcept
+    {
+      return jrk_variables_get_scaled_feedback(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_error_sum().
+    uint16_t get_error_sum() const noexcept
+    {
+      return jrk_variables_get_error_sum(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_duty_cycle_target().
+    int16_t get_duty_cycle_target() const noexcept
+    {
+      return jrk_variables_get_duty_cycle_target(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_duty_cycle().
+    int16_t get_duty_cycle() const noexcept
+    {
+      return jrk_variables_get_duty_cycle(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_current().
+    uint8_t get_current() const noexcept
+    {
+      return jrk_variables_get_current(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_pid_period_exceeded().
+    bool get_pid_period_exceeded() const noexcept
+    {
+      return jrk_variables_get_pid_period_exceeded(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_pid_period_count().
+    uint16_t get_pid_period_count() const noexcept
+    {
+      return jrk_variables_get_pid_period_count(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_error_flags_halting().
+    uint16_t get_error_flags_halting() const noexcept
+    {
+      return jrk_variables_get_error_flags_halting(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_error_flags_occurred().
+    uint16_t get_error_flags_occurred() const noexcept
+    {
+      return jrk_variables_get_error_flags_occurred(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_vin_voltage().
+    uint16_t get_vin_voltage() const noexcept
+    {
+      return jrk_variables_get_vin_voltage(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_device_reset().
+    uint8_t get_device_reset() const noexcept
+    {
+      return jrk_variables_get_device_reset(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_up_time().
+    uint32_t get_up_time() const noexcept
+    {
+      return jrk_variables_get_up_time(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_rc_pulse_width().
+    uint16_t get_rc_pulse_width() const noexcept
+    {
+      return jrk_variables_get_rc_pulse_width(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_tachometer_reading().
+    uint16_t get_tachometer_reading() const noexcept
+    {
+      return jrk_variables_get_tachometer_reading(pointer);
+    }
+
+    // End of auto-generated variables C++ getters.
   };
 
   /// Represents a jrk that is or was connected to the computer.  Can also be in

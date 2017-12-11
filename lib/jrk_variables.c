@@ -5,6 +5,28 @@
 struct jrk_variables
 {
   uint8_t avoid_struct_size_zero;  // TODO: remove, put real variables here
+
+  // Beginning of auto-generated variables struct members.
+
+  uint16_t input;
+  uint16_t target;
+  uint16_t feedback;
+  uint16_t scaled_feedback;
+  uint16_t error_sum;
+  int16_t duty_cycle_target;
+  int16_t duty_cycle;
+  uint8_t current;
+  bool pid_period_exceeded;
+  uint16_t pid_period_count;
+  uint16_t error_flags_halting;
+  uint16_t error_flags_occurred;
+  uint16_t vin_voltage;
+  uint8_t device_reset;
+  uint32_t up_time;
+  uint16_t rc_pulse_width;
+  uint16_t tachometer_reading;
+
+  // End of auto-generated variables struct members.
 };
 
 jrk_error * jrk_variables_create(jrk_variables ** variables)
@@ -85,7 +107,27 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   assert(vars != NULL);
   assert(buf != NULL);
 
-  // TODO: interpret the variables buffer
+  // Beginning of auto-generated buffer-to-variables code.
+
+  vars->input = read_uint16_t(buf + JRK_VAR_INPUT);
+  vars->target = read_uint16_t(buf + JRK_VAR_TARGET);
+  vars->feedback = read_uint16_t(buf + JRK_VAR_FEEDBACK);
+  vars->scaled_feedback = read_uint16_t(buf + JRK_VAR_SCALED_FEEDBACK);
+  vars->error_sum = read_uint16_t(buf + JRK_VAR_ERROR_SUM);
+  vars->duty_cycle_target = read_int16_t(buf + JRK_VAR_DUTY_CYCLE_TARGET);
+  vars->duty_cycle = read_int16_t(buf + JRK_VAR_DUTY_CYCLE);
+  vars->current = buf[JRK_VAR_CURRENT];
+  vars->pid_period_exceeded = buf[JRK_VAR_PID_PERIOD_EXCEEDED] & 1;
+  vars->pid_period_count = read_uint16_t(buf + JRK_VAR_PID_PERIOD_COUNT);
+  vars->error_flags_halting = read_uint16_t(buf + JRK_VAR_ERROR_FLAGS_HALTING);
+  vars->error_flags_occurred = read_uint16_t(buf + JRK_VAR_ERROR_FLAGS_OCCURRED);
+  vars->vin_voltage = read_uint16_t(buf + JRK_VAR_VIN_VOLTAGE);
+  vars->device_reset = buf[JRK_VAR_DEVICE_RESET];
+  vars->up_time = read_uint32_t(buf + JRK_VAR_UP_TIME);
+  vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
+  vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
+
+  // End of auto-generated buffer-to-variables code.
 }
 
 jrk_error * jrk_get_variables(jrk_handle * handle, jrk_variables ** variables,
@@ -144,3 +186,109 @@ jrk_error * jrk_get_variables(jrk_handle * handle, jrk_variables ** variables,
 
   return error;
 }
+
+// Beginning of auto-generated variables getters.
+
+uint16_t jrk_variable_get_input(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->input;
+}
+
+uint16_t jrk_variable_get_target(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->target;
+}
+
+uint16_t jrk_variable_get_feedback(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->feedback;
+}
+
+uint16_t jrk_variable_get_scaled_feedback(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->scaled_feedback;
+}
+
+uint16_t jrk_variable_get_error_sum(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->error_sum;
+}
+
+int16_t jrk_variable_get_duty_cycle_target(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->duty_cycle_target;
+}
+
+int16_t jrk_variable_get_duty_cycle(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->duty_cycle;
+}
+
+uint8_t jrk_variable_get_current(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->current;
+}
+
+bool jrk_variable_get_pid_period_exceeded(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->pid_period_exceeded;
+}
+
+uint16_t jrk_variable_get_pid_period_count(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->pid_period_count;
+}
+
+uint16_t jrk_variable_get_error_flags_halting(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->error_flags_halting;
+}
+
+uint16_t jrk_variable_get_error_flags_occurred(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->error_flags_occurred;
+}
+
+uint16_t jrk_variable_get_vin_voltage(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->vin_voltage;
+}
+
+uint8_t jrk_variable_get_device_reset(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->device_reset;
+}
+
+uint32_t jrk_variable_get_up_time(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->up_time;
+}
+
+uint16_t jrk_variable_get_rc_pulse_width(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->rc_pulse_width;
+}
+
+uint16_t jrk_variable_get_tachometer_reading(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->tachometer_reading;
+}
+
+// End of auto-generated variables getters.

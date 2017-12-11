@@ -1051,6 +1051,78 @@ jrk_error * jrk_variables_copy(
 JRK_API
 void jrk_variables_free(jrk_variables *);
 
+// Beginning of auto-generated variables getter prototypes.
+
+// Gets the input variable.
+JRK_API
+uint16_t jrk_variables_get_input(const jrk_variables *);
+
+// Gets the target variable.
+JRK_API
+uint16_t jrk_variables_get_target(const jrk_variables *);
+
+// Gets the feedback variable.
+JRK_API
+uint16_t jrk_variables_get_feedback(const jrk_variables *);
+
+// Gets the scaled_feedback variable.
+JRK_API
+uint16_t jrk_variables_get_scaled_feedback(const jrk_variables *);
+
+// Gets the error_sum variable.
+JRK_API
+uint16_t jrk_variables_get_error_sum(const jrk_variables *);
+
+// Gets the duty_cycle_target variable.
+JRK_API
+int16_t jrk_variables_get_duty_cycle_target(const jrk_variables *);
+
+// Gets the duty_cycle variable.
+JRK_API
+int16_t jrk_variables_get_duty_cycle(const jrk_variables *);
+
+// Gets the current variable.
+JRK_API
+uint8_t jrk_variables_get_current(const jrk_variables *);
+
+// Gets the pid_period_exceeded variable.
+JRK_API
+bool jrk_variables_get_pid_period_exceeded(const jrk_variables *);
+
+// Gets the pid_period_count variable.
+JRK_API
+uint16_t jrk_variables_get_pid_period_count(const jrk_variables *);
+
+// Gets the error_flags_halting variable.
+JRK_API
+uint16_t jrk_variables_get_error_flags_halting(const jrk_variables *);
+
+// Gets the error_flags_occurred variable.
+JRK_API
+uint16_t jrk_variables_get_error_flags_occurred(const jrk_variables *);
+
+// Gets the vin_voltage variable.
+JRK_API
+uint16_t jrk_variables_get_vin_voltage(const jrk_variables *);
+
+// Gets the device_reset variable.
+JRK_API
+uint8_t jrk_variables_get_device_reset(const jrk_variables *);
+
+// Gets the up_time variable.
+JRK_API
+uint32_t jrk_variables_get_up_time(const jrk_variables *);
+
+// Gets the rc_pulse_width variable.
+JRK_API
+uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables *);
+
+// Gets the tachometer_reading variable.
+JRK_API
+uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
+
+// End of auto-generated variables getter prototypes.
+
 
 // jrk_device ///////////////////////////////////////////////////////////////////
 

@@ -122,15 +122,20 @@ static inline uint16_t read_uint16_t(const uint8_t * p)
   return p[0] + (p[1] << 8);
 }
 
+static inline int16_t read_int16_t(const uint8_t * p)
+{
+  return read_uint16_t(p);
+}
+
+static inline uint32_t read_uint32_t(const uint8_t * p)
+{
+  return p[0] + (p[1] << 8) + (p[2] << 16) + (p[3] << 24);
+}
+
 static inline void write_uint16_t(uint8_t * p, uint16_t value)
 {
   p[0] = value & 0xFF;
   p[1] = value >> 8 & 0xFF;
-}
-
-static inline int16_t read_int16_t(const uint8_t * p)
-{
-  return read_uint16_t(p);
 }
 
 static inline void write_int16_t(uint8_t * p, uint16_t value)

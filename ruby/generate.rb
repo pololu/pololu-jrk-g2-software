@@ -2,14 +2,55 @@
 
 require 'pathname'
 require_relative 'generate_settings'
+require_relative 'generate_variables'
+
+def generate_fragment(fragment_name, indent, filename)
+  stream = IndentedStream.new(indent)
+  puts fragment_name
+  case fragment_name
+  when 'settings struct members'
+    generate_settings_struct_members(stream)
+  when 'settings accessor prototypes'
+    generate_settings_accessor_prototypes(stream)
+  when 'settings accessors'
+    generate_settings_accessors(stream)
+  when 'settings C++ accessors'
+    generate_settings_cpp_accessors(stream)
+  when 'settings defaults'
+    generate_settings_defaults_code(stream)
+  when 'settings fixing code'
+    generate_settings_fixing_code(stream)
+  when 'buffer-to-settings code'
+    generate_buffer_to_settings_code(stream)
+  when 'settings-to-buffer code'
+    generate_settings_to_buffer_code(stream)
+  when 'settings file parsing code'
+    generate_settings_file_parsing_code(stream)
+  when 'settings file printing code'
+    generate_settings_file_printing_code(stream)
+  when 'variables struct members'
+    generate_variables_struct_members(stream)
+  when 'variables getter prototypes'
+    generate_variables_getter_prototypes(stream)
+  when 'variables C++ getters'
+    generate_variables_cpp_getters(stream)
+  when 'buffer-to-variables code'
+    generate_buffer_to_variables_code(stream)
+  when 'variables getters'
+    generate_variables_getters(stream)
+  else
+    raise "Unrecognized fragment in #{filename}: #{fragment_name}"
+  end
+  stream.io.string
+end
 
 class IndentedStream
-  attr_reader :io
   attr_accessor :indent
+  attr_reader :io
 
-  def initialize(io, indent)
-    @io = io
+  def initialize(indent, io = StringIO.new)
     @indent = indent
+    @io = io
   end
 
   def puts(*args)
@@ -80,35 +121,6 @@ def autogenerate_file_fragments(files, &proc)
     lines_generated += autogenerate_file_fragments_core(file, &proc)
   end
   puts "Generated #{lines_generated} lines of code."
-end
-
-def generate_fragment(fragment_name, indent, filename)
-  stream = IndentedStream.new(StringIO.new, indent)
-  case fragment_name
-  when 'settings struct members'
-    generate_settings_struct_members(stream)
-  when 'settings accessor prototypes'
-    generate_settings_accessor_prototypes(stream)
-  when 'settings accessors'
-    generate_settings_accessors(stream)
-  when 'settings C++ accessors'
-    generate_settings_cpp_accessors(stream)
-  when 'settings defaults'
-    generate_settings_defaults_code(stream)
-  when 'settings fixing code'
-    generate_settings_fixing_code(stream)
-  when 'buffer-to-settings code'
-    generate_buffer_to_settings_code(stream)
-  when 'settings-to-buffer code'
-    generate_settings_to_buffer_code(stream)
-  when 'settings file parsing code'
-    generate_settings_file_parsing_code(stream)
-  when 'settings file printing code'
-    generate_settings_file_printing_code(stream)
-  else
-    raise "Unrecognized fragment in #{filename}: #{fragment_name}"
-  end
-  stream.io.string
 end
 
 files = Pathname.glob("include/*") + Pathname.glob("lib/*.c")
