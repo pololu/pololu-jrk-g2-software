@@ -62,8 +62,21 @@ const jrk_name jrk_motor_pwm_frequency_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_error_names_ui[] =  // TODO
+const jrk_name jrk_error_names_ui[] =
 {
+  { "Awaiting command", 1 << JRK_ERROR_AWAITING_COMMAND },
+  { "No power", 1 << JRK_ERROR_NO_POWER },
+  { "Motor driver error", 1 << JRK_ERROR_MOTOR_DRIVER },
+  { "Input invalid", 1 << JRK_ERROR_INPUT_INVALID },
+  { "Input disconnect", 1 << JRK_ERROR_INPUT_DISCONNECT },
+  { "Feedback disconnect", 1 << JRK_ERROR_FEEDBACK_DISCONNECT },
+  { "Max. current exceeded", 1 << JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED },
+  { "Serial signal error", 1 << JRK_ERROR_SERIAL_SIGNAL },
+  { "Serial overrun", 1 << JRK_ERROR_SERIAL_OVERRUN },
+  { "Serial RX buffer full", 1 << JRK_ERROR_SERIAL_BUFFER_FULL },
+  { "Serial CRC error", 1 << JRK_ERROR_SERIAL_CRC },
+  { "Serial protocol error", 1 << JRK_ERROR_SERIAL_PROTOCOL },
+  { "Serial timeout error", 1 << JRK_ERROR_SERIAL_TIMEOUT },
   { NULL, 0 },
 };
 

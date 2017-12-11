@@ -17,7 +17,7 @@ Variables = [
   },
   {
     name: 'error_sum',
-    type: :uint16_t,
+    type: :int16_t,
   },
   {
     name: 'duty_cycle_target',

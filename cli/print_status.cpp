@@ -134,7 +134,7 @@ void print_status(const jrk::variables & vars,
     << std::endl;
 
   std::cout << left_column << "PID period exceeded: "
-    << vars.get_pid_period_exceeded()
+    << (vars.get_pid_period_exceeded() ? "Yes" : "No")
     << std::endl;
 
   std::cout << left_column << "PID period count: "
@@ -147,6 +147,7 @@ void print_status(const jrk::variables & vars,
     "Errors currently stopping the motor");
   print_errors(vars.get_error_flags_occurred(),
     "Errors that occurred since last check");
+
   std::cout << std::endl;
 
   // TODO: print analog readings from pins and the pin states
