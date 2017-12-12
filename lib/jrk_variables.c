@@ -12,7 +12,7 @@ struct jrk_variables
   uint16_t target;
   uint16_t feedback;
   uint16_t scaled_feedback;
-  uint16_t error_sum;
+  int16_t error_sum;
   int16_t duty_cycle_target;
   int16_t duty_cycle;
   uint8_t current;
@@ -113,7 +113,7 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->target = read_uint16_t(buf + JRK_VAR_TARGET);
   vars->feedback = read_uint16_t(buf + JRK_VAR_FEEDBACK);
   vars->scaled_feedback = read_uint16_t(buf + JRK_VAR_SCALED_FEEDBACK);
-  vars->error_sum = read_uint16_t(buf + JRK_VAR_ERROR_SUM);
+  vars->error_sum = read_int16_t(buf + JRK_VAR_ERROR_SUM);
   vars->duty_cycle_target = read_int16_t(buf + JRK_VAR_DUTY_CYCLE_TARGET);
   vars->duty_cycle = read_int16_t(buf + JRK_VAR_DUTY_CYCLE);
   vars->current = buf[JRK_VAR_CURRENT];
@@ -213,7 +213,7 @@ uint16_t jrk_variables_get_scaled_feedback(const jrk_variables * vars)
   return vars->scaled_feedback;
 }
 
-uint16_t jrk_variables_get_error_sum(const jrk_variables * vars)
+int16_t jrk_variables_get_error_sum(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->error_sum;

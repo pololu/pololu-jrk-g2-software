@@ -1071,7 +1071,7 @@ uint16_t jrk_variables_get_scaled_feedback(const jrk_variables *);
 
 // Gets the error_sum variable.
 JRK_API
-uint16_t jrk_variables_get_error_sum(const jrk_variables *);
+int16_t jrk_variables_get_error_sum(const jrk_variables *);
 
 // Gets the duty_cycle_target variable.
 JRK_API
