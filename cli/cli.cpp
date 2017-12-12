@@ -9,7 +9,7 @@ static const char help[] =
   "  -s, --status                 Show device settings and info.\n"
   "  --full                       When used with --status, shows more.\n"
   "  -d SERIALNUMBER              Specifies the serial number of the device.\n"
-  "  --list                       List devices connected to computer.\n"
+  "  -l, --list                   List devices connected to computer.\n"
   "  --pause                      Pause program at the end.\n"
   "  --pause-on-error             Pause program at the end if an error happens.\n"
   "  -h, --help                   Show this help screen.\n"
@@ -167,7 +167,7 @@ static arguments parse_args(int argc, char ** argv)
     {
       args.full_output = true;
     }
-    else if (arg == "-d" || arg == "--serial")
+    else if (arg == "-d" || arg == "--serial" || arg == "--device")
     {
       args.serial_number_specified = true;
       args.serial_number = parse_arg_string(arg_reader);
@@ -179,7 +179,7 @@ static arguments parse_args(int argc, char ** argv)
         args.serial_number.erase(0, 1);
       }
     }
-    else if (arg == "--list")
+    else if (arg == "--list" || arg == "-l")
     {
       args.show_list = true;
     }
