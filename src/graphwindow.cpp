@@ -15,18 +15,14 @@
 #include <QCloseEvent>
 
 
-double refreshTimer = 25; // used as a constant for both places the refresh rate is used
+// double refreshTimer = 25; // used as a constant for both places the refresh rate is used
 
-graph_window::graph_window(QWidget * parent)
+graph_widget::graph_widget(QWidget * parent)
   : QMainWindow(parent)
 {
   setup_ui(this); 
   setup_plots();
-  
-  all_plots[0].plot_graph->setPen(QPen(Qt::cyan));
-  all_plots[1].plot_graph->setPen(QPen(Qt::blue));
-  all_plots[2].plot_graph->setPen(QPen("#ffc0cb"));
-  all_plots[3].plot_graph->setPen(QPen(Qt::red));
+
 
   connect(max_y, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
 
@@ -40,23 +36,20 @@ graph_window::graph_window(QWidget * parent)
   data_timer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
 }
 
-graph_window::~graph_window()
+graph_widget::~graph_widget()
 {
 }
 
-void graph_window::setup_ui(QMainWindow *graph_window)
+void graph_widget::setup_ui(QWidget *graph_widget)
 // sets the gui objects in the graph window
 {
-  graph_window->setObjectName(tr("graph_window"));
-  // graph_window->setMinimumSize(818,547);
+  graph_widget->setObjectName(tr("graph_widget"));
 
-  central_widget = new QWidget(graph_window);
+  central_widget = new QWidget(graph_widget);
   central_widget->setObjectName(tr("central_widget"));
-  // central_widget->setMinimumSize(802,508);
 
   pauseRunButton = new QPushButton();
   pauseRunButton->setObjectName(tr("pauseRunButton"));
-  // pauseRunButton->setMinimumSize(82, 22);
   pauseRunButton->setCheckable(true);
   pauseRunButton->setChecked(false);
   pauseRunButton->setText(tr("&Pause"));
@@ -67,69 +60,85 @@ void graph_window::setup_ui(QMainWindow *graph_window)
   font.setPointSize(8);
 
   label1 = new QLabel();
-  // label1->setMinimumSize(59,13);
   label1->setFont(font);
   label1->setText(tr("Range (%)"));
   
   custom_plot = new QCustomPlot();
 
   label2 = new QLabel();
-  // label2->setMinimumSize(47,13);
   label2->setFont(font);
   label2->setText(tr("Time (s)"));
 
   label3 = new QLabel();
-  // label3->setMinimumSize(0,0);
   label3->setFont(font);
   label3->setAlignment(Qt::AlignCenter);
   label3->setText(tr("-"));
   
   min_y = new QDoubleSpinBox();
-  // min_y->setMinimumSize(60,20);
   min_y->setRange(-100,0);
   min_y->setDecimals(0);
   min_y->setSingleStep(1.0);
   min_y->setValue(-100);
   
   max_y = new QDoubleSpinBox();
-  // max_y->setMinimumSize(60,20);
   max_y->setRange(0,100);
   max_y->setDecimals(0);
   max_y->setSingleStep(1.0);
   max_y->setValue(100);
   
   domain = new QSpinBox();
-  // domain->setMinimumSize(42,20);
   domain->setValue(10); // initialized the graph to show 10 seconds of data
 
   input.plot_range = new QDoubleSpinBox();
-  // input.plot_range->setMinimumSize(63,20);
   
   target.plot_range = new QDoubleSpinBox();
-  // target.plot_range->setMinimumSize(63,20);
 
   feedback.plot_range = new QDoubleSpinBox();
-  // feedback.plot_range->setMinimumSize(63,20);
 
   scaled_feedback.plot_range = new QDoubleSpinBox();
-  // scaled_feedback.plot_range->setMinimumSize(63,20);
+
+  error.plot_range = new QDoubleSpinBox();
+
+  integral.plot_range = new QDoubleSpinBox();
+
+  duty_cycle_target.plot_range = new QDoubleSpinBox();
+
+  duty_cycle.plot_range = new QDoubleSpinBox();
+
+  current.plot_range = new QDoubleSpinBox();
 
   input.plot_display = new QCheckBox("Input");
-  // input.plot_display->setMinimumSize(87,17);
-  input.plot_display->setStyleSheet(QStringLiteral("background-color:cyan"));
+  input.plot_display->setStyleSheet(QStringLiteral("background-color:#00ffff"));
 
   target.plot_display = new QCheckBox("Target");
-  // target.plot_display->setMinimumSize(87,17);
-  target.plot_display->setStyleSheet(QStringLiteral("background-color:blue"));
+  target.plot_display->setStyleSheet(QStringLiteral("background-color:#0000ff"));
 
   feedback.plot_display = new QCheckBox("Feedback");
-  // feedback.plot_display->setMinimumSize(87,17);
   feedback.plot_display->setStyleSheet(QStringLiteral("background-color:#ffc0cb"));
 
   scaled_feedback.plot_display = new QCheckBox("Scaled Feedback");
-  // scaled_feedback.plot_display->setMinimumSize(87,17);
-  scaled_feedback.plot_display->setStyleSheet(QStringLiteral("background-color:red"));
+  scaled_feedback.plot_display->setStyleSheet(QStringLiteral("background-color:#ff0000"));
 
+  error.plot_display = new QCheckBox("Error");
+  error.plot_display->setStyleSheet(QStringLiteral("background-color:#9400d3"));
+
+  integral.plot_display = new QCheckBox("Integral");
+  integral.plot_display->setStyleSheet(QStringLiteral("background-color:#ff8c00"));
+
+  duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
+  duty_cycle_target.plot_display->setStyleSheet(QStringLiteral("background-color:#32cd32"));
+
+  duty_cycle.plot_display = new QCheckBox("Duty cycle");
+  duty_cycle.plot_display->setStyleSheet(QStringLiteral("background-color:#006400"));
+
+  current.plot_display = new QCheckBox("Current (mA)");
+  current.plot_display->setStyleSheet(QStringLiteral("background-color:#b8860b"));
+
+  all_plots.push_front(current);
+  all_plots.push_front(duty_cycle);
+  all_plots.push_front(duty_cycle_target);
+  all_plots.push_front(integral);
+  all_plots.push_front(error);
   all_plots.push_front(scaled_feedback);
   all_plots.push_front(feedback);
   all_plots.push_front(target);
@@ -147,35 +156,37 @@ void graph_window::setup_ui(QMainWindow *graph_window)
   // custom_plot->xAxis2->setAutoTickStep(true);
   // custom_plot->xAxis2->setTickStep(2);
 
-  QMetaObject::connectSlotsByName(graph_window);
+  QMetaObject::connectSlotsByName(graph_widget);
 }
 
-void graph_window::setup_plots()
+void graph_widget::setup_plots()
 // sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot. 
 // connects the valueChanged signal of the plot_range to change the ranges of the plots.
 {
-  for(auto &x: all_plots)
+  for(int i=0; i<all_plots.size(); i++)
   {
-    x.plot_range->setDecimals(1);
-    x.plot_range->setSingleStep(0.1);
-    x.plot_range->setRange(0,1);
-    x.plot_range->setValue(1);
-    x.plot_display->setCheckable(true);
-    x.plot_display->setChecked(true);    
+    all_plots[i].plot_range->setDecimals(1);
+    all_plots[i].plot_range->setSingleStep(0.1);
+    all_plots[i].plot_range->setRange(0,1);
+    all_plots[i].plot_range->setValue(1);
+    all_plots[i].plot_display->setCheckable(true);
+    all_plots[i].plot_display->setChecked(true);    
 
-    x.plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
-    x.plot_axis->setRange(-1,1);
-    x.plot_axis->setVisible(false);
+    all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+    all_plots[i].plot_axis->setRange(-1,1);
+    all_plots[i].plot_axis->setVisible(false);
 
-    x.plot_graph = new QCPGraph(custom_plot->xAxis2,x.plot_axis); // yellow line
+    all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis); // yellow line
 
-    connect(x.plot_range, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
+    all_plots[i].plot_graph->setPen(QPen(plot_colors[i]));
 
-    connect(x.plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+    connect(all_plots[i].plot_range, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
+
+    connect(all_plots[i].plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
   }
 }
 
-void graph_window::change_ranges()
+void graph_widget::change_ranges()
 {
   for(auto &x: all_plots)
   {
@@ -186,7 +197,7 @@ void graph_window::change_ranges()
   custom_plot->replot();
 }
 
-void graph_window::on_pauseRunButton_clicked()
+void graph_widget::on_pauseRunButton_clicked()
 // used the QMetaObject class to parse the function name and send the signal to the function.
 {
   pauseRunButton->setText(pauseRunButton->isChecked() ? "R&un" : "&Pause");
@@ -194,7 +205,7 @@ void graph_window::on_pauseRunButton_clicked()
   custom_plot->replot();
 }
 
-void graph_window::set_line_visible()
+void graph_widget::set_line_visible()
 // sets the visibility of the plot both when the plot is running and when it is paused.
 {
   for(auto &x: all_plots)
@@ -204,7 +215,7 @@ void graph_window::set_line_visible()
   }    
 }
 
-void graph_window::remove_data_to_scroll()
+void graph_widget::remove_data_to_scroll()
 // modifies the x-axis based on the domain value and removes data outside of visible range
 { 
   custom_plot->xAxis->setRange(0, domain->value()*1000);
@@ -216,13 +227,14 @@ void graph_window::remove_data_to_scroll()
   custom_plot->replot();
 }
 
-void graph_window::realtime_data_slot()
+void graph_widget::realtime_data_slot()
 // plots data on graph
 {
   key += (refreshTimer/1000);
   
   // this list is only used for demonstrations
-  QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3))};
+  QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3)),
+   (sin(key+4)), (sin(key+5)), (sin(key+6)), (sin(key+7)), (sin(key+8))};
   
   for(int i=0; i<all_plots.size(); i++)
   {

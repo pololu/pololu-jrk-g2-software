@@ -64,7 +64,7 @@ void AltWindow::closeEvent(QCloseEvent *event)
 	QMainWindow::closeEvent(event);
 }
 
-void AltWindow::receive_widget(graph_window *widget)
+void AltWindow::receive_widget(graph_widget *widget)
 {
 	if(grabbedWidget != 0)
 		qWarning() << "You might have lost a widget just now.";

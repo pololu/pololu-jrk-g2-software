@@ -21,10 +21,10 @@ public:
 	~main_window();
 	
 signals:
-	void pass_widget(graph_window *widget);
+	void pass_widget(graph_widget *widget);
 
 private slots:
-	void receive_widget(graph_window *widget);
+	void receive_widget(graph_widget *widget);
 	void on_launchGraph_clicked(QMouseEvent*);
 
 	
@@ -39,8 +39,7 @@ private:
 	QWidget *central_widget;
 	QGridLayout *grid_layout;
 	QHBoxLayout *horizontal_layout;
-	graph_window *preview_window;
-	QPushButton *separate_button;
+	graph_widget *preview_window;
 	AltWindow *altw;
 	QWidget *preview_plot;
 	QMenuBar * menu_bar;
@@ -264,7 +263,7 @@ private:
 	QWidget *central_widget;
 	QFrame *pid_control_frame;
 	QFrame *pid_proportion_frame;
-	QTextEdit *pid_constant_control_textbox;
+	QLineEdit *pid_constant_control_textbox;
 	QLabel *pid_equal_label;
 	QSpinBox *pid_multiplier_spinbox;
 	QLabel *pid_base_label;
@@ -275,7 +274,10 @@ class errors_control : public QWidget
 {
 	Q_OBJECT
 public:
-	errors_control(int row_number, QWidget *parent = 0);
+	// errors_control(QWidget *parent);
+  errors_control(int row_number, const QString& object_name, const QString& bit_mask_text, 
+      const QString& error_label_text, const bool& disabled_visible, 
+      const bool& enabled_visible, QWidget *parent = 0);
 	~errors_control();
 	
 	QGridLayout *errors_central;
