@@ -14,9 +14,17 @@ static const char help[] =
   "  --pause-on-error             Pause program at the end if an error happens.\n"
   "  -h, --help                   Show this help screen.\n"
   "\n"
-  //"Control commands:\n"
+  "Control commands:\n"
+  "  --target NUM                 Set the target value (if input mode is Serial)\n"
+  "  --stop                       Stop the motor\n"
+  "  --run                        Run the motor\n"
+  "  --clear-errors               Clear latched errors\n"
+  "\n"
   //"Temporary settings:\n"
-  //"Permanent settings:\n"
+  // TODO: stuff for setting PID variables
+  // TODO: stuff for temporarily setting duty cycle
+  //"\n"
+  "Permanent settings:\n"
   "  --restore-defaults           Restore device's factory settings\n"
   "  --settings FILE              Load settings file into device.\n"
   "  --get-settings FILE          Read device settings and write to file.\n"
@@ -44,6 +52,15 @@ struct arguments
 
   bool show_help = false;
 
+  bool set_target = false;
+  uint16_t target;
+
+  bool stop_motor = false;
+
+  bool run_motor = false;
+
+  bool clear_errors = false;
+
   bool restore_defaults = false;
 
   bool set_settings = false;
@@ -65,6 +82,10 @@ struct arguments
     return show_status ||
       show_list ||
       show_help ||
+      set_target ||
+      stop_motor ||
+      run_motor ||
+      clear_errors ||
       restore_defaults ||
       set_settings ||
       get_settings ||
@@ -175,6 +196,24 @@ static arguments parse_args(int argc, char ** argv)
     {
       args.show_help = true;
     }
+    else if (arg == "--target")
+    {
+      args.set_target = true;
+      args.target = parse_arg_int<uint16_t>(arg_reader);
+    }
+    else if (arg == "--stop" || arg == "--stop-motor" || arg == "--stopmotor"
+      || arg == "--motor-off" || arg == "--motoroff")
+    {
+      args.stop_motor = true;
+    }
+    else if (arg == "--run" || arg == "--run-motor" || arg == "--runmotor")
+    {
+      args.run_motor = true;
+    }
+    else if (arg == "--clear-errors" || arg == "--clearerrors")
+    {
+      args.clear_errors = true;
+    }
     else if (arg == "--restore-defaults" || arg == "--restoredefaults")
     {
       args.restore_defaults = true;
@@ -240,11 +279,6 @@ static void get_status(device_selector & selector, bool full_output)
   std::string serial_number = device.get_serial_number();
   std::string firmware_version = handle.get_firmware_version_string();
   print_status(vars, settings, name, serial_number, firmware_version, full_output);
-}
-
-static void restore_defaults(device_selector & selector)
-{
-  handle(selector).restore_defaults();
 }
 
 static void get_settings(device_selector & selector,
@@ -348,12 +382,32 @@ static void run(const arguments & args)
 
   if (args.restore_defaults)
   {
-    restore_defaults(selector);
+    handle(selector).restore_defaults();
   }
 
   if (args.set_settings)
   {
     set_settings(selector, args.set_settings_filename);
+  }
+
+  if (args.clear_errors)
+  {
+    handle(selector).clear_errors();
+  }
+
+  if (args.set_target)
+  {
+    handle(selector).set_target(args.target);
+  }
+
+  if (args.run_motor)
+  {
+    handle(selector).run_motor();
+  }
+
+  if (args.stop_motor)
+  {
+    handle(selector).stop_motor();
   }
 
   if (args.get_debug_data)

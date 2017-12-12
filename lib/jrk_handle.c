@@ -183,6 +183,103 @@ jrk_error * jrk_set_setting_byte(jrk_handle * handle,
   return error;
 }
 
+jrk_error * jrk_set_target(jrk_handle * handle, uint16_t target)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
+    0x40, JRK_CMD_SET_TARGET_USB, target, 0, NULL, 0, NULL));
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error setting the target.");
+  }
+
+  return error;
+}
+
+jrk_error * jrk_stop_motor(jrk_handle * handle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
+    0x40, JRK_CMD_MOTOR_OFF_USB, 0, 0, NULL, 0, NULL));
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error stopping the motor.");
+  }
+
+  return error;
+}
+
+jrk_error * jrk_run_motor(jrk_handle * handle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  // Get the target value and clear halting errors at the same time.
+  uint8_t buffer[2];
+  if (error == NULL)
+  {
+    error = jrk_get_variable_segment(handle,
+      JRK_VAR_TARGET, 2, buffer, true, false);
+  }
+  uint16_t target = buffer[0] | (buffer[1] << 8);
+
+  // Send a "Set target" command with the same target value to clear the
+  // "Awaiting command" error bit.
+  if (error == NULL)
+  {
+    error = jrk_set_target(handle, target);
+  }
+
+  return error;
+}
+
+jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
+{
+  if (error_flags != NULL)
+  {
+    *error_flags = 0;
+  }
+
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  // Get the halting error flags and clear them at the same time.
+  uint8_t buffer[2];
+  jrk_error * error = jrk_get_variable_segment(handle,
+    JRK_VAR_ERROR_FLAGS_HALTING, 2, buffer, true, false);
+
+  if (error == NULL && error_flags != NULL)
+  {
+    *error_flags = buffer[0] | (buffer[1] << 8);
+  }
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error while clearing errors.");
+  }
+
+  return error;
+}
+
 jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   uint8_t index, size_t length, uint8_t * output)
 {

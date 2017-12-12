@@ -1223,6 +1223,42 @@ const jrk_device * jrk_handle_get_device(const jrk_handle *);
 JRK_API JRK_WARN_UNUSED
 const char * jrk_get_firmware_version_string(jrk_handle *);
 
+/// Sends a "Set target" command to the jrk, which clears the "Awaiting command"
+/// error bit and (if the input mode is serial) will set the jrk's input and
+/// target variables.
+///
+/// The target should be between 0 and 4095, and its meaning depends on what
+/// feedback mode the jrk is in and its feedback scaling settings.
+///
+/// This is the main command you would use to control the jrk over USB.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_set_target(jrk_handle *, uint16_t target);
+
+/// Sends a "Motor off" command to the jrk.
+///
+/// This command turns the motor off by setting the "Awaiting command" error
+/// bit.  The jrk will not restart the motor until it receives a "Set target"
+/// command (see jrk_set_target()).
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_stop_motor(jrk_handle *);
+
+/// This function clears all of the latched errors including the "Awaiting
+/// command" error bit.
+///
+/// This is the command to use if you want the jrk to clear all of its errors
+/// and run the motor if possible.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_run_motor(jrk_handle *);
+
+/// Sends a command to the jrk that causes it to clear latched errors in the
+/// "Error flags halting" varible except for "Awaiting command".
+///
+/// If the optional error_flags pointer is supplied, this function uses it to
+/// return the value of the "Error flags halting" variable before it was
+/// cleared.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
+
 /// Reads the jrk's status variables and returns them as an object.
 ///
 /// This function sends a "Get variables" command.
