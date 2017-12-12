@@ -25,11 +25,11 @@ if (POLOLU_BUILD)
 endif ()
 
 add_executable (gui
-  ../src/altwindow.cpp
-  ../src/graphwindow.cpp
-  ../src/main.cpp
-  ../src/mainwindow.cpp
-  ../src/qcustomplot.cpp
+  qt/altwindow.cpp
+  qt/graphwindow.cpp
+  qt/main.cpp
+  qt/mainwindow.cpp
+  qt/qcustomplot.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/gui_info.rc
   ${ICON_QRC}
   ${ICON_FILE}
