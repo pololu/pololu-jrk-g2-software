@@ -186,6 +186,7 @@ EOF
     name: 'feedback_disconnect_maximum',
     type: :uint16_t,
     range: 0..4095,
+    default: 4095,
   },
   {
     name: 'feedback_minimum',
@@ -203,6 +204,7 @@ EOF
     name: 'feedback_maximum',
     type: :uint16_t,
     range: 0..4095,
+    default: 4095,
     comment:
       "This is one of the parameters of the feedback scaling described in\n" \
       "the feedback_minimum documentation."

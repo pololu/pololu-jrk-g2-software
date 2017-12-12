@@ -1061,7 +1061,7 @@ namespace jrk
     }
 
     /// Wrapper for jrk_variables_get_error_sum().
-    uint16_t get_error_sum() const noexcept
+    int16_t get_error_sum() const noexcept
     {
       return jrk_variables_get_error_sum(pointer);
     }
