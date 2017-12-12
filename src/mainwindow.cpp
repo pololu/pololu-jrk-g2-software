@@ -19,9 +19,6 @@ main_window::main_window(QWidget * parent)
   setup_ui(this);
   altw = 0;
 
-  sepAct = new QAction(tr("&Separate"), this);
-  sepAct->setStatusTip(tr("Make the red part pop out into another window."));
-  connect(sepAct, SIGNAL(triggered()), this, SLOT(on_separateBtn_clicked()));
   widgetAtHome = true;
 }
 
@@ -142,7 +139,7 @@ void main_window::setup_ui(QMainWindow *main_window)
   horizontal_layout->setSpacing(6);
   horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
 
-  preview_window = new graph_window();
+  preview_window = new graph_widget();
   preview_window->setObjectName(QStringLiteral("preview_window"));
   preview_window->custom_plot->xAxis->setTicks(false);
   preview_window->custom_plot->yAxis->setTicks(false);
@@ -152,6 +149,13 @@ void main_window::setup_ui(QMainWindow *main_window)
   preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
+  connect(
+    stop_motor, &QCheckBox::stateChanged,
+    [=](const bool& d) {
+      stop_motor->isChecked() ? preview_window->data_timer.stop() : 
+      preview_window->data_timer.start(preview_window->refreshTimer);
+      preview_window->custom_plot->replot();
+    });
 
   header_layout->addWidget(device_list_label);
   header_layout->addWidget(device_list_value);
@@ -201,7 +205,8 @@ void main_window::setup_ui(QMainWindow *main_window)
 
   grid_layout->addLayout(footer_layout,2,0);
   
-  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(on_launchGraph_clicked(QMouseEvent*)));
+  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this, 
+    SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
   main_window->setCentralWidget(central_widget);
   main_window->setMenuBar(menu_bar);
@@ -212,12 +217,13 @@ void main_window::setup_ui(QMainWindow *main_window)
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
 {
-  graph_window *red = preview_window;
+  graph_widget *red = preview_window;
   horizontal_layout->removeWidget(red);
   if(altw == 0)
   {
     altw = new AltWindow(this);
-    connect(altw, SIGNAL(pass_widget(graph_window*)), this, SLOT(receive_widget(graph_window*)));
+    connect(altw, SIGNAL(pass_widget(graph_widget*)), this, 
+    SLOT(receive_widget(graph_widget*)));
   }
 
   altw->receive_widget(red);
@@ -225,7 +231,7 @@ void main_window::on_launchGraph_clicked(QMouseEvent *event)
   widgetAtHome = false;
 }
 
-void main_window::receive_widget(graph_window *widget)
+void main_window::receive_widget(graph_widget *widget)
 {
   widget->custom_plot->setFixedSize(150,150);
   widget->custom_plot->xAxis->setTicks(false);
@@ -380,7 +386,8 @@ QWidget * main_window::setup_input_tab()
   input_reset_range_button->setText(tr("Reset to full range"));
   scaling_column2->addWidget(input_reset_range_button);
 
-  input_scaling_order_warning_label = new QLabel(tr("Warning: some of the values\nare not in the correct order."));
+  input_scaling_order_warning_label = new QLabel(
+    tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_waring_label");
   input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
   scaling_column2->addWidget(input_scaling_order_warning_label);  
@@ -473,7 +480,8 @@ QWidget * main_window::setup_feedback_tab()
   feedback_calibration_label = new QLabel(tr("Calibration"));
   feedback_calibration_label->setObjectName("feedback_calibration_label");
   feedback_scaling_layout->addWidget(feedback_calibration_label,1,1);
-  feedback_scaling_order_warning_label = new QLabel(tr("Warning: some of the values\nare not in the correct order"));
+  feedback_scaling_order_warning_label = new QLabel(
+    tr("Warning: some of the values\nare not in the correct order"));
   feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_waring_label");
   feedback_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
   feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,5,4,5,2);
@@ -522,15 +530,19 @@ QWidget * main_window::setup_feedback_tab()
 QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
-  QGridLayout *layout = pid_page_layout = new QGridLayout();
+  QGridLayout *layout = pid_page_layout = new QGridLayout(pid_page_widget);
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  pid_proportional_coefficient = new pid_constant_control("Proportional Coefficient", "pid_proportional_coefficient");
-  pid_integral_coefficient = new pid_constant_control("Integral Coefficient", "pid_integral_coefficient");
-  pid_derivative_coefficient = new pid_constant_control("Derivative Coefficient", "pid_derivative_coefficient");
-  QHBoxLayout *group_box_row = new QHBoxLayout();
-  group_box_row->addWidget(pid_proportional_coefficient,1,Qt::AlignCenter);
-  group_box_row->addWidget(pid_integral_coefficient,1,Qt::AlignCenter);
-  group_box_row->addWidget(pid_derivative_coefficient,1,Qt::AlignCenter);
+  pid_proportional_coefficient = new pid_constant_control(
+    "Proportional Coefficient", "pid_proportional_coefficient");
+  pid_integral_coefficient = new pid_constant_control(
+    "Integral Coefficient", "pid_integral_coefficient");
+  pid_derivative_coefficient = new pid_constant_control(
+    "Derivative Coefficient", "pid_derivative_coefficient");
+  QGridLayout *group_box_row = new QGridLayout();
+  // group_box_row->setRowStretch(0,pid_constant_control()->sizeHint().height());
+  group_box_row->addWidget(pid_proportional_coefficient,0,0,Qt::AlignCenter);
+  group_box_row->addWidget(pid_integral_coefficient,0,1,Qt::AlignCenter);
+  group_box_row->addWidget(pid_derivative_coefficient,0,2,Qt::AlignCenter);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -546,7 +558,8 @@ QWidget * main_window::setup_pid_tab()
   QHBoxLayout *integral_row_layout = new QHBoxLayout();
   integral_row_layout->addWidget(pid_integral_limit_label);
   integral_row_layout->addWidget(pid_integral_limit_spinbox);
-  pid_reset_integral_checkbox = new QCheckBox(tr("Reset integral when proportional term exceeds max duty cycle"));
+  pid_reset_integral_checkbox = new QCheckBox(
+    tr("Reset integral when proportional term exceeds max duty cycle"));
   pid_reset_integral_checkbox->setObjectName("pid_reset_integral_checkbox");
   pid_deadzone_label = new QLabel(tr("Feedback dead zone:"));
   pid_deadzone_label->setObjectName("pid_deadzone_label");
@@ -555,14 +568,13 @@ QWidget * main_window::setup_pid_tab()
   QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
   deadzone_row_layout->addWidget(pid_deadzone_label);
   deadzone_row_layout->addWidget(pid_deadzone_spinbox);
-  layout->setRowMinimumHeight(0,100);
   layout->addLayout(group_box_row,0,0);
-  layout->addLayout(period_row_layout,1,0,Qt::AlignLeft);
-  layout->addLayout(integral_row_layout,2,0,Qt::AlignLeft);
-  layout->addWidget(pid_reset_integral_checkbox,3,0,Qt::AlignLeft);
-  layout->addLayout(deadzone_row_layout,4,0,Qt::AlignLeft);
+  layout->addLayout(period_row_layout,1,0,1,1,Qt::AlignLeft);
+  layout->addLayout(integral_row_layout,2,0,1,1,Qt::AlignLeft);
+  layout->addWidget(pid_reset_integral_checkbox,3,0,1,2,Qt::AlignLeft);
+  layout->addLayout(deadzone_row_layout,4,0,1,1,Qt::AlignLeft);
 
-  pid_page_widget->setLayout(layout);
+  // pid_page_widget->setLayout(layout);
   return pid_page_widget;
 }
 
@@ -719,82 +731,6 @@ QWidget *main_window::setup_errors_tab()
 
   int row_number = 0;
 
-  awaiting_command = new errors_control(row_number++);
-  awaiting_command->setObjectName("awaiting_command");
-  awaiting_command->bit_mask_label->setText(tr("0x0001"));
-  awaiting_command->error_label->setText(tr("Awaiting command"));
-  awaiting_command->disabled_radio->setVisible(false);
-  awaiting_command->enabled_radio->setVisible(false);
-  
-  no_power = new errors_control(row_number++);
-  no_power->setObjectName("no_power");
-  no_power->bit_mask_label->setText(tr("0x0002"));
-  no_power->error_label->setText(tr("No power"));
-  no_power->disabled_radio->setVisible(false);
-
-  motor_driven_error = new errors_control(row_number++);
-  motor_driven_error->setObjectName("motor_driven_error");
-  motor_driven_error->bit_mask_label->setText(tr("0x0004"));
-  motor_driven_error->error_label->setText(tr("Motor driven error"));
-  motor_driven_error->disabled_radio->setVisible(false);
-
-  input_invalid = new errors_control(row_number++);
-  input_invalid->setObjectName("input_invalid");
-  input_invalid->bit_mask_label->setText(tr("0x0008"));
-  input_invalid->error_label->setText(tr("Input invalid"));
-  input_invalid->disabled_radio->setVisible(false);
-
-  input_disconnect = new errors_control(row_number++);
-  input_disconnect->setObjectName("input_disconnect");
-  input_disconnect->bit_mask_label->setText(tr("0x0010"));
-  input_disconnect->error_label->setText(tr("Input disconnect"));
-
-  feedback_disconnect = new errors_control(row_number++);
-  feedback_disconnect->setObjectName("feedback_disconnect");
-  feedback_disconnect->bit_mask_label->setText(tr("0x0020"));
-  feedback_disconnect->error_label->setText(tr("Feedback disconnect"));
-
-  max_current_exceeded = new errors_control(row_number++);
-  max_current_exceeded->setObjectName("max_current_exceeded");
-  max_current_exceeded->bit_mask_label->setText(tr("0x0040"));
-  max_current_exceeded->error_label->setText(tr("Max. current exceeded"));
-
-  serial_signal_error = new errors_control(row_number++);
-  serial_signal_error->setObjectName("serial_signal_error");
-  serial_signal_error->bit_mask_label->setText(tr("0x0080"));
-  serial_signal_error->error_label->setText(tr("Serial signal error"));
-  serial_signal_error->enabled_radio->setVisible(false);
-
-  serial_overrun = new errors_control(row_number++);
-  serial_overrun->setObjectName("serial_overrun");
-  serial_overrun->bit_mask_label->setText(tr("0x0100"));
-  serial_overrun->error_label->setText(tr("Serial overrun"));
-  serial_overrun->enabled_radio->setVisible(false);
-
-  serial_rx_buffer_full = new errors_control(row_number++);
-  serial_rx_buffer_full->setObjectName("serial_rx_buffer_full");
-  serial_rx_buffer_full->bit_mask_label->setText(tr("0x0200"));
-  serial_rx_buffer_full->error_label->setText(tr("Serial RX buffer full"));
-  serial_rx_buffer_full->enabled_radio->setVisible(false);
-
-  serial_crc_error = new errors_control(row_number++);
-  serial_crc_error->setObjectName("serial_crc_error");
-  serial_crc_error->bit_mask_label->setText(tr("0x0400"));
-  serial_crc_error->error_label->setText(tr("Serial CRC error"));
-  serial_crc_error->enabled_radio->setVisible(false);
-
-  serial_protocol_error = new errors_control(row_number++);
-  serial_protocol_error->setObjectName("serial_protocol_error");
-  serial_protocol_error->bit_mask_label->setText(tr("0x0800"));
-  serial_protocol_error->error_label->setText(tr("Serial protocol error"));
-  serial_protocol_error->enabled_radio->setVisible(false);
-
-  serial_timeout_error = new errors_control(row_number++);
-  serial_timeout_error->setObjectName("serial_timeout_error");
-  serial_timeout_error->bit_mask_label->setText(tr("0x1000"));
-  serial_timeout_error->error_label->setText(tr("Serial timeout error"));
-  serial_timeout_error->enabled_radio->setVisible(false);
-
   QHBoxLayout *errors_bottom_buttons = new QHBoxLayout();
   errors_clear_errors = new QPushButton(tr("&Clear Errors"));
   errors_clear_errors->setObjectName("errors_clear_errors");
@@ -805,36 +741,47 @@ QWidget *main_window::setup_errors_tab()
 
   layout->setSpacing(0);
   layout->addWidget(errors_column_labels_frame);
-  layout->addWidget(awaiting_command);
-  layout->addWidget(no_power);
-  layout->addWidget(motor_driven_error);
-  layout->addWidget(input_invalid);
-  layout->addWidget(input_disconnect);
-  layout->addWidget(feedback_disconnect);
-  layout->addWidget(max_current_exceeded);
-  layout->addWidget(serial_signal_error);
-  layout->addWidget(serial_overrun);
-  layout->addWidget(serial_rx_buffer_full);
-  layout->addWidget(serial_crc_error);
-  layout->addWidget(serial_protocol_error);
-  layout->addWidget(serial_timeout_error);
+  layout->addWidget(new errors_control(row_number++, 
+    "awaiting_command", "0x0001", "Awaiting command", false, false));
+  layout->addWidget(new errors_control(row_number++, 
+    "no_power", "0x0002", "No power", false, true));
+  layout->addWidget(new errors_control(row_number++, 
+    "motor_driven_error", "0x0004", "Motor driven error", false, true));
+  layout->addWidget(new errors_control(row_number++, 
+    "input_invalid", "0x0008", "Input invalid", false, true));
+  layout->addWidget(new errors_control(row_number++, 
+    "input_disconnect", "0x0010", "Input disconnect", true, true));
+  layout->addWidget(new errors_control(row_number++, 
+    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true));
+  layout->addWidget(new errors_control(row_number++, 
+    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true));
+  layout->addWidget(new errors_control(row_number++, 
+    "serial_signal_error", "0x0080", "Serial signal error", true, false));
+  layout->addWidget(new errors_control(row_number++, 
+    "serial_overrun", "0x0100", "Serial overrun", true, false));
+  layout->addWidget(new errors_control(row_number++, 
+    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false));
+  layout->addWidget(new errors_control(row_number++, 
+    "serial_crc_error", "0x0400", "Serial CRC error", true, false));
+  layout->addWidget(new errors_control(row_number++, 
+    "serial_protocol_error", "0x0800", "Serial protocol error", true, false));
+  layout->addWidget(new errors_control(row_number++, 
+    "serial_timeout_error", "0x1000", "Serial timeout error", true, false));
   layout->addLayout(errors_bottom_buttons);
 
   errors_page_widget->setLayout(layout);
   return errors_page_widget;
 }
 
-pid_constant_control::pid_constant_control(const QString& group_box_title, const QString& object_name, QWidget *parent)
+pid_constant_control::pid_constant_control(const QString& group_box_title, 
+  const QString& object_name, QWidget *parent)
   : QGroupBox(parent)
 {
   setObjectName(object_name);
   setTitle(group_box_title);
-  setMinimumSize(200,100);
-  central_widget = new QWidget(this);
-  central_widget->setObjectName(tr("central_widget"));
-  pid_base_label = new QLabel(central_widget);
+
+  pid_base_label = new QLabel();
   pid_base_label->setObjectName("pid_base_label");
-  pid_base_label->setGeometry(QRect(13,64,16,27));
   QFont font;
   font.setFamily(QStringLiteral("MS Shell Dlg 2"));
   font.setPointSize(16);
@@ -844,23 +791,19 @@ pid_constant_control::pid_constant_control(const QString& group_box_title, const
   pid_base_label->setLayoutDirection(Qt::LeftToRight);
   pid_base_label->setAlignment(Qt::AlignCenter);
   pid_base_label->setText(tr("2"));
-  pid_control_frame = new QFrame(central_widget);
+  pid_control_frame = new QFrame();
   pid_control_frame->setObjectName(QStringLiteral("pid_control_frame"));
-  pid_control_frame->setGeometry(QRect(11, 36, 65, 27));
   pid_control_frame->setFrameShadow(QFrame::Plain);
   pid_control_frame->setLineWidth(4);
   pid_control_frame->setFrameShape(QFrame::HLine);
-  pid_multiplier_spinbox = new QSpinBox(central_widget);
+  pid_multiplier_spinbox = new QSpinBox();
   pid_multiplier_spinbox->setObjectName("pid_multiplier_spinbox");
-  pid_multiplier_spinbox->setGeometry(QRect(14,21,58,20));
   pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
-  pid_exponent_spinbox = new QSpinBox(central_widget);
+  pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
-  pid_exponent_spinbox->setGeometry(QRect(31,56,41,20));
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
-  pid_equal_label = new QLabel(central_widget);
+  pid_equal_label = new QLabel();
   pid_equal_label->setObjectName("pid_equal_label");
-  pid_equal_label->setGeometry(QRect(87,32,21,31));
   pid_equal_label->setText(tr("="));
   QFont font1;
   font1.setPointSize(12);
@@ -868,10 +811,18 @@ pid_constant_control::pid_constant_control(const QString& group_box_title, const
   font1.setWeight(75);
   pid_equal_label->setFont(font1);
   pid_equal_label->setAlignment(Qt::AlignCenter);
-  pid_constant_control_textbox = new QTextEdit(central_widget);
+  pid_constant_control_textbox = new QLineEdit();
   pid_constant_control_textbox->setObjectName("pid_constant_control_textbox");
-  pid_constant_control_textbox->setGeometry(QRect(122, 39, 70, 21));
-  pid_constant_control_textbox->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+  QGridLayout *group_box_layout = new QGridLayout();
+  group_box_layout->addWidget(pid_base_label,3,1,3,2);
+  group_box_layout->addWidget(pid_control_frame,2,1,1,5);
+  group_box_layout->addWidget(pid_multiplier_spinbox,1,2,1,3);
+  group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
+  group_box_layout->addWidget(pid_equal_label,2,7,1,2);
+  group_box_layout->addWidget(pid_constant_control_textbox,1,9,3,1,Qt::AlignCenter);
+
+  setLayout(group_box_layout);
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -881,7 +832,10 @@ pid_constant_control::~pid_constant_control()
 
 }
 
-errors_control::errors_control(int row_number, QWidget *parent)
+errors_control::errors_control
+(int row_number, const QString& object_name, const QString& bit_mask_text, 
+    const QString& error_label_text, const bool& disabled_visible, 
+      const bool& enabled_visible, QWidget *parent)
 { 
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
@@ -915,7 +869,12 @@ errors_control::errors_control(int row_number, QWidget *parent)
   
   count_label = new QLabel(tr("0"));
   count_label->setObjectName("count_label");
-  
+
+  setObjectName(object_name);
+  bit_mask_label->setText(bit_mask_text);
+  error_label->setText(error_label_text);
+  disabled_radio->setVisible(disabled_visible);
+  enabled_radio->setVisible(enabled_visible);  
 
   // Set the size of the labels and buttons for the errors tab in 
   // a way that can change from OS to OS.
