@@ -208,7 +208,7 @@ private:
 	QRadioButton *motor_coast_radio;
 
 	QWidget *errors_page_widget;
-	QVBoxLayout *errors_page_layout;
+	QGridLayout *errors_page_layout;
 	QLabel *errors_bit_mask_label;
 	QLabel *errors_error_label;
 	QLabel *errors_setting_label;

@@ -697,8 +697,10 @@ QWidget *main_window::setup_motor_tab()
 QWidget *main_window::setup_errors_tab()
 {
   errors_page_widget = new QWidget();
-  QVBoxLayout *layout = errors_page_layout = new QVBoxLayout();
+  QGridLayout *layout = errors_page_layout = new QGridLayout(errors_page_widget);
   layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->setContentsMargins(0,0,0,0);
+  layout->setVerticalSpacing(0);
   QFont font;
   font.setBold(true);
   font.setWeight(75);
@@ -722,12 +724,6 @@ QWidget *main_window::setup_errors_tab()
 
   QGridLayout *errors_column_labels = new QGridLayout();
   QWidget *errors_column_labels_frame = new QWidget();
-  errors_column_labels->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
-  errors_column_labels->addWidget(errors_error_label,0,1,Qt::AlignCenter);
-  errors_column_labels->addWidget(errors_setting_label,0,2,1,4,Qt::AlignCenter);
-  errors_column_labels->addWidget(errors_stopping_motor_label,0,6,Qt::AlignLeft);
-  errors_column_labels->addWidget(errors_occurence_count_label,0,7,Qt::AlignRight);
-  errors_column_labels_frame->setLayout(errors_column_labels);
 
   int row_number = 0;
 
@@ -739,38 +735,40 @@ QWidget *main_window::setup_errors_tab()
   errors_bottom_buttons->addWidget(errors_clear_errors,-1,Qt::AlignRight);
   errors_bottom_buttons->addWidget(errors_reset_counts,-1,Qt::AlignLeft);
 
-  layout->setSpacing(0);
-  layout->addWidget(errors_column_labels_frame);
-  layout->addWidget(new errors_control(row_number++, 
-    "awaiting_command", "0x0001", "Awaiting command", false, false));
-  layout->addWidget(new errors_control(row_number++, 
-    "no_power", "0x0002", "No power", false, true));
-  layout->addWidget(new errors_control(row_number++, 
-    "motor_driven_error", "0x0004", "Motor driven error", false, true));
-  layout->addWidget(new errors_control(row_number++, 
-    "input_invalid", "0x0008", "Input invalid", false, true));
-  layout->addWidget(new errors_control(row_number++, 
-    "input_disconnect", "0x0010", "Input disconnect", true, true));
-  layout->addWidget(new errors_control(row_number++, 
-    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true));
-  layout->addWidget(new errors_control(row_number++, 
-    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true));
-  layout->addWidget(new errors_control(row_number++, 
-    "serial_signal_error", "0x0080", "Serial signal error", true, false));
-  layout->addWidget(new errors_control(row_number++, 
-    "serial_overrun", "0x0100", "Serial overrun", true, false));
-  layout->addWidget(new errors_control(row_number++, 
-    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false));
-  layout->addWidget(new errors_control(row_number++, 
-    "serial_crc_error", "0x0400", "Serial CRC error", true, false));
-  layout->addWidget(new errors_control(row_number++, 
-    "serial_protocol_error", "0x0800", "Serial protocol error", true, false));
-  layout->addWidget(new errors_control(row_number++, 
-    "serial_timeout_error", "0x1000", "Serial timeout error", true, false));
-  layout->addLayout(errors_bottom_buttons);
+  layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignCenter);
+  layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
+  layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
+  layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
+  layout->addWidget(errors_occurence_count_label,0,7);
+  layout->addWidget(new errors_control(++row_number, 
+    "awaiting_command", "0x0001", "Awaiting command", false, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "no_power", "0x0002", "No power", false, true),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "motor_driven_error", "0x0004", "Motor driven error", false, true),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "input_invalid", "0x0008", "Input invalid", false, true),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "input_disconnect", "0x0010", "Input disconnect", true, true),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "serial_signal_error", "0x0080", "Serial signal error", true, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "serial_overrun", "0x0100", "Serial overrun", true, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "serial_crc_error", "0x0400", "Serial CRC error", true, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "serial_protocol_error", "0x0800", "Serial protocol error", true, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addWidget(new errors_control(++row_number, 
+    "serial_timeout_error", "0x1000", "Serial timeout error", true, false),row_number,0,2,8,Qt::AlignTop);
+  layout->addLayout(errors_bottom_buttons,16,0,3,7,Qt::AlignCenter);
 
-  errors_page_widget->setLayout(layout);
-  return errors_page_widget;
+   return errors_page_widget;
 }
 
 pid_constant_control::pid_constant_control(const QString& group_box_title, 
@@ -846,7 +844,8 @@ errors_control::errors_control
   {
     errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
   }
-  errors_central = new QGridLayout();
+  errors_central = new QGridLayout(this);
+
   bit_mask_label = new QLabel();
   bit_mask_label->setObjectName("bit_mask_label");
   
@@ -880,7 +879,7 @@ errors_control::errors_control
   // a way that can change from OS to OS.
   {
     QRadioButton tmp_button;
-    tmp_button.setText("xxxxxxxxxxxxxxxxxxxxxxx");
+    tmp_button.setText("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
     QRadioButton tmp_button_2;
     tmp_button_2.setText("xxxxxxxxx");
     QLabel tmp_label;
@@ -892,21 +891,20 @@ errors_control::errors_control
     disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
     enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
     latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    stopping_motor_label->setFixedWidth(tmp_label2.sizeHint().width());
+    stopping_motor_label->setFixedWidth(tmp_label2.sizeHint().width() * 150/100);
     count_label->setFixedWidth(tmp_label2.sizeHint().width());
   }
 
 
-  errors_central->addWidget(errors_frame,0,0,1,7);
-  errors_central->addWidget(bit_mask_label,0,0,Qt::AlignLeft);
-  errors_central->addWidget(error_label,0,1,Qt::AlignCenter);
-  errors_central->addWidget(disabled_radio,0,2,Qt::AlignRight);
-  errors_central->addWidget(enabled_radio,0,3,Qt::AlignCenter);
-  errors_central->addWidget(latched_radio,0,4,Qt::AlignLeft);
-  errors_central->addWidget(stopping_motor_label,0,5,Qt::AlignCenter);
-  errors_central->addWidget(count_label,0,6,Qt::AlignRight);
-
-  setLayout(errors_central);
+  errors_central->addWidget(errors_frame,1,0,1,9);
+  errors_central->addWidget(bit_mask_label,1,1,Qt::AlignLeft);
+  errors_central->addWidget(error_label,1,2,Qt::AlignCenter);
+  errors_central->addWidget(disabled_radio,1,3,Qt::AlignRight);
+  errors_central->addWidget(enabled_radio,1,4,Qt::AlignCenter);
+  errors_central->addWidget(latched_radio,1,5,Qt::AlignLeft);
+  errors_central->addWidget(stopping_motor_label,1,6,Qt::AlignLeft);
+  errors_central->addWidget(count_label,1,7,1,2,Qt::AlignRight);
+  errors_central->setColumnStretch(6,10);
 
   QMetaObject::connectSlotsByName(this);
 }
