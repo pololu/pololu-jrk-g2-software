@@ -1259,6 +1259,32 @@ namespace jrk
       return settings(s);
     }
 
+    /// Wrapper for jrk_set_target().
+    void set_target(uint16_t target)
+    {
+      throw_if_needed(jrk_set_target(pointer, target));
+    }
+
+    /// Wrapper for jrk_stop_motor().
+    void stop_motor()
+    {
+      throw_if_needed(jrk_stop_motor(pointer));
+    }
+
+    /// Wrapper for jrk_run_motor().
+    void run_motor()
+    {
+      throw_if_needed(jrk_run_motor(pointer));
+    }
+
+    /// Wrapper for jrk_clear_errors().
+    uint16_t clear_errors()
+    {
+      uint16_t error_flags;
+      throw_if_needed(jrk_clear_errors(pointer, &error_flags));
+      return error_flags;
+    }
+
     /// Wrapper for jrk_set_settings().
     void set_settings(const settings & settings)
     {
