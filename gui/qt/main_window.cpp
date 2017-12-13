@@ -705,20 +705,20 @@ QWidget *main_window::setup_errors_tab()
   QFont font;
   font.setBold(true);
   font.setWeight(75);
-  errors_bit_mask_label = new QLabel(tr("Bit mask"));
+  errors_bit_mask_label = new QLabel(tr("Bit mask\n"));
   errors_bit_mask_label->setObjectName("errors_bit_mask_label");
   errors_bit_mask_label->setFont(font);
-  errors_error_label = new QLabel(tr("Error"));
+  errors_error_label = new QLabel(tr("Error\n"));
   errors_error_label->setObjectName("errors_error_label");
   errors_error_label->setFont(font);
-  errors_setting_label = new QLabel(tr("Setting"));
+  errors_setting_label = new QLabel(tr("Setting\n"));
   errors_setting_label->setObjectName("errors_setting_label");
   errors_setting_label->setFont(font);
-  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?"));
+  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?\n"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
   errors_stopping_motor_label->setFont(font);
-  errors_occurence_count_label = new QLabel(tr("Occurence\ncount"));
+  errors_occurence_count_label = new QLabel(tr("Occurence\ncount\n"));
   errors_occurence_count_label->setObjectName("errors_occurence_count_label");
   errors_occurence_count_label->setAlignment(Qt::AlignCenter);
   errors_occurence_count_label->setFont(font);
@@ -736,17 +736,17 @@ QWidget *main_window::setup_errors_tab()
   errors_bottom_buttons->addWidget(errors_clear_errors,-1,Qt::AlignRight);
   errors_bottom_buttons->addWidget(errors_reset_counts,-1,Qt::AlignLeft);
 
-  layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignCenter);
+  layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
   layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
   layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
-  layout->addWidget(errors_occurence_count_label,0,7);
+  layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
   layout->addWidget(new errors_control(++row_number, 
     "awaiting_command", "0x0001", "Awaiting command", false, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
     "no_power", "0x0002", "No power", false, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "motor_driven_error", "0x0004", "Motor driven error", false, true),row_number,0,1,8,Qt::AlignCenter);
+    "motor_driven_error", "0x0004", "Motor driver error", false, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
     "input_invalid", "0x0008", "Input invalid", false, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
@@ -776,8 +776,50 @@ QWidget *main_window::setup_errors_tab()
   page_layout->addLayout(layout,Qt::AlignCenter);
   errors_page_widget->setLayout(page_layout);
 
-   return errors_page_widget;
+  return errors_page_widget;
 }
+
+// void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)
+// {
+//   suppress_events = true;
+//   device_list_value->clear();
+//   device_list_value->addItem(tr("Not connected"), QString()); // null value
+//   for (jrk::device const & device : device_list)
+//   {
+//     device_list_value->addItem(
+//       QString::fromStdString(
+//         " #" + device.get_serial_number()),
+//       QString::fromStdString(device.get_os_id()));
+//   }
+//   suppress_events = false;
+// }
+
+// void main_window::set_device_list_selected(jrk::device const & device)
+// {
+//   // TODO: show an error if we couldn't find the specified device
+//   // (findData returned -1)?
+//   suppress_events = true;
+//   int index = 0;
+//   if (device)
+//   {
+//     index = device_list_value->findData(QString::fromStdString(device.get_os_id()));
+//   }
+//   device_list_value->setCurrentIndex(index);
+//   suppress_events = false;
+// }
+
+// void main_window::set_connection_status(std::string const & status, bool error)
+// {
+//   if (error)
+//   {
+//     connection_status_value->setStyleSheet("color: red;");
+//   }
+//   else
+//   {
+//     connection_status_value->setStyleSheet("");
+//   }
+//   connection_status_value->setText(QString::fromStdString(status));
+// }
 
 pid_constant_control::pid_constant_control(const QString& group_box_title, 
   const QString& object_name, QWidget *parent)
@@ -849,7 +891,7 @@ errors_control::errors_control
 
   errors_frame = new QWidget();
 
-  if(row_number % 2 == 0)
+  if(row_number % 2 != 0)
   {
     errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
   }
@@ -892,7 +934,7 @@ errors_control::errors_control
     QRadioButton tmp_button_2;
     tmp_button_2.setText("xxxxxxxxx");
     QLabel tmp_label;
-    tmp_label.setText("xxxxxxxxxxxxxxxxxxxxx");
+    tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
     QLabel tmp_label2;
     tmp_label2.setText("xxxxxxxxxx");
     bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());

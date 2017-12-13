@@ -241,11 +241,19 @@ private:
 	bool widgetAtHome;
 	
 	QWidget * setup_status_tab();
-    QWidget * setup_input_tab();
+  QWidget * setup_input_tab();
 	QWidget * setup_feedback_tab();
 	QWidget * setup_pid_tab();
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
+
+ //  bool suppress_events = false;
+
+	// void set_device_list_contents(std::vector<jrk::device> const & device_list);
+ //  void set_device_list_selected(jrk::device const & device);
+
+ //  // Sets the label that shows the connection status/error.
+ //  void set_connection_status(std::string const & status, bool error);
 	void setup_ui(QMainWindow *main_window);
 	void retranslate_ui(QMainWindow *main_window);
 
