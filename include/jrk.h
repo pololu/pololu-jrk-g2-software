@@ -1281,6 +1281,24 @@ JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
   bool clear_error_flags_halting, bool clear_error_flags_occurred);
 
+/// Sends an "Override duty cycle" command to the jrk.
+///
+/// For specified number of PID periods, the jrk will ignore the results of the
+/// usual algorithm for choosing the duty cycle target, and instead set it to be
+/// equal to the target specified by this command.
+///
+/// The dutyCycle argument should be between -600 and 600.
+///
+/// The timeout argument is the number of PID periods for the override to be
+/// active, and can be any number from 0 to 255.  Set it to 0 if you want to
+/// cancel an earlier override.
+///
+/// While the override is active, motor limits like maximum acceleration are
+/// still enforced, and errors can still stop the motor.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_override_duty_cycle(jrk_handle *,
+  int16_t duty_cycle, uint8_t timeout);
+
 /// Reads all of the jrk's non-volatile settings and returns them as an object.
 ///
 /// The settings parameter should be a non-null pointer to a jrk_settings

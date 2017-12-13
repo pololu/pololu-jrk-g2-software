@@ -17,6 +17,8 @@ static const char help[] =
   "Control commands:\n"
   "  --target NUM                 Set the target value (if input mode is Serial)\n"
   "  --speed NUM                  Set the target value to 2048 plus NUM\n"
+  "  --override NUM TIMEOUT       Ignore PID and target, set duty cycle target\n"
+  "                               to NUM for TIMEOUT PID periods.\n"
   "  --stop                       Stop the motor\n"
   "  --run                        Run the motor\n"
   "  --clear-errors               Clear latched errors\n"
@@ -56,6 +58,10 @@ struct arguments
   bool set_target = false;
   uint16_t target;
 
+  bool override_duty_cycle = true;
+  int16_t override_duty_cycle_value;
+  uint8_t override_duty_cycle_timeout;
+
   bool stop_motor = false;
 
   bool run_motor = false;
@@ -84,6 +90,7 @@ struct arguments
       show_list ||
       show_help ||
       set_target ||
+      override_duty_cycle ||
       stop_motor ||
       run_motor ||
       clear_errors ||
@@ -209,6 +216,12 @@ static arguments parse_args(int argc, char ** argv)
       if (speed < -2048) { args.target = 0; }
       else if (speed > 2047) { args.target = 4095; }
       else { args.target = 2048 + speed; }
+    }
+    else if (arg == "--override")
+    {
+      args.override_duty_cycle = true;
+      args.override_duty_cycle_value = parse_arg_int<int16_t>(arg_reader);
+      args.override_duty_cycle_timeout = parse_arg_int<uint8_t>(arg_reader);
     }
     else if (arg == "--stop" || arg == "--stop-motor" || arg == "--stopmotor"
       || arg == "--motor-off" || arg == "--motoroff")
@@ -407,6 +420,12 @@ static void run(const arguments & args)
   if (args.set_target)
   {
     handle(selector).set_target(args.target);
+  }
+
+  if (args.override_duty_cycle)
+  {
+    handle(selector).override_duty_cycle(
+      args.override_duty_cycle_value, args.override_duty_cycle_timeout);
   }
 
   if (args.run_motor)

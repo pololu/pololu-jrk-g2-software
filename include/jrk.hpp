@@ -1265,6 +1265,12 @@ namespace jrk
       throw_if_needed(jrk_set_target(pointer, target));
     }
 
+    /// Wrapper for jrk_override_duty_cycle().
+    void override_duty_cycle(int16_t duty_cycle, uint8_t timeout)
+    {
+      throw_if_needed(jrk_override_duty_cycle(pointer, duty_cycle, timeout));
+    }
+
     /// Wrapper for jrk_stop_motor().
     void stop_motor()
     {
