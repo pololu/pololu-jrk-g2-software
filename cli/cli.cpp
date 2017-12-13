@@ -16,6 +16,7 @@ static const char help[] =
   "\n"
   "Control commands:\n"
   "  --target NUM                 Set the target value (if input mode is Serial)\n"
+  "  --speed NUM                  Set the target value to 2048 plus NUM\n"
   "  --stop                       Stop the motor\n"
   "  --run                        Run the motor\n"
   "  --clear-errors               Clear latched errors\n"
@@ -200,6 +201,14 @@ static arguments parse_args(int argc, char ** argv)
     {
       args.set_target = true;
       args.target = parse_arg_int<uint16_t>(arg_reader);
+    }
+    else if (arg == "--speed")
+    {
+      args.set_target = true;
+      int32_t speed = parse_arg_int<int32_t>(arg_reader);
+      if (speed < -2048) { args.target = 0; }
+      else if (speed > 2047) { args.target = 4095; }
+      else { args.target = 2048 + speed; }
     }
     else if (arg == "--stop" || arg == "--stop-motor" || arg == "--stopmotor"
       || arg == "--motor-off" || arg == "--motoroff")
