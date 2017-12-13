@@ -701,7 +701,7 @@ QWidget *main_window::setup_errors_tab()
   errors_page_widget = new QWidget();
   QGridLayout *layout = errors_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setVerticalSpacing(8);
+  layout->setVerticalSpacing(0);
   QFont font;
   font.setBold(true);
   font.setWeight(75);
@@ -827,6 +827,7 @@ pid_constant_control::pid_constant_control(const QString& group_box_title,
   group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
   group_box_layout->addWidget(pid_equal_label,2,7,1,2);
   group_box_layout->addWidget(pid_constant_control_textbox,1,9,3,1,Qt::AlignCenter);
+  group_box_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   setLayout(group_box_layout);
 
@@ -904,7 +905,7 @@ errors_control::errors_control
   }
 
 
-  errors_central->addWidget(errors_frame,1,0,1,9);
+  errors_central->addWidget(errors_frame,0,0,3,9);
   errors_central->addWidget(bit_mask_label,1,1,Qt::AlignLeft);
   errors_central->addWidget(error_label,1,2,Qt::AlignCenter);
   errors_central->addWidget(disabled_radio,1,3,Qt::AlignRight);
