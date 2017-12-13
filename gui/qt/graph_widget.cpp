@@ -1,5 +1,5 @@
-#include "graphwindow.h"
-#include "mainwindow.h"
+#include "graph_widget.h"
+#include "main_window.h"
 #include "qcustomplot.h"
 #include <ctime>
 #include <QApplication>

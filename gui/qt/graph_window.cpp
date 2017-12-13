@@ -1,6 +1,6 @@
-#include "altwindow.h"
-#include "mainwindow.h"
-#include "graphwindow.h"
+#include "graph_window.h"
+#include "main_window.h"
+#include "graph_widget.h"
 #include <QDebug>
 #include <QWidget>
 

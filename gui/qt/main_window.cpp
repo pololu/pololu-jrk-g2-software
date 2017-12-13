@@ -1,6 +1,6 @@
-#include "mainwindow.h"
+#include "main_window.h"
 #include "qcustomplot.h"
-#include "altwindow.h"
+#include "graph_window.h"
 
 #include <QApplication>
 #include <QWidget>
@@ -149,6 +149,8 @@ void main_window::setup_ui(QMainWindow *main_window)
   preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
+  
+  // tmphax:stop graph 
   connect(
     stop_motor, &QCheckBox::stateChanged,
     [=](const bool& d) {
@@ -697,10 +699,9 @@ QWidget *main_window::setup_motor_tab()
 QWidget *main_window::setup_errors_tab()
 {
   errors_page_widget = new QWidget();
-  QGridLayout *layout = errors_page_layout = new QGridLayout(errors_page_widget);
+  QGridLayout *layout = errors_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setContentsMargins(0,0,0,0);
-  layout->setVerticalSpacing(0);
+  layout->setVerticalSpacing(8);
   QFont font;
   font.setBold(true);
   font.setWeight(75);
@@ -741,32 +742,39 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
   layout->addWidget(errors_occurence_count_label,0,7);
   layout->addWidget(new errors_control(++row_number, 
-    "awaiting_command", "0x0001", "Awaiting command", false, false),row_number,0,2,8,Qt::AlignTop);
+    "awaiting_command", "0x0001", "Awaiting command", false, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "no_power", "0x0002", "No power", false, true),row_number,0,2,8,Qt::AlignTop);
+    "no_power", "0x0002", "No power", false, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "motor_driven_error", "0x0004", "Motor driven error", false, true),row_number,0,2,8,Qt::AlignTop);
+    "motor_driven_error", "0x0004", "Motor driven error", false, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "input_invalid", "0x0008", "Input invalid", false, true),row_number,0,2,8,Qt::AlignTop);
+    "input_invalid", "0x0008", "Input invalid", false, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "input_disconnect", "0x0010", "Input disconnect", true, true),row_number,0,2,8,Qt::AlignTop);
+    "input_disconnect", "0x0010", "Input disconnect", true, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true),row_number,0,2,8,Qt::AlignTop);
+    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true),row_number,0,2,8,Qt::AlignTop);
+    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "serial_signal_error", "0x0080", "Serial signal error", true, false),row_number,0,2,8,Qt::AlignTop);
+    "serial_signal_error", "0x0080", "Serial signal error", true, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "serial_overrun", "0x0100", "Serial overrun", true, false),row_number,0,2,8,Qt::AlignTop);
+    "serial_overrun", "0x0100", "Serial overrun", true, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false),row_number,0,2,8,Qt::AlignTop);
+    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "serial_crc_error", "0x0400", "Serial CRC error", true, false),row_number,0,2,8,Qt::AlignTop);
+    "serial_crc_error", "0x0400", "Serial CRC error", true, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "serial_protocol_error", "0x0800", "Serial protocol error", true, false),row_number,0,2,8,Qt::AlignTop);
+    "serial_protocol_error", "0x0800", "Serial protocol error", true, false),row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number, 
-    "serial_timeout_error", "0x1000", "Serial timeout error", true, false),row_number,0,2,8,Qt::AlignTop);
-  layout->addLayout(errors_bottom_buttons,16,0,3,7,Qt::AlignCenter);
+    "serial_timeout_error", "0x1000", "Serial timeout error", true, false),row_number,0,1,8,Qt::AlignCenter);
+  layout->addLayout(errors_bottom_buttons,16,0,4,8,Qt::AlignBottom);
+
+  layout->setMargin(0);
+
+  QHBoxLayout *page_layout = new QHBoxLayout();
+  page_layout->setSizeConstraint(QLayout::SetFixedSize);
+  page_layout->addLayout(layout,Qt::AlignCenter);
+  errors_page_widget->setLayout(page_layout);
 
    return errors_page_widget;
 }
@@ -906,6 +914,7 @@ errors_control::errors_control
   errors_central->addWidget(count_label,1,7,1,2,Qt::AlignRight);
   errors_central->setColumnStretch(6,10);
 
+  errors_central->setMargin(0);
   QMetaObject::connectSlotsByName(this);
 }
 

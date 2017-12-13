@@ -6,8 +6,8 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 #include "qcustomplot.h"
-#include "graphwindow.h"
-#include "altwindow.h"
+#include "graph_widget.h"
+#include "graph_window.h"
 
 class pid_constant_control;
 class errors_control;
@@ -274,7 +274,6 @@ class errors_control : public QWidget
 {
 	Q_OBJECT
 public:
-	// errors_control(QWidget *parent);
   errors_control(int row_number, const QString& object_name, const QString& bit_mask_text, 
       const QString& error_label_text, const bool& disabled_visible, 
       const bool& enabled_visible, QWidget *parent = 0);

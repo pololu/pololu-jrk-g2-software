@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include "graphwindow.h"
+#include "graph_widget.h"
 
 class AltWindow : public QMainWindow
 {
