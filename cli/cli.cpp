@@ -58,7 +58,7 @@ struct arguments
   bool set_target = false;
   uint16_t target;
 
-  bool override_duty_cycle = true;
+  bool override_duty_cycle = false;
   int16_t override_duty_cycle_value;
   uint8_t override_duty_cycle_timeout;
 
