@@ -25,9 +25,10 @@ if (POLOLU_BUILD)
 endif ()
 
 add_executable (gui
+  main.cpp
+  main_controller.cpp
   qt/graph_window
   qt/graph_widget.cpp
-  qt/main.cpp
   qt/main_window.cpp
   qt/qcustomplot.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/gui_info.rc
@@ -45,7 +46,7 @@ if (WIN32)
   )
 endif ()
 
-target_link_libraries (gui Qt5::Widgets) # TODO: add 'lib' and 'bootloader'
+target_link_libraries (gui Qt5::Widgets lib) # TODO: add 'bootloader'
 qt5_use_modules(gui PrintSupport)
 qt5_use_modules(gui SerialPort)   # TODO: remove since we aren't using it
 
