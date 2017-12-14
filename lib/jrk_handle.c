@@ -310,7 +310,7 @@ jrk_error * jrk_get_setting_segment(jrk_handle * handle,
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0xC0, JRK_CMD_GET_SETTING, 0, index, output, length, &transferred));
+    0xC0, JRK_CMD_GET_SETTINGS, 0, index, output, length, &transferred));
   if (error != NULL)
   {
     return error;
