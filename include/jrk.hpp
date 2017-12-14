@@ -1141,7 +1141,7 @@ namespace jrk
     // End of auto-generated variables C++ getters.
 
     /// Wrapper for jrk_variables_get_error().
-    uint16_t get_error() const noexcept
+    int16_t get_error() const noexcept
     {
       return jrk_variables_get_error(pointer);
     }
