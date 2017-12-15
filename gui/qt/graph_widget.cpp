@@ -20,7 +20,7 @@
 graph_widget::graph_widget(QWidget * parent)
   : QMainWindow(parent)
 {
-  setup_ui(this); 
+  setup_ui(this);
   setup_plots();
 
 
@@ -32,8 +32,8 @@ graph_widget::graph_widget(QWidget * parent)
 
   // connect the signal from the dataTime to call realtime_data_slot() using the refresh interval "refreshTimer"
   // set as a constant to be used throughout the class
-  connect(&data_timer, SIGNAL(timeout()), this, SLOT(realtime_data_slot()));
-  data_timer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
+  // connect(&data_timer, SIGNAL(timeout()), this, SLOT(realtime_data_slot()));
+  // data_timer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
 }
 
 graph_widget::~graph_widget()
@@ -53,16 +53,16 @@ void graph_widget::setup_ui(QWidget *graph_widget)
   pauseRunButton->setCheckable(true);
   pauseRunButton->setChecked(false);
   pauseRunButton->setText(tr("&Pause"));
-  
+
   connect(pauseRunButton, SIGNAL(clicked()), this, SLOT(on_pauseRunButton_clicked()));
-  
+
   QFont font;
   font.setPointSize(8);
 
   label1 = new QLabel();
   label1->setFont(font);
   label1->setText(tr("Range (%)"));
-  
+
   custom_plot = new QCustomPlot();
 
   label2 = new QLabel();
@@ -73,24 +73,24 @@ void graph_widget::setup_ui(QWidget *graph_widget)
   label3->setFont(font);
   label3->setAlignment(Qt::AlignCenter);
   label3->setText(tr("-"));
-  
+
   min_y = new QDoubleSpinBox();
   min_y->setRange(-100,0);
   min_y->setDecimals(0);
   min_y->setSingleStep(1.0);
   min_y->setValue(-100);
-  
+
   max_y = new QDoubleSpinBox();
   max_y->setRange(0,100);
   max_y->setDecimals(0);
   max_y->setSingleStep(1.0);
   max_y->setValue(100);
-  
+
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
 
   input.plot_range = new QDoubleSpinBox();
-  
+
   target.plot_range = new QDoubleSpinBox();
 
   feedback.plot_range = new QDoubleSpinBox();
@@ -160,7 +160,7 @@ void graph_widget::setup_ui(QWidget *graph_widget)
 }
 
 void graph_widget::setup_plots()
-// sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot. 
+// sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot.
 // connects the valueChanged signal of the plot_range to change the ranges of the plots.
 {
   for(int i=0; i<all_plots.size(); i++)
@@ -170,7 +170,7 @@ void graph_widget::setup_plots()
     all_plots[i].plot_range->setRange(0,1);
     all_plots[i].plot_range->setValue(1);
     all_plots[i].plot_display->setCheckable(true);
-    all_plots[i].plot_display->setChecked(true);    
+    all_plots[i].plot_display->setChecked(true);
 
     all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
     all_plots[i].plot_axis->setRange(-1,1);
@@ -212,17 +212,17 @@ void graph_widget::set_line_visible()
   {
     x.plot_display->isChecked() ? x.plot_graph->setVisible(true) : x.plot_graph->setVisible(false);
     custom_plot->replot();
-  }    
+  }
 }
 
 void graph_widget::remove_data_to_scroll()
 // modifies the x-axis based on the domain value and removes data outside of visible range
-{ 
+{
   custom_plot->xAxis->setRange(0, domain->value()*1000);
 
   // make key axis range scroll with the data at a rate of the time value obtained from QSpinBox
   custom_plot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
-  
+
   // these range values are divided by 100 just for the sample data in order to draw sine curve
   custom_plot->replot();
 }
@@ -231,17 +231,17 @@ void graph_widget::realtime_data_slot()
 // plots data on graph
 {
   key += (refreshTimer/1000);
-  
+
   // this list is only used for demonstrations
   QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3)),
    (sin(key+4)), (sin(key+5)), (sin(key+6)), (sin(key+7)), (sin(key+8))};
-  
+
   for(int i=0; i<all_plots.size(); i++)
   {
     all_plots[i].plot_graph->addData(key, value[i]);
     all_plots[i].plot_graph->removeDataBefore(key-(domain->value()));
   }
-  
+
   remove_data_to_scroll();
 }
 
