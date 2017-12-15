@@ -142,15 +142,15 @@ private slots:
 
 
 protected:
-	void context_menu_event(QContextMenuEvent *event);
+	// void context_menu_event(QContextMenuEvent *event);
 
   // This is called by Qt just before the window is shown for the first time,
   // and is also called whenever the window becomes unminimized.
-  void showEvent(QShowEvent *);
+  void showEvent(QShowEvent *) override;
 
   // This is called by Qt when the "close" slot is triggered, meaning that
   // the user wants to close the window.
-  void closeEvent(QCloseEvent *);
+  void closeEvent(QCloseEvent *) override;
 
 
 private:
@@ -160,14 +160,14 @@ private:
 
 	QTimer *update_timer = NULL;
 
-	QLabel * device_name_label;
-  QLabel * device_name_value;
-  QLabel * serial_number_label;
-  QLabel * serial_number_value;
-  QLabel * firmware_version_label;
-  QLabel * firmware_version_value;
-  QLabel * device_reset_label;
-  QLabel * device_reset_value;
+	QLabel * device_name_label = NULL;
+  QLabel * device_name_value = NULL;
+  QLabel * serial_number_label = NULL;
+  QLabel * serial_number_value = NULL;
+  QLabel * firmware_version_label = NULL;
+  QLabel * firmware_version_value = NULL;
+  QLabel * device_reset_label = NULL;
+  QLabel * device_reset_value = NULL;
 
 	QWidget *central_widget;
 	QGridLayout *grid_layout;

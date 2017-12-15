@@ -4,24 +4,23 @@
 #include <QDebug>
 #include <QWidget>
 
-AltWindow::AltWindow(QWidget *parent) :
-	QMainWindow(parent)
+AltWindow::AltWindow(QWidget *parent)
 {
-	setup_ui(this);
+	setup_ui();
 	grabbedWidget = 0;
 	connect(backBtn, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 AltWindow::~AltWindow()
 {
-		
+
 }
 
-void AltWindow::setup_ui(QMainWindow *AltWindow)
+void AltWindow::setup_ui()
 {
-	AltWindow->setObjectName(QStringLiteral("AltWindow"));
-	AltWindow->resize(818,547);
-	centralwidget = new QWidget(AltWindow);
+	setObjectName(QStringLiteral("AltWindow"));
+	resize(818,547);
+	centralwidget = new QWidget(this);
 	centralwidget->setObjectName(QStringLiteral("centralwidget"));
 	verticalLayout = new QVBoxLayout(centralwidget);
 	verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
@@ -39,7 +38,7 @@ void AltWindow::setup_ui(QMainWindow *AltWindow)
 	plotRangeLayout = new QVBoxLayout;
 
 	plotVisibleLayout = new QVBoxLayout;
-	
+
 	verticalLayout->addWidget(backBtn);
 
 	horizontal_layout = new QHBoxLayout();
@@ -47,11 +46,10 @@ void AltWindow::setup_ui(QMainWindow *AltWindow)
 
 	verticalLayout->addLayout(horizontal_layout);
 
-	AltWindow->setCentralWidget(centralwidget);
 
-	retranslate_ui(AltWindow);
+	retranslate_ui();
 
-	QMetaObject::connectSlotsByName(AltWindow);
+	QMetaObject::connectSlotsByName(this);
 }
 
 void AltWindow::closeEvent(QCloseEvent *event)
@@ -61,7 +59,7 @@ void AltWindow::closeEvent(QCloseEvent *event)
 	horizontal_layout->removeWidget(grabbedWidget);
 	emit pass_widget(grabbedWidget);
 	grabbedWidget = 0;
-	QMainWindow::closeEvent(event);
+	QWidget::closeEvent(event);
 }
 
 void AltWindow::receive_widget(graph_widget *widget)
@@ -99,8 +97,8 @@ void AltWindow::receive_widget(graph_widget *widget)
 	horizontal_layout->addLayout(centralLayout);
 }
 
-void AltWindow::retranslate_ui(QMainWindow *AltWindow)
+void AltWindow::retranslate_ui()
 {
-	AltWindow->setWindowTitle(QApplication::translate("AltWindow", "Graph Popout Window", Q_NULLPTR));
+	this->setWindowTitle(QApplication::translate("AltWindow", "Graph Popout Window", Q_NULLPTR));
 	backBtn->setText(QApplication::translate("AltWindow", "Back", Q_NULLPTR));
 }

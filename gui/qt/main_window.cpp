@@ -274,19 +274,19 @@ void main_window::receive_widget(graph_widget *widget)
   widgetAtHome = true;
 }
 
-void main_window::context_menu_event(QContextMenuEvent *event)
-{
-  if (widgetAtHome)
-  {
-    QMenu menu(this);
-    menu.addAction(sepAct);
-    menu.exec(event->globalPos());
-  }
-}
+// void main_window::context_menu_event(QContextMenuEvent *event)
+// {
+//   if (widgetAtHome)
+//   {
+//     QMenu menu(this);
+//     menu.addAction(sepAct);
+//     menu.exec(event->globalPos());
+//   }
+// }
 
 void main_window::retranslate_ui(QMainWindow *main_window)
 {
-  main_window->setWindowTitle(QApplication::translate("main_window", "main_window", Q_NULLPTR));
+  // main_window->setWindowTitle(QApplication::translate("main_window", "main_window", Q_NULLPTR));
 }
 
 QWidget * main_window::setup_status_tab()
@@ -1243,8 +1243,8 @@ void main_window::start_update_timer()
 
 void main_window::on_update_timer_timeout()
 {
-  // feedback_calibration_label->setText(tr("hi"));
-  controller->update();
+  feedback_calibration_label->setText(tr("hi"));
+  controller->update_window();
 }
 
 void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)

@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include "graph_widget.h"
 
-class AltWindow : public QMainWindow
+class AltWindow : public QWidget
 {
   Q_OBJECT
 public:
@@ -13,7 +13,7 @@ public:
 
 
 
-  void setup_ui(QMainWindow *AltWindow);
+  void setup_ui();
   graph_widget *grabbedWidget;
   void closeEvent(QCloseEvent *);
   QWidget *centralwidget;
@@ -26,7 +26,7 @@ public:
   QHBoxLayout *bottomControlLayout;
   QVBoxLayout *plotRangeLayout;
   QVBoxLayout *plotVisibleLayout;
-  void retranslate_ui(QMainWindow *AltWindow);
+  void retranslate_ui();
 
 signals:
   void pass_widget(graph_widget* widget);

@@ -17,9 +17,8 @@
 // double refreshTimer = 25; // used as a constant for both places the refresh rate is used
 
 graph_widget::graph_widget(QWidget * parent)
-  : QMainWindow(parent)
 {
-  setup_ui(this);
+  setup_ui();
   setup_plots();
 
   connect(max_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
@@ -36,12 +35,12 @@ graph_widget::~graph_widget()
 {
 }
 
-void graph_widget::setup_ui(QWidget *graph_widget)
+void graph_widget::setup_ui()
 // sets the gui objects in the graph window
 {
-  graph_widget->setObjectName(tr("graph_widget"));
+  this->setObjectName(tr("graph_widget"));
 
-  central_widget = new QWidget(graph_widget);
+  central_widget = new QWidget(this);
   central_widget->setObjectName(tr("central_widget"));
 
   pauseRunButton = new QPushButton();
@@ -152,7 +151,7 @@ void graph_widget::setup_ui(QWidget *graph_widget)
   // custom_plot->xAxis2->setAutoTickStep(true);
   // custom_plot->xAxis2->setTickStep(2);
 
-  QMetaObject::connectSlotsByName(graph_widget);
+  QMetaObject::connectSlotsByName(this);
 }
 
 void graph_widget::setup_plots()

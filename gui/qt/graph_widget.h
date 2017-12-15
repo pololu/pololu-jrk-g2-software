@@ -4,14 +4,14 @@
 #include <QList>
 #include "qcustomplot.h"
 
-class graph_widget : public QMainWindow
+class graph_widget : public QWidget
 {
 	Q_OBJECT
 
 public:
 	graph_widget(QWidget * parent = 0);
 	~graph_widget();
-	
+
 	struct plot
     {
     	QDoubleSpinBox *plot_range;
@@ -41,7 +41,7 @@ public:
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
-  double refreshTimer = 25;  
+  double refreshTimer = 25;
 
   QList<plot> all_plots;
   QList<QString> plot_colors = {
@@ -54,21 +54,21 @@ public:
     "#32cd32",
     "#006400",
     "#b8860b"
-  };    
+  };
 
 signals:
-	
+
 
 public slots:
 	void on_pauseRunButton_clicked();
 	void remove_data_to_scroll();
 	void realtime_data_slot();
-	void setup_ui(QWidget *graph_widget);
+	void setup_ui();
 	void set_line_visible();
 	void setup_plots();
 	void change_ranges();
-	
 
 
-	
+
+
 };

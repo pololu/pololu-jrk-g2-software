@@ -34,7 +34,7 @@ public:
 
   // This is called when it is time to check if the status of the device has
   // changed.
-  void update();
+  void update_window();
 
   // This is called when the user tries to exit the program.  Returns true if
   // the program is actually allowed to exit.

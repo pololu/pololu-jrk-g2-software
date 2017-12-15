@@ -6,7 +6,7 @@
 #include <cmath>
 
 // This is how often we fetch the variables from the device.
-static const uint32_t UPDATE_INTERVAL_MS = 5000;
+static const uint32_t UPDATE_INTERVAL_MS = 50;
 
 // Only update the device list once per second to save CPU time.
 static const uint32_t UPDATE_DEVICE_LIST_DIVIDER = 20;
@@ -240,7 +240,7 @@ static bool device_list_includes(
   return device_with_os_id(device_list, device.get_os_id());
 }
 
-void main_controller::update()
+void main_controller::update_window()
 {
   // This is called regularly by the view when it is time to check for
   // updates to the state of USB devices.  This runs on the same thread as
@@ -416,7 +416,7 @@ void main_controller::handle_device_changed()
   if (connected())
   {
     jrk::device const & device = device_handle.get_device();
-    window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
+    // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
     window->set_serial_number(device.get_serial_number());
     window->set_firmware_version(device_handle.get_firmware_version_string());
     window->set_device_reset(
