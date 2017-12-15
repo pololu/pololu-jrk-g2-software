@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <QMainWindow>
 #include <QList>
 #include <QAction>
@@ -8,9 +10,24 @@
 #include "qcustomplot.h"
 #include "graph_widget.h"
 #include "graph_window.h"
+#include "jrk.hpp"
 
 class pid_constant_control;
 class errors_control;
+class main_controller;
+
+struct error_row
+{
+	unsigned int count;
+	QLabel *bit_mask_label = NULL;
+	QLabel *error_label = NULL;
+	QRadioButton *disabled_radio;
+	QRadioButton *enabled_radio;
+	QRadioButton *latched_radio;
+	QLabel *stopping_motor_label = NULL;
+	QLabel *count_value = NULL;
+	QWidget *errors_frame;
+};
 
 class main_window : public QMainWindow
 {
@@ -18,8 +35,100 @@ class main_window : public QMainWindow
 
 public:
 	main_window(QWidget * parent = 0);
-	~main_window();
-	
+  void set_controller(main_controller * controller);
+
+  // This causes the window to call the controller's update() function
+  // periodically, on the same thread as everything else.
+  //
+  // interval_ms is the amount of time between updates, in milliseconds.
+  void set_update_timer_interval(uint32_t interval_ms);
+  void start_update_timer();
+
+  // Show an OK/Cancel dialog, return true if the user selects OK.
+  bool confirm(std::string const & question);
+
+  void show_info_message(std::string const & message);
+  void show_error_message(std::string const & message);
+ 	void set_device_name(std::string const & name, bool link_enabled);
+ 	void set_serial_number(std::string const & serial_number);
+ 	void set_firmware_version(std::string const & firmware_version);
+ 	void set_device_reset(std::string const & device_reset);
+ 	void reset_error_counts();
+
+  bool suppress_events = false;
+  main_controller * window_controller() const;
+  main_controller * controller;
+	void set_device_list_contents(std::vector<jrk::device> const & device_list);
+  void set_device_list_selected(jrk::device const & device);
+
+  // Sets the label that shows the connection status/error.
+  void set_connection_status(std::string const & status, bool error);
+
+  void set_manual_target_enabled(bool enabled);
+
+  // Controls whether the apply settings action/button is enabled or
+  // disabled.
+  void set_apply_settings_enabled(bool enabled);
+
+  void set_vin_calibration(int16_t vin_calibration);
+
+  void set_never_sleep(bool never_sleep);
+
+  void set_accel_max_forward(uint32_t accel_max);
+	void set_decel_max_forward(uint32_t decel_max);
+	void set_accel_max_reverse(uint32_t accel_max);
+	void set_decel_max_reverse(uint32_t decel_max);
+
+	void set_input_scaling_degree(uint8_t input_scaling_degree);
+
+  void set_input_invert(bool input_invert);
+	void set_input_min(uint16_t input_min);
+  void set_input_neutral_min(uint16_t input_neutral_min);
+  void set_input_neutral_max(uint16_t input_neutral_max);
+  void set_input_max(uint16_t input_max);
+  void set_output_min(int32_t output_min);
+  void set_output_max(int32_t output_max);
+
+  void set_serial_baud_rate(uint32_t serial_baud_rate);
+  void set_serial_device_number(uint8_t serial_device_number);
+
+	void set_motor_status_message(std::string const & message, bool stopped = true);
+
+	void set_resume_button_enabled(bool enabled);
+
+	void increment_errors_occurred(uint32_t errors_occurred);
+
+	void set_error_status(uint16_t error_status);
+
+	void set_current_velocity(int32_t current_velocity);
+
+	void set_current_position(int32_t current_position);
+
+	void set_target_none();
+
+	void set_target_velocity(int32_t target_velocity);
+
+	void set_vin_voltage(uint32_t vin_voltage);
+
+	void set_up_time(uint32_t up_time);
+
+	// Controls whether the main controls of the application are enabled or
+  // disabled.
+  void set_tab_pages_enabled(bool enabled);
+
+	// Controls whether the open and save settings file actions are enabled or
+  // disabled.
+  void set_open_save_settings_enabled(bool enabled);
+
+  // Controls whether the disconnect action is enabled or disabled.
+  void set_disconnect_enabled(bool enabled);
+
+  // Controls whether the reload settings from device action is enabled.
+  void set_reload_settings_enabled(bool enabled);
+
+  // Controls whether the restore defaults option is enabled.
+  void set_restore_defaults_enabled(bool enabled);
+
 signals:
 	void pass_widget(graph_widget *widget);
 
@@ -27,7 +136,7 @@ private slots:
 	void receive_widget(graph_widget *widget);
 	void on_launchGraph_clicked(QMouseEvent*);
 
-	
+
 
 protected:
 	void context_menu_event(QContextMenuEvent *event);
@@ -35,6 +144,19 @@ protected:
 
 private:
 	QFont font;
+
+	std::array<error_row,32> error_rows;
+
+	QTimer *update_timer = NULL;
+
+	QLabel * device_name_label;
+  QLabel * device_name_value;
+  QLabel * serial_number_label;
+  QLabel * serial_number_value;
+  QLabel * firmware_version_label;
+  QLabel * firmware_version_value;
+  QLabel * device_reset_label;
+  QLabel * device_reset_value;
 
 	QWidget *central_widget;
 	QGridLayout *grid_layout;
@@ -85,17 +207,17 @@ private:
 	QGroupBox *input_scaling_groupbox;
 	QLabel *input_scaling_order_warning_label;
 	QLabel *input_absolute_max_label;
-	QDoubleSpinBox *input_absolute_max_spinbox;
+	QSpinBox *input_absolute_max_spinbox;
 	QLabel *input_maximum_label;
-	QDoubleSpinBox *input_maximum_spinbox;
+	QSpinBox *input_maximum_spinbox;
 	QLabel *input_neutral_max_label;
-	QDoubleSpinBox *input_neutral_max_spinbox;
+	QSpinBox *input_neutral_max_spinbox;
 	QLabel *input_neutral_min_label;
-	QDoubleSpinBox *input_neutral_min_spinbox;
+	QSpinBox *input_neutral_min_spinbox;
 	QLabel *input_minimum_label;
-	QDoubleSpinBox *input_minimum_spinbox;
+	QSpinBox *input_minimum_spinbox;
 	QLabel *input_absolute_min_label;
-	QDoubleSpinBox *input_absolute_min_spinbox;
+	QSpinBox *input_absolute_min_spinbox;
 	QLabel *input_degree_label;
 	QComboBox *input_degree_combobox;
 	QCheckBox *input_invert_checkbox;
@@ -103,9 +225,9 @@ private:
 	QPushButton *input_reset_range_button;
 	QLabel *input_input_label;
 	QLabel *input_target_label;
-	QDoubleSpinBox *input_output_maximum_spinbox;
-	QDoubleSpinBox *input_output_neutral_spinbox;
-	QDoubleSpinBox *input_output_minimum_spinbox;
+	QSpinBox *input_output_maximum_spinbox;
+	QSpinBox *input_output_neutral_spinbox;
+	QSpinBox *input_output_minimum_spinbox;
 
 	// input tab "Serial interface" groupbox
 
@@ -114,8 +236,8 @@ private:
 	QRadioButton *input_usb_dual_port_radio;
 	QRadioButton *input_usb_chained_radio;
 	QLabel *input_device_label;
-	QDoubleSpinBox *input_device_spinbox;
-	QDoubleSpinBox *input_uart_fixed_baud_spinbox;
+	QSpinBox *input_device_spinbox;
+	QSpinBox *input_uart_fixed_baud_spinbox;
 	QRadioButton *input_uart_detect_baud_radio;
 	QCheckBox *input_enable_crc_checkbox;
 	QLabel *input_timeout_label;
@@ -170,7 +292,7 @@ private:
 	pid_constant_control *pid_proportional_coefficient;
 	pid_constant_control *pid_integral_coefficient;
 	pid_constant_control *pid_derivative_coefficient;
-	
+
 	// motor tab
 
 	QWidget *motor_page_widget;
@@ -239,7 +361,7 @@ private:
 
 	QAction *sepAct;
 	bool widgetAtHome;
-	
+
 	QWidget * setup_status_tab();
   QWidget * setup_input_tab();
 	QWidget * setup_feedback_tab();
@@ -247,17 +369,21 @@ private:
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
 
- //  bool suppress_events = false;
 
-	// void set_device_list_contents(std::vector<jrk::device> const & device_list);
- //  void set_device_list_selected(jrk::device const & device);
-
- //  // Sets the label that shows the connection status/error.
- //  void set_connection_status(std::string const & status, bool error);
 	void setup_ui(QMainWindow *main_window);
 	void retranslate_ui(QMainWindow *main_window);
 
-	
+
+	QLabel * up_time_value;
+	QLabel * vin_voltage_value;
+
+	// Helper method for setting the index of a combo box, given the desired
+  // uint8_t item value. Sets index of -1 for no selection if the specified
+  // value is not found.
+  void set_u8_combo_box(QComboBox * combo, uint8_t value);
+  void set_spin_box(QSpinBox * box, int value);
+  void set_double_spin_box(QDoubleSpinBox * spin, double value);
+  void set_check_box(QCheckBox * check, bool value);
 };
 
 class pid_constant_control : public QGroupBox
@@ -275,27 +401,19 @@ private:
 	QLabel *pid_equal_label;
 	QSpinBox *pid_multiplier_spinbox;
 	QLabel *pid_base_label;
-	QSpinBox *pid_exponent_spinbox;	
+	QSpinBox *pid_exponent_spinbox;
 };
 
 class errors_control : public QWidget
 {
 	Q_OBJECT
 public:
-  errors_control(int row_number, const QString& object_name, const QString& bit_mask_text, 
-      const QString& error_label_text, const bool& disabled_visible, 
-      const bool& enabled_visible, QWidget *parent = 0);
-	~errors_control();
-	
+  errors_control(int row_number, const QString& object_name, const QString& bit_mask_text,
+      const QString& error_label_text, const bool& disabled_visible,
+      const bool& enabled_visible, error_row &er, QWidget *parent = 0);
+
 	QGridLayout *errors_central;
 	QWidget *errors_frame;
-	QLabel *bit_mask_label;
-	QLabel *error_label;
-	QRadioButton *disabled_radio;
-	QRadioButton *enabled_radio;
-	QRadioButton *latched_radio;
-	QLabel *stopping_motor_label;
-	QLabel *count_label;
-	QLabel *errors_disabled_spacer;
-	QLabel *errors_enabled_spacer;
+
+
 };

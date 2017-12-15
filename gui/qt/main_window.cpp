@@ -1,7 +1,7 @@
 #include "main_window.h"
+#include "main_controller.h"
 #include "qcustomplot.h"
 #include "graph_window.h"
-
 #include <QApplication>
 #include <QWidget>
 #include <QPushButton>
@@ -12,6 +12,7 @@
 #include <QVector>
 #include <QtCore>
 #include <QCloseEvent>
+#include <cassert>
 
 main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
@@ -22,12 +23,9 @@ main_window::main_window(QWidget * parent)
   widgetAtHome = true;
 }
 
-main_window::~main_window()
+void main_window::set_controller(main_controller * controller)
 {
-  if (altw != 0)
-  {
-    delete altw;
-  }
+  this->controller = controller;
 }
 
 void main_window::setup_ui(QMainWindow *main_window)
@@ -44,7 +42,7 @@ void main_window::setup_ui(QMainWindow *main_window)
 
   file_menu = menu_bar->addMenu("");
   file_menu->setTitle(tr("&File"));
- 
+
   open_settings_action = new QAction(this);
   open_settings_action->setObjectName("open_settings_action");
   open_settings_action->setText(tr("&Open settings file..."));
@@ -149,12 +147,12 @@ void main_window::setup_ui(QMainWindow *main_window)
   preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
-  
-  // tmphax:stop graph 
+
+  // tmphax:stop graph
   connect(
     stop_motor, &QCheckBox::stateChanged,
     [=](const bool& d) {
-      stop_motor->isChecked() ? preview_window->data_timer.stop() : 
+      stop_motor->isChecked() ? preview_window->data_timer.stop() :
       preview_window->data_timer.start(preview_window->refreshTimer);
       preview_window->custom_plot->replot();
     });
@@ -206,12 +204,16 @@ void main_window::setup_ui(QMainWindow *main_window)
   footer_layout->setStretch(2,3);
 
   grid_layout->addLayout(footer_layout,2,0);
-  
-  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this, 
+
+  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
   main_window->setCentralWidget(central_widget);
   main_window->setMenuBar(menu_bar);
+
+  update_timer = new QTimer(this);
+  update_timer->setObjectName("update_timer");
+
 
   QMetaObject::connectSlotsByName(main_window);
 
@@ -224,7 +226,7 @@ void main_window::on_launchGraph_clicked(QMouseEvent *event)
   if(altw == 0)
   {
     altw = new AltWindow(this);
-    connect(altw, SIGNAL(pass_widget(graph_widget*)), this, 
+    connect(altw, SIGNAL(pass_widget(graph_widget*)), this,
     SLOT(receive_widget(graph_widget*)));
   }
 
@@ -308,9 +310,9 @@ QWidget * main_window::setup_input_tab()
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
   input_invert_checkbox->setObjectName("input_invert_checkbox");
   scaling_column1->addWidget(input_invert_checkbox);
-  
+
   QGridLayout *scaling_column1_labels = new QGridLayout();
-  
+
   input_absolute_max_label = new QLabel(tr("Absolute max:"));
   input_absolute_max_label->setObjectName("input_absolute_max_label");
   scaling_column1_labels->addWidget(input_absolute_max_label,1,0);
@@ -336,43 +338,43 @@ QWidget * main_window::setup_input_tab()
   input_input_label = new QLabel(tr("Input"));
   input_input_label->setObjectName("input_input_label");
   scaling_column1_labels->addWidget(input_input_label,0,1);
-  input_absolute_max_spinbox = new QDoubleSpinBox();
+  input_absolute_max_spinbox = new QSpinBox();
   input_absolute_max_spinbox->setObjectName("input_absolute_max_spinbox");
   scaling_column1_labels->addWidget(input_absolute_max_spinbox,1,1);
-  input_maximum_spinbox = new QDoubleSpinBox();
+  input_maximum_spinbox = new QSpinBox();
   input_maximum_spinbox->setObjectName("input_maximum_spinbox");
   scaling_column1_labels->addWidget(input_maximum_spinbox,2,1);
-  input_neutral_max_spinbox = new QDoubleSpinBox();
+  input_neutral_max_spinbox = new QSpinBox();
   input_neutral_max_spinbox->setObjectName("input_neutral_max_spinbox");
   scaling_column1_labels->addWidget(input_neutral_max_spinbox,3,1);
-  input_neutral_min_spinbox = new QDoubleSpinBox();
+  input_neutral_min_spinbox = new QSpinBox();
   input_neutral_min_spinbox->setObjectName("input_neutral_min_spinbox");
   scaling_column1_labels->addWidget(input_neutral_min_spinbox,4,1);
-  input_minimum_spinbox = new QDoubleSpinBox();
+  input_minimum_spinbox = new QSpinBox();
   input_minimum_spinbox->setObjectName("input_minimum_spinbox");
-  scaling_column1_labels->addWidget(input_minimum_spinbox,5,1);    
-  input_absolute_min_spinbox = new QDoubleSpinBox();
+  scaling_column1_labels->addWidget(input_minimum_spinbox,5,1);
+  input_absolute_min_spinbox = new QSpinBox();
   input_absolute_min_spinbox->setObjectName("input_absolute_min_spinbox");
-  scaling_column1_labels->addWidget(input_absolute_min_spinbox,6,1);    
+  scaling_column1_labels->addWidget(input_absolute_min_spinbox,6,1);
   input_degree_combobox = new QComboBox();
   input_degree_combobox->setObjectName("input_degree_combobox");
-  scaling_column1_labels->addWidget(input_degree_combobox,7,1,7,2,Qt::AlignTop); 
+  scaling_column1_labels->addWidget(input_degree_combobox,7,1,7,2,Qt::AlignTop);
 
   input_target_label = new QLabel(tr("Target"));
   input_target_label->setObjectName("input_target_label");
   scaling_column1_labels->addWidget(input_target_label,0,2);
-  input_output_maximum_spinbox = new QDoubleSpinBox();
+  input_output_maximum_spinbox = new QSpinBox();
   input_output_maximum_spinbox->setObjectName("input_output_maximum_spinbox");
   scaling_column1_labels->addWidget(input_output_maximum_spinbox,2,2);
-  input_output_neutral_spinbox = new QDoubleSpinBox();
+  input_output_neutral_spinbox = new QSpinBox();
   input_output_neutral_spinbox->setObjectName("input_output_neutral_spinbox");
   scaling_column1_labels->addWidget(input_output_neutral_spinbox,3,2);
-  input_output_minimum_spinbox = new QDoubleSpinBox();
+  input_output_minimum_spinbox = new QSpinBox();
   input_output_minimum_spinbox->setObjectName("input_output_minimum_spinbox");
   scaling_column1_labels->addWidget(input_output_minimum_spinbox,4,2);
 
   scaling_column1->addLayout(scaling_column1_labels);
-  
+
 
   input_scaling_layout->addLayout(scaling_column1,0,0);
 
@@ -381,8 +383,8 @@ QWidget * main_window::setup_input_tab()
   input_learn_button->setObjectName("input_learn_button");
   input_learn_button->setText(tr("Learn.."));
   scaling_column2->addWidget(input_learn_button);
-  
- 
+
+
   input_reset_range_button = new QPushButton();
   input_reset_range_button->setObjectName("input_reset_range_button");
   input_reset_range_button->setText(tr("Reset to full range"));
@@ -392,7 +394,7 @@ QWidget * main_window::setup_input_tab()
     tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_waring_label");
   input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
-  scaling_column2->addWidget(input_scaling_order_warning_label);  
+  scaling_column2->addWidget(input_scaling_order_warning_label);
   input_scaling_layout->addLayout(scaling_column2,0,1);
   input_scaling_groupbox->setLayout(input_scaling_layout);
   column2->addWidget(input_scaling_groupbox,-1,Qt::AlignCenter);
@@ -412,7 +414,7 @@ QWidget * main_window::setup_input_tab()
   QHBoxLayout *uart_fixed_baud_rate = new QHBoxLayout();
   input_uart_fixed_baud_radio = new QRadioButton(tr("UART, fixed baud rate: "));
   input_uart_fixed_baud_radio->setObjectName("input_uart_fixed_baud_radio");
-  input_uart_fixed_baud_spinbox = new QDoubleSpinBox();
+  input_uart_fixed_baud_spinbox = new QSpinBox();
   input_uart_fixed_baud_spinbox->setObjectName("input_uart_fixed_baud_spinbox");
   uart_fixed_baud_rate->addWidget(input_uart_fixed_baud_radio);
   uart_fixed_baud_rate->addWidget(input_uart_fixed_baud_spinbox);
@@ -421,7 +423,7 @@ QWidget * main_window::setup_input_tab()
   QHBoxLayout *device_number = new QHBoxLayout();
   input_device_label = new QLabel(tr("Device Number:"));
   input_device_label->setObjectName("input_device_label");
-  input_device_spinbox = new QDoubleSpinBox();
+  input_device_spinbox = new QSpinBox();
   input_device_spinbox->setObjectName("input_device_spinbox");
   device_number->addWidget(input_device_label);
   device_number->addWidget(input_device_spinbox);
@@ -741,33 +743,46 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
   layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
-  layout->addWidget(new errors_control(++row_number, 
-    "awaiting_command", "0x0001", "Awaiting command", false, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "no_power", "0x0002", "No power", false, true),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "motor_driven_error", "0x0004", "Motor driver error", false, true),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "input_invalid", "0x0008", "Input invalid", false, true),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "input_disconnect", "0x0010", "Input disconnect", true, true),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "serial_signal_error", "0x0080", "Serial signal error", true, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "serial_overrun", "0x0100", "Serial overrun", true, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "serial_crc_error", "0x0400", "Serial CRC error", true, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "serial_protocol_error", "0x0800", "Serial protocol error", true, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number, 
-    "serial_timeout_error", "0x1000", "Serial timeout error", true, false),row_number,0,1,8,Qt::AlignCenter);
-  layout->addLayout(errors_bottom_buttons,16,0,4,8,Qt::AlignBottom);
+  layout->addWidget(new errors_control(++row_number,
+    "awaiting_command", "0x0001", "Awaiting command", false, false, error_rows[JRK_ERROR_AWAITING_COMMAND])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "no_power", "0x0002", "No power", false, true, error_rows[JRK_ERROR_NO_POWER])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "motor_driver_error", "0x0004", "Motor driver error", false, true, error_rows[JRK_ERROR_MOTOR_DRIVER])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "input_invalid", "0x0008", "Input invalid", false, true, error_rows[JRK_ERROR_INPUT_INVALID])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "input_disconnect", "0x0010", "Input disconnect", true, true, error_rows[JRK_ERROR_INPUT_DISCONNECT])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true, error_rows[JRK_ERROR_FEEDBACK_DISCONNECT])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true, error_rows[JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "serial_signal_error", "0x0080", "Serial signal error", true, false, error_rows[JRK_ERROR_SERIAL_SIGNAL])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "serial_overrun", "0x0100", "Serial overrun", true, false, error_rows[JRK_ERROR_SERIAL_OVERRUN])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false, error_rows[JRK_ERROR_SERIAL_BUFFER_FULL])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "serial_crc_error", "0x0400", "Serial CRC error", true, false, error_rows[JRK_ERROR_SERIAL_CRC])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "serial_protocol_error", "0x0800", "Serial protocol error", true, false, error_rows[JRK_ERROR_SERIAL_PROTOCOL])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addWidget(new errors_control(++row_number,
+    "serial_timeout_error", "0x1000", "Serial timeout error", true, false, error_rows[JRK_ERROR_SERIAL_TIMEOUT])
+    ,row_number,0,1,8,Qt::AlignCenter);
+  layout->addLayout(errors_bottom_buttons,16,0,4,8,Qt::AlignCenter);
 
   layout->setMargin(0);
 
@@ -779,49 +794,419 @@ QWidget *main_window::setup_errors_tab()
   return errors_page_widget;
 }
 
-// void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)
-// {
-//   suppress_events = true;
-//   device_list_value->clear();
-//   device_list_value->addItem(tr("Not connected"), QString()); // null value
-//   for (jrk::device const & device : device_list)
-//   {
-//     device_list_value->addItem(
-//       QString::fromStdString(
-//         " #" + device.get_serial_number()),
-//       QString::fromStdString(device.get_os_id()));
-//   }
-//   suppress_events = false;
-// }
+void main_window::set_u8_combo_box(QComboBox * combo, uint8_t value)
+{
+  suppress_events = true;
+  combo->setCurrentIndex(combo->findData(value));
+  suppress_events = false;
+}
 
-// void main_window::set_device_list_selected(jrk::device const & device)
-// {
-//   // TODO: show an error if we couldn't find the specified device
-//   // (findData returned -1)?
-//   suppress_events = true;
-//   int index = 0;
-//   if (device)
-//   {
-//     index = device_list_value->findData(QString::fromStdString(device.get_os_id()));
-//   }
-//   device_list_value->setCurrentIndex(index);
-//   suppress_events = false;
-// }
+void main_window::set_spin_box(QSpinBox * spin, int value)
+{
+  // Only set the QSpinBox's value if the new value is numerically different.
+  // This prevents, for example, a value of "0000" from being changed to "0"
+  // while you're trying to change "10000" to "20000".
+  if (spin->value() != value)
+  {
+    suppress_events = true;
+    spin->setValue(value);
+    suppress_events = false;
+  }
+}
 
-// void main_window::set_connection_status(std::string const & status, bool error)
-// {
-//   if (error)
-//   {
-//     connection_status_value->setStyleSheet("color: red;");
-//   }
-//   else
-//   {
-//     connection_status_value->setStyleSheet("");
-//   }
-//   connection_status_value->setText(QString::fromStdString(status));
-// }
+void main_window::set_double_spin_box(QDoubleSpinBox * spin, double value)
+{
+  // Only set the QSpinBox's value if the new value is numerically different.
+  // This prevents, for example, a value of "0000" from being changed to "0"
+  // while you're trying to change "10000" to "20000".
+  if (spin->value() != value)
+  {
+    suppress_events = true;
+    spin->setValue(value);
+    suppress_events = false;
+  }
+}
 
-pid_constant_control::pid_constant_control(const QString& group_box_title, 
+void main_window::set_check_box(QCheckBox * check, bool value)
+{
+  suppress_events = true;
+  check->setChecked(value);
+  suppress_events = false;
+}
+
+void main_window::set_tab_pages_enabled(bool enabled)
+{
+  for (int i = 0; i < tab_widget->count(); i++)
+  {
+    tab_widget->widget(i)->setEnabled(enabled);
+  }
+}
+
+void main_window::set_restore_defaults_enabled(bool enabled)
+{
+  restore_defaults_action->setEnabled(enabled);
+}
+
+void main_window::set_reload_settings_enabled(bool enabled)
+{
+  reload_settings_action->setEnabled(enabled);
+}
+
+void main_window::set_open_save_settings_enabled(bool enabled)
+{
+  open_settings_action->setEnabled(enabled);
+  save_settings_action->setEnabled(enabled);
+}
+
+void main_window::set_disconnect_enabled(bool enabled)
+{
+  disconnect_action->setEnabled(enabled);
+}
+
+void main_window::set_up_time(uint32_t up_time)
+{
+  // up_time_value->setText(QString::fromStdString(
+  //   convert_up_time_to_hms_string(up_time)));
+}
+
+void main_window::set_vin_voltage(uint32_t vin_voltage)
+{
+  // vin_voltage_value->setText(QString::fromStdString(
+  //   convert_mv_to_v_string(vin_voltage)));
+}
+
+void main_window::set_target_velocity(int32_t target_velocity)
+{
+  // target_label->setText(tr("Target velocity:"));
+  // target_value->setText(QString::number(target_velocity));
+  // target_velocity_pretty->setText("(" + QString::fromStdString(
+  //   convert_speed_to_pps_string(target_velocity)) + ")");
+}
+
+void main_window::set_target_none()
+{
+  // target_label->setText(tr("Target:"));
+  // target_value->setText(tr("No target"));
+  // target_velocity_pretty->setText("");
+}
+
+void main_window::set_current_position(int32_t current_position)
+{
+  // current_position_value->setText(QString::number(current_position));
+}
+
+void main_window::set_current_velocity(int32_t current_velocity)
+{
+  // current_velocity_value->setText(QString::number(current_velocity));
+  // current_velocity_pretty->setText("(" + QString::fromStdString(
+  //   convert_speed_to_pps_string(current_velocity)) + ")");
+}
+
+void main_window::set_error_status(uint16_t error_status)
+{
+  // for (int i = 0; i < 16; i++)
+  // {
+  //   if (error_rows[i].stopping_value == NULL) { continue; }
+
+  //   // setStyleSheet() is expensive, so only call it if something actually
+  //   // changed. Check if there's currently a stylesheet applied and decide
+  //   // whether we need to do anything based on that.
+  //   bool styled = !error_rows[i].stopping_value->styleSheet().isEmpty();
+
+  //   if (error_status & (1 << i))
+  //   {
+  //     error_rows[i].stopping_value->setText(tr("Yes"));
+  //     if (!styled)
+  //     {
+  //       error_rows[i].stopping_value->setStyleSheet(
+  //         ":enabled { background-color: red; color: white; }");
+  //     }
+  //   }
+  //   else
+  //   {
+  //     error_rows[i].stopping_value->setText(tr("No"));
+  //     if (styled)
+  //     {
+  //       error_rows[i].stopping_value->setStyleSheet("");
+  //     }
+  //   }
+  // }
+}
+
+void main_window::increment_errors_occurred(uint32_t errors_occurred)
+{
+  // for (int i = 0; i < 32; i++)
+  // {
+  //   if (error_rows[i].count_value == NULL) { continue; }
+
+  //   if (errors_occurred & (1 << i))
+  //   {
+  //     error_rows[i].count++;
+  //     error_rows[i].count_value->setText(QString::number(error_rows[i].count));
+  //   }
+  // }
+}
+
+void main_window::set_resume_button_enabled(bool enabled)
+{
+  // resume_button->setEnabled(enabled);
+}
+
+
+void main_window::set_motor_status_message(std::string const & message, bool stopped)
+{
+  // // setStyleSheet() is expensive, so only call it if something actually
+  // // changed. Check if there's currently a stylesheet applied and decide
+  // // whether we need to do anything based on that.
+  // bool styled = !motor_status_value->styleSheet().isEmpty();
+
+  // if (!styled && stopped)
+  // {
+  //   motor_status_value->setStyleSheet("color: red;");
+  // }
+  // else if (styled && !stopped)
+  // {
+  //   motor_status_value->setStyleSheet("");
+  // }
+  // motor_status_value->setText(QString::fromStdString(message));
+}
+
+void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
+{
+  set_spin_box(input_uart_fixed_baud_spinbox, serial_baud_rate);
+}
+
+void main_window::set_serial_device_number(uint8_t serial_device_number)
+{
+  set_spin_box(input_device_spinbox, serial_device_number);
+}
+
+void main_window::set_input_invert(bool input_invert)
+{
+  set_check_box(input_invert_checkbox, input_invert);
+}
+
+void main_window::set_input_min(uint16_t input_min)
+{
+  set_spin_box(input_minimum_spinbox, input_min);
+}
+
+void main_window::set_input_neutral_min(uint16_t input_neutral_min)
+{
+  set_spin_box(input_neutral_min_spinbox, input_neutral_min);
+}
+
+void main_window::set_input_neutral_max(uint16_t input_neutral_max)
+{
+  set_spin_box(input_neutral_max_spinbox, input_neutral_max);
+}
+
+void main_window::set_input_max(uint16_t input_max)
+{
+  set_spin_box(input_maximum_spinbox, input_max);
+}
+
+void main_window::set_output_min(int32_t output_min)
+{
+  set_spin_box(input_output_minimum_spinbox, output_min);
+}
+
+void main_window::set_output_max(int32_t output_max)
+{
+  set_spin_box(input_output_maximum_spinbox, output_max);
+}
+
+
+void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
+{
+  set_u8_combo_box(input_degree_combobox, input_scaling_degree);
+}
+
+void main_window::set_accel_max_forward(uint32_t accel_max)
+{
+  // set_spin_box(accel_max_value, accel_max);
+  // accel_max_value_pretty->setText(QString::fromStdString(
+  //   convert_accel_to_pps2_string(accel_max)));
+}
+
+void main_window::set_decel_max_forward(uint32_t decel_max)
+{
+  // if (decel_max == 0)
+  // {
+  //   set_check_box(decel_accel_max_same_check, true);
+  //   decel_max_value->setEnabled(false);
+  //   decel_max = accel_max_value->value();
+  // }
+  // else
+  // {
+  //   set_check_box(decel_accel_max_same_check, false);
+  //   decel_max_value->setEnabled(true);
+  // }
+  // set_spin_box(decel_max_value, decel_max);
+  // decel_max_value_pretty->setText(QString::fromStdString(
+  //   convert_accel_to_pps2_string(decel_max)));
+}
+
+void main_window::set_accel_max_reverse(uint32_t accel_max)
+{
+  // set_spin_box(accel_max_value, accel_max);
+  // accel_max_value_pretty->setText(QString::fromStdString(
+  //   convert_accel_to_pps2_string(accel_max)));
+}
+
+void main_window::set_decel_max_reverse(uint32_t decel_max)
+{
+  // if (decel_max == 0)
+  // {
+  //   set_check_box(decel_accel_max_same_check, true);
+  //   decel_max_value->setEnabled(false);
+  //   decel_max = accel_max_value->value();
+  // }
+  // else
+  // {
+  //   set_check_box(decel_accel_max_same_check, false);
+  //   decel_max_value->setEnabled(true);
+  // }
+  // set_spin_box(decel_max_value, decel_max);
+  // decel_max_value_pretty->setText(QString::fromStdString(
+  //   convert_accel_to_pps2_string(decel_max)));
+}
+
+void main_window::set_never_sleep(bool never_sleep)
+{
+  set_check_box(input_never_sleep_checkbox, never_sleep);
+}
+
+void main_window::set_vin_calibration(int16_t vin_calibration)
+{
+  // set_spin_box(vin_calibration_value, vin_calibration);
+}
+
+void main_window::set_apply_settings_enabled(bool enabled)
+{
+  apply_settings->setEnabled(enabled);
+  apply_settings_action->setEnabled(enabled);
+}
+
+void main_window::set_manual_target_enabled(bool enabled)
+{
+  // manual_target_widget->setEnabled(enabled);
+}
+
+void main_window::reset_error_counts()
+{
+  for (int i = 0; i < 32; i++)
+  {
+    if (error_rows[i].count_value == NULL) { continue; }
+
+    error_rows[i].count = 0;
+    error_rows[i].count_value->setText(tr("-"));
+  }
+}
+
+void main_window::set_device_reset(std::string const & device_reset)
+{
+  device_reset_value->setText(QString::fromStdString(device_reset));
+}
+
+void main_window::set_firmware_version(std::string const & firmware_version)
+{
+  firmware_version_value->setText(QString::fromStdString(firmware_version));
+}
+
+void main_window::set_serial_number(std::string const & serial_number)
+{
+  serial_number_value->setText(QString::fromStdString(serial_number));
+}
+
+void main_window::set_device_name(std::string const & name, bool link_enabled)
+{
+  QString text = QString::fromStdString(name);
+  if (link_enabled)
+  {
+    text = "<a href=\"#doc\">" + text + "</a>";
+  }
+  device_name_value->setText(text);
+}
+
+void main_window::show_error_message(std::string const & message)
+{
+  QMessageBox mbox(QMessageBox::Critical, windowTitle(),
+    QString::fromStdString(message), QMessageBox::NoButton, this);
+  mbox.exec();
+}
+
+void main_window::show_info_message(std::string const & message)
+{
+  QMessageBox mbox(QMessageBox::Information, windowTitle(),
+    QString::fromStdString(message), QMessageBox::NoButton, this);
+  mbox.exec();
+}
+
+bool main_window::confirm(std::string const & question)
+{
+  QMessageBox mbox(QMessageBox::Question, windowTitle(),
+    QString::fromStdString(question), QMessageBox::Ok | QMessageBox::Cancel, this);
+  int button = mbox.exec();
+  return button == QMessageBox::Ok;
+}
+
+void main_window::set_update_timer_interval(uint32_t interval_ms)
+{
+  assert(update_timer);
+  assert(interval_ms <= std::numeric_limits<int>::max());
+  update_timer->setInterval(interval_ms);
+}
+
+void main_window::start_update_timer()
+{
+  assert(update_timer);
+  update_timer->start();
+}
+
+void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)
+{
+  suppress_events = true;
+  device_list_value->clear();
+  device_list_value->addItem(tr("Not connected"), QString()); // null value
+  for (jrk::device const & device : device_list)
+  {
+    device_list_value->addItem(
+      QString::fromStdString(
+        " #" + device.get_serial_number()),
+      QString::fromStdString(device.get_os_id()));
+  }
+  suppress_events = false;
+}
+
+void main_window::set_device_list_selected(jrk::device const & device)
+{
+  // TODO: show an error if we couldn't find the specified device
+  // (findData returned -1)?
+  suppress_events = true;
+  int index = 0;
+  if (device)
+  {
+    index = device_list_value->findData(QString::fromStdString(device.get_os_id()));
+  }
+  device_list_value->setCurrentIndex(index);
+  suppress_events = false;
+}
+
+void main_window::set_connection_status(std::string const & status, bool error)
+{
+  if (error)
+  {
+    connection_status_value->setStyleSheet("color: red;");
+  }
+  else
+  {
+    connection_status_value->setStyleSheet("");
+  }
+  connection_status_value->setText(QString::fromStdString(status));
+}
+
+pid_constant_control::pid_constant_control(const QString& group_box_title,
   const QString& object_name, QWidget *parent)
   : QGroupBox(parent)
 {
@@ -882,51 +1267,54 @@ pid_constant_control::~pid_constant_control()
 }
 
 errors_control::errors_control
-(int row_number, const QString& object_name, const QString& bit_mask_text, 
-    const QString& error_label_text, const bool& disabled_visible, 
-      const bool& enabled_visible, QWidget *parent)
-{ 
+(int row_number, const QString& object_name, const QString& bit_mask_text,
+    const QString& error_label_text, const bool& disabled_visible,
+      const bool& enabled_visible, error_row &er, QWidget *parent)
+{
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  errors_frame = new QWidget();
+  er.errors_frame = new QWidget();
 
   if(row_number % 2 != 0)
   {
-    errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+    er.errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
   }
+
+  er.count = 0;
+
   errors_central = new QGridLayout(this);
 
-  bit_mask_label = new QLabel();
-  bit_mask_label->setObjectName("bit_mask_label");
-  
-  error_label = new QLabel();
-  error_label->setObjectName("error_label"); 
-  
-  disabled_radio = new QRadioButton(tr("Disabled"));
-  disabled_radio->setObjectName("disabled_radio");
-  disabled_radio->setSizePolicy(p);
-  
-  enabled_radio = new QRadioButton(tr("Enabled"));
-  enabled_radio->setObjectName("enabled_radio");
-  enabled_radio->setSizePolicy(p);
+  er.bit_mask_label = new QLabel();
+  er.bit_mask_label->setObjectName("bit_mask_label");
 
-  latched_radio = new QRadioButton(tr("Enabled and latched"));
-  latched_radio->setObjectName("latched_radio");
-  
-  stopping_motor_label = new QLabel(tr("No"));
-  stopping_motor_label->setObjectName("stopping_motor_label");
-  
-  count_label = new QLabel(tr("0"));
-  count_label->setObjectName("count_label");
+  er.error_label = new QLabel();
+  er.error_label->setObjectName("error_label");
+
+  er.disabled_radio = new QRadioButton(tr("Disabled"));
+  er.disabled_radio->setObjectName("disabled_radio");
+  er.disabled_radio->setSizePolicy(p);
+
+  er.enabled_radio = new QRadioButton(tr("Enabled"));
+  er.enabled_radio->setObjectName("enabled_radio");
+  er.enabled_radio->setSizePolicy(p);
+
+  er.latched_radio = new QRadioButton(tr("Enabled and latched"));
+  er.latched_radio->setObjectName("latched_radio");
+
+  er.stopping_motor_label = new QLabel(tr("No"));
+  er.stopping_motor_label->setObjectName("stopping_motor_label");
+
+  er.count_value = new QLabel(tr("0"));
+  er.count_value->setObjectName("count_value");
 
   setObjectName(object_name);
-  bit_mask_label->setText(bit_mask_text);
-  error_label->setText(error_label_text);
-  disabled_radio->setVisible(disabled_visible);
-  enabled_radio->setVisible(enabled_visible);  
+  er.bit_mask_label->setText(bit_mask_text);
+  er.error_label->setText(error_label_text);
+  er.disabled_radio->setVisible(disabled_visible);
+  er.enabled_radio->setVisible(enabled_visible);
 
-  // Set the size of the labels and buttons for the errors tab in 
+  // Set the size of the labels and buttons for the errors tab in
   // a way that can change from OS to OS.
   {
     QRadioButton tmp_button;
@@ -937,31 +1325,25 @@ errors_control::errors_control
     tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
     QLabel tmp_label2;
     tmp_label2.setText("xxxxxxxxxx");
-    bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
-    error_label->setFixedWidth(tmp_label.sizeHint().width());
-    disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    stopping_motor_label->setFixedWidth(tmp_label2.sizeHint().width() * 150/100);
-    count_label->setFixedWidth(tmp_label2.sizeHint().width());
+    er.bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
+    er.error_label->setFixedWidth(tmp_label.sizeHint().width());
+    er.disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
+    er.enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
+    er.latched_radio->setFixedWidth(tmp_button.sizeHint().width());
+    er.stopping_motor_label->setFixedWidth(tmp_label2.sizeHint().width() * 150/100);
+    er.count_value->setFixedWidth(tmp_label2.sizeHint().width());
   }
 
 
-  errors_central->addWidget(errors_frame,0,0,3,9);
-  errors_central->addWidget(bit_mask_label,1,1,Qt::AlignLeft);
-  errors_central->addWidget(error_label,1,2,Qt::AlignCenter);
-  errors_central->addWidget(disabled_radio,1,3,Qt::AlignRight);
-  errors_central->addWidget(enabled_radio,1,4,Qt::AlignCenter);
-  errors_central->addWidget(latched_radio,1,5,Qt::AlignLeft);
-  errors_central->addWidget(stopping_motor_label,1,6,Qt::AlignLeft);
-  errors_central->addWidget(count_label,1,7,1,2,Qt::AlignRight);
+  errors_central->addWidget(er.errors_frame,0,0,3,9);
+  errors_central->addWidget(er.bit_mask_label,1,1,Qt::AlignLeft);
+  errors_central->addWidget(er.error_label,1,2,Qt::AlignCenter);
+  errors_central->addWidget(er.disabled_radio,1,3,Qt::AlignRight);
+  errors_central->addWidget(er.enabled_radio,1,4,Qt::AlignCenter);
+  errors_central->addWidget(er.latched_radio,1,5,Qt::AlignLeft);
+  errors_central->addWidget(er.stopping_motor_label,1,6,Qt::AlignLeft);
+  errors_central->addWidget(er.count_value,1,7,1,2,Qt::AlignRight);
   errors_central->setColumnStretch(6,10);
 
   errors_central->setMargin(0);
-  QMetaObject::connectSlotsByName(this);
-}
-
-errors_control::~errors_control()
-{
-
 }
