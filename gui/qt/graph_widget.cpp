@@ -8,7 +8,6 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QMainWindow>
-#include <QSerialPort>
 #include <QVector>
 #include <array>
 #include <QtCore>
