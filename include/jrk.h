@@ -256,25 +256,31 @@ void jrk_settings_set_input_mode(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_input_mode(const jrk_settings *);
 
-// Sets the input_disconnect_minimum setting.
+// Sets the input_absolute_minimum setting.
+//
+// If the raw input value is below this value, it causes an "Input disconnect"
+// error.
 JRK_API
-void jrk_settings_set_input_disconnect_minimum(jrk_settings *,
-  uint16_t input_disconnect_minimum);
+void jrk_settings_set_input_absolute_minimum(jrk_settings *,
+  uint16_t input_absolute_minimum);
 
-// Gets the input_disconnect_minimum setting, which is described in
-// jrk_settings_set_input_disconnect_minimum.
+// Gets the input_absolute_minimum setting, which is described in
+// jrk_settings_set_input_absolute_minimum.
 JRK_API
-uint16_t jrk_settings_get_input_disconnect_minimum(const jrk_settings *);
+uint16_t jrk_settings_get_input_absolute_minimum(const jrk_settings *);
 
-// Sets the input_disconnect_maximum setting.
+// Sets the input_absolute_maximum setting.
+//
+// If the raw input value is above this value, it causes an "Input disconnect"
+// error.
 JRK_API
-void jrk_settings_set_input_disconnect_maximum(jrk_settings *,
-  uint16_t input_disconnect_maximum);
+void jrk_settings_set_input_absolute_maximum(jrk_settings *,
+  uint16_t input_absolute_maximum);
 
-// Gets the input_disconnect_maximum setting, which is described in
-// jrk_settings_set_input_disconnect_maximum.
+// Gets the input_absolute_maximum setting, which is described in
+// jrk_settings_set_input_absolute_maximum.
 JRK_API
-uint16_t jrk_settings_get_input_disconnect_maximum(const jrk_settings *);
+uint16_t jrk_settings_get_input_absolute_maximum(const jrk_settings *);
 
 // Sets the input_minimum setting.
 //
@@ -461,25 +467,31 @@ void jrk_settings_set_feedback_mode(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_feedback_mode(const jrk_settings *);
 
-// Sets the feedback_disconnect_minimum setting.
+// Sets the feedback_absolute_minimum setting.
+//
+// If the raw feedback value is below this value, it causes a
+// "Feedback disconnect" error.
 JRK_API
-void jrk_settings_set_feedback_disconnect_minimum(jrk_settings *,
-  uint16_t feedback_disconnect_minimum);
+void jrk_settings_set_feedback_absolute_minimum(jrk_settings *,
+  uint16_t feedback_absolute_minimum);
 
-// Gets the feedback_disconnect_minimum setting, which is described in
-// jrk_settings_set_feedback_disconnect_minimum.
+// Gets the feedback_absolute_minimum setting, which is described in
+// jrk_settings_set_feedback_absolute_minimum.
 JRK_API
-uint16_t jrk_settings_get_feedback_disconnect_minimum(const jrk_settings *);
+uint16_t jrk_settings_get_feedback_absolute_minimum(const jrk_settings *);
 
-// Sets the feedback_disconnect_maximum setting.
+// Sets the feedback_absolute_maximum setting.
+//
+// If the raw feedback value is below this value, it causes a
+// "Feedback disconnect" error.
 JRK_API
-void jrk_settings_set_feedback_disconnect_maximum(jrk_settings *,
-  uint16_t feedback_disconnect_maximum);
+void jrk_settings_set_feedback_absolute_maximum(jrk_settings *,
+  uint16_t feedback_absolute_maximum);
 
-// Gets the feedback_disconnect_maximum setting, which is described in
-// jrk_settings_set_feedback_disconnect_maximum.
+// Gets the feedback_absolute_maximum setting, which is described in
+// jrk_settings_set_feedback_absolute_maximum.
 JRK_API
-uint16_t jrk_settings_get_feedback_disconnect_maximum(const jrk_settings *);
+uint16_t jrk_settings_get_feedback_absolute_maximum(const jrk_settings *);
 
 // Sets the feedback_minimum setting.
 //

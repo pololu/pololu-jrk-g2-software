@@ -12,13 +12,13 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint16_t input_disconnect_minimum = read_uint16_t(buf + JRK_SETTING_INPUT_DISCONNECT_MINIMUM);
-    jrk_settings_set_input_disconnect_minimum(settings, input_disconnect_minimum);
+    uint16_t input_absolute_minimum = read_uint16_t(buf + JRK_SETTING_INPUT_ABSOLUTE_MINIMUM);
+    jrk_settings_set_input_absolute_minimum(settings, input_absolute_minimum);
   }
 
   {
-    uint16_t input_disconnect_maximum = read_uint16_t(buf + JRK_SETTING_INPUT_DISCONNECT_MAXIMUM);
-    jrk_settings_set_input_disconnect_maximum(settings, input_disconnect_maximum);
+    uint16_t input_absolute_maximum = read_uint16_t(buf + JRK_SETTING_INPUT_ABSOLUTE_MAXIMUM);
+    jrk_settings_set_input_absolute_maximum(settings, input_absolute_maximum);
   }
 
   {
@@ -82,13 +82,13 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint16_t feedback_disconnect_minimum = read_uint16_t(buf + JRK_SETTING_FEEDBACK_DISCONNECT_MINIMUM);
-    jrk_settings_set_feedback_disconnect_minimum(settings, feedback_disconnect_minimum);
+    uint16_t feedback_absolute_minimum = read_uint16_t(buf + JRK_SETTING_FEEDBACK_ABSOLUTE_MINIMUM);
+    jrk_settings_set_feedback_absolute_minimum(settings, feedback_absolute_minimum);
   }
 
   {
-    uint16_t feedback_disconnect_maximum = read_uint16_t(buf + JRK_SETTING_FEEDBACK_DISCONNECT_MAXIMUM);
-    jrk_settings_set_feedback_disconnect_maximum(settings, feedback_disconnect_maximum);
+    uint16_t feedback_absolute_maximum = read_uint16_t(buf + JRK_SETTING_FEEDBACK_ABSOLUTE_MAXIMUM);
+    jrk_settings_set_feedback_absolute_maximum(settings, feedback_absolute_maximum);
   }
 
   {

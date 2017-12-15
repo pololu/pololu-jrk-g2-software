@@ -37,33 +37,33 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_input_mode(settings, input_mode);
   }
-  else if (!strcmp(key, "input_disconnect_minimum"))
+  else if (!strcmp(key, "input_absolute_minimum"))
   {
-    int64_t input_disconnect_minimum;
-    if (jrk_string_to_i64(value, &input_disconnect_minimum))
+    int64_t input_absolute_minimum;
+    if (jrk_string_to_i64(value, &input_absolute_minimum))
     {
-      return jrk_error_create("Invalid input_disconnect_minimum value.");
+      return jrk_error_create("Invalid input_absolute_minimum value.");
     }
-    if (input_disconnect_minimum < 0 || input_disconnect_minimum > UINT16_MAX)
+    if (input_absolute_minimum < 0 || input_absolute_minimum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The input_disconnect_minimum value is out of range.");
+        "The input_absolute_minimum value is out of range.");
     }
-    jrk_settings_set_input_disconnect_minimum(settings, input_disconnect_minimum);
+    jrk_settings_set_input_absolute_minimum(settings, input_absolute_minimum);
   }
-  else if (!strcmp(key, "input_disconnect_maximum"))
+  else if (!strcmp(key, "input_absolute_maximum"))
   {
-    int64_t input_disconnect_maximum;
-    if (jrk_string_to_i64(value, &input_disconnect_maximum))
+    int64_t input_absolute_maximum;
+    if (jrk_string_to_i64(value, &input_absolute_maximum))
     {
-      return jrk_error_create("Invalid input_disconnect_maximum value.");
+      return jrk_error_create("Invalid input_absolute_maximum value.");
     }
-    if (input_disconnect_maximum < 0 || input_disconnect_maximum > UINT16_MAX)
+    if (input_absolute_maximum < 0 || input_absolute_maximum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The input_disconnect_maximum value is out of range.");
+        "The input_absolute_maximum value is out of range.");
     }
-    jrk_settings_set_input_disconnect_maximum(settings, input_disconnect_maximum);
+    jrk_settings_set_input_absolute_maximum(settings, input_absolute_maximum);
   }
   else if (!strcmp(key, "input_minimum"))
   {
@@ -215,33 +215,33 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_feedback_mode(settings, feedback_mode);
   }
-  else if (!strcmp(key, "feedback_disconnect_minimum"))
+  else if (!strcmp(key, "feedback_absolute_minimum"))
   {
-    int64_t feedback_disconnect_minimum;
-    if (jrk_string_to_i64(value, &feedback_disconnect_minimum))
+    int64_t feedback_absolute_minimum;
+    if (jrk_string_to_i64(value, &feedback_absolute_minimum))
     {
-      return jrk_error_create("Invalid feedback_disconnect_minimum value.");
+      return jrk_error_create("Invalid feedback_absolute_minimum value.");
     }
-    if (feedback_disconnect_minimum < 0 || feedback_disconnect_minimum > UINT16_MAX)
+    if (feedback_absolute_minimum < 0 || feedback_absolute_minimum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The feedback_disconnect_minimum value is out of range.");
+        "The feedback_absolute_minimum value is out of range.");
     }
-    jrk_settings_set_feedback_disconnect_minimum(settings, feedback_disconnect_minimum);
+    jrk_settings_set_feedback_absolute_minimum(settings, feedback_absolute_minimum);
   }
-  else if (!strcmp(key, "feedback_disconnect_maximum"))
+  else if (!strcmp(key, "feedback_absolute_maximum"))
   {
-    int64_t feedback_disconnect_maximum;
-    if (jrk_string_to_i64(value, &feedback_disconnect_maximum))
+    int64_t feedback_absolute_maximum;
+    if (jrk_string_to_i64(value, &feedback_absolute_maximum))
     {
-      return jrk_error_create("Invalid feedback_disconnect_maximum value.");
+      return jrk_error_create("Invalid feedback_absolute_maximum value.");
     }
-    if (feedback_disconnect_maximum < 0 || feedback_disconnect_maximum > UINT16_MAX)
+    if (feedback_absolute_maximum < 0 || feedback_absolute_maximum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The feedback_disconnect_maximum value is out of range.");
+        "The feedback_absolute_maximum value is out of range.");
     }
-    jrk_settings_set_feedback_disconnect_maximum(settings, feedback_disconnect_maximum);
+    jrk_settings_set_feedback_absolute_maximum(settings, feedback_absolute_maximum);
   }
   else if (!strcmp(key, "feedback_minimum"))
   {

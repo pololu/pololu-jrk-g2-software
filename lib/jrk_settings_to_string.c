@@ -39,13 +39,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t input_disconnect_minimum = jrk_settings_get_input_disconnect_minimum(settings);
-    jrk_sprintf(&str, "input_disconnect_minimum: %u\n", input_disconnect_minimum);
+    uint16_t input_absolute_minimum = jrk_settings_get_input_absolute_minimum(settings);
+    jrk_sprintf(&str, "input_absolute_minimum: %u\n", input_absolute_minimum);
   }
 
   {
-    uint16_t input_disconnect_maximum = jrk_settings_get_input_disconnect_maximum(settings);
-    jrk_sprintf(&str, "input_disconnect_maximum: %u\n", input_disconnect_maximum);
+    uint16_t input_absolute_maximum = jrk_settings_get_input_absolute_maximum(settings);
+    jrk_sprintf(&str, "input_absolute_maximum: %u\n", input_absolute_maximum);
   }
 
   {
@@ -115,13 +115,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t feedback_disconnect_minimum = jrk_settings_get_feedback_disconnect_minimum(settings);
-    jrk_sprintf(&str, "feedback_disconnect_minimum: %u\n", feedback_disconnect_minimum);
+    uint16_t feedback_absolute_minimum = jrk_settings_get_feedback_absolute_minimum(settings);
+    jrk_sprintf(&str, "feedback_absolute_minimum: %u\n", feedback_absolute_minimum);
   }
 
   {
-    uint16_t feedback_disconnect_maximum = jrk_settings_get_feedback_disconnect_maximum(settings);
-    jrk_sprintf(&str, "feedback_disconnect_maximum: %u\n", feedback_disconnect_maximum);
+    uint16_t feedback_absolute_maximum = jrk_settings_get_feedback_absolute_maximum(settings);
+    jrk_sprintf(&str, "feedback_absolute_maximum: %u\n", feedback_absolute_maximum);
   }
 
   {

@@ -30,15 +30,23 @@ algorithm.
 EOF
   },
   {
-    name: 'input_disconnect_minimum',
+    name: 'input_absolute_minimum',
     type: :uint16_t,
     range: 0..4095,
+    comment: <<EOF
+If the raw input value is below this value, it causes an "Input disconnect"
+error.
+EOF
   },
   {
-    name: 'input_disconnect_maximum',
+    name: 'input_absolute_maximum',
     type: :uint16_t,
     range: 0..4095,
     default: 4095,
+    comment: <<EOF
+If the raw input value is above this value, it causes an "Input disconnect"
+error.
+EOF
   },
   {
     name: 'input_minimum',
@@ -178,15 +186,23 @@ measure that feedback.
 EOF
   },
   {
-    name: 'feedback_disconnect_minimum',
+    name: 'feedback_absolute_minimum',
     type: :uint16_t,
     range: 0..4095,
+    comment: <<EOF
+If the raw feedback value is below this value, it causes a
+"Feedback disconnect" error.
+EOF
   },
   {
-    name: 'feedback_disconnect_maximum',
+    name: 'feedback_absolute_maximum',
     type: :uint16_t,
     range: 0..4095,
     default: 4095,
+    comment: <<EOF
+If the raw feedback value is below this value, it causes a
+"Feedback disconnect" error.
+EOF
   },
   {
     name: 'feedback_minimum',
