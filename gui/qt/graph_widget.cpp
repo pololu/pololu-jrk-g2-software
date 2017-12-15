@@ -22,12 +22,9 @@ graph_widget::graph_widget(QWidget * parent)
   setup_ui(this);
   setup_plots();
 
-
-  connect(max_y, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
-
-  connect(min_y, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
-
-  connect(domain, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, remove_data_to_scroll);
+  connect(max_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
+  connect(min_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
+  connect(domain, SIGNAL(valueChanged(double)), this, SLOT(remove_data_to_scroll()));
 
   // connect the signal from the dataTime to call realtime_data_slot() using the refresh interval "refreshTimer"
   // set as a constant to be used throughout the class
@@ -179,7 +176,7 @@ void graph_widget::setup_plots()
 
     all_plots[i].plot_graph->setPen(QPen(plot_colors[i]));
 
-    connect(all_plots[i].plot_range, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, change_ranges);
+    connect(all_plots[i].plot_range, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
 
     connect(all_plots[i].plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
   }
