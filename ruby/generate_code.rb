@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # This Ruby script auto-generates certain parts of our C/C++ code that are repetitive.
 
 require 'pathname'

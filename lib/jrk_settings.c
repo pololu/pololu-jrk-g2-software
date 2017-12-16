@@ -1,5 +1,9 @@
 #include "jrk_internal.h"
 
+// Note: When we have multiple jrk models with different units for their current
+// settings, we will need some new functions for converting the settings from
+// one product to another while keepign the currents roughly the same.
+
 struct jrk_settings
 {
   uint32_t product;
@@ -117,8 +121,8 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_motor_max_deceleration_reverse(settings, 600);
   jrk_settings_set_motor_max_duty_cycle_forward(settings, 600);
   jrk_settings_set_motor_max_duty_cycle_reverse(settings, 600);
-  jrk_settings_set_motor_max_current_forward(settings, 81);
-  jrk_settings_set_motor_max_current_reverse(settings, 81);
+  jrk_settings_set_motor_max_current_forward(settings, 42);
+  jrk_settings_set_motor_max_current_reverse(settings, 42);
 
   // End of auto-generated settings defaults.
 }

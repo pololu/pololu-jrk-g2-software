@@ -36,6 +36,7 @@ set (os_src ${CMAKE_CURRENT_BINARY_DIR}/lib_info.rc)
 
 add_library (lib
   jrk_baud_rate.c
+  jrk_current.c
   jrk_device.c
   jrk_error.c
   jrk_get_settings.c

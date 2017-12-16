@@ -488,12 +488,23 @@ EOF
   {
     name: 'motor_max_current_forward',
     type: :uint8_t,
-    default: 81, # TODO: rethink this default
+    default: 42,
+    comment:
+      "Sets the current limit to be used when driving forward.\n" \
+      "This is the native current limit value stored on the device.\n" \
+      "The correspondence between this setting and the actual current limit\n" \
+      "in milliamps depends on what product you are using.  See als:\n" \
+      "- jrk_current_limit_native_to_ma()\n" \
+      "- jrk_current_limit_ma_to_native()\n" \
+      "- jrk_achievable_current_limit()\n"
   },
   {
     name: 'motor_max_current_reverse',
     type: :uint8_t,
-    default: 81, # TODO: rethink this default
+    default: 42,
+    comment:
+      "Sets the current limit to be used when driving in reverse.\n" \
+      "See the documentation of motor_max_current_forward."
   },
   {
     name: 'motor_current_calibration_forward',

@@ -936,6 +936,14 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings *);
 
 // Sets the motor_max_current_forward setting.
+//
+// Sets the current limit to be used when driving forward.
+// This is the native current limit value stored on the device.
+// The correspondence between this setting and the actual current limit
+// in milliamps depends on what product you are using.  See als:
+// - jrk_current_limit_native_to_ma()
+// - jrk_current_limit_ma_to_native()
+// - jrk_achievable_current_limit()
 JRK_API
 void jrk_settings_set_motor_max_current_forward(jrk_settings *,
   uint8_t motor_max_current_forward);
@@ -946,6 +954,9 @@ JRK_API
 uint8_t jrk_settings_get_motor_max_current_forward(const jrk_settings *);
 
 // Sets the motor_max_current_reverse setting.
+//
+// Sets the current limit to be used when driving in reverse.
+// See the documentation of motor_max_current_forward.
 JRK_API
 void jrk_settings_set_motor_max_current_reverse(jrk_settings *,
   uint8_t motor_max_current_reverse);
@@ -1409,6 +1420,41 @@ jrk_error * jrk_reinitialize(jrk_handle * handle);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 /// \endcond
+
+
+//// Miscellaneous //////////////////////////////////////////////////////////////
+
+// Converts raw current limit values to milliamps for the specified
+// product.  You can use this to interpret the raw values returned by
+// jrk_settings_get_motor_max_current_forward() or
+// jrk_settings_get_motor_max_current_reverse().
+//
+// The product argument should be one of the JRK_PRODUCT_* macros.
+//
+// The raw argument should be a raw current limit value.
+//
+// See also jrk_current_limit_ma_to_raw().
+JRK_API
+uint32_t jrk_current_limit_raw_to_ma(uint32_t product, uint32_t raw);
+
+// Converts raw current limit values to milliamps for the specified
+// product.  You can use this to get the raw values needed by
+// jrk_settings_set_motor_max_current_forward() or
+// jrk_settings_set_motor_max_current_reverse().
+//
+// The product argument should be one of the JRK_PRODUCT_* macros.
+//
+// The raw argument should be a raw current limit value.
+//
+// See also jrk_current_limit_raw_to_ma().
+JRK_API
+uint32_t jrk_current_limit_ma_to_raw(uint32_t product, uint32_t ma);
+
+// Returns the highest achievable current limit in milliamps that is less than
+// the given current limit in milliamps.
+//
+// The product argument should be one of the JRK_PRODUCT_* macros.
+uint32_t jrk_achievable_current_limit(uint32_t product, uint32_t ma);
 
 
 #ifdef __cplusplus
