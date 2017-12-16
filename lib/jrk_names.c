@@ -70,6 +70,7 @@ const jrk_name jrk_pin_func_names[] =
   { "pot_power", JRK_PIN_FUNC_POT_POWER },
   { "serial", JRK_PIN_FUNC_SERIAL },
   { "rc", JRK_PIN_FUNC_RC },
+  { "tachometer", JRK_PIN_FUNC_TACHOMETER },
   { NULL, 0 },
 };
 
