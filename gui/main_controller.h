@@ -34,7 +34,7 @@ public:
 
   // This is called when it is time to check if the status of the device has
   // changed.
-  void update();
+  void update_window();
 
   // This is called when the user tries to exit the program.  Returns true if
   // the program is actually allowed to exit.
@@ -83,9 +83,9 @@ public:
   void handle_serial_baud_rate_input(uint32_t serial_baud_rate);
   void handle_serial_baud_rate_input_finished();
   void handle_serial_device_number_input(uint8_t serial_device_number);
-  // void handle_serial_crc_enabled_input(bool serial_crc_enabled);
+  void handle_serial_crc_enabled_input(bool serial_crc_enabled);
   // void handle_serial_response_delay_input(uint8_t delay);
-  // void handle_command_timeout_input(uint16_t command_timeout);
+  void handle_command_timeout_input(uint16_t command_timeout);
 
   void handle_encoder_prescaler_input(uint32_t encoder_prescaler);
   void handle_encoder_postscaler_input(uint32_t encoder_postscaler);
@@ -103,13 +103,16 @@ public:
   void handle_output_max_input(int32_t output_max);
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
 
-  // void handle_invert_motor_direction_input(bool invert_motor_direction);
+  void handle_invert_motor_input(bool invert_motor);
   // void handle_speed_max_input(uint32_t speed_max);
   // void handle_starting_speed_input(uint32_t starting_speed);
-  // void handle_accel_max_input(uint32_t accel_max);
-  // void handle_decel_max_input(uint32_t decel_max);
+  void handle_accel_max_forward_input(uint32_t accel_max);
+  void handle_decel_max_forward_input(uint32_t decel_max);
+  void handle_accel_max_reverse_input(uint32_t accel_max);
+  void handle_decel_max_reverse_input(uint32_t decel_max);
   // void handle_step_mode_input(uint8_t step_mode);
-  // void handle_current_limit_input(uint32_t current_limit);
+  void handle_current_limit_input_forward(uint32_t current_limit);
+  void handle_current_limit_input_reverse(uint32_t current_limit);
   // void handle_current_limit_input_finished();
   // void handle_decay_mode_input(uint8_t decay_mode);
 

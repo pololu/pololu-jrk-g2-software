@@ -240,7 +240,7 @@ static bool device_list_includes(
   return device_with_os_id(device_list, device.get_os_id());
 }
 
-void main_controller::update()
+void main_controller::update_window()
 {
   // This is called regularly by the view when it is time to check for
   // updates to the state of USB devices.  This runs on the same thread as
@@ -416,7 +416,7 @@ void main_controller::handle_device_changed()
   if (connected())
   {
     jrk::device const & device = device_handle.get_device();
-    // window->set_device_name(device.get_name(), true);
+    // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
     window->set_serial_number(device.get_serial_number());
     window->set_firmware_version(device_handle.get_firmware_version_string());
     window->set_device_reset(
@@ -772,13 +772,13 @@ void main_controller::handle_serial_device_number_input(uint8_t serial_device_nu
   handle_settings_changed();
 }
 
-// void main_controller::handle_serial_crc_enabled_input(bool serial_crc_enabled)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_serial_crc_enabled(settings.get_pointer(), serial_crc_enabled);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_serial_crc_enabled_input(bool serial_crc_enabled)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_serial_enable_crc(settings.get_pointer(), serial_crc_enabled);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
 // void main_controller::handle_serial_response_delay_input(uint8_t delay)
 // {
@@ -788,13 +788,13 @@ void main_controller::handle_serial_device_number_input(uint8_t serial_device_nu
 //   handle_settings_changed();
 // }
 
-// void main_controller::handle_command_timeout_input(uint16_t command_timeout)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_command_timeout(settings.get_pointer(), command_timeout);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_command_timeout_input(uint16_t command_timeout)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_serial_timeout(settings.get_pointer(), command_timeout);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
 // void main_controller::handle_encoder_prescaler_input(uint32_t encoder_prescaler)
 // {
@@ -900,13 +900,13 @@ void main_controller::handle_input_scaling_degree_input(uint8_t input_scaling_de
   handle_settings_changed();
 }
 
-// void main_controller::handle_invert_motor_direction_input(bool invert_motor_direction)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_invert_motor_direction(settings.get_pointer(), invert_motor_direction);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_invert_motor_input(bool invert_motor)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_invert(settings.get_pointer(), invert_motor);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
 // void main_controller::handle_speed_max_input(uint32_t speed_max)
 // {
@@ -924,21 +924,37 @@ void main_controller::handle_input_scaling_degree_input(uint8_t input_scaling_de
 //   handle_settings_changed();
 // }
 
-// void main_controller::handle_accel_max_input(uint32_t accel_max)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_max_accel(settings.get_pointer(), accel_max);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_accel_max_forward_input(uint32_t accel_max)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_max_acceleration_forward(settings.get_pointer(), accel_max);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
-// void main_controller::handle_decel_max_input(uint32_t decel_max)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_max_decel(settings.get_pointer(), decel_max);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_decel_max_forward_input(uint32_t decel_max)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_max_deceleration_forward(settings.get_pointer(), decel_max);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_accel_max_reverse_input(uint32_t accel_max)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_max_acceleration_reverse(settings.get_pointer(), accel_max);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_decel_max_reverse_input(uint32_t decel_max)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_max_deceleration_reverse(settings.get_pointer(), decel_max);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
 // void main_controller::handle_step_mode_input(uint8_t step_mode)
 // {
@@ -948,13 +964,21 @@ void main_controller::handle_input_scaling_degree_input(uint8_t input_scaling_de
 //   handle_settings_changed();
 // }
 
-// void main_controller::handle_current_limit_input(uint32_t current_limit)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_current_limit(settings.get_pointer(), current_limit);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_current_limit_input_forward(uint32_t current_limit)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_max_current_forward(settings.get_pointer(), current_limit);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_current_limit_input_reverse(uint32_t current_limit)
+{
+  if (!connected()) { return; }
+  jrk_settings_set_motor_max_current_reverse(settings.get_pointer(), current_limit);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
 // void main_controller::handle_current_limit_input_finished()
 // {

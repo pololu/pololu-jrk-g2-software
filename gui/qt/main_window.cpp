@@ -2,22 +2,50 @@
 #include "main_controller.h"
 #include "qcustomplot.h"
 #include "graph_window.h"
+
 #include <QApplication>
-#include <QWidget>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QLabel>
-#include <QMainWindow>
-#include <QSerialPort>
-#include <QVector>
-#include <QtCore>
+#include <QButtonGroup>
+#include <QCheckBox>
 #include <QCloseEvent>
+#include <QComboBox>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+#include <QDoubleSpinBox>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QProcessEnvironment>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QShortcut>
+#include <QSpinBox>
+#include <QTabWidget>
+#include <QTimer>
+#include <QUrl>
+#include <QVBoxLayout>
+
 #include <cassert>
+#include <cmath>
+
+#ifdef QT_STATIC
+#include <QtPlugin>
+#ifdef _WIN32
+Q_IMPORT_PLUGIN (QWindowsIntegrationPlugin);
+#endif
+#ifdef __linux__
+Q_IMPORT_PLUGIN (QLinuxFbIntegrationPlugin);
+Q_IMPORT_PLUGIN (QXcbIntegrationPlugin);
+#endif
+#endif
 
 main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
 {
-  setup_ui(this);
+  setup_ui();
   altw = 0;
 
   widgetAtHome = true;
@@ -28,14 +56,14 @@ void main_window::set_controller(main_controller * controller)
   this->controller = controller;
 }
 
-void main_window::setup_ui(QMainWindow *main_window)
+void main_window::setup_ui()
 {
   font.setPointSizeF(8.25);
 
-  main_window->setObjectName(QStringLiteral("main_window"));
-  main_window->setWindowTitle("Pololu Jrk G2 Configuration Utility");
+  setObjectName(QStringLiteral("main_window"));
+  setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
-  central_widget = new QWidget(main_window);
+  central_widget = new QWidget();
   central_widget->setObjectName(QStringLiteral("central_widget"));
 
   menu_bar = new QMenuBar();
@@ -208,14 +236,14 @@ void main_window::setup_ui(QMainWindow *main_window)
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
-  main_window->setCentralWidget(central_widget);
-  main_window->setMenuBar(menu_bar);
+  setCentralWidget(central_widget);
+  setMenuBar(menu_bar);
 
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
 
 
-  QMetaObject::connectSlotsByName(main_window);
+  QMetaObject::connectSlotsByName(this);
 
 }
 
@@ -246,19 +274,19 @@ void main_window::receive_widget(graph_widget *widget)
   widgetAtHome = true;
 }
 
-void main_window::context_menu_event(QContextMenuEvent *event)
-{
-  if (widgetAtHome)
-  {
-    QMenu menu(this);
-    menu.addAction(sepAct);
-    menu.exec(event->globalPos());
-  }
-}
+// void main_window::context_menu_event(QContextMenuEvent *event)
+// {
+//   if (widgetAtHome)
+//   {
+//     QMenu menu(this);
+//     menu.addAction(sepAct);
+//     menu.exec(event->globalPos());
+//   }
+// }
 
 void main_window::retranslate_ui(QMainWindow *main_window)
 {
-  main_window->setWindowTitle(QApplication::translate("main_window", "main_window", Q_NULLPTR));
+  // main_window->setWindowTitle(QApplication::translate("main_window", "main_window", Q_NULLPTR));
 }
 
 QWidget * main_window::setup_status_tab()
@@ -794,6 +822,55 @@ QWidget *main_window::setup_errors_tab()
   return errors_page_widget;
 }
 
+void main_window::center_at_startup_if_needed()
+{
+  // Center the window.  This fixes a strange bug on the Raspbian Jessie where
+  // the window would appear in the upper left with its title bar off the
+  // screen.  On other platforms, the default window position did not make much
+  // sense, so it is nice to center it.
+  //
+  // In case this causes problems, you can set the TICGUI_CENTER environment
+  // variable to "N".
+  //
+  // NOTE: This position issue on Raspbian is a bug in Qt that should be fixed.
+  // Another workaround for it was to uncomment the lines in retranslate() that
+  // set up errors_stopping_header_label, error_rows[*].name_label, and
+  // manual_target_velocity_mode_radio, but then the Window would strangely
+  // start in the lower right.
+  auto env = QProcessEnvironment::systemEnvironment();
+  if (env.value("TICGUI_CENTER") != "N")
+  {
+    setGeometry(
+      QStyle::alignedRect(
+        Qt::LeftToRight,
+        Qt::AlignCenter,
+        size(),
+        qApp->desktop()->availableGeometry()
+        )
+      );
+  }
+}
+
+void main_window::showEvent(QShowEvent * event)
+{
+  center_at_startup_if_needed();
+
+  if (!start_event_reported)
+  {
+    start_event_reported = true;
+    controller->start();
+  }
+}
+
+void main_window::closeEvent(QCloseEvent * event)
+{
+  if (!controller->exit())
+  {
+    // User canceled exit when prompted about settings that have not been applied.
+    event->ignore();
+  }
+}
+
 void main_window::set_u8_combo_box(QComboBox * combo, uint8_t value)
 {
   suppress_events = true;
@@ -904,47 +981,47 @@ void main_window::set_current_velocity(int32_t current_velocity)
 
 void main_window::set_error_status(uint16_t error_status)
 {
-  // for (int i = 0; i < 16; i++)
-  // {
-  //   if (error_rows[i].stopping_value == NULL) { continue; }
+  for (int i = 0; i < 16; i++)
+  {
+    if (error_rows[i].stopping_value == NULL) { continue; }
 
-  //   // setStyleSheet() is expensive, so only call it if something actually
-  //   // changed. Check if there's currently a stylesheet applied and decide
-  //   // whether we need to do anything based on that.
-  //   bool styled = !error_rows[i].stopping_value->styleSheet().isEmpty();
+    // setStyleSheet() is expensive, so only call it if something actually
+    // changed. Check if there's currently a stylesheet applied and decide
+    // whether we need to do anything based on that.
+    bool styled = !error_rows[i].stopping_value->styleSheet().isEmpty();
 
-  //   if (error_status & (1 << i))
-  //   {
-  //     error_rows[i].stopping_value->setText(tr("Yes"));
-  //     if (!styled)
-  //     {
-  //       error_rows[i].stopping_value->setStyleSheet(
-  //         ":enabled { background-color: red; color: white; }");
-  //     }
-  //   }
-  //   else
-  //   {
-  //     error_rows[i].stopping_value->setText(tr("No"));
-  //     if (styled)
-  //     {
-  //       error_rows[i].stopping_value->setStyleSheet("");
-  //     }
-  //   }
-  // }
+    if (error_status & (1 << i))
+    {
+      error_rows[i].stopping_value->setText(tr("Yes"));
+      if (!styled)
+      {
+        error_rows[i].stopping_value->setStyleSheet(
+          ":enabled { background-color: red; color: white; }");
+      }
+    }
+    else
+    {
+      error_rows[i].stopping_value->setText(tr("hell No"));
+      if (styled)
+      {
+        error_rows[i].stopping_value->setStyleSheet("");
+      }
+    }
+  }
 }
 
 void main_window::increment_errors_occurred(uint32_t errors_occurred)
 {
-  // for (int i = 0; i < 32; i++)
-  // {
-  //   if (error_rows[i].count_value == NULL) { continue; }
+  for (int i = 0; i < 32; i++)
+  {
+    if (error_rows[i].count_value == NULL) { continue; }
 
-  //   if (errors_occurred & (1 << i))
-  //   {
-  //     error_rows[i].count++;
-  //     error_rows[i].count_value->setText(QString::number(error_rows[i].count));
-  //   }
-  // }
+    if (errors_occurred & (1 << i))
+    {
+      error_rows[i].count++;
+      error_rows[i].count_value->setText(QString::number(error_rows[i].count));
+    }
+  }
 }
 
 void main_window::set_resume_button_enabled(bool enabled)
@@ -1164,6 +1241,12 @@ void main_window::start_update_timer()
   update_timer->start();
 }
 
+void main_window::on_update_timer_timeout()
+{
+  feedback_calibration_label->setText(tr("hi"));
+  controller->update_window();
+}
+
 void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)
 {
   suppress_events = true;
@@ -1302,8 +1385,8 @@ errors_control::errors_control
   er.latched_radio = new QRadioButton(tr("Enabled and latched"));
   er.latched_radio->setObjectName("latched_radio");
 
-  er.stopping_motor_label = new QLabel(tr("No"));
-  er.stopping_motor_label->setObjectName("stopping_motor_label");
+  er.stopping_value = new QLabel(tr("No"));
+  er.stopping_value->setObjectName("stopping_value");
 
   er.count_value = new QLabel(tr("0"));
   er.count_value->setObjectName("count_value");
@@ -1330,7 +1413,7 @@ errors_control::errors_control
     er.disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
     er.enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
     er.latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    er.stopping_motor_label->setFixedWidth(tmp_label2.sizeHint().width() * 150/100);
+    er.stopping_value->setFixedWidth(tmp_label2.sizeHint().width() * 150/100);
     er.count_value->setFixedWidth(tmp_label2.sizeHint().width());
   }
 
@@ -1341,7 +1424,7 @@ errors_control::errors_control
   errors_central->addWidget(er.disabled_radio,1,3,Qt::AlignRight);
   errors_central->addWidget(er.enabled_radio,1,4,Qt::AlignCenter);
   errors_central->addWidget(er.latched_radio,1,5,Qt::AlignLeft);
-  errors_central->addWidget(er.stopping_motor_label,1,6,Qt::AlignLeft);
+  errors_central->addWidget(er.stopping_value,1,6,Qt::AlignLeft);
   errors_central->addWidget(er.count_value,1,7,1,2,Qt::AlignRight);
   errors_central->setColumnStretch(6,10);
 

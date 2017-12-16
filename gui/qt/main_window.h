@@ -7,6 +7,8 @@
 #include <QAction>
 #include <QMenu>
 #include <QContextMenuEvent>
+#include <QShowEvent>
+#include <QCloseEvent>
 #include "qcustomplot.h"
 #include "graph_widget.h"
 #include "graph_window.h"
@@ -24,7 +26,7 @@ struct error_row
 	QRadioButton *disabled_radio;
 	QRadioButton *enabled_radio;
 	QRadioButton *latched_radio;
-	QLabel *stopping_motor_label = NULL;
+	QLabel *stopping_value = NULL;
 	QLabel *count_value = NULL;
 	QWidget *errors_frame;
 };
@@ -43,6 +45,7 @@ public:
   // interval_ms is the amount of time between updates, in milliseconds.
   void set_update_timer_interval(uint32_t interval_ms);
   void start_update_timer();
+  void on_update_timer_timeout();
 
   // Show an OK/Cancel dialog, return true if the user selects OK.
   bool confirm(std::string const & question);
@@ -139,7 +142,15 @@ private slots:
 
 
 protected:
-	void context_menu_event(QContextMenuEvent *event);
+	// void context_menu_event(QContextMenuEvent *event);
+
+  // This is called by Qt just before the window is shown for the first time,
+  // and is also called whenever the window becomes unminimized.
+  void showEvent(QShowEvent *) override;
+
+  // This is called by Qt when the "close" slot is triggered, meaning that
+  // the user wants to close the window.
+  void closeEvent(QCloseEvent *) override;
 
 
 private:
@@ -149,14 +160,14 @@ private:
 
 	QTimer *update_timer = NULL;
 
-	QLabel * device_name_label;
-  QLabel * device_name_value;
-  QLabel * serial_number_label;
-  QLabel * serial_number_value;
-  QLabel * firmware_version_label;
-  QLabel * firmware_version_value;
-  QLabel * device_reset_label;
-  QLabel * device_reset_value;
+	QLabel * device_name_label = NULL;
+  QLabel * device_name_value = NULL;
+  QLabel * serial_number_label = NULL;
+  QLabel * serial_number_value = NULL;
+  QLabel * firmware_version_label = NULL;
+  QLabel * firmware_version_value = NULL;
+  QLabel * device_reset_label = NULL;
+  QLabel * device_reset_value = NULL;
 
 	QWidget *central_widget;
 	QGridLayout *grid_layout;
@@ -370,7 +381,7 @@ private:
 	QWidget * setup_errors_tab();
 
 
-	void setup_ui(QMainWindow *main_window);
+	void setup_ui();
 	void retranslate_ui(QMainWindow *main_window);
 
 
@@ -384,6 +395,10 @@ private:
   void set_spin_box(QSpinBox * box, int value);
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
+
+  void center_at_startup_if_needed();
+
+  bool start_event_reported = false;
 };
 
 class pid_constant_control : public QGroupBox

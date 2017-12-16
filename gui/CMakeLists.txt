@@ -48,6 +48,5 @@ endif ()
 
 target_link_libraries (gui Qt5::Widgets lib) # TODO: add 'bootloader'
 qt5_use_modules(gui PrintSupport)
-qt5_use_modules(gui SerialPort)   # TODO: remove since we aren't using it
 
 install(TARGETS gui DESTINATION bin)
