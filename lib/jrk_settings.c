@@ -18,7 +18,7 @@ struct jrk_settings
   uint16_t output_maximum;
   bool input_invert;
   uint8_t input_scaling_degree;
-  bool input_power_with_aux;
+  bool input_detect_disconnect;
   uint8_t input_analog_samples_exponent;
   uint8_t feedback_mode;
   uint16_t feedback_absolute_minimum;
@@ -26,7 +26,7 @@ struct jrk_settings
   uint16_t feedback_minimum;
   uint16_t feedback_maximum;
   bool feedback_invert;
-  bool feedback_power_with_aux;
+  bool feedback_detect_disconnect;
   uint8_t feedback_dead_zone;
   uint8_t feedback_analog_samples_exponent;
   bool feedback_wraparound;
@@ -354,16 +354,16 @@ uint8_t jrk_settings_get_input_scaling_degree(const jrk_settings * settings)
   return settings->input_scaling_degree;
 }
 
-void jrk_settings_set_input_power_with_aux(jrk_settings * settings, bool input_power_with_aux)
+void jrk_settings_set_input_detect_disconnect(jrk_settings * settings, bool input_detect_disconnect)
 {
   if (settings == NULL) { return; }
-  settings->input_power_with_aux = input_power_with_aux;
+  settings->input_detect_disconnect = input_detect_disconnect;
 }
 
-bool jrk_settings_get_input_power_with_aux(const jrk_settings * settings)
+bool jrk_settings_get_input_detect_disconnect(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->input_power_with_aux;
+  return settings->input_detect_disconnect;
 }
 
 void jrk_settings_set_input_analog_samples_exponent(jrk_settings * settings, uint8_t input_analog_samples_exponent)
@@ -450,16 +450,16 @@ bool jrk_settings_get_feedback_invert(const jrk_settings * settings)
   return settings->feedback_invert;
 }
 
-void jrk_settings_set_feedback_power_with_aux(jrk_settings * settings, bool feedback_power_with_aux)
+void jrk_settings_set_feedback_detect_disconnect(jrk_settings * settings, bool feedback_detect_disconnect)
 {
   if (settings == NULL) { return; }
-  settings->feedback_power_with_aux = feedback_power_with_aux;
+  settings->feedback_detect_disconnect = feedback_detect_disconnect;
 }
 
-bool jrk_settings_get_feedback_power_with_aux(const jrk_settings * settings)
+bool jrk_settings_get_feedback_detect_disconnect(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->feedback_power_with_aux;
+  return settings->feedback_detect_disconnect;
 }
 
 void jrk_settings_set_feedback_dead_zone(jrk_settings * settings, uint8_t feedback_dead_zone)

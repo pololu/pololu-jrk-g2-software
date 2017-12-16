@@ -222,15 +222,15 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_input_scaling_degree(settings, input_scaling_degree);
   }
-  else if (!strcmp(key, "input_power_with_aux"))
+  else if (!strcmp(key, "input_detect_disconnect"))
   {
-    uint32_t input_power_with_aux;
-    if (!jrk_name_to_code(jrk_bool_names, value, &input_power_with_aux))
+    uint32_t input_detect_disconnect;
+    if (!jrk_name_to_code(jrk_bool_names, value, &input_detect_disconnect))
     {
-      return jrk_error_create("Unrecognized input_power_with_aux value.");
+      return jrk_error_create("Unrecognized input_detect_disconnect value.");
     }
-    jrk_settings_set_input_power_with_aux(settings, input_power_with_aux);
-    jrk_settings_set_input_power_with_aux(settings, input_power_with_aux);
+    jrk_settings_set_input_detect_disconnect(settings, input_detect_disconnect);
+    jrk_settings_set_input_detect_disconnect(settings, input_detect_disconnect);
   }
   else if (!strcmp(key, "input_analog_samples_exponent"))
   {
@@ -321,15 +321,15 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     jrk_settings_set_feedback_invert(settings, feedback_invert);
     jrk_settings_set_feedback_invert(settings, feedback_invert);
   }
-  else if (!strcmp(key, "feedback_power_with_aux"))
+  else if (!strcmp(key, "feedback_detect_disconnect"))
   {
-    uint32_t feedback_power_with_aux;
-    if (!jrk_name_to_code(jrk_bool_names, value, &feedback_power_with_aux))
+    uint32_t feedback_detect_disconnect;
+    if (!jrk_name_to_code(jrk_bool_names, value, &feedback_detect_disconnect))
     {
-      return jrk_error_create("Unrecognized feedback_power_with_aux value.");
+      return jrk_error_create("Unrecognized feedback_detect_disconnect value.");
     }
-    jrk_settings_set_feedback_power_with_aux(settings, feedback_power_with_aux);
-    jrk_settings_set_feedback_power_with_aux(settings, feedback_power_with_aux);
+    jrk_settings_set_feedback_detect_disconnect(settings, feedback_detect_disconnect);
+    jrk_settings_set_feedback_detect_disconnect(settings, feedback_detect_disconnect);
   }
   else if (!strcmp(key, "feedback_dead_zone"))
   {

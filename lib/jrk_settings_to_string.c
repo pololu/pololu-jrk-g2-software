@@ -117,9 +117,9 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    bool input_power_with_aux = jrk_settings_get_input_power_with_aux(settings);
-    jrk_sprintf(&str, "input_power_with_aux: %s\n",
-      input_power_with_aux ? "true" : "false");
+    bool input_detect_disconnect = jrk_settings_get_input_detect_disconnect(settings);
+    jrk_sprintf(&str, "input_detect_disconnect: %s\n",
+      input_detect_disconnect ? "true" : "false");
   }
 
   {
@@ -161,9 +161,9 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    bool feedback_power_with_aux = jrk_settings_get_feedback_power_with_aux(settings);
-    jrk_sprintf(&str, "feedback_power_with_aux: %s\n",
-      feedback_power_with_aux ? "true" : "false");
+    bool feedback_detect_disconnect = jrk_settings_get_feedback_detect_disconnect(settings);
+    jrk_sprintf(&str, "feedback_detect_disconnect: %s\n",
+      feedback_detect_disconnect ? "true" : "false");
   }
 
   {

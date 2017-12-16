@@ -67,8 +67,8 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool input_power_with_aux = buf[JRK_SETTING_INPUT_POWER_WITH_AUX] & 1;
-    jrk_settings_set_input_power_with_aux(settings, input_power_with_aux);
+    bool input_detect_disconnect = buf[JRK_SETTING_INPUT_DETECT_DISCONNECT] & 1;
+    jrk_settings_set_input_detect_disconnect(settings, input_detect_disconnect);
   }
 
   {
@@ -107,8 +107,8 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool feedback_power_with_aux = buf[JRK_SETTING_FEEDBACK_POWER_WITH_AUX] & 1;
-    jrk_settings_set_feedback_power_with_aux(settings, feedback_power_with_aux);
+    bool feedback_detect_disconnect = buf[JRK_SETTING_FEEDBACK_DETECT_DISCONNECT] & 1;
+    jrk_settings_set_feedback_detect_disconnect(settings, feedback_detect_disconnect);
   }
 
   {

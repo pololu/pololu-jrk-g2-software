@@ -141,8 +141,16 @@ EOF
       "input_minimum documentation."
   },
   {
-    name: 'input_power_with_aux',
+    name: 'input_detect_disconnect',
     type: :bool,
+    comment:
+      "If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the jrk to\n" \
+      "drive its designated potentiometer power pins (SCL and/or AUX) low once per\n" \
+      "PID period and make sure that the input potentiometer reading on the SDA/AN\n" \
+      "pin also goes low.  If it does not go low, the jrk signals an input\n" \
+      "disconnect error.\n\n" \
+      "If you enable this setting, we recommend powering your potentiometer from\n" \
+      "GND and SCL."
   },
   {
     name: 'input_analog_samples_exponent',
@@ -233,8 +241,16 @@ EOF
       "the feedback_minimum documentation."
   },
   {
-    name: 'feedback_power_with_aux',
+    name: 'feedback_detect_disconnect',
     type: :bool,
+    comment:
+      "If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the jrk\n" \
+      "to drive its designated potentiometer power pins (SCL and/or AUX) low once\n" \
+      "per PID period and make sure that the feedback potentiometer reading on FBA\n" \
+      "also goes low.  If it does not go low, the jrk signals a feedback\n" \
+      "disconnect error.\n\n" \
+      "If you enable this setting, we recommend powering your potentiometer from\n" \
+      "GND and AUX."
   },
   {
     name: 'feedback_dead_zone',

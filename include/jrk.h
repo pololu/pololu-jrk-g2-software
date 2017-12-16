@@ -411,15 +411,24 @@ void jrk_settings_set_input_scaling_degree(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_input_scaling_degree(const jrk_settings *);
 
-// Sets the input_power_with_aux setting.
+// Sets the input_detect_disconnect setting.
+//
+// If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the jrk to
+// drive its designated potentiometer power pins (SCL and/or AUX) low once per
+// PID period and make sure that the input potentiometer reading on the SDA/AN
+// pin also goes low.  If it does not go low, the jrk signals an input
+// disconnect error.
+//
+// If you enable this setting, we recommend powering your potentiometer from
+// GND and SCL.
 JRK_API
-void jrk_settings_set_input_power_with_aux(jrk_settings *,
-  bool input_power_with_aux);
+void jrk_settings_set_input_detect_disconnect(jrk_settings *,
+  bool input_detect_disconnect);
 
-// Gets the input_power_with_aux setting, which is described in
-// jrk_settings_set_input_power_with_aux.
+// Gets the input_detect_disconnect setting, which is described in
+// jrk_settings_set_input_detect_disconnect.
 JRK_API
-bool jrk_settings_get_input_power_with_aux(const jrk_settings *);
+bool jrk_settings_get_input_detect_disconnect(const jrk_settings *);
 
 // Sets the input_analog_samples_exponent setting.
 //
@@ -539,15 +548,24 @@ void jrk_settings_set_feedback_invert(jrk_settings *,
 JRK_API
 bool jrk_settings_get_feedback_invert(const jrk_settings *);
 
-// Sets the feedback_power_with_aux setting.
+// Sets the feedback_detect_disconnect setting.
+//
+// If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the jrk
+// to drive its designated potentiometer power pins (SCL and/or AUX) low once
+// per PID period and make sure that the feedback potentiometer reading on FBA
+// also goes low.  If it does not go low, the jrk signals a feedback
+// disconnect error.
+//
+// If you enable this setting, we recommend powering your potentiometer from
+// GND and AUX.
 JRK_API
-void jrk_settings_set_feedback_power_with_aux(jrk_settings *,
-  bool feedback_power_with_aux);
+void jrk_settings_set_feedback_detect_disconnect(jrk_settings *,
+  bool feedback_detect_disconnect);
 
-// Gets the feedback_power_with_aux setting, which is described in
-// jrk_settings_set_feedback_power_with_aux.
+// Gets the feedback_detect_disconnect setting, which is described in
+// jrk_settings_set_feedback_detect_disconnect.
 JRK_API
-bool jrk_settings_get_feedback_power_with_aux(const jrk_settings *);
+bool jrk_settings_get_feedback_detect_disconnect(const jrk_settings *);
 
 // Sets the feedback_dead_zone setting.
 JRK_API

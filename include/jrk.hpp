@@ -444,16 +444,16 @@ namespace jrk
       return jrk_settings_get_input_scaling_degree(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_input_power_with_aux().
-    void set_input_power_with_aux(bool value) noexcept
+    /// Wrapper for jrk_settings_set_input_detect_disconnect().
+    void set_input_detect_disconnect(bool value) noexcept
     {
-      jrk_settings_set_input_power_with_aux(pointer, value);
+      jrk_settings_set_input_detect_disconnect(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_input_power_with_aux().
-    bool get_input_power_with_aux() const noexcept
+    /// Wrapper for jrk_settings_get_input_detect_disconnect().
+    bool get_input_detect_disconnect() const noexcept
     {
-      return jrk_settings_get_input_power_with_aux(pointer);
+      return jrk_settings_get_input_detect_disconnect(pointer);
     }
 
     /// Wrapper for jrk_settings_set_input_analog_samples_exponent().
@@ -540,16 +540,16 @@ namespace jrk
       return jrk_settings_get_feedback_invert(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_feedback_power_with_aux().
-    void set_feedback_power_with_aux(bool value) noexcept
+    /// Wrapper for jrk_settings_set_feedback_detect_disconnect().
+    void set_feedback_detect_disconnect(bool value) noexcept
     {
-      jrk_settings_set_feedback_power_with_aux(pointer, value);
+      jrk_settings_set_feedback_detect_disconnect(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_feedback_power_with_aux().
-    bool get_feedback_power_with_aux() const noexcept
+    /// Wrapper for jrk_settings_get_feedback_detect_disconnect().
+    bool get_feedback_detect_disconnect() const noexcept
     {
-      return jrk_settings_get_feedback_power_with_aux(pointer);
+      return jrk_settings_get_feedback_detect_disconnect(pointer);
     }
 
     /// Wrapper for jrk_settings_set_feedback_dead_zone().
