@@ -570,6 +570,8 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     baud = jrk_settings_achievable_serial_baud_rate(settings, baud);
     jrk_settings_set_serial_baud_rate(settings, baud);
   }
+
+  // TODO: fix invalid pin configurations here
 }
 
 jrk_error * jrk_settings_fix(jrk_settings * settings, char ** warnings)

@@ -1045,6 +1045,47 @@ int16_t jrk_settings_get_vin_calibration(const jrk_settings *);
 JRK_API
 uint32_t jrk_settings_achievable_serial_baud_rate(const jrk_settings *, uint32_t);
 
+/// Sets the assigned function for a control pin.
+///
+/// The pin argument should be one of the JRK_PIN_NUM_* macros.
+///
+/// The func argument should be one of the JRK_PIN_FUNC_* macros.
+JRK_API
+void jrk_settings_set_pin_func(jrk_settings *, uint8_t pin, uint8_t func);
+
+/// Gets the pin function as described in jrk_settings_get_pin_func().
+JRK_API
+uint8_t jrk_settings_get_pin_func(const jrk_settings *, uint8_t pin);
+
+/// Sets whether the pin will have its internal pull-up enabled (if applicable).
+///
+/// Note that this setting is ignored by the device if the pin function is
+/// JRK_PIN_FUNC_DEFAULT.
+///
+/// The pin argument should be one of the JRK_PIN_NUM_* macros.
+JRK_API
+void jrk_settings_set_pin_pullup(jrk_settings *, uint8_t pin, bool pullup);
+
+/// Gets the pullup flag for a pin as described in jrk_settings_set_pin_pullup().
+JRK_API
+bool jrk_settings_get_pin_pullup(const jrk_settings *, uint8_t pin);
+
+/// Sets whether the pin will be used as an analog input (if applicable).
+///
+/// This flag causes the jrk to disable digital input functionality on that pin
+/// and regularly take analog readings of the pin.
+///
+/// Note that this setting is ignored by the device if the pin function is
+/// JRK_PIN_FUNC_DEFAULT.
+///
+/// The pin argument should be one of the JRK_PIN_NUM_* macros.
+JRK_API
+void jrk_settings_set_pin_analog(jrk_settings *, uint8_t pin, bool analog);
+
+/// Gets the analog flag for a pin as described in jrk_settings_set_pin_analog().
+JRK_API
+bool jrk_settings_get_pin_analog(const jrk_settings *, uint8_t pin);
+
 
 // jrk_variables ////////////////////////////////////////////////////////////////
 

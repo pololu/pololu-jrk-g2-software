@@ -68,6 +68,12 @@ struct jrk_settings
   int16_t vin_calibration;
 
   // End of auto-generated settings struct members.
+
+  struct {
+    uint8_t func;
+    bool pullup;
+    bool analog;
+  } pin_settings[JRK_CONTROL_PIN_COUNT];
 };
 
 void jrk_settings_fill_with_defaults(jrk_settings * settings)
@@ -932,4 +938,40 @@ uint32_t jrk_settings_achievable_serial_baud_rate(
   if (settings == NULL) { return 0; }
   uint16_t brg = jrk_baud_rate_to_brg(baud);
   return jrk_baud_rate_from_brg(brg);
+}
+
+void jrk_settings_set_pin_func(jrk_settings * settings, uint8_t pin, uint8_t func)
+{
+  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return; }
+  settings->pin_settings[pin].func = func;
+}
+
+uint8_t jrk_settings_get_pin_func(const jrk_settings * settings, uint8_t pin)
+{
+  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
+  return settings->pin_settings[pin].func;
+}
+
+void jrk_settings_set_pin_pullup(jrk_settings * settings, uint8_t pin, bool pullup)
+{
+  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return; }
+  settings->pin_settings[pin].pullup = pullup;
+}
+
+bool jrk_settings_get_pin_pullup(const jrk_settings * settings, uint8_t pin)
+{
+  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
+  return settings->pin_settings[pin].pullup;
+}
+
+void jrk_settings_set_pin_analog(jrk_settings * settings, uint8_t pin, bool analog)
+{
+  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return; }
+  settings->pin_settings[pin].analog = analog;
+}
+
+bool jrk_settings_get_pin_analog(const jrk_settings * settings, uint8_t pin)
+{
+  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
+  return settings->pin_settings[pin].analog;
 }

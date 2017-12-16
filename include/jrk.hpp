@@ -1021,6 +1021,42 @@ namespace jrk
     }
 
     // End of auto-generated settings C++ accessors.
+
+    /// Wrapper for jrk_settings_set_pin_func().
+    void set_pin_func(uint8_t pin, uint8_t func)
+    {
+      jrk_settings_set_pin_func(pointer, pin, func);
+    }
+
+    /// Wrapper for jrk_settings_get_pin_func().
+    uint8_t get_pin_func(uint8_t pin)
+    {
+      return jrk_settings_get_pin_func(pointer, pin);
+    }
+
+    /// Wrapper for jrk_settings_set_pin_pullup().
+    void set_pin_pullup(uint8_t pin, bool pullup)
+    {
+      jrk_settings_set_pin_pullup(pointer, pin, pullup);
+    }
+
+    /// Wrapper for jrk_settings_get_pin_pullup().
+    bool get_pin_pullup(uint8_t pin)
+    {
+      return jrk_settings_get_pin_pullup(pointer, pin);
+    }
+
+    /// Wrapper for jrk_settings_set_pin_analog().
+    void set_pin_analog(uint8_t pin, bool analog)
+    {
+      jrk_settings_set_pin_analog(pointer, pin, analog);
+    }
+
+    /// Wrapper for jrk_settings_get_pin_analog().
+    bool get_pin_analog(uint8_t pin)
+    {
+      return jrk_settings_get_pin_analog(pointer, pin);
+    }
   };
 
   /// Represents the variables read from a jrk.  This object just stores plain

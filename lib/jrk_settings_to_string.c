@@ -1,5 +1,25 @@
 #include "jrk_internal.h"
 
+static void print_pin_config_to_yaml(jrk_string * str,
+  const jrk_settings * settings, uint8_t pin,  const char * config_name)
+{
+  assert(str != NULL);
+  assert(config_name != NULL);
+
+  const char * pullup_str = "";
+  if (jrk_settings_get_pin_pullup(settings, pin)) { pullup_str = " pullup"; }
+
+  const char * analog_str = "";
+  if (jrk_settings_get_pin_analog(settings, pin)) { analog_str = " analog"; }
+
+  const char * func_str = "";
+  jrk_code_to_name(jrk_pin_func_names,
+    jrk_settings_get_pin_func(settings, pin), &func_str);
+
+  jrk_sprintf(str, "%s: %s%s%s\n", config_name, func_str,
+    pullup_str, analog_str);
+}
+
 jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string)
 {
   if (string == NULL)
@@ -354,6 +374,17 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   // End of auto-generated settings file printing code.
+
+  {
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_SCL, "pin_config_scl");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_SDA, "pin_config_sda");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_TX, "pin_config_tx");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_RX, "pin_config_rx");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_RC, "pin_config_rc");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_AUX, "pin_config_aux");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_FBA, "pin_config_fba");
+    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_FBT, "pin_config_fbt");
+  }
 
   if (error == NULL && str.data == NULL)
   {
