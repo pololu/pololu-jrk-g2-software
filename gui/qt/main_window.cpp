@@ -624,52 +624,82 @@ QWidget *main_window::setup_motor_tab()
   frequency_layout->addWidget(motor_frequency_label);
   frequency_layout->addWidget(motor_frequency_combobox);
   layout->addLayout(frequency_layout,0,0,Qt::AlignLeft);
+
   QHBoxLayout *invert_layout = new QHBoxLayout();
+
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
+
   motor_detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
   motor_detect_motor_button->setObjectName("motor_detect_motor_button");
+
   invert_layout->addWidget(motor_invert_checkbox);
   invert_layout->addWidget(motor_detect_motor_button);
+
   QGridLayout *motor_controls_layout = new QGridLayout();
+
   motor_asymmetric_checkbox = new QCheckBox(tr("Asymmetric"));
   motor_asymmetric_checkbox->setObjectName("motor_asymmetric_checkbox");
+
   motor_forward_label = new QLabel(tr("Forward"));
   motor_forward_label->setObjectName("motor_forward_label");
+
   motor_reverse_label = new QLabel(tr("Reverse"));
   motor_reverse_label->setObjectName("motor_reverse_label");
+
   motor_duty_label = new QLabel(tr("Max. duty cycle:"));
   motor_duty_label->setObjectName("motor_duty_label");
-  motor_duty_forward_spinbox = new QDoubleSpinBox();
+
+  motor_duty_forward_spinbox = new QSpinBox();
   motor_duty_forward_spinbox->setObjectName("motor_duty_forward_spinbox");
-  motor_duty_reverse_spinbox = new QDoubleSpinBox();
+  motor_duty_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+
+  motor_duty_reverse_spinbox = new QSpinBox();
   motor_duty_reverse_spinbox->setObjectName("motor_duty_reverse_spinbox");
+  motor_duty_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+
   motor_duty_means_label = new QLabel(tr("(600 means 100%)"));
+
   motor_acceleration_label = new QLabel(tr("Max. acceleration:"));
   motor_acceleration_label->setObjectName("motor_acceleration_label");
-  motor_acceleration_forward_spinbox = new QDoubleSpinBox();
+
+  motor_acceleration_forward_spinbox = new QSpinBox();
   motor_acceleration_forward_spinbox->setObjectName("motor_acceleration_forward_spinbox");
-  motor_acceleration_reverse_spinbox = new QDoubleSpinBox();
+  motor_acceleration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+
+  motor_acceleration_reverse_spinbox = new QSpinBox();
   motor_acceleration_reverse_spinbox->setObjectName("motor_acceleration_reverse_spinbox");
+  motor_acceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+
   motor_acceleration_means_label = new QLabel(tr("(600 means no limit)"));
+
   motor_duration_label = new QLabel(tr("Brake duration (ms):"));
   motor_duration_label->setObjectName("motor_duration_label");
-  motor_duration_forward_spinbox = new QDoubleSpinBox();
+
+  motor_duration_forward_spinbox = new QSpinBox();
   motor_duration_forward_spinbox->setObjectName("motor_duration_forward_spinbox");
-  motor_duration_reverse_spinbox = new QDoubleSpinBox();
+
+  motor_duration_reverse_spinbox = new QSpinBox();
   motor_duration_reverse_spinbox->setObjectName("motor_duration_reverse_spinbox");
+
   motor_current_label = new QLabel(tr("Max. current (A):"));
   motor_current_label->setObjectName("motor_current_label");
+
   motor_current_forward_spinbox = new QDoubleSpinBox();
   motor_current_forward_spinbox->setObjectName("motor_current_forward_spinbox");
+
   motor_current_reverse_spinbox = new QDoubleSpinBox();
   motor_current_reverse_spinbox->setObjectName("motor_current_reverse_spinbox");
+
   motor_current_means_label = new QLabel(tr("(0.000 means no limit)"));
   motor_current_means_label->setObjectName("motor_current_means_label");
+
   motor_calibration_label = new QLabel(tr("Current calibration:"));
   motor_calibration_label->setObjectName("motor_calibration_label");
+
   motor_calibration_forward_spinbox = new QDoubleSpinBox();
   motor_calibration_forward_spinbox->setObjectName("motor_calibration_forward_spinbox");
+
   motor_calibration_reverse_spinbox = new QDoubleSpinBox();
   motor_calibration_reverse_spinbox->setObjectName("motor_calibration_reverse_spinbox");
 

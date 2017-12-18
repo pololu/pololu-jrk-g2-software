@@ -421,7 +421,7 @@ void main_controller::handle_model_changed()
 {
   handle_device_changed();
   //TODO: handle_variables_changed();
-  //TODO: handle_settings_changed();
+  handle_settings_changed();
 }
 
 void main_controller::handle_device_changed()
