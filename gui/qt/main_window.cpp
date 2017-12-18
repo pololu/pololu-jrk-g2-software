@@ -1251,22 +1251,23 @@ void main_window::on_update_timer_timeout()
   controller->update();
 }
 
-void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)
+void main_window::set_device_list_contents(const std::vector<jrk::device> & device_list)
 {
   suppress_events = true;
   device_list_value->clear();
   device_list_value->addItem(tr("Not connected"), QString()); // null value
-  for (jrk::device const & device : device_list)
+  for (const jrk::device & device : device_list)
   {
     device_list_value->addItem(
       QString::fromStdString(
+        std::string(jrk_look_up_product_name_short(device.get_product())) +
         " #" + device.get_serial_number()),
       QString::fromStdString(device.get_os_id()));
   }
   suppress_events = false;
 }
 
-void main_window::set_device_list_selected(jrk::device const & device)
+void main_window::set_device_list_selected(const jrk::device & device)
 {
   // TODO: show an error if we couldn't find the specified device
   // (findData returned -1)?
