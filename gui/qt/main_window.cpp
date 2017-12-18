@@ -27,6 +27,8 @@
 #include <QTimer>
 #include <QUrl>
 #include <QVBoxLayout>
+#include <string>
+#include <QString>
 
 #include <cassert>
 #include <cmath>
@@ -1188,16 +1190,19 @@ void main_window::set_device_reset(std::string const & device_reset)
 
 void main_window::set_firmware_version(std::string const & firmware_version)
 {
+  return; //TODO: fix function
   firmware_version_value->setText(QString::fromStdString(firmware_version));
 }
 
 void main_window::set_serial_number(std::string const & serial_number)
 {
+  return; //TODO: fix function
   serial_number_value->setText(QString::fromStdString(serial_number));
 }
 
 void main_window::set_device_name(std::string const & name, bool link_enabled)
 {
+  return; //TODO: fix function
   QString text = QString::fromStdString(name);
   if (link_enabled)
   {

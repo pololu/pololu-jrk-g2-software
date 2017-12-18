@@ -23,7 +23,7 @@ graph_widget::graph_widget(QWidget * parent)
 
   connect(max_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
   connect(min_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
-  connect(domain, SIGNAL(valueChanged(double)), this, SLOT(remove_data_to_scroll()));
+  connect(domain, SIGNAL(valueChanged(int)), this, SLOT(remove_data_to_scroll()));
 
   // connect the signal from the dataTime to call realtime_data_slot() using the refresh interval "refreshTimer"
   // set as a constant to be used throughout the class
@@ -44,7 +44,7 @@ void graph_widget::setup_ui()
   central_widget->setObjectName(tr("central_widget"));
 
   pauseRunButton = new QPushButton();
-  pauseRunButton->setObjectName(tr("pauseRunButton"));
+  pauseRunButton->setObjectName("pauseRunButton");
   pauseRunButton->setCheckable(true);
   pauseRunButton->setChecked(false);
   pauseRunButton->setText(tr("&Pause"));
