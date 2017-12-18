@@ -912,6 +912,12 @@ void main_window::on_device_list_value_currentIndexChanged(int index)
   controller->connect_device_with_os_id(id.toStdString());
 }
 
+void main_window::on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_duty_cycle_forward_input(value);
+}
+
 void main_window::set_u8_combo_box(QComboBox * combo, uint8_t value)
 {
   suppress_events = true;

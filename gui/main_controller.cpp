@@ -899,6 +899,14 @@ void main_controller::handle_invert_motor_input(bool invert_motor)
 //   handle_settings_changed();
 // }
 
+void main_controller::handle_motor_max_duty_cycle_forward_input(uint16_t duty_cycle)
+{
+  if (!connected()) { return; }
+  settings.set_motor_max_duty_cycle_forward(duty_cycle);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
 void main_controller::handle_accel_max_forward_input(uint32_t accel_max)
 {
   if (!connected()) { return; }

@@ -152,6 +152,8 @@ private slots:
   void on_launchGraph_clicked(QMouseEvent *);
   void on_device_list_value_currentIndexChanged(int index);
 
+  void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
+
 private:
 	QFont font;
 

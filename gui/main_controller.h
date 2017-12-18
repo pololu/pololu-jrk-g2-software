@@ -42,7 +42,7 @@ public:
   // This is called whenever something in the model has changed that might
   // require the window to be updated.  It includes no details about what
   // exactly changed.
-  void handle_model_changed();
+  void handle_model_changed();  // TODO: make this private
 
 private:
   void connect_device(jrk::device const & device);
@@ -105,6 +105,8 @@ public:
   void handle_invert_motor_input(bool invert_motor);
   // void handle_speed_max_input(uint32_t speed_max);
   // void handle_starting_speed_input(uint32_t starting_speed);
+
+  void handle_motor_max_duty_cycle_forward_input(uint16_t);
   void handle_accel_max_forward_input(uint32_t accel_max);
   void handle_decel_max_forward_input(uint32_t decel_max);
   void handle_accel_max_reverse_input(uint32_t accel_max);
