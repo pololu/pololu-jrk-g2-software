@@ -45,7 +45,6 @@ public:
   // interval_ms is the amount of time between updates, in milliseconds.
   void set_update_timer_interval(uint32_t interval_ms);
   void start_update_timer();
-  void on_update_timer_timeout();
 
   // Show an OK/Cancel dialog, return true if the user selects OK.
   bool confirm(std::string const & question);
@@ -136,8 +135,9 @@ signals:
 	void pass_widget(graph_widget *widget);
 
 private slots:
-	void receive_widget(graph_widget *widget);
-	void on_launchGraph_clicked(QMouseEvent*);
+  void on_update_timer_timeout();
+  void receive_widget(graph_widget *widget);
+  void on_launchGraph_clicked(QMouseEvent*);
 
 
 

@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>  // tmphax
 
 // This is how often we fetch the variables from the device.
 static const uint32_t UPDATE_INTERVAL_MS = 50;
@@ -240,7 +241,7 @@ static bool device_list_includes(
   return device_with_os_id(device_list, device.get_os_id());
 }
 
-void main_controller::update_window()
+void main_controller::update()
 {
   // This is called regularly by the view when it is time to check for
   // updates to the state of USB devices.  This runs on the same thread as
@@ -369,6 +370,7 @@ static bool device_lists_different(std::vector<jrk::device> const & list1,
 
 bool main_controller::update_device_list()
 {
+  std::cout << "listing devices" << std::endl;  // tmphax
   try
   {
     std::vector<jrk::device> new_device_list = jrk::list_connected_devices();

@@ -32,9 +32,8 @@ public:
   // This is called when the user wants to upgrade some firmware.
   void upgrade_firmware();
 
-  // This is called when it is time to check if the status of the device has
-  // changed.
-  void update_window();
+  // This is called regularly to do various updates.
+  void update();
 
   // This is called when the user tries to exit the program.  Returns true if
   // the program is actually allowed to exit.

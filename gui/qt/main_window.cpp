@@ -32,6 +32,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream> // tmphax
 
 #ifdef QT_STATIC
 #include <QtPlugin>
@@ -244,9 +245,7 @@ void main_window::setup_ui()
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
 
-
   QMetaObject::connectSlotsByName(this);
-
 }
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
@@ -1248,8 +1247,8 @@ void main_window::start_update_timer()
 
 void main_window::on_update_timer_timeout()
 {
-  feedback_calibration_label->setText(tr("hi"));
-  controller->update_window();
+  std::cout << "on_update_time_timeout" << std::endl;
+  controller->update();
 }
 
 void main_window::set_device_list_contents(std::vector<jrk::device> const & device_list)
