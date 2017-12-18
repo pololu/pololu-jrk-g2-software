@@ -381,7 +381,6 @@ static bool device_lists_different(std::vector<jrk::device> const & list1,
 
 bool main_controller::update_device_list()
 {
-  std::cout << "listing devices" << std::endl;  // tmphax
   try
   {
     std::vector<jrk::device> new_device_list = jrk::list_connected_devices();
@@ -709,8 +708,8 @@ void main_controller::handle_settings_applied()
 {
 //   window->set_manual_target_enabled(control_mode_is_serial(settings));
 
-//   // this must be last so the preceding code can compare old and new settings
-//   cached_settings = settings;
+  // this must be last so the preceding code can compare old and new settings
+  // TODO: cached_settings = settings;
 }
 
 // void main_controller::handle_control_mode_input(uint8_t control_mode)
@@ -1247,11 +1246,11 @@ void main_controller::apply_settings()
       settings = fixed_settings;
       device_handle.set_settings(settings);
       device_handle.reinitialize();
-      // handle_settings_applied();
+      handle_settings_applied();
       settings_modified = false;  // this must be last in case exceptions are thrown
     }
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
     show_exception(e);
   }

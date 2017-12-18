@@ -151,6 +151,7 @@ private slots:
   void receive_widget(graph_widget * widget);
   void on_launchGraph_clicked(QMouseEvent *);
   void on_device_list_value_currentIndexChanged(int index);
+  void on_apply_settings_action_triggered();
 
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
 
@@ -368,7 +369,7 @@ private:
 	QHBoxLayout *footer_layout;
 	QPushButton *motorOffButton;
 	QPushButton *motorOnButton;
-	QPushButton *apply_settings;
+	QPushButton *apply_settings_button;
 
 
 	QAction *sepAct;

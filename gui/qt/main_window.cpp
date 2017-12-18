@@ -210,30 +210,28 @@ void main_window::setup_ui()
   grid_layout->addWidget(tab_widget,1,0);
 
   motorOffButton = new QPushButton();
-  motorOnButton = new QPushButton();
-  apply_settings = new QPushButton();
-  footer_layout = new QHBoxLayout();
-
-  // motorOffButton->resize(75,23);
   motorOffButton->setObjectName("motorOffButton");
   motorOffButton->setText(tr("&Stop Motor"));
   motorOffButton->setStyleSheet(QStringLiteral("background-color:red"));
   motorOffButton->setFixedSize(motorOffButton->sizeHint());
 
-  // motorOnButton->resize(75,23);
+  motorOnButton = new QPushButton();
   motorOnButton->setObjectName("motorOnButton");
   motorOnButton->setText(tr("&Run Motor"));
   motorOnButton->setFixedSize(motorOnButton->sizeHint());
 
-  // apply_settings->resize(148,23);
-  apply_settings->setObjectName("apply_settings");
-  apply_settings->setText(tr("&Apply settings to device"));
-  apply_settings->setFixedSize(apply_settings->sizeHint());
+  apply_settings_button = new QPushButton();
+  apply_settings_button->setObjectName("apply_settings");
+  apply_settings_button->setText(tr("&Apply settings"));
+  apply_settings_button->setFixedSize(apply_settings_button->sizeHint());
+  connect(apply_settings_button, SIGNAL(clicked()), this,
+    SLOT(on_apply_settings_action_triggered()));
 
-  footer_layout->addWidget(motorOffButton,Qt::AlignRight);
-  footer_layout->addWidget(motorOnButton,Qt::AlignLeft);
+  footer_layout = new QHBoxLayout();
+  footer_layout->addWidget(motorOffButton, Qt::AlignRight);
+  footer_layout->addWidget(motorOnButton, Qt::AlignLeft);
   footer_layout->addSpacing(200);
-  footer_layout->addWidget(apply_settings,Qt::AlignRight);
+  footer_layout->addWidget(apply_settings_button, Qt::AlignRight);
   footer_layout->setStretch(2,3);
 
   grid_layout->addLayout(footer_layout,2,0);
@@ -912,6 +910,11 @@ void main_window::on_device_list_value_currentIndexChanged(int index)
   controller->connect_device_with_os_id(id.toStdString());
 }
 
+void main_window::on_apply_settings_action_triggered()
+{
+  controller->apply_settings();
+}
+
 void main_window::on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1213,7 +1216,7 @@ void main_window::set_vin_calibration(int16_t vin_calibration)
 
 void main_window::set_apply_settings_enabled(bool enabled)
 {
-  apply_settings->setEnabled(enabled);
+  apply_settings_button->setEnabled(enabled);
   apply_settings_action->setEnabled(enabled);
 }
 
@@ -1298,7 +1301,6 @@ void main_window::start_update_timer()
 
 void main_window::on_update_timer_timeout()
 {
-  std::cout << "on_update_time_timeout" << std::endl;
   controller->update();
 }
 
