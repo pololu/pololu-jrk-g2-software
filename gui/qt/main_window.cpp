@@ -872,6 +872,14 @@ void main_window::closeEvent(QCloseEvent * event)
   }
 }
 
+void main_window::on_device_list_value_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+
+  QString id = device_list_value->itemData(index).toString();
+  controller->connect_device_with_os_id(id.toStdString());
+}
+
 void main_window::set_u8_combo_box(QComboBox * combo, uint8_t value)
 {
   suppress_events = true;

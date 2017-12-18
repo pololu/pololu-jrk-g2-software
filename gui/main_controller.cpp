@@ -44,10 +44,21 @@ static jrk::device device_with_os_id(
   return jrk::device(); // null device
 }
 
-void main_controller::connect_device_with_os_id(std::string const & id)
+void main_controller::connect_device_with_os_id(const std::string & id)
 {
-  // TODO: deal with id being invalid
-  connect_device(device_with_os_id(device_list, id));
+  if (disconnect_device())
+  {
+    if (id.size() != 0)
+    {
+      connect_device(device_with_os_id(device_list, id));
+    }
+  }
+  else
+  {
+    // User canceled disconnect when prompted about settings that have not been
+    // applied. Reset the 'Connected to' dropdown.
+    handle_model_changed();
+  }
 }
 
 bool main_controller::disconnect_device()
@@ -408,7 +419,7 @@ void main_controller::show_exception(std::exception const & e,
 
 void main_controller::handle_model_changed()
 {
-  //TODO: handle_device_changed();
+  handle_device_changed();
   //TODO: handle_variables_changed();
   //TODO: handle_settings_changed();
 }
@@ -417,43 +428,47 @@ void main_controller::handle_device_changed()
 {
   if (connected())
   {
-    jrk::device const & device = device_handle.get_device();
-    // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
-    window->set_serial_number(device.get_serial_number());
-    window->set_firmware_version(device_handle.get_firmware_version_string());
-    window->set_device_reset(
-      jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
+    const jrk::device & device = device_handle.get_device();
 
     window->set_device_list_selected(device);
-    window->set_connection_status("", false);
 
-    window->reset_error_counts();
+    // TODO:
+    // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
+    // window->set_serial_number(device.get_serial_number());
+    // window->set_firmware_version(device_handle.get_firmware_version_string());
+    // window->set_device_reset(
+    //   jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
-    initialize_manual_target();
+    // window->set_connection_status("", false);
+
+    // window->reset_error_counts();
+
+    // initialize_manual_target();
   }
   else
   {
-    std::string value = "N/A";
-    window->set_device_name(value, false);
-    window->set_serial_number(value);
-    window->set_firmware_version(value);
-
     window->set_device_list_selected(jrk::device()); // show "Not connected"
 
-    if (connection_error)
-    {
-      window->set_connection_status(connection_error_message, true);
-    }
-    else
-    {
-      window->set_connection_status("", false);
-    }
+    //TODO:
+    // std::string value = "N/A";
+    // window->set_device_name(value, false);
+    // window->set_serial_number(value);
+    // window->set_firmware_version(value);
+
+    // if (connection_error)
+    // {
+    //   window->set_connection_status(connection_error_message, true);
+    // }
+    // else
+    // {
+    //   window->set_connection_status("", false);
+    // }
   }
 
-  window->set_disconnect_enabled(connected());
-  window->set_open_save_settings_enabled(connected());
-  window->set_reload_settings_enabled(connected());
-  window->set_restore_defaults_enabled(connected());
+  //TODO: window->set_disconnect_enabled(connected());
+  //TODO: window->set_open_save_settings_enabled(connected());
+  //TODO: window->set_reload_settings_enabled(connected());
+  //TODO: window->set_restore_defaults_enabled(connected());
   window->set_tab_pages_enabled(connected());
 }
 

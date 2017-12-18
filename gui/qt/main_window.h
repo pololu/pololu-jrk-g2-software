@@ -134,13 +134,6 @@ public:
 signals:
 	void pass_widget(graph_widget *widget);
 
-private slots:
-  void on_update_timer_timeout();
-  void receive_widget(graph_widget *widget);
-  void on_launchGraph_clicked(QMouseEvent*);
-
-
-
 protected:
 	// void context_menu_event(QContextMenuEvent *event);
 
@@ -152,6 +145,11 @@ protected:
   // the user wants to close the window.
   void closeEvent(QCloseEvent *) override;
 
+private slots:
+  void on_update_timer_timeout();
+  void receive_widget(graph_widget * widget);
+  void on_launchGraph_clicked(QMouseEvent *);
+  void on_device_list_value_currentIndexChanged(int index);
 
 private:
 	QFont font;
