@@ -205,6 +205,8 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
 
+  tab_widget->setCurrentIndex(4);  // tmphax
+
   grid_layout->addWidget(tab_widget,1,0);
 
   motorOffButton = new QPushButton();
@@ -650,9 +652,9 @@ QWidget *main_window::setup_motor_tab()
   motor_duty_label = new QLabel(tr("Max. duty cycle:"));
   motor_duty_label->setObjectName("motor_duty_label");
 
-  motor_duty_forward_spinbox = new QSpinBox();
-  motor_duty_forward_spinbox->setObjectName("motor_duty_forward_spinbox");
-  motor_duty_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  motor_max_duty_cycle_forward_spinbox = new QSpinBox();
+  motor_max_duty_cycle_forward_spinbox->setObjectName("motor_max_duty_cycle_forward_spinbox");
+  motor_max_duty_cycle_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
   motor_duty_reverse_spinbox = new QSpinBox();
   motor_duty_reverse_spinbox->setObjectName("motor_duty_reverse_spinbox");
@@ -707,7 +709,7 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_reverse_label,1,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_duty_label,2,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duty_forward_spinbox,2,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_duty_cycle_forward_spinbox, 2, 1, Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_duty_reverse_spinbox,2,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_duty_means_label,2,3,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_acceleration_label,3,0,Qt::AlignLeft);
@@ -1138,14 +1140,14 @@ void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
   set_u8_combo_box(input_degree_combobox, input_scaling_degree);
 }
 
-void main_window::set_accel_max_forward(uint32_t accel_max)
+void main_window::set_accel_max_forward(uint16_t accel_max)
 {
   // set_spin_box(accel_max_value, accel_max);
   // accel_max_value_pretty->setText(QString::fromStdString(
   //   convert_accel_to_pps2_string(accel_max)));
 }
 
-void main_window::set_decel_max_forward(uint32_t decel_max)
+void main_window::set_decel_max_forward(uint16_t decel_max)
 {
   // if (decel_max == 0)
   // {
@@ -1163,14 +1165,14 @@ void main_window::set_decel_max_forward(uint32_t decel_max)
   //   convert_accel_to_pps2_string(decel_max)));
 }
 
-void main_window::set_accel_max_reverse(uint32_t accel_max)
+void main_window::set_accel_max_reverse(uint16_t accel_max)
 {
   // set_spin_box(accel_max_value, accel_max);
   // accel_max_value_pretty->setText(QString::fromStdString(
   //   convert_accel_to_pps2_string(accel_max)));
 }
 
-void main_window::set_decel_max_reverse(uint32_t decel_max)
+void main_window::set_decel_max_reverse(uint16_t decel_max)
 {
   // if (decel_max == 0)
   // {
@@ -1191,6 +1193,11 @@ void main_window::set_decel_max_reverse(uint32_t decel_max)
 void main_window::set_never_sleep(bool never_sleep)
 {
   set_check_box(input_never_sleep_checkbox, never_sleep);
+}
+
+void main_window::set_motor_max_duty_cycle_forward(uint16_t duty_cycle)
+{
+  set_spin_box(motor_max_duty_cycle_forward_spinbox, duty_cycle);
 }
 
 void main_window::set_vin_calibration(int16_t vin_calibration)

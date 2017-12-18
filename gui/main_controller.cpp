@@ -682,49 +682,7 @@ void main_controller::handle_settings_changed()
 {
   // [all-settings]
 
-  // window->set_control_mode(jrk_settings_get_control_mode(settings.get_pointer()));
-  window->set_serial_baud_rate(jrk_settings_get_serial_baud_rate(settings.get_pointer()));
-  window->set_serial_device_number(jrk_settings_get_serial_device_number(settings.get_pointer()));
-  // window->set_serial_crc_enabled(jrk_settings_get_serial_crc_enabled(settings.get_pointer()));
-  // window->set_serial_response_delay(jrk_settings_get_serial_response_delay(settings.get_pointer()));
-  // window->set_command_timeout(jrk_settings_get_command_timeout(settings.get_pointer()));
-
-  // window->set_encoder_prescaler(jrk_settings_get_encoder_prescaler(settings.get_pointer()));
-  // window->set_encoder_postscaler(jrk_settings_get_encoder_postscaler(settings.get_pointer()));
-  // window->set_encoder_unlimited(jrk_settings_get_encoder_unlimited(settings.get_pointer()));
-
-  // window->set_input_averaging_enabled(jrk_settings_get_input_averaging_enabled(settings.get_pointer()));
-  // window->set_input_hysteresis(jrk_settings_get_input_hysteresis(settings.get_pointer()));
-
-  window->set_input_invert(jrk_settings_get_input_invert(settings.get_pointer()));
-  window->set_input_min(jrk_settings_get_input_minimum(settings.get_pointer()));
-  window->set_input_neutral_min(jrk_settings_get_input_neutral_minimum(settings.get_pointer()));
-  window->set_input_neutral_max(jrk_settings_get_input_neutral_maximum(settings.get_pointer()));
-  window->set_input_max(jrk_settings_get_input_maximum(settings.get_pointer()));
-  window->set_output_min(jrk_settings_get_output_minimum(settings.get_pointer()));
-  window->set_output_max(jrk_settings_get_output_maximum(settings.get_pointer()));
-  window->set_input_scaling_degree(jrk_settings_get_input_scaling_degree(settings.get_pointer()));
-
-  // window->set_invert_motor_direction(jrk_settings_get_invert_motor_direction(settings.get_pointer()));
-  // window->set_speed_max(jrk_settings_get_max_speed(settings.get_pointer()));
-  // window->set_starting_speed(jrk_settings_get_starting_speed(settings.get_pointer()));
-  window->set_accel_max_forward(jrk_settings_get_motor_max_acceleration_forward(settings.get_pointer()));
-  window->set_decel_max_forward(jrk_settings_get_motor_max_deceleration_forward(settings.get_pointer()));
-  window->set_accel_max_reverse(jrk_settings_get_motor_max_acceleration_reverse(settings.get_pointer()));
-  window->set_decel_max_reverse(jrk_settings_get_motor_max_deceleration_reverse(settings.get_pointer()));
-  // window->set_step_mode(jrk_settings_get_step_mode(settings.get_pointer()));
-  // window->set_current_limit(jrk_settings_get_current_limit(settings.get_pointer()));
-  // window->set_decay_mode(jrk_settings_get_decay_mode(settings.get_pointer()));
-
-  // window->set_soft_error_response(jrk_settings_get_soft_error_response(settings.get_pointer()));
-  // window->set_soft_error_position(jrk_settings_get_soft_error_position(settings.get_pointer()));
-  // window->set_current_limit_during_error(jrk_settings_get_current_limit_during_error(settings.get_pointer()));
-
-  // window->set_disable_safe_start(jrk_settings_get_disable_safe_start(settings.get_pointer()));
-  // window->set_ignore_err_line_high(jrk_settings_get_ignore_err_line_high(settings.get_pointer()));
-  // window->set_auto_clear_driver_error(jrk_settings_get_auto_clear_driver_error(settings.get_pointer()));
-  window->set_never_sleep(jrk_settings_get_never_sleep(settings.get_pointer()));
-  window->set_vin_calibration(jrk_settings_get_vin_calibration(settings.get_pointer()));
+  window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
 
   // for (int i = 0; i < 5; i++)
   // {

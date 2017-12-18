@@ -76,15 +76,16 @@ public:
 
   void set_never_sleep(bool never_sleep);
 
-  void set_accel_max_forward(uint32_t accel_max);
-	void set_decel_max_forward(uint32_t decel_max);
-	void set_accel_max_reverse(uint32_t accel_max);
-	void set_decel_max_reverse(uint32_t decel_max);
+  void set_motor_max_duty_cycle_forward(uint16_t);
+  void set_accel_max_forward(uint16_t accel_max);
+  void set_decel_max_forward(uint16_t decel_max);
+  void set_accel_max_reverse(uint16_t accel_max);
+  void set_decel_max_reverse(uint16_t decel_max);
 
-	void set_input_scaling_degree(uint8_t input_scaling_degree);
+  void set_input_scaling_degree(uint8_t input_scaling_degree);
 
   void set_input_invert(bool input_invert);
-	void set_input_min(uint16_t input_min);
+  void set_input_min(uint16_t input_min);
   void set_input_neutral_min(uint16_t input_neutral_min);
   void set_input_neutral_max(uint16_t input_neutral_max);
   void set_input_max(uint16_t input_max);
@@ -314,7 +315,7 @@ private:
 	QLabel *motor_forward_label;
 	QLabel *motor_reverse_label;
 	QLabel *motor_duty_label;
-	QSpinBox *motor_duty_forward_spinbox;
+	QSpinBox *motor_max_duty_cycle_forward_spinbox;
 	QSpinBox *motor_duty_reverse_spinbox;
 	QLabel *motor_duty_means_label;
 	QLabel *motor_acceleration_label;
