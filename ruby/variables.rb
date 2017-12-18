@@ -67,4 +67,12 @@ Variables = [
     name: 'tachometer_reading',
     type: :uint16_t,
   },
+  {
+    name: 'current_high_res',
+    type: :uint16_t,
+  },
+  {
+    name: 'current_chopping_log',
+    type: :uint16_t,
+  },
 ]

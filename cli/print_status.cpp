@@ -130,7 +130,11 @@ void print_status(const jrk::variables & vars,
     << std::endl;
 
   std::cout << left_column << "Current: "
-    << (uint16_t)vars.get_current()  // TODO: properly format this in mA or A
+    << vars.get_current_high_res()  // TODO: properly format this in mA or A
+    << std::endl;
+
+  std::cout << left_column << "Current chopping log: "
+    << vars.get_current_chopping_log()
     << std::endl;
 
   std::cout << left_column << "PID period exceeded: "

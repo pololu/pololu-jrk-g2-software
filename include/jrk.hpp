@@ -1174,6 +1174,18 @@ namespace jrk
       return jrk_variables_get_tachometer_reading(pointer);
     }
 
+    /// Wrapper for jrk_variables_get_current_high_res().
+    uint16_t get_current_high_res() const noexcept
+    {
+      return jrk_variables_get_current_high_res(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_current_chopping_log().
+    uint16_t get_current_chopping_log() const noexcept
+    {
+      return jrk_variables_get_current_chopping_log(pointer);
+    }
+
     // End of auto-generated variables C++ getters.
 
     /// Wrapper for jrk_variables_get_error().

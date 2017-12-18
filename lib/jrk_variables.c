@@ -25,6 +25,8 @@ struct jrk_variables
   uint32_t up_time;
   uint16_t rc_pulse_width;
   uint16_t tachometer_reading;
+  uint16_t current_high_res;
+  uint16_t current_chopping_log;
 
   // End of auto-generated variables struct members.
 };
@@ -126,6 +128,8 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->up_time = read_uint32_t(buf + JRK_VAR_UP_TIME);
   vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
   vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
+  vars->current_high_res = read_uint16_t(buf + JRK_VAR_CURRENT_HIGH_RES);
+  vars->current_chopping_log = read_uint16_t(buf + JRK_VAR_CURRENT_CHOPPING_LOG);
 
   // End of auto-generated buffer-to-variables code.
 }
@@ -289,6 +293,18 @@ uint16_t jrk_variables_get_tachometer_reading(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->tachometer_reading;
+}
+
+uint16_t jrk_variables_get_current_high_res(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->current_high_res;
+}
+
+uint16_t jrk_variables_get_current_chopping_log(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->current_chopping_log;
 }
 
 // End of auto-generated variables getters.

@@ -1203,6 +1203,14 @@ uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
 
+// Gets the current_high_res variable.
+JRK_API
+uint16_t jrk_variables_get_current_high_res(const jrk_variables *);
+
+// Gets the current_chopping_log variable.
+JRK_API
+uint16_t jrk_variables_get_current_chopping_log(const jrk_variables *);
+
 // End of auto-generated variables getter prototypes.
 
 // Gets the error, which is the scaled feedback minus the target.
