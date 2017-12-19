@@ -1,18 +1,20 @@
 #include "graph_widget.h"
 #include "main_window.h"
 #include "qcustomplot.h"
-#include <ctime>
+
 #include <QApplication>
-#include <QWidget>
-#include <QPushButton>
-#include <QSpinBox>
+#include <QCheckBox>
+#include <QCloseEvent>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QMainWindow>
+#include <QPushButton>
+#include <QSpinBox>
 #include <QVector>
-#include <array>
-#include <QtCore>
-#include <QCloseEvent>
+#include <QWidget>
 
+#include <array>
+#include <ctime>
 
 // double refreshTimer = 25; // used as a constant for both places the refresh rate is used
 

@@ -10500,12 +10500,12 @@ void QCustomPlot::rescaleAxes(bool onlyVisiblePlottables)
 bool QCustomPlot::savePdf(const QString &fileName, bool noCosmeticPen, int width, int height, const QString &pdfCreator, const QString &pdfTitle)
 {
   bool success = false;
-#ifdef QT_NO_PRINTER
+#if 1
   Q_UNUSED(fileName)
   Q_UNUSED(noCosmeticPen)
   Q_UNUSED(width)
   Q_UNUSED(height)
-  qDebug() << Q_FUNC_INFO << "Qt was built without printer support (QT_NO_PRINTER). PDF not created.";
+  qDebug() << Q_FUNC_INFO << "Printer support is disabled. PDF not created.";
 #else
   int newWidth, newHeight;
   if (width == 0 || height == 0)

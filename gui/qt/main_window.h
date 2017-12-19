@@ -1,26 +1,26 @@
 #pragma once
 
-#include <array>
-
-#include <QMainWindow>
-#include <QList>
-#include <QAction>
-#include <QGroupBox>
-#include <QMenu>
-#include <QContextMenuEvent>
-#include <QShowEvent>
-#include <QCloseEvent>
 #include "qcustomplot.h"
 #include "graph_widget.h"
 #include "graph_window.h"
 #include "jrk.hpp"
 
+#include <QMainWindow>
+#include <QGroupBox>
+
+#include <array>
+
+class QAction;
+class QCloseEvent;
 class QComboBox;
 class QDoubleSpinBox;
 class QGridLayout;
+class QGroupBox;
 class QHBoxLayout;
 class QLineEdit;
+class QMenu;
 class QRadioButton;
+class QShowEvent;
 class QSpinBox;
 
 class pid_constant_control;

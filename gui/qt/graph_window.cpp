@@ -1,7 +1,15 @@
 #include "graph_window.h"
 #include "main_window.h"
 #include "graph_widget.h"
+
+#include <QApplication>
+#include <QCheckBox>
 #include <QDebug>
+#include <QDoubleSpinBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 #include <QWidget>
 
 AltWindow::AltWindow(QWidget *parent)
