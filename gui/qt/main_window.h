@@ -371,8 +371,8 @@ private:
 	QSpinBox *motor_max_deceleration_forward_spinbox;
 	QSpinBox *motor_max_deceleration_reverse_spinbox;
 	QLabel *motor_max_current_label;
-	QDoubleSpinBox *motor_max_current_forward_spinbox;
-	QDoubleSpinBox *motor_max_current_reverse_spinbox;
+	QSpinBox *motor_max_current_forward_spinbox;
+	QSpinBox *motor_max_current_reverse_spinbox;
 	QLabel *motor_max_current_means_label;
 	QLabel *motor_calibration_label;
 	QDoubleSpinBox *motor_calibration_forward_spinbox;
