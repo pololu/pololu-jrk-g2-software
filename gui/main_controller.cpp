@@ -592,7 +592,11 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
 
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
+<<<<<<< HEAD
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
+=======
+
+>>>>>>> ad9342641953046c6620e8be431a349b31b6195c
 
 
   // for (int i = 0; i < 5; i++)
