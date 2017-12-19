@@ -60,13 +60,8 @@ private:
   void show_exception(std::exception const & e, std::string const & context = "");
 
 public:
-  // void set_target_position(int32_t position);
-  // void set_target_velocity(int32_t velocity);
-  // void halt_and_set_position(int32_t position);
-  // void halt_and_hold();
-  // void deenergize();
-  // void energize();
-  // void start_input_setup();
+  void run_motor();
+  void stop_motor();
 
   // This is called when the user wants to apply the settings.
   void apply_settings();

@@ -106,6 +106,18 @@ void main_window::setup_ui()
 
   device_menu->addSeparator();
 
+  stop_motor_action = new QAction(this);
+  stop_motor_action->setObjectName("stop_motor_action");
+  stop_motor_action->setText(tr("Stop motor")); // TODO: shortcut key with &
+  device_menu->addAction(stop_motor_action);
+
+  run_motor_action = new QAction(this);
+  run_motor_action->setObjectName("run_motor_action");
+  run_motor_action->setText(tr("Run motor")); // TODO: shortcut key with &
+  device_menu->addAction(run_motor_action);
+
+  device_menu->addSeparator();
+
   reload_settings_action = new QAction(this);
   reload_settings_action->setObjectName("reload_settings_action");
   reload_settings_action->setText(tr("Re&load settings from device"));
@@ -121,6 +133,8 @@ void main_window::setup_ui()
   apply_settings_action->setText(tr("&Apply settings"));
   apply_settings_action->setShortcut(Qt::CTRL + Qt::Key_P);
   device_menu->addAction(apply_settings_action);
+
+  device_menu->addSeparator();
 
   upgrade_firmware_action = new QAction(this);
   upgrade_firmware_action->setObjectName("upgrade_firmware_action");
@@ -209,27 +223,31 @@ void main_window::setup_ui()
 
   grid_layout->addWidget(tab_widget,1,0);
 
-  motorOffButton = new QPushButton();
-  motorOffButton->setObjectName("motorOffButton");
-  motorOffButton->setText(tr("&Stop Motor"));
-  motorOffButton->setStyleSheet(QStringLiteral("background-color:red"));
-  motorOffButton->setFixedSize(motorOffButton->sizeHint());
+  stop_motor_button = new QPushButton();
+  stop_motor_button->setObjectName("stop_motor_button");
+  stop_motor_button->setText(tr("&Stop Motor"));
+  stop_motor_button->setStyleSheet("background-color:red");
+  stop_motor_button->setFixedSize(stop_motor_button->sizeHint());
+  connect(stop_motor_button, SIGNAL(clicked()),
+    stop_motor_action, SLOT(trigger()));
 
-  motorOnButton = new QPushButton();
-  motorOnButton->setObjectName("motorOnButton");
-  motorOnButton->setText(tr("&Run Motor"));
-  motorOnButton->setFixedSize(motorOnButton->sizeHint());
+  run_motor_button = new QPushButton();
+  run_motor_button->setObjectName("run_motor_button");
+  run_motor_button->setText(tr("&Run Motor"));
+  run_motor_button->setFixedSize(run_motor_button->sizeHint());
+  connect(run_motor_button, SIGNAL(clicked()),
+    run_motor_action, SLOT(trigger()));
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
   apply_settings_button->setFixedSize(apply_settings_button->sizeHint());
-  connect(apply_settings_button, SIGNAL(clicked()), this,
-    SLOT(on_apply_settings_action_triggered()));
+  connect(apply_settings_button, SIGNAL(clicked()),
+    apply_settings_action, SLOT(trigger()));
 
   footer_layout = new QHBoxLayout();
-  footer_layout->addWidget(motorOffButton, Qt::AlignRight);
-  footer_layout->addWidget(motorOnButton, Qt::AlignLeft);
+  footer_layout->addWidget(stop_motor_button, Qt::AlignRight);
+  footer_layout->addWidget(run_motor_button, Qt::AlignLeft);
   footer_layout->addSpacing(200);
   footer_layout->addWidget(apply_settings_button, Qt::AlignRight);
   footer_layout->setStretch(2,3);
@@ -293,6 +311,11 @@ void main_window::retranslate_ui(QMainWindow *main_window)
 QWidget * main_window::setup_status_tab()
 {
   status_page_widget = new QWidget();
+  QGridLayout * layout = new QGridLayout();
+
+  // TODO: layout->addWidget(setup_manual_target_box(), 0, 0, 1, 1);
+
+  status_page_widget->setLayout(layout);
   return status_page_widget;
 }
 
@@ -913,6 +936,16 @@ void main_window::on_device_list_value_currentIndexChanged(int index)
 void main_window::on_apply_settings_action_triggered()
 {
   controller->apply_settings();
+}
+
+void main_window::on_run_motor_action_triggered()
+{
+  controller->run_motor();
+}
+
+void main_window::on_stop_motor_action_triggered()
+{
+  controller->stop_motor();
 }
 
 void main_window::on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value)

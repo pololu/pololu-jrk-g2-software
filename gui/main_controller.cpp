@@ -1229,6 +1229,34 @@ void main_controller::handle_upload_complete()
 //   window->run_input_wizard(control_mode);
 // }
 
+void main_controller::stop_motor()
+{
+  if (!connected()) { return; }
+
+  try
+  {
+    device_handle.stop_motor();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e);
+  }
+}
+
+void main_controller::run_motor()
+{
+  if (!connected()) { return; }
+
+  try
+  {
+    device_handle.run_motor();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e);
+  }
+}
+
 void main_controller::apply_settings()
 {
   if (!connected()) { return; }
