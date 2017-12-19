@@ -1191,6 +1191,48 @@ void main_controller::apply_settings()
   handle_settings_changed();
 }
 
+void main_controller::stop_motor()
+{
+  if (!connected()) { return; }
+
+  try
+  {
+    device_handle.stop_motor();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e);
+  }
+}
+
+void main_controller::run_motor()
+{
+  if (!connected()) { return; }
+
+  try
+  {
+    device_handle.run_motor();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e);
+  }
+}
+
+void main_controller::set_target(uint16_t target)
+{
+  if (!connected()) { return; }
+
+  try
+  {
+    device_handle.set_target(target);
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e);
+  }
+}
+
 void main_controller::open_settings_from_file(std::string filename)
 {
   if (!connected()) { return; }

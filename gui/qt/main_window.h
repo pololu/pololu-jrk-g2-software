@@ -159,6 +159,9 @@ private slots:
   void on_launchGraph_clicked(QMouseEvent *);
   void on_device_list_value_currentIndexChanged(int index);
   void on_apply_settings_action_triggered();
+  void on_stop_motor_action_triggered();
+  void on_run_motor_action_triggered();
+  void on_set_target_button_clicked();
 
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
   void on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value);
@@ -189,22 +192,25 @@ private:
 	QGridLayout *grid_layout;
 	QHBoxLayout *horizontal_layout;
 	graph_widget *preview_window;
-	AltWindow *altw;
-	QWidget *preview_plot;
-	QMenuBar * menu_bar;
-	QMenu * file_menu;
-	QAction * open_settings_action;
-	QAction * save_settings_action;
-	QAction * exit_action;
-	QMenu * device_menu;
-	QAction * disconnect_action;
-	QAction * reload_settings_action;
-	QAction * restore_defaults_action;
-	QAction * apply_settings_action;
-	QAction * upgrade_firmware_action;
-	QMenu * help_menu;
-	QAction * documentation_action;
-	QAction * about_action;
+        AltWindow *altw;
+        QWidget * preview_plot;
+
+  QMenuBar * menu_bar;
+  QMenu * file_menu;
+  QAction * open_settings_action;
+  QAction * save_settings_action;
+  QAction * exit_action;
+  QMenu * device_menu;
+  QAction * stop_motor_action;
+  QAction * run_motor_action;
+  QAction * disconnect_action;
+  QAction * reload_settings_action;
+  QAction * restore_defaults_action;
+  QAction * apply_settings_action;
+  QAction * upgrade_firmware_action;
+  QMenu * help_menu;
+  QAction * documentation_action;
+  QAction * about_action;
 
 	QHBoxLayout * header_layout;
 	QLabel * device_list_label;
@@ -213,7 +219,13 @@ private:
 	QCheckBox *stop_motor;
 
 	QTabWidget *tab_widget;
-	QWidget *status_page_widget;
+
+  // status tab
+
+  QWidget * status_page_widget;
+  QGroupBox * manual_target_box;
+  QSpinBox * manual_target_entry_value;
+  QPushButton * set_target_button;
 
 	// input tab
 
@@ -379,17 +391,17 @@ private:
 	QPushButton *errors_clear_errors;
 	QPushButton *errors_reset_counts;
 
-
-	QHBoxLayout *footer_layout;
-	QPushButton *motorOffButton;
-	QPushButton *motorOnButton;
-	QPushButton *apply_settings_button;
-
+  QHBoxLayout * footer_layout;
+  QPushButton * stop_motor_button;
+  QPushButton * run_motor_button;
+  QPushButton * apply_settings_button;
 
 	QAction *sepAct;
 	bool widgetAtHome;
 
-	QWidget * setup_status_tab();
+  QWidget * setup_status_tab();
+  QWidget * setup_manual_target_box();
+
   QWidget * setup_input_tab();
 	QWidget * setup_feedback_tab();
 	QWidget * setup_pid_tab();
