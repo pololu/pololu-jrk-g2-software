@@ -181,8 +181,8 @@ private slots:
   void on_motor_max_current_forward_spinbox_valueChanged(int value);
   void on_motor_max_current_reverse_spinbox_valueChanged(int value);
 
-  void on_motor_coast_radio_clicked(bool checked);
-  void on_motor_brake_radio_clicked(bool checked);
+  void on_motor_coast_radio_toggled(bool checked);
+  void on_motor_brake_radio_toggled(bool checked);
 
 private:
 	QFont font;
