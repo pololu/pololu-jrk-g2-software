@@ -194,6 +194,7 @@ void main_window::setup_ui()
   preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
+  stop_motor->setEnabled(false);  // doesn't work yet
 
   // tmphax:stop graph
   connect(
@@ -1217,6 +1218,18 @@ void main_window::set_open_save_settings_enabled(bool enabled)
 void main_window::set_disconnect_enabled(bool enabled)
 {
   disconnect_action->setEnabled(enabled);
+}
+
+void main_window::set_stop_motor_enabled(bool enabled)
+{
+  stop_motor_action->setEnabled(enabled);
+  stop_motor_button->setEnabled(enabled);
+}
+
+void main_window::set_run_motor_enabled(bool enabled)
+{
+  run_motor_action->setEnabled(enabled);
+  run_motor_button->setEnabled(enabled);
 }
 
 void main_window::set_error_flags_halting(uint16_t error_flags_halting)
