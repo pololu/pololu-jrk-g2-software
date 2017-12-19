@@ -47,6 +47,5 @@ if (WIN32)
 endif ()
 
 target_link_libraries (gui Qt5::Widgets lib) # TODO: add 'bootloader'
-qt5_use_modules(gui PrintSupport)
 
 install(TARGETS gui DESTINATION bin)

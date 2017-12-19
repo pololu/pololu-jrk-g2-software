@@ -1,8 +1,14 @@
 #pragma once
 
-#include <QMainWindow>
-#include <QList>
 #include "qcustomplot.h"
+
+#include <QTimer>  // TODO: remove
+
+class QCheckBox;
+class QDoubleSpinBox;
+class QLabel;
+class QPushButton;
+class QSpinBox;
 
 class graph_widget : public QWidget
 {
@@ -31,8 +37,8 @@ public:
   plot current;
 
   double key = 0;
-	QTimer data_timer;
-	QWidget *central_widget;
+  QTimer data_timer;  // TODO: remove
+  QWidget *central_widget;
   QCustomPlot *custom_plot;
   QPushButton *pauseRunButton;
   QDoubleSpinBox *min_y;

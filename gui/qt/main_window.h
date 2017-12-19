@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QList>
 #include <QAction>
+#include <QGroupBox>
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QShowEvent>
@@ -13,6 +14,14 @@
 #include "graph_widget.h"
 #include "graph_window.h"
 #include "jrk.hpp"
+
+class QComboBox;
+class QDoubleSpinBox;
+class QGridLayout;
+class QHBoxLayout;
+class QLineEdit;
+class QRadioButton;
+class QSpinBox;
 
 class pid_constant_control;
 class errors_control;

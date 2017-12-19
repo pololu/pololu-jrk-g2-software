@@ -1,7 +1,13 @@
 #pragma once
 
-#include <QMainWindow>
 #include "graph_widget.h"
+
+#include <QWidget>
+
+class QGridLayout;
+class QHBoxLayout;
+class QPushButton;
+class QVBoxLayout;
 
 class AltWindow : public QWidget
 {
