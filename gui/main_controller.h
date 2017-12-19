@@ -107,24 +107,14 @@ public:
   // void handle_starting_speed_input(uint32_t starting_speed);
 
   void handle_motor_max_duty_cycle_forward_input(uint16_t);
-  void handle_accel_max_forward_input(uint32_t accel_max);
-  void handle_decel_max_forward_input(uint32_t decel_max);
-  void handle_accel_max_reverse_input(uint32_t accel_max);
-  void handle_decel_max_reverse_input(uint32_t decel_max);
-  // void handle_step_mode_input(uint8_t step_mode);
-  void handle_current_limit_input_forward(uint32_t current_limit);
-  void handle_current_limit_input_reverse(uint32_t current_limit);
-  // void handle_current_limit_input_finished();
-  // void handle_decay_mode_input(uint8_t decay_mode);
+  void handle_motor_max_duty_cycle_reverse_input(uint16_t);
+  void handle_motor_max_acceleration_forward_input(uint16_t);
+  void handle_motor_max_acceleration_reverse_input(uint16_t);
+  void handle_motor_max_deceleration_forward_input(uint16_t);
+  void handle_motor_max_deceleration_reverse_input(uint16_t);
+  void handle_motor_max_current_forward_input(uint16_t);
+  void handle_motor_max_current_reverse_input(uint16_t);
 
-  // void handle_soft_error_response_input(uint8_t soft_error_response);
-  // void handle_soft_error_position_input(int32_t soft_error_position);
-  // void handle_current_limit_during_error_input(int32_t current_limit_during_error);
-  // void handle_current_limit_during_error_input_finished();
-
-  // void handle_disable_safe_start_input(bool disable_safe_start);
-  // void handle_ignore_err_line_high_input(bool ignore_err_line_high);
-  // void handle_auto_clear_driver_error_input(bool auto_clear_driver_error);
   void handle_never_sleep_input(bool never_sleep);
   void handle_vin_calibration_input(int16_t vin_calibration);
 
