@@ -757,9 +757,11 @@ QWidget *main_window::setup_motor_tab()
 
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
+  motor_invert_checkbox->setEnabled(false); //tmphax: used during testing
 
   motor_detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
   motor_detect_motor_button->setObjectName("motor_detect_motor_button");
+  motor_detect_motor_button->setEnabled(false); //tmphax: used during testing
 
   invert_layout->addWidget(motor_invert_checkbox);
   invert_layout->addWidget(motor_detect_motor_button);
@@ -768,6 +770,7 @@ QWidget *main_window::setup_motor_tab()
 
   motor_asymmetric_checkbox = new QCheckBox(tr("Asymmetric"));
   motor_asymmetric_checkbox->setObjectName("motor_asymmetric_checkbox");
+  motor_asymmetric_checkbox->setEnabled(false); //tmphax: used during testing
 
   motor_forward_label = new QLabel(tr("Forward"));
   motor_forward_label->setObjectName("motor_forward_label");
@@ -833,9 +836,11 @@ QWidget *main_window::setup_motor_tab()
 
   motor_calibration_forward_spinbox = new QDoubleSpinBox();
   motor_calibration_forward_spinbox->setObjectName("motor_calibration_forward_spinbox");
+  motor_calibration_forward_spinbox->setEnabled(false); //tmphax: used during testing
 
   motor_calibration_reverse_spinbox = new QDoubleSpinBox();
   motor_calibration_reverse_spinbox->setObjectName("motor_calibration_reverse_spinbox");
+  motor_calibration_reverse_spinbox->setEnabled(false); //tmphax: used during testing
 
   motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
@@ -860,10 +865,11 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,6,2,Qt::AlignLeft);
 
   QHBoxLayout *deceleration_layout = new QHBoxLayout();
-  motor_outofrange_label = new QLabel(tr("Max. duty cycke while feedback is out of range:"));
+  motor_outofrange_label = new QLabel(tr("Max. duty cycle while feedback is out of range:"));
   motor_outofrange_label->setObjectName("motor_outofrange_label");
   motor_outofrange_spinbox = new QDoubleSpinBox();
   motor_outofrange_spinbox->setObjectName("motor_outofrange_spinbox");
+  motor_outofrange_spinbox->setEnabled(false); //tmphax: used during testing
   motor_outofrange_means_label = new QLabel(tr("(600 means 100%)"));
 
   deceleration_layout->addWidget(motor_outofrange_label);
@@ -1179,10 +1185,17 @@ void main_window::set_check_box(QCheckBox * check, bool value)
 
 void main_window::set_tab_pages_enabled(bool enabled)
 {
-  for (int i = 0; i < tab_widget->count(); i++)
-  {
-    tab_widget->widget(i)->setEnabled(enabled);
-  }
+  // tmphax: only enabled the tabs used for testing
+
+  tab_widget->widget(1)->setEnabled(false);
+  tab_widget->widget(2)->setEnabled(false);
+  tab_widget->widget(3)->setEnabled(false);
+  tab_widget->widget(5)->setEnabled(false);
+
+  // for (int i = 0; i < tab_widget->count(); i++)
+  // {
+  //   tab_widget->widget(i)->setEnabled(enabled);
+  // }
 }
 
 void main_window::set_restore_defaults_enabled(bool enabled)
