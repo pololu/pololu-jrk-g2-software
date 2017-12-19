@@ -434,7 +434,7 @@ void main_controller::handle_device_changed()
     // TODO:
     // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
     // window->set_serial_number(device.get_serial_number());
-    // window->set_firmware_version(device_handle.get_firmware_version_string());
+    window->set_firmware_version(device_handle.get_firmware_version_string());
     // window->set_device_reset(
     //   jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
@@ -448,11 +448,11 @@ void main_controller::handle_device_changed()
   {
     window->set_device_list_selected(jrk::device()); // show "Not connected"
 
+    std::string na = "N/A";
     //TODO:
-    // std::string value = "N/A";
-    // window->set_device_name(value, false);
-    // window->set_serial_number(value);
-    // window->set_firmware_version(value);
+    // window->set_device_name(na, false);
+    // window->set_serial_number(na);
+    window->set_firmware_version(na);
 
     // if (connection_error)
     // {

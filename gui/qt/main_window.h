@@ -165,15 +165,6 @@ private:
 
 	QTimer *update_timer = NULL;
 
-	QLabel * device_name_label = NULL;
-  QLabel * device_name_value = NULL;
-  QLabel * serial_number_label = NULL;
-  QLabel * serial_number_value = NULL;
-  QLabel * firmware_version_label = NULL;
-  QLabel * firmware_version_value = NULL;
-  QLabel * device_reset_label = NULL;
-  QLabel * device_reset_value = NULL;
-
 	QWidget *central_widget;
 	QGridLayout *grid_layout;
 	QHBoxLayout *horizontal_layout;
@@ -210,6 +201,24 @@ private:
 
   QWidget * status_page_widget;
   QGroupBox * manual_target_box;
+  QGroupBox * variables_box;
+  QLabel * device_name_label;
+  QLabel * device_name_value;
+  QLabel * serial_number_label;
+  QLabel * serial_number_value;
+  QLabel * firmware_version_label;
+  QLabel * firmware_version_value;
+  QLabel * device_reset_label;
+  QLabel * device_reset_value;
+  QLabel * up_time_label;
+  QLabel * up_time_value;
+  QLabel * duty_cycle_label;
+  QLabel * duty_cycle_value;
+  QLabel * current_label;
+  QLabel * current_value;
+  QLabel * current_chopping_log_label;
+  QLabel * current_chopping_log_value;
+
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
 
@@ -386,6 +395,7 @@ private:
 	bool widgetAtHome;
 
   QWidget * setup_status_tab();
+  QWidget * setup_variables_box();
   QWidget * setup_manual_target_box();
 
   QWidget * setup_input_tab();
@@ -399,10 +409,7 @@ private:
 	void retranslate_ui(QMainWindow *main_window);
 
 
-	QLabel * up_time_value;
-	QLabel * vin_voltage_value;
-
-	// Helper method for setting the index of a combo box, given the desired
+  // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified
   // value is not found.
   void set_u8_combo_box(QComboBox * combo, uint8_t value);

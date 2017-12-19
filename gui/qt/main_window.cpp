@@ -305,17 +305,83 @@ void main_window::retranslate_ui(QMainWindow *main_window)
   // main_window->setWindowTitle(QApplication::translate("main_window", "main_window", Q_NULLPTR));
 }
 
+static void setup_read_only_text_field(QGridLayout * layout,
+  int row, int col, int value_col_span, QLabel ** label, QLabel ** value)
+{
+  QLabel * new_value = new QLabel();
+  new_value->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
+  QLabel * new_label = new QLabel();
+  new_label->setBuddy(new_value);
+
+  layout->addWidget(new_label, row, col, Qt::AlignLeft);
+  layout->addWidget(new_value, row, col + 1, 1, value_col_span, Qt::AlignLeft);
+
+  if (label) { *label = new_label; }
+  if (value) { *value = new_value; }
+}
+
+static void setup_read_only_text_field(QGridLayout * layout,
+  int row, int col, QLabel ** label, QLabel ** value)
+{
+  setup_read_only_text_field(layout, row, col, 1, label, value);
+}
+
+static void setup_read_only_text_field(QGridLayout * layout,
+  int row, QLabel ** label, QLabel ** value)
+{
+  setup_read_only_text_field(layout, row, 0, 1, label, value);
+}
+
 QWidget * main_window::setup_status_tab()
 {
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
 
-  layout->addWidget(setup_manual_target_box(), 0, 0, 1, 1);
+  layout->addWidget(setup_variables_box(), 0, 0, 1, 1);
+  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 1);
 
-  layout->setRowStretch(1, 1);
+  layout->setRowStretch(2, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
+}
+
+QWidget * main_window::setup_variables_box()
+{
+  variables_box = new QGroupBox();
+  variables_box->setTitle(tr("Variables"));  // TODO: better name?
+
+  QGridLayout * layout = new QGridLayout();
+
+  int row = 0;
+
+  setup_read_only_text_field(layout, row++, &firmware_version_label,
+    &firmware_version_value);
+  firmware_version_label->setText(tr("Firmware version:"));
+
+  setup_read_only_text_field(layout, row++,
+    &device_reset_label, &device_reset_value);
+  device_reset_label->setText(tr("Last reset:"));
+
+  setup_read_only_text_field(layout, row++, &up_time_label, &up_time_value);
+  up_time_label->setText(tr("Up time:"));
+
+  setup_read_only_text_field(layout, row++, &duty_cycle_label, &duty_cycle_value);
+  duty_cycle_label->setText(tr("Duty cycle:"));
+
+  setup_read_only_text_field(layout, row++, &current_label,
+    &current_value);
+  current_label->setText(tr("Current:"));
+
+  setup_read_only_text_field(layout, row++,
+    &current_chopping_log_label, &current_chopping_log_value);
+  current_chopping_log_label->setText(tr("Current chopping log:"));
+
+  layout->setColumnStretch(2, 1);
+  layout->setRowStretch(row, 1);
+  variables_box->setLayout(layout);
+  return variables_box;
 }
 
 QWidget * main_window::setup_manual_target_box()
@@ -1307,7 +1373,6 @@ void main_window::set_device_reset(std::string const & device_reset)
 
 void main_window::set_firmware_version(std::string const & firmware_version)
 {
-  return; //TODO: fix function
   firmware_version_value->setText(QString::fromStdString(firmware_version));
 }
 
