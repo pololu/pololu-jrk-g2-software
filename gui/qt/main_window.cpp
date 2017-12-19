@@ -1185,6 +1185,11 @@ void main_window::set_check_box(QCheckBox * check, bool value)
 
 void main_window::set_tab_pages_enabled(bool enabled)
 {
+  for (int i = 0; i < tab_widget->count(); i++)
+  {
+    tab_widget->widget(i)->setEnabled(enabled);
+  }
+
   // tmphax: only enabled the tabs used for testing
 
   tab_widget->widget(1)->setEnabled(false);
@@ -1192,10 +1197,7 @@ void main_window::set_tab_pages_enabled(bool enabled)
   tab_widget->widget(3)->setEnabled(false);
   tab_widget->widget(5)->setEnabled(false);
 
-  // for (int i = 0; i < tab_widget->count(); i++)
-  // {
-  //   tab_widget->widget(i)->setEnabled(enabled);
-  // }
+
 }
 
 void main_window::set_restore_defaults_enabled(bool enabled)
