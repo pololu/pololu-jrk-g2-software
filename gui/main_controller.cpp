@@ -482,8 +482,7 @@ void main_controller::handle_variables_changed()
   window->set_current(variables.get_current());
   window->set_current_chopping_log(variables.get_current_chopping_log());
   window->set_vin_voltage(variables.get_vin_voltage());
-
-  // window->set_error_flags_halting(variables.get_error_flags_halting());
+  window->set_error_flags_halting(variables.get_error_flags_halting());
   // TODO: window->increment_errors_occurred(variables.get_errors_occurred());
 }
 

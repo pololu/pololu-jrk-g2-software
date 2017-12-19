@@ -384,6 +384,10 @@ QWidget * main_window::setup_variables_box()
     &vin_voltage_label, &vin_voltage_value);
   vin_voltage_label->setText(tr("VIN voltage:"));
 
+  setup_read_only_text_field(layout, row++,
+    &error_flags_halting_label, &error_flags_halting_value);
+  error_flags_halting_label->setText(tr("Errors:"));
+
   layout->setColumnStretch(2, 1);
   layout->setRowStretch(row, 1);
   variables_box->setLayout(layout);
@@ -1172,8 +1176,11 @@ void main_window::set_disconnect_enabled(bool enabled)
   disconnect_action->setEnabled(enabled);
 }
 
-void main_window::set_error_status(uint16_t error_status)
+void main_window::set_error_flags_halting(uint16_t error_flags_halting)
 {
+  error_flags_halting_value->setText(QString::fromStdString(
+    convert_error_flags_to_hex_string(error_flags_halting)));
+
   for (int i = 0; i < 16; i++)
   {
     if (error_rows[i].stopping_value == NULL) { continue; }
@@ -1183,7 +1190,7 @@ void main_window::set_error_status(uint16_t error_status)
     // whether we need to do anything based on that.
     bool styled = !error_rows[i].stopping_value->styleSheet().isEmpty();
 
-    if (error_status & (1 << i))
+    if (error_flags_halting & (1 << i))
     {
       error_rows[i].stopping_value->setText(tr("Yes"));
       if (!styled)
@@ -1203,7 +1210,7 @@ void main_window::set_error_status(uint16_t error_status)
   }
 }
 
-void main_window::increment_errors_occurred(uint32_t errors_occurred)
+void main_window::increment_errors_occurred(uint16_t errors_occurred)
 {
   for (int i = 0; i < 32; i++)
   {

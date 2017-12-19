@@ -5,6 +5,13 @@
 #include <sstream>
 #include <iomanip>
 
+static std::string convert_error_flags_to_hex_string(uint16_t flags)
+{
+  std::ostringstream ss;
+  ss << "0x" << std::hex << std::setfill('0') << std::setw(4) << flags;
+  return ss.str();
+}
+
 static std::string convert_mv_to_v_string(uint32_t mv)
 {
   std::ostringstream ss;

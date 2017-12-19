@@ -62,6 +62,9 @@ public:
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
 
+  void set_error_flags_halting(uint16_t error_flags_halting);
+  void increment_errors_occurred(uint16_t errors_occurred);
+
   void reset_error_counts();
 
   bool suppress_events = false;
@@ -110,10 +113,6 @@ public:
   void set_serial_device_number(uint8_t serial_device_number);
 
 	void set_motor_status_message(std::string const & message, bool stopped = true);
-
-	void increment_errors_occurred(uint32_t errors_occurred);
-
-	void set_error_status(uint16_t error_status);
 
 	void set_current_velocity(int32_t current_velocity);
 
@@ -233,6 +232,8 @@ private:
   QLabel * current_chopping_log_value;
   QLabel * vin_voltage_label;
   QLabel * vin_voltage_value;
+  QLabel * error_flags_halting_label;
+  QLabel * error_flags_halting_value;
 
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
