@@ -435,8 +435,8 @@ void main_controller::handle_device_changed()
     // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
     // window->set_serial_number(device.get_serial_number());
     window->set_firmware_version(device_handle.get_firmware_version_string());
-    // window->set_device_reset(
-    //   jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
+    window->set_device_reset(
+      jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
     // window->set_connection_status("", false);
 
@@ -473,116 +473,18 @@ void main_controller::handle_device_changed()
 
 void main_controller::initialize_manual_target()
 {
-//   if (control_mode_is_serial(cached_settings) &&
-//     (variables.get_input_state() == TIC_INPUT_STATE_POSITION))
-//   {
-//     window->set_manual_target_position_mode();
-//     window->set_displayed_manual_target(variables.get_input_after_scaling());
-//   }
-//   else if (control_mode_is_serial(cached_settings) &&
-//     (variables.get_input_state() == TIC_INPUT_STATE_VELOCITY))
-//   {
-//     window->set_manual_target_velocity_mode();
-//     window->set_displayed_manual_target(variables.get_input_after_scaling());
-//   }
-//   else
-//   {
-//     window->set_manual_target_position_mode();
-//     window->set_displayed_manual_target(0);
-//   }
 }
 
 void main_controller::handle_variables_changed()
 {
   window->set_up_time(variables.get_up_time());
-
-  // window->set_encoder_position(variables.get_encoder_position());
-  // window->set_input_state(
-  //   jrk_look_up_input_state_name_ui(variables.get_input_state()),
-    // variables.get_input_state());
-  // window->set_input_after_averaging(variables.get_input_after_averaging());
-  // window->set_input_after_hysteresis(variables.get_input_after_hysteresis());
-  // if (cached_settings)
-  // {
-  //   window->set_input_before_scaling(
-  //     variables.get_input_before_scaling(cached_settings),
-  //     jrk_settings_get_control_mode(settings.get_pointer()));
-  // }
-  // window->set_input_after_scaling(variables.get_input_after_scaling());
-
+  window->set_duty_cycle(variables.get_duty_cycle());
+  window->set_current(variables.get_current());
+  window->set_current_chopping_log(variables.get_current_chopping_log());
   window->set_vin_voltage(variables.get_vin_voltage());
-  // window->set_energized(variables.get_energized());
-  // window->set_operation_state(
-  //   jrk_look_up_operation_state_name_ui(variables.get_operation_state()));
 
-  // int32_t target_position = variables.get_target_position();
-  // int32_t target_velocity = variables.get_target_velocity();
-  // int32_t current_position = variables.get_current_position();
-  // int32_t current_velocity = variables.get_current_velocity();
-
-  bool target_valid = true;
-  // if (variables.get_planning_mode() == TIC_PLANNING_MODE_TARGET_POSITION)
-  // {
-  //   window->set_target_position(target_position);
-  // }
-  // else if (variables.get_planning_mode() == TIC_PLANNING_MODE_TARGET_VELOCITY)
-  // {
-  //   window->set_target_velocity(target_velocity);
-  // }
-  // else
-  // {
-  //   window->set_target_none();
-  //   target_valid = false;
-  // }
-
-  // window->set_manual_target_ball_position(current_position,
-  //   target_valid && (current_position == target_position));
-  // window->set_manual_target_ball_velocity(current_velocity,
-  //   target_valid && (current_velocity == target_velocity));
-
-  // window->set_current_position(current_position);
-  // window->set_position_uncertain(variables.get_position_uncertain());
-  // window->set_current_velocity(current_velocity);
-
-  // uint16_t error_status = variables.get_error_status();
-
-  // window->set_error_status(error_status);
-  // window->increment_errors_occurred(variables.get_errors_occurred());
-
-  // We could enable the de-energize button only when the motor is not
-  // intentionally de-energized, but instead we enable it all the time (when
-  // connected to a device) so that people aren't nervous to see it disabled.
-  // window->set_deenergize_button_enabled(connected());
-
-  // uint16_t resumable_errors = 1 << TIC_ERROR_INTENTIONALLY_DEENERGIZED;
-  bool resume_button_enabled, prompt_to_resume;
-  // if (control_mode_is_serial(cached_settings))
-  // {
-  //   resumable_errors |= 1 << TIC_ERROR_SERIAL_ERROR;
-  //   resumable_errors |= 1 << TIC_ERROR_COMMAND_TIMEOUT;
-  //   resumable_errors |= 1 << TIC_ERROR_SAFE_START_VIOLATION;
-
-  //   // Enable the resume button and prompt to resume if and only if we are
-  //   // connected, there are errors, and there are no errors that the resume
-  //   // button can't clear.
-  //   resume_button_enabled = connected() && error_status &&
-  //     !(error_status & ~resumable_errors);
-  //   prompt_to_resume = resume_button_enabled;
-  // }
-  // else
-  // {
-  //   // Enable the resume button if we are connected and the motor is
-  //   // intentionally de-energized. This means that the resume button is simpler
-  //   // in non-serial modes: it isn't guaranteed to clear all the errors, but it
-  //   // exactly reverses the action of the de-energize button.
-  //   resume_button_enabled = connected() && (error_status & resumable_errors);
-  //   // Prompt to resume if and only if we are connected, there are errors, and
-  //   // there are no errors that the resume button can't clear.
-  //   prompt_to_resume = connected() && error_status &&
-  //     !(error_status & ~resumable_errors);
-  // }
-  window->set_resume_button_enabled(resume_button_enabled);
-  // update_motor_status_message(prompt_to_resume);
+  // window->set_error_flags_halting(variables.get_error_flags_halting());
+  // TODO: window->increment_errors_occurred(variables.get_errors_occurred());
 }
 
 // void main_controller::update_motor_status_message(bool prompt_to_resume)

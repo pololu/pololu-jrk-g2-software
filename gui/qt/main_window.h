@@ -47,15 +47,22 @@ public:
   void start_update_timer();
 
   // Show an OK/Cancel dialog, return true if the user selects OK.
-  bool confirm(std::string const & question);
+  bool confirm(const std::string & question);
 
-  void show_info_message(std::string const & message);
-  void show_error_message(std::string const & message);
- 	void set_device_name(std::string const & name, bool link_enabled);
- 	void set_serial_number(std::string const & serial_number);
- 	void set_firmware_version(std::string const & firmware_version);
- 	void set_device_reset(std::string const & device_reset);
- 	void reset_error_counts();
+  void show_info_message(const std::string & message);
+  void show_error_message(const std::string & message);
+
+  void set_device_name(const std::string & name, bool link_enabled);
+  void set_serial_number(const std::string & serial_number);
+  void set_firmware_version(const std::string & firmware_version);
+  void set_device_reset(const std::string & device_reset);
+  void set_up_time(uint32_t);
+  void set_duty_cycle(int16_t);
+  void set_current(uint16_t);
+  void set_current_chopping_log(uint16_t);
+  void set_vin_voltage(uint16_t);
+
+  void reset_error_counts();
 
   bool suppress_events = false;
   main_controller * window_controller() const;
@@ -104,8 +111,6 @@ public:
 
 	void set_motor_status_message(std::string const & message, bool stopped = true);
 
-	void set_resume_button_enabled(bool enabled);
-
 	void increment_errors_occurred(uint32_t errors_occurred);
 
 	void set_error_status(uint16_t error_status);
@@ -115,12 +120,6 @@ public:
 	void set_current_position(int32_t current_position);
 
 	void set_target_none();
-
-	void set_target_velocity(int32_t target_velocity);
-
-	void set_vin_voltage(uint32_t vin_voltage);
-
-	void set_up_time(uint32_t up_time);
 
 	// Controls whether the main controls of the application are enabled or
   // disabled.
@@ -232,6 +231,8 @@ private:
   QLabel * current_value;
   QLabel * current_chopping_log_label;
   QLabel * current_chopping_log_value;
+  QLabel * vin_voltage_label;
+  QLabel * vin_voltage_value;
 
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;

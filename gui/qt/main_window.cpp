@@ -3,6 +3,8 @@
 #include "qcustomplot.h"
 #include "graph_window.h"
 
+#include "to_string.h"
+
 #include <QApplication>
 #include <QButtonGroup>
 #include <QCheckBox>
@@ -377,6 +379,10 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++,
     &current_chopping_log_label, &current_chopping_log_value);
   current_chopping_log_label->setText(tr("Current chopping log:"));
+
+  setup_read_only_text_field(layout, row++,
+    &vin_voltage_label, &vin_voltage_value);
+  vin_voltage_label->setText(tr("VIN voltage:"));
 
   layout->setColumnStretch(2, 1);
   layout->setRowStretch(row, 1);
@@ -1166,45 +1172,6 @@ void main_window::set_disconnect_enabled(bool enabled)
   disconnect_action->setEnabled(enabled);
 }
 
-void main_window::set_up_time(uint32_t up_time)
-{
-  // up_time_value->setText(QString::fromStdString(
-  //   convert_up_time_to_hms_string(up_time)));
-}
-
-void main_window::set_vin_voltage(uint32_t vin_voltage)
-{
-  // vin_voltage_value->setText(QString::fromStdString(
-  //   convert_mv_to_v_string(vin_voltage)));
-}
-
-void main_window::set_target_velocity(int32_t target_velocity)
-{
-  // target_label->setText(tr("Target velocity:"));
-  // target_value->setText(QString::number(target_velocity));
-  // target_velocity_pretty->setText("(" + QString::fromStdString(
-  //   convert_speed_to_pps_string(target_velocity)) + ")");
-}
-
-void main_window::set_target_none()
-{
-  // target_label->setText(tr("Target:"));
-  // target_value->setText(tr("No target"));
-  // target_velocity_pretty->setText("");
-}
-
-void main_window::set_current_position(int32_t current_position)
-{
-  // current_position_value->setText(QString::number(current_position));
-}
-
-void main_window::set_current_velocity(int32_t current_velocity)
-{
-  // current_velocity_value->setText(QString::number(current_velocity));
-  // current_velocity_pretty->setText("(" + QString::fromStdString(
-  //   convert_speed_to_pps_string(current_velocity)) + ")");
-}
-
 void main_window::set_error_status(uint16_t error_status)
 {
   for (int i = 0; i < 16; i++)
@@ -1227,7 +1194,7 @@ void main_window::set_error_status(uint16_t error_status)
     }
     else
     {
-      error_rows[i].stopping_value->setText(tr("hell No"));
+      error_rows[i].stopping_value->setText(tr("No"));
       if (styled)
       {
         error_rows[i].stopping_value->setStyleSheet("");
@@ -1249,12 +1216,6 @@ void main_window::increment_errors_occurred(uint32_t errors_occurred)
     }
   }
 }
-
-void main_window::set_resume_button_enabled(bool enabled)
-{
-  // resume_button->setEnabled(enabled);
-}
-
 
 void main_window::set_motor_status_message(std::string const & message, bool stopped)
 {
@@ -1436,33 +1397,6 @@ void main_window::set_manual_target_enabled(bool enabled)
   // manual_target_widget->setEnabled(enabled);
 }
 
-void main_window::reset_error_counts()
-{
-  for (int i = 0; i < 32; i++)
-  {
-    if (error_rows[i].count_value == NULL) { continue; }
-
-    error_rows[i].count = 0;
-    error_rows[i].count_value->setText(tr("-"));
-  }
-}
-
-void main_window::set_device_reset(std::string const & device_reset)
-{
-  device_reset_value->setText(QString::fromStdString(device_reset));
-}
-
-void main_window::set_firmware_version(std::string const & firmware_version)
-{
-  firmware_version_value->setText(QString::fromStdString(firmware_version));
-}
-
-void main_window::set_serial_number(std::string const & serial_number)
-{
-  return; //TODO: fix function
-  serial_number_value->setText(QString::fromStdString(serial_number));
-}
-
 void main_window::set_device_name(std::string const & name, bool link_enabled)
 {
   return; //TODO: fix function
@@ -1472,6 +1406,60 @@ void main_window::set_device_name(std::string const & name, bool link_enabled)
     text = "<a href=\"#doc\">" + text + "</a>";
   }
   device_name_value->setText(text);
+}
+
+void main_window::set_serial_number(std::string const & serial_number)
+{
+  return; //TODO: fix function
+  serial_number_value->setText(QString::fromStdString(serial_number));
+}
+
+void main_window::set_firmware_version(std::string const & firmware_version)
+{
+  firmware_version_value->setText(QString::fromStdString(firmware_version));
+}
+
+void main_window::set_device_reset(std::string const & device_reset)
+{
+  device_reset_value->setText(QString::fromStdString(device_reset));
+}
+
+void main_window::set_up_time(uint32_t up_time)
+{
+  up_time_value->setText(QString::fromStdString(
+    convert_up_time_to_hms_string(up_time)));
+}
+
+void main_window::set_duty_cycle(int16_t duty_cycle)
+{
+  duty_cycle_value->setText(QString::number(duty_cycle));
+}
+
+void main_window::set_current(uint16_t current)
+{
+  current_value->setText(QString::number(current));
+}
+
+void main_window::set_current_chopping_log(uint16_t log)
+{
+  current_chopping_log_value->setText(QString::number(log));
+}
+
+void main_window::set_vin_voltage(uint16_t vin_voltage)
+{
+  vin_voltage_value->setText(QString::fromStdString(
+    convert_mv_to_v_string(vin_voltage)));
+}
+
+void main_window::reset_error_counts()
+{
+  for (int i = 0; i < 32; i++)
+  {
+    if (error_rows[i].count_value == NULL) { continue; }
+
+    error_rows[i].count = 0;
+    error_rows[i].count_value->setText(tr("-"));
+  }
 }
 
 void main_window::show_error_message(std::string const & message)
