@@ -882,10 +882,12 @@ QWidget *main_window::setup_motor_tab()
   motor_brake_radio = new QRadioButton(tr("Brake"));
   motor_brake_radio->setObjectName("motor_brake_radio");
   motor_brake_radio->setChecked(true);
+  motor_brake_radio->setEnabled(false);  // does not work
 
   motor_coast_radio = new QRadioButton(tr("Coast"));
   motor_coast_radio->setObjectName("motor_coast_radio");
   motor_coast_radio->setChecked(false);
+  motor_coast_radio->setEnabled(false);  // does not work
 
   motor_off_layout->addWidget(motor_off_label,0,0);
   motor_off_layout->addWidget(motor_brake_radio,0,1);
