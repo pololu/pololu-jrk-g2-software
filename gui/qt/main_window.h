@@ -95,6 +95,8 @@ public:
 
   void set_never_sleep(bool never_sleep);
 
+  void set_motor_pwm_frequency(uint8_t pwm_frequency);
+
   void set_motor_max_duty_cycle_forward(uint16_t);
   void set_motor_max_duty_cycle_reverse(uint16_t);
   void set_motor_max_acceleration_forward(uint16_t);
@@ -103,10 +105,8 @@ public:
   void set_motor_max_deceleration_reverse(uint16_t);
   void set_motor_max_current_forward(uint16_t);
   void set_motor_max_current_reverse(uint16_t);
-  void set_accel_max_forward(uint16_t accel_max);
-  void set_decel_max_forward(uint16_t decel_max);
-  void set_accel_max_reverse(uint16_t accel_max);
-  void set_decel_max_reverse(uint16_t decel_max);
+
+  void set_motor_coast_when_off(bool);
 
   void set_input_scaling_degree(uint8_t input_scaling_degree);
 
@@ -170,6 +170,8 @@ private slots:
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();
 
+  void on_motor_pwm_frequency_combo_box_currentIndexChanged(int index);
+
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
   void on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value);
   void on_motor_max_acceleration_forward_spinbox_valueChanged(int value);
@@ -178,6 +180,9 @@ private slots:
   void on_motor_max_deceleration_reverse_spinbox_valueChanged(int value);
   void on_motor_max_current_forward_spinbox_valueChanged(int value);
   void on_motor_max_current_reverse_spinbox_valueChanged(int value);
+
+  void on_motor_coast_radio_clicked(bool checked);
+  void on_motor_brake_radio_clicked(bool checked);
 
 private:
 	QFont font;
@@ -357,7 +362,7 @@ private:
 	QWidget *motor_page_widget;
 	QGridLayout *motor_page_layout;
 	QLabel *motor_frequency_label;
-	QComboBox *motor_frequency_combobox;
+	QComboBox *motor_pwm_frequency_combo_box;
 	QCheckBox *motor_invert_checkbox;
 	QPushButton *motor_detect_motor_button;
 	QCheckBox *motor_asymmetric_checkbox;
