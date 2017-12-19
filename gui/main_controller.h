@@ -60,11 +60,12 @@ private:
   void show_exception(std::exception const & e, std::string const & context = "");
 
 public:
-  void run_motor();
-  void stop_motor();
-
   // This is called when the user wants to apply the settings.
   void apply_settings();
+
+  void stop_motor();
+  void run_motor();
+  void set_target(uint16_t);
 
   void open_settings_from_file(std::string filename);
   void save_settings_to_file(std::string filename);

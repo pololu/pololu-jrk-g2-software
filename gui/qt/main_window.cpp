@@ -32,7 +32,6 @@
 
 #include <cassert>
 #include <cmath>
-#include <iostream> // tmphax
 
 #ifdef QT_STATIC
 #include <QtPlugin>
@@ -219,8 +218,6 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
 
-  tab_widget->setCurrentIndex(4);  // tmphax
-
   grid_layout->addWidget(tab_widget,1,0);
 
   stop_motor_button = new QPushButton();
@@ -313,10 +310,39 @@ QWidget * main_window::setup_status_tab()
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
 
-  // TODO: layout->addWidget(setup_manual_target_box(), 0, 0, 1, 1);
+  layout->addWidget(setup_manual_target_box(), 0, 0, 1, 1);
+
+  layout->setRowStretch(1, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
+}
+
+QWidget * main_window::setup_manual_target_box()
+{
+  manual_target_box = new QGroupBox();
+  manual_target_box->setTitle(tr("Manually set target (Serial mode only)"));
+  QGridLayout * layout = new QGridLayout();
+
+  manual_target_entry_value = new QSpinBox();
+  manual_target_entry_value->setObjectName("manual_target_entry_value");
+  // Don't emit valueChanged events while user is typing (e.g. if the user
+  // enters 500, we don't want to set targets of 5, 50, and 500).
+  manual_target_entry_value->setKeyboardTracking(false);
+  manual_target_entry_value->setRange(0, 4095);
+
+  set_target_button = new QPushButton();
+  set_target_button->setObjectName("set_target_button");
+  set_target_button->setText(tr("Set &target"));
+
+  layout->addWidget(manual_target_entry_value, 0, 0);
+  layout->addWidget(set_target_button, 0, 1);
+
+  layout->setRowStretch(1, 1);
+  layout->setColumnStretch(2, 1);
+
+  manual_target_box->setLayout(layout);
+  return manual_target_box;
 }
 
 QWidget * main_window::setup_input_tab()
@@ -946,6 +972,11 @@ void main_window::on_run_motor_action_triggered()
 void main_window::on_stop_motor_action_triggered()
 {
   controller->stop_motor();
+}
+
+void main_window::on_set_target_button_clicked()
+{
+  controller->set_target(manual_target_entry_value->value());
 }
 
 void main_window::on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value)

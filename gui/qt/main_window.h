@@ -154,6 +154,7 @@ private slots:
   void on_apply_settings_action_triggered();
   void on_stop_motor_action_triggered();
   void on_run_motor_action_triggered();
+  void on_set_target_button_clicked();
 
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
 
@@ -204,7 +205,13 @@ private:
 	QCheckBox *stop_motor;
 
 	QTabWidget *tab_widget;
-	QWidget *status_page_widget;
+
+  // status tab
+
+  QWidget * status_page_widget;
+  QGroupBox * manual_target_box;
+  QSpinBox * manual_target_entry_value;
+  QPushButton * set_target_button;
 
 	// input tab
 
@@ -378,7 +385,9 @@ private:
 	QAction *sepAct;
 	bool widgetAtHome;
 
-	QWidget * setup_status_tab();
+  QWidget * setup_status_tab();
+  QWidget * setup_manual_target_box();
+
   QWidget * setup_input_tab();
 	QWidget * setup_feedback_tab();
 	QWidget * setup_pid_tab();

@@ -1229,6 +1229,35 @@ void main_controller::handle_upload_complete()
 //   window->run_input_wizard(control_mode);
 // }
 
+void main_controller::apply_settings()
+{
+  if (!connected()) { return; }
+
+  try
+  {
+    assert(connected());
+
+    jrk::settings fixed_settings = settings;
+    std::string warnings;
+    fixed_settings.fix(&warnings);
+    if (warnings.empty() ||
+      window->confirm(warnings.append("\nAccept these changes and apply settings?")))
+    {
+      settings = fixed_settings;
+      device_handle.set_settings(settings);
+      device_handle.reinitialize();
+      handle_settings_applied();
+      settings_modified = false;  // this must be last in case exceptions are thrown
+    }
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e);
+  }
+
+  handle_settings_changed();
+}
+
 void main_controller::stop_motor()
 {
   if (!connected()) { return; }
@@ -1257,33 +1286,18 @@ void main_controller::run_motor()
   }
 }
 
-void main_controller::apply_settings()
+void main_controller::set_target(uint16_t target)
 {
   if (!connected()) { return; }
 
   try
   {
-    assert(connected());
-
-    jrk::settings fixed_settings = settings;
-    std::string warnings;
-    fixed_settings.fix(&warnings);
-    if (warnings.empty() ||
-      window->confirm(warnings.append("\nAccept these changes and apply settings?")))
-    {
-      settings = fixed_settings;
-      device_handle.set_settings(settings);
-      device_handle.reinitialize();
-      handle_settings_applied();
-      settings_modified = false;  // this must be last in case exceptions are thrown
-    }
+    device_handle.set_target(target);
   }
   catch (const std::exception & e)
   {
     show_exception(e);
   }
-
-  handle_settings_changed();
 }
 
 void main_controller::open_settings_from_file(std::string filename)
