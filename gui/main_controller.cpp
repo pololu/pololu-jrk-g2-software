@@ -592,12 +592,7 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
 
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
-<<<<<<< HEAD
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
-=======
-
->>>>>>> ad9342641953046c6620e8be431a349b31b6195c
-
 
   // for (int i = 0; i < 5; i++)
   // {
@@ -622,19 +617,9 @@ void main_controller::handle_settings_changed()
 
 void main_controller::handle_settings_applied()
 {
-//   window->set_manual_target_enabled(control_mode_is_serial(settings));
-
   // this must be last so the preceding code can compare old and new settings
   // TODO: cached_settings = settings;
 }
-
-// void main_controller::handle_control_mode_input(uint8_t control_mode)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_control_mode(settings.get_pointer(), control_mode);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
 
 void main_controller::handle_serial_baud_rate_input(uint32_t serial_baud_rate)
 {
@@ -670,14 +655,6 @@ void main_controller::handle_serial_crc_enabled_input(bool serial_crc_enabled)
   handle_settings_changed();
 }
 
-// void main_controller::handle_serial_response_delay_input(uint8_t delay)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_serial_response_delay(settings.get_pointer(), delay);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
 void main_controller::handle_command_timeout_input(uint16_t command_timeout)
 {
   if (!connected()) { return; }
@@ -685,46 +662,6 @@ void main_controller::handle_command_timeout_input(uint16_t command_timeout)
   settings_modified = true;
   handle_settings_changed();
 }
-
-// void main_controller::handle_encoder_prescaler_input(uint32_t encoder_prescaler)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_encoder_prescaler(settings.get_pointer(), encoder_prescaler);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_encoder_postscaler_input(uint32_t encoder_postscaler)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_encoder_postscaler(settings.get_pointer(), encoder_postscaler);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_encoder_unlimited_input(bool encoder_unlimited)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_encoder_unlimited(settings.get_pointer(), encoder_unlimited);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_input_averaging_enabled_input(bool input_averaging_enabled)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_input_averaging_enabled(settings.get_pointer(), input_averaging_enabled);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_input_hysteresis_input(uint16_t input_hysteresis)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_input_hysteresis(settings.get_pointer(), input_hysteresis);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
 
 void main_controller::handle_input_invert_input(bool input_invert)
 {
@@ -797,22 +734,6 @@ void main_controller::handle_invert_motor_input(bool invert_motor)
   settings_modified = true;
   handle_settings_changed();
 }
-
-// void main_controller::handle_speed_max_input(uint32_t speed_max)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_max_speed(settings.get_pointer(), speed_max);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_starting_speed_input(uint32_t starting_speed)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_starting_speed(settings.get_pointer(), starting_speed);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
 
 void main_controller::handle_motor_pwm_frequency_input(uint8_t motor_pwm_frequency)
 {
@@ -916,174 +837,6 @@ void main_controller::handle_upload_complete()
   // device automatically.
   disconnected_by_user = false;
 }
-
-// void main_controller::handle_pin_func_input(uint8_t pin, uint8_t func)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_pin_func(settings.get_pointer(), pin, func);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_pin_pullup_input(uint8_t pin, bool pullup)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_pin_pullup(settings.get_pointer(), pin, pullup);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_pin_polarity_input(uint8_t pin, bool polarity)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_pin_polarity(settings.get_pointer(), pin, polarity);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_pin_analog_input(uint8_t pin, bool analog)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_pin_analog(settings.get_pointer(), pin, analog);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::set_target_position(int32_t position)
-// {
-//   if (!connected()) { return; }
-
-//   try
-//   {
-//     assert(connected());
-
-//     device_handle.set_target_position(position);
-//   }
-//   catch (std::exception const & e)
-//   {
-//     show_exception(e);
-//   }
-// }
-
-// void main_controller::set_target_velocity(int32_t velocity)
-// {
-//   if (!connected()) { return; }
-
-//   try
-//   {
-//     assert(connected());
-
-//     device_handle.set_target_velocity(velocity);
-//   }
-//   catch (std::exception const & e)
-//   {
-//     show_exception(e);
-//   }
-// }
-
-// void main_controller::halt_and_set_position(int32_t position)
-// {
-//   if (!connected()) { return; }
-
-//   try
-//   {
-//     assert(connected());
-
-//     device_handle.halt_and_set_position(position);
-//   }
-//   catch (std::exception const & e)
-//   {
-//     show_exception(e);
-//   }
-// }
-
-// void main_controller::halt_and_hold()
-// {
-//   if (!connected()) { return; }
-
-//   try
-//   {
-//     assert(connected());
-
-//     device_handle.halt_and_hold();
-//   }
-//   catch (std::exception const & e)
-//   {
-//     show_exception(e);
-//   }
-// }
-
-// void main_controller::deenergize()
-// {
-//   if (!connected()) { return; }
-
-//   try
-//   {
-//     assert(connected());
-
-//     device_handle.deenergize();
-//   }
-//   catch (std::exception const & e)
-//   {
-//     show_exception(e);
-//   }
-// }
-
-// // TODO: rename to resume to match the button name
-// void main_controller::energize()
-// {
-//   if (!connected()) { return; }
-
-//   try
-//   {
-//     assert(connected());
-
-//     device_handle.energize();
-
-//     device_handle.exit_safe_start();
-//   }
-//   catch (std::exception const & e)
-//   {
-//     show_exception(e);
-//   }
-// }
-
-// void main_controller::start_input_setup()
-// {
-//   if (!connected()) { return; }
-
-//   if (settings_modified)
-//   {
-//     window->show_info_message("This wizard cannot be used right now because "
-//       "the settings you changed have not been applied to the device.\n"
-//       "\n"
-//       "Please click \"Apply settings\" to apply your changes to the device or "
-//       "select \"Reload settings from device\" in the Device menu to discard "
-//       "your changes, then try again.");
-//     return;
-//   }
-
-//   uint8_t control_mode = jrk_settings_get_control_mode(cached_settings.get_pointer());
-//   switch (control_mode)
-//   {
-//   case TIC_CONTROL_MODE_RC_POSITION:
-//   case TIC_CONTROL_MODE_RC_SPEED:
-//   case TIC_CONTROL_MODE_ANALOG_POSITION:
-//   case TIC_CONTROL_MODE_ANALOG_SPEED:
-//     // The Tic is using a valid control mode; do nothing and continue.
-//     break;
-
-//   default:
-//     window->show_info_message("This wizard helps you set the scaling "
-//       "parameters for the Tic's RC or analog input.\n"
-//       "\n"
-//       "Please change the control mode to RC or analog, then try again.");
-//     return;
-//   }
-
-//   deenergize();
-//   window->run_input_wizard(control_mode);
-// }
 
 void main_controller::apply_settings()
 {
@@ -1232,9 +985,3 @@ void main_controller::reload_variables()
     throw;
   }
 }
-
-// bool main_controller::control_mode_is_serial(jrk::settings const & s) const
-// {
-//   uint8_t control_mode = jrk_settings_get_control_mode(s.get_pointer());
-//   return (control_mode == TIC_CONTROL_MODE_SERIAL);
-// }

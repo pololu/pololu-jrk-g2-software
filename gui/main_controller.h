@@ -73,21 +73,11 @@ public:
   // These are called when the user changes a setting.
   // [all-settings]
 
-  // void handle_control_mode_input(uint8_t control_mode);
-
   void handle_serial_baud_rate_input(uint32_t serial_baud_rate);
   void handle_serial_baud_rate_input_finished();
   void handle_serial_device_number_input(uint8_t serial_device_number);
   void handle_serial_crc_enabled_input(bool serial_crc_enabled);
-  // void handle_serial_response_delay_input(uint8_t delay);
   void handle_command_timeout_input(uint16_t command_timeout);
-
-  void handle_encoder_prescaler_input(uint32_t encoder_prescaler);
-  void handle_encoder_postscaler_input(uint32_t encoder_postscaler);
-  void handle_encoder_unlimited_input(bool encoder_unlimited);
-
-  // void handle_input_averaging_enabled_input(bool input_averaging_enabled);
-  // void handle_input_hysteresis_input(uint16_t input_hysteresis);
 
   void handle_input_invert_input(bool input_invert);
   void handle_input_min_input(uint16_t input_min);
@@ -99,9 +89,6 @@ public:
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
 
   void handle_invert_motor_input(bool invert_motor);
-  // void handle_speed_max_input(uint32_t speed_max);
-  // void handle_starting_speed_input(uint32_t starting_speed);
-
   void handle_motor_pwm_frequency_input(uint8_t);
 
   void handle_motor_max_duty_cycle_forward_input(uint16_t);
@@ -119,11 +106,6 @@ public:
   void handle_vin_calibration_input(int16_t vin_calibration);
 
   void handle_upload_complete();
-
-  // void handle_pin_func_input(uint8_t pin, uint8_t func);
-  // void handle_pin_pullup_input(uint8_t pin, bool pullup);
-  // void handle_pin_polarity_input(uint8_t pin, bool polarity);
-  // void handle_pin_analog_input(uint8_t pin, bool analog);
 
 private:
   // This is called whenever it is possible that we have connected to a
@@ -178,8 +160,6 @@ private:
 
   // Returns true if we are currently connected to a device.
   bool connected() const { return device_handle; }
-
-  // bool control_mode_is_serial(jrk::settings const & s) const;
 
   main_window * window;
 };
