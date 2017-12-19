@@ -1,3 +1,5 @@
+// This file has been modified by Pololu.
+
 /***************************************************************************
 **                                                                        **
 **  QCustomPlot, an easy to use, modern plotting widget for Qt            **
