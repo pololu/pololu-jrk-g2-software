@@ -682,6 +682,15 @@ void main_controller::handle_settings_changed()
   // [all-settings]
 
   window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
+  window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
+  window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
+  window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
+  window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
+  window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
+  window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
+  window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
+
+
 
   // for (int i = 0; i < 5; i++)
   // {
@@ -906,137 +915,61 @@ void main_controller::handle_motor_max_duty_cycle_forward_input(uint16_t duty_cy
   handle_settings_changed();
 }
 
-void main_controller::handle_accel_max_forward_input(uint32_t accel_max)
+void main_controller::handle_motor_max_duty_cycle_reverse_input(uint16_t duty_cycle)
 {
   if (!connected()) { return; }
-  jrk_settings_set_motor_max_acceleration_forward(settings.get_pointer(), accel_max);
+  settings.set_motor_max_duty_cycle_reverse(duty_cycle);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_decel_max_forward_input(uint32_t decel_max)
+void main_controller::handle_motor_max_acceleration_forward_input(uint16_t acceleration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_motor_max_deceleration_forward(settings.get_pointer(), decel_max);
+  settings.set_motor_max_acceleration_forward(acceleration);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_accel_max_reverse_input(uint32_t accel_max)
+void main_controller::handle_motor_max_acceleration_reverse_input(uint16_t acceleration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_motor_max_acceleration_reverse(settings.get_pointer(), accel_max);
+  settings.set_motor_max_acceleration_reverse(acceleration);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_decel_max_reverse_input(uint32_t decel_max)
+void main_controller::handle_motor_max_deceleration_forward_input(uint16_t deceleration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_motor_max_deceleration_reverse(settings.get_pointer(), decel_max);
+  settings.set_motor_max_deceleration_forward(deceleration);
   settings_modified = true;
   handle_settings_changed();
 }
 
-// void main_controller::handle_step_mode_input(uint8_t step_mode)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_step_mode(settings.get_pointer(), step_mode);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-void main_controller::handle_current_limit_input_forward(uint32_t current_limit)
+void main_controller::handle_motor_max_deceleration_reverse_input(uint16_t deceleration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_motor_max_current_forward(settings.get_pointer(), current_limit);
+  settings.set_motor_max_deceleration_reverse(deceleration);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_input_reverse(uint32_t current_limit)
+void main_controller::handle_motor_max_current_forward_input(uint16_t current)
 {
   if (!connected()) { return; }
-  jrk_settings_set_motor_max_current_reverse(settings.get_pointer(), current_limit);
+  settings.set_motor_max_current_forward(current);
   settings_modified = true;
   handle_settings_changed();
 }
 
-// void main_controller::handle_current_limit_input_finished()
-// {
-//   if (!connected()) { return; }
-//   uint32_t current_limit = jrk_settings_get_current_limit(settings.get_pointer());
-//   current_limit = jrk_settings_achievable_current_limit(settings.get_pointer(), current_limit);
-//   jrk_settings_set_current_limit(settings.get_pointer(), current_limit);
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_decay_mode_input(uint8_t decay_mode)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_decay_mode(settings.get_pointer(), decay_mode);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_soft_error_response_input(uint8_t soft_error_response)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_soft_error_response(settings.get_pointer(), soft_error_response);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_soft_error_position_input(int32_t soft_error_position)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_soft_error_position(settings.get_pointer(), soft_error_position);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_current_limit_during_error_input(int32_t current_limit_during_error)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_current_limit_during_error(settings.get_pointer(), current_limit_during_error);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_current_limit_during_error_input_finished()
-// {
-//   if (!connected()) { return; }
-//   uint32_t current_limit_during_error =
-//     jrk_settings_get_current_limit_during_error(settings.get_pointer());
-//   current_limit_during_error = jrk_settings_achievable_current_limit(
-//     settings.get_pointer(), current_limit_during_error);
-//   jrk_settings_set_current_limit_during_error(settings.get_pointer(), current_limit_during_error);
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_disable_safe_start_input(bool disable_safe_start)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_disable_safe_start(settings.get_pointer(), disable_safe_start);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_ignore_err_line_high_input(bool ignore_err_line_high)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_ignore_err_line_high(settings.get_pointer(), ignore_err_line_high);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
-
-// void main_controller::handle_auto_clear_driver_error_input(bool auto_clear_driver_error)
-// {
-//   if (!connected()) { return; }
-//   jrk_settings_set_auto_clear_driver_error(settings.get_pointer(), auto_clear_driver_error);
-//   settings_modified = true;
-//   handle_settings_changed();
-// }
+void main_controller::handle_motor_max_current_reverse_input(uint16_t current)
+{
+  if (!connected()) { return; }
+  settings.set_motor_max_current_reverse(current);
+  settings_modified = true;
+  handle_settings_changed();
+}
 
 void main_controller::handle_never_sleep_input(bool never_sleep)
 {

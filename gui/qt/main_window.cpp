@@ -762,52 +762,56 @@ QWidget *main_window::setup_motor_tab()
   motor_reverse_label = new QLabel(tr("Reverse"));
   motor_reverse_label->setObjectName("motor_reverse_label");
 
-  motor_duty_label = new QLabel(tr("Max. duty cycle:"));
-  motor_duty_label->setObjectName("motor_duty_label");
+  motor_max_duty_cycle_label = new QLabel(tr("Max. duty cycle:"));
+  motor_max_duty_cycle_label->setObjectName("motor_max_deceleration_label");
 
   motor_max_duty_cycle_forward_spinbox = new QSpinBox();
   motor_max_duty_cycle_forward_spinbox->setObjectName("motor_max_duty_cycle_forward_spinbox");
   motor_max_duty_cycle_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_duty_reverse_spinbox = new QSpinBox();
-  motor_duty_reverse_spinbox->setObjectName("motor_duty_reverse_spinbox");
-  motor_duty_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  motor_max_duty_cycle_reverse_spinbox = new QSpinBox();
+  motor_max_duty_cycle_reverse_spinbox->setObjectName("motor_max_duty_cycle_reverse_spinbox");
+  motor_max_duty_cycle_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_duty_means_label = new QLabel(tr("(600 means 100%)"));
+  motor_max_duty_cycle_means_label = new QLabel(tr("(600 means 100%)"));
 
-  motor_acceleration_label = new QLabel(tr("Max. acceleration:"));
-  motor_acceleration_label->setObjectName("motor_acceleration_label");
+  motor_max_acceleration_label = new QLabel(tr("Max. acceleration:"));
+  motor_max_acceleration_label->setObjectName("motor_max_acceleration_label");
 
-  motor_acceleration_forward_spinbox = new QSpinBox();
-  motor_acceleration_forward_spinbox->setObjectName("motor_acceleration_forward_spinbox");
-  motor_acceleration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  motor_max_acceleration_forward_spinbox = new QSpinBox();
+  motor_max_acceleration_forward_spinbox->setObjectName("motor_max_acceleration_forward_spinbox");
+  motor_max_acceleration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_acceleration_reverse_spinbox = new QSpinBox();
-  motor_acceleration_reverse_spinbox->setObjectName("motor_acceleration_reverse_spinbox");
-  motor_acceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  motor_max_acceleration_reverse_spinbox = new QSpinBox();
+  motor_max_acceleration_reverse_spinbox->setObjectName("motor_max_acceleration_reverse_spinbox");
+  motor_max_acceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_acceleration_means_label = new QLabel(tr("(600 means no limit)"));
+  motor_max_acceleration_means_label = new QLabel(tr("(600 means no limit)"));
 
-  motor_duration_label = new QLabel(tr("Brake duration (ms):"));
-  motor_duration_label->setObjectName("motor_duration_label");
+  motor_max_deceleration_label = new QLabel(tr("Brake duration (ms):"));
+  motor_max_deceleration_label->setObjectName("motor_max_deceleration_label");
 
-  motor_duration_forward_spinbox = new QSpinBox();
-  motor_duration_forward_spinbox->setObjectName("motor_duration_forward_spinbox");
+  motor_max_deceleration_forward_spinbox = new QSpinBox();
+  motor_max_deceleration_forward_spinbox->setObjectName("motor_max_deceleration_forward_spinbox");
+  motor_max_deceleration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_duration_reverse_spinbox = new QSpinBox();
-  motor_duration_reverse_spinbox->setObjectName("motor_duration_reverse_spinbox");
+  motor_max_deceleration_reverse_spinbox = new QSpinBox();
+  motor_max_deceleration_reverse_spinbox->setObjectName("motor_max_deceleration_reverse_spinbox");
+  motor_max_deceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_current_label = new QLabel(tr("Max. current (A):"));
-  motor_current_label->setObjectName("motor_current_label");
+  motor_max_current_label = new QLabel(tr("Max. current (A):"));
+  motor_max_current_label->setObjectName("motor_max_current_label");
 
-  motor_current_forward_spinbox = new QDoubleSpinBox();
-  motor_current_forward_spinbox->setObjectName("motor_current_forward_spinbox");
+  motor_max_current_forward_spinbox = new QDoubleSpinBox();
+  motor_max_current_forward_spinbox->setObjectName("motor_max_current_forward_spinbox");
+  motor_max_current_forward_spinbox->setRange(0, 255); // TODO: add macro in place of 255
 
-  motor_current_reverse_spinbox = new QDoubleSpinBox();
-  motor_current_reverse_spinbox->setObjectName("motor_current_reverse_spinbox");
+  motor_max_current_reverse_spinbox = new QDoubleSpinBox();
+  motor_max_current_reverse_spinbox->setObjectName("motor_max_current_reverse_spinbox");
+  motor_max_current_reverse_spinbox->setRange(0, 255); // TODO: add macro in place of 255
 
-  motor_current_means_label = new QLabel(tr("(0.000 means no limit)"));
-  motor_current_means_label->setObjectName("motor_current_means_label");
+  motor_max_current_means_label = new QLabel(tr("(0.000 means no limit)"));
+  motor_max_current_means_label->setObjectName("motor_max_current_means_label");
 
   motor_calibration_label = new QLabel(tr("Current calibration:"));
   motor_calibration_label->setObjectName("motor_calibration_label");
@@ -821,35 +825,35 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_reverse_label,1,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duty_label,2,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_duty_cycle_label,2,0,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_max_duty_cycle_forward_spinbox, 2, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duty_reverse_spinbox,2,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duty_means_label,2,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_acceleration_label,3,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_acceleration_forward_spinbox,3,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_acceleration_reverse_spinbox,3,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_acceleration_means_label,3,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duration_label,4,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duration_forward_spinbox,4,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_duration_reverse_spinbox,4,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_current_label,5,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_current_forward_spinbox,5,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_current_reverse_spinbox,5,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_current_means_label,5,3,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_duty_cycle_reverse_spinbox,2,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_duty_cycle_means_label,2,3,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_acceleration_label,3,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_acceleration_forward_spinbox,3,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_acceleration_reverse_spinbox,3,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_acceleration_means_label,3,3,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_deceleration_label,4,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_deceleration_forward_spinbox,4,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_deceleration_reverse_spinbox,4,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_label,5,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_forward_spinbox,5,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_reverse_spinbox,5,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_means_label,5,3,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_label,6,0,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_forward_spinbox,6,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,6,2,Qt::AlignLeft);
 
-  QHBoxLayout *duty_cycle_layout = new QHBoxLayout();
+  QHBoxLayout *deceleration_layout = new QHBoxLayout();
   motor_outofrange_label = new QLabel(tr("Max. duty cycke while feedback is out of range:"));
   motor_outofrange_label->setObjectName("motor_outofrange_label");
   motor_outofrange_spinbox = new QDoubleSpinBox();
   motor_outofrange_spinbox->setObjectName("motor_outofrange_spinbox");
   motor_outofrange_means_label = new QLabel(tr("(600 means 100%)"));
 
-  duty_cycle_layout->addWidget(motor_outofrange_label);
-  duty_cycle_layout->addWidget(motor_outofrange_spinbox);
-  duty_cycle_layout->addWidget(motor_outofrange_means_label);
+  deceleration_layout->addWidget(motor_outofrange_label);
+  deceleration_layout->addWidget(motor_outofrange_spinbox);
+  deceleration_layout->addWidget(motor_outofrange_means_label);
 
   QGridLayout *motor_off_layout = new QGridLayout();
   motor_off_label = new QLabel(tr("When motor is off:"));
@@ -865,7 +869,7 @@ QWidget *main_window::setup_motor_tab()
 
   layout->addLayout(invert_layout,1,0,Qt::AlignLeft);
   layout->addLayout(motor_controls_layout,2,0,Qt::AlignLeft);
-  layout->addLayout(duty_cycle_layout,3,0,Qt::AlignLeft);
+  layout->addLayout(deceleration_layout,3,0,Qt::AlignLeft);
   layout->addLayout(motor_off_layout,4,0,Qt::AlignLeft);
 
   motor_page_widget->setLayout(layout);
@@ -1049,6 +1053,48 @@ void main_window::on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value
 {
   if (suppress_events) { return; }
   controller->handle_motor_max_duty_cycle_forward_input(value);
+}
+
+void main_window::on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_duty_cycle_reverse_input(value);
+}
+
+void main_window::on_motor_max_acceleration_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_acceleration_forward_input(value);
+}
+
+void main_window::on_motor_max_acceleration_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_acceleration_reverse_input(value);
+}
+
+void main_window::on_motor_max_deceleration_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_deceleration_forward_input(value);
+}
+
+void main_window::on_motor_max_deceleration_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_deceleration_reverse_input(value);
+}
+
+void main_window::on_motor_max_current_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_current_forward_input(value);
+}
+
+void main_window::on_motor_max_current_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_max_current_reverse_input(value);
 }
 
 void main_window::set_u8_combo_box(QComboBox * combo, uint8_t value)
@@ -1337,6 +1383,41 @@ void main_window::set_never_sleep(bool never_sleep)
 void main_window::set_motor_max_duty_cycle_forward(uint16_t duty_cycle)
 {
   set_spin_box(motor_max_duty_cycle_forward_spinbox, duty_cycle);
+}
+
+void main_window::set_motor_max_duty_cycle_reverse(uint16_t duty_cycle)
+{
+  set_spin_box(motor_max_duty_cycle_reverse_spinbox, duty_cycle);
+}
+
+void main_window::set_motor_max_acceleration_forward(uint16_t acceleration)
+{
+  set_spin_box(motor_max_acceleration_forward_spinbox, acceleration);
+}
+
+void main_window::set_motor_max_acceleration_reverse(uint16_t acceleration)
+{
+  set_spin_box(motor_max_acceleration_reverse_spinbox, acceleration);
+}
+
+void main_window::set_motor_max_deceleration_forward(uint16_t acceleration)
+{
+  set_spin_box(motor_max_deceleration_forward_spinbox, acceleration);
+}
+
+void main_window::set_motor_max_deceleration_reverse(uint16_t acceleration)
+{
+  set_spin_box(motor_max_deceleration_reverse_spinbox, acceleration);
+}
+
+void main_window::set_motor_max_current_forward(uint16_t current)
+{
+  set_double_spin_box(motor_max_current_forward_spinbox, current);
+}
+
+void main_window::set_motor_max_current_reverse(uint16_t current)
+{
+  set_double_spin_box(motor_max_current_reverse_spinbox, current);
 }
 
 void main_window::set_vin_calibration(int16_t vin_calibration)

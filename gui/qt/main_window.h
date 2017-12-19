@@ -77,6 +77,13 @@ public:
   void set_never_sleep(bool never_sleep);
 
   void set_motor_max_duty_cycle_forward(uint16_t);
+  void set_motor_max_duty_cycle_reverse(uint16_t);
+  void set_motor_max_acceleration_forward(uint16_t);
+  void set_motor_max_acceleration_reverse(uint16_t);
+  void set_motor_max_deceleration_forward(uint16_t);
+  void set_motor_max_deceleration_reverse(uint16_t);
+  void set_motor_max_current_forward(uint16_t);
+  void set_motor_max_current_reverse(uint16_t);
   void set_accel_max_forward(uint16_t accel_max);
   void set_decel_max_forward(uint16_t decel_max);
   void set_accel_max_reverse(uint16_t accel_max);
@@ -157,6 +164,13 @@ private slots:
   void on_set_target_button_clicked();
 
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
+  void on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value);
+  void on_motor_max_acceleration_forward_spinbox_valueChanged(int value);
+  void on_motor_max_acceleration_reverse_spinbox_valueChanged(int value);
+  void on_motor_max_deceleration_forward_spinbox_valueChanged(int value);
+  void on_motor_max_deceleration_reverse_spinbox_valueChanged(int value);
+  void on_motor_max_current_forward_spinbox_valueChanged(int value);
+  void on_motor_max_current_reverse_spinbox_valueChanged(int value);
 
 private:
 	QFont font;
@@ -338,21 +352,21 @@ private:
 	QCheckBox *motor_asymmetric_checkbox;
 	QLabel *motor_forward_label;
 	QLabel *motor_reverse_label;
-	QLabel *motor_duty_label;
+	QLabel *motor_max_duty_cycle_label;
 	QSpinBox *motor_max_duty_cycle_forward_spinbox;
-	QSpinBox *motor_duty_reverse_spinbox;
-	QLabel *motor_duty_means_label;
-	QLabel *motor_acceleration_label;
-	QSpinBox *motor_acceleration_forward_spinbox;
-	QSpinBox *motor_acceleration_reverse_spinbox;
-	QLabel *motor_acceleration_means_label;
-	QLabel *motor_duration_label;
-	QSpinBox *motor_duration_forward_spinbox;
-	QSpinBox *motor_duration_reverse_spinbox;
-	QLabel *motor_current_label;
-	QDoubleSpinBox *motor_current_forward_spinbox;
-	QDoubleSpinBox *motor_current_reverse_spinbox;
-	QLabel *motor_current_means_label;
+	QSpinBox *motor_max_duty_cycle_reverse_spinbox;
+	QLabel *motor_max_duty_cycle_means_label;
+	QLabel *motor_max_acceleration_label;
+	QSpinBox *motor_max_acceleration_forward_spinbox;
+	QSpinBox *motor_max_acceleration_reverse_spinbox;
+	QLabel *motor_max_acceleration_means_label;
+	QLabel *motor_max_deceleration_label;
+	QSpinBox *motor_max_deceleration_forward_spinbox;
+	QSpinBox *motor_max_deceleration_reverse_spinbox;
+	QLabel *motor_max_current_label;
+	QDoubleSpinBox *motor_max_current_forward_spinbox;
+	QDoubleSpinBox *motor_max_current_reverse_spinbox;
+	QLabel *motor_max_current_means_label;
 	QLabel *motor_calibration_label;
 	QDoubleSpinBox *motor_calibration_forward_spinbox;
 	QDoubleSpinBox *motor_calibration_reverse_spinbox;
