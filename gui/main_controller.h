@@ -102,6 +102,8 @@ public:
   // void handle_speed_max_input(uint32_t speed_max);
   // void handle_starting_speed_input(uint32_t starting_speed);
 
+  void handle_motor_pwm_frequency_input(uint8_t);
+
   void handle_motor_max_duty_cycle_forward_input(uint16_t);
   void handle_motor_max_duty_cycle_reverse_input(uint16_t);
   void handle_motor_max_acceleration_forward_input(uint16_t);
@@ -110,6 +112,8 @@ public:
   void handle_motor_max_deceleration_reverse_input(uint16_t);
   void handle_motor_max_current_forward_input(uint16_t);
   void handle_motor_max_current_reverse_input(uint16_t);
+
+  void handle_motor_coast_when_off(bool);
 
   void handle_never_sleep_input(bool never_sleep);
   void handle_vin_calibration_input(int16_t vin_calibration);

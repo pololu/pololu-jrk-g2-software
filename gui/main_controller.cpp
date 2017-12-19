@@ -591,6 +591,8 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
   window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
 
+  window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
+  window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
 
 
   // for (int i = 0; i < 5; i++)
@@ -808,6 +810,14 @@ void main_controller::handle_invert_motor_input(bool invert_motor)
 //   handle_settings_changed();
 // }
 
+void main_controller::handle_motor_pwm_frequency_input(uint8_t motor_pwm_frequency)
+{
+  if (!connected()) { return; }
+  settings.set_motor_pwm_frequency(motor_pwm_frequency);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
 void main_controller::handle_motor_max_duty_cycle_forward_input(uint16_t duty_cycle)
 {
   if (!connected()) { return; }
@@ -868,6 +878,14 @@ void main_controller::handle_motor_max_current_reverse_input(uint16_t current)
 {
   if (!connected()) { return; }
   settings.set_motor_max_current_reverse(current);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_coast_when_off(bool motor_coast)
+{
+  if (!connected()) { return; }
+  settings.set_motor_coast_when_off(motor_coast);
   settings_modified = true;
   handle_settings_changed();
 }
