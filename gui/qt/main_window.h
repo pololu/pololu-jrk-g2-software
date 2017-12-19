@@ -129,22 +129,13 @@ public:
 
 	void set_target_none();
 
-	// Controls whether the main controls of the application are enabled or
-  // disabled.
   void set_tab_pages_enabled(bool enabled);
-
-	// Controls whether the open and save settings file actions are enabled or
-  // disabled.
   void set_open_save_settings_enabled(bool enabled);
-
-  // Controls whether the disconnect action is enabled or disabled.
   void set_disconnect_enabled(bool enabled);
-
-  // Controls whether the reload settings from device action is enabled.
   void set_reload_settings_enabled(bool enabled);
-
-  // Controls whether the restore defaults option is enabled.
   void set_restore_defaults_enabled(bool enabled);
+  void set_stop_motor_enabled(bool enabled);
+  void set_run_motor_enabled(bool enabled);
 
 signals:
 	void pass_widget(graph_widget *widget);
@@ -380,8 +371,8 @@ private:
 	QSpinBox *motor_max_deceleration_forward_spinbox;
 	QSpinBox *motor_max_deceleration_reverse_spinbox;
 	QLabel *motor_max_current_label;
-	QDoubleSpinBox *motor_max_current_forward_spinbox;
-	QDoubleSpinBox *motor_max_current_reverse_spinbox;
+	QSpinBox *motor_max_current_forward_spinbox;
+	QSpinBox *motor_max_current_reverse_spinbox;
 	QLabel *motor_max_current_means_label;
 	QLabel *motor_calibration_label;
 	QDoubleSpinBox *motor_calibration_forward_spinbox;

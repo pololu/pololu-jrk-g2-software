@@ -194,6 +194,7 @@ void main_window::setup_ui()
   preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
+  stop_motor->setEnabled(false);  // doesn't work yet
 
   // tmphax:stop graph
   connect(
@@ -818,14 +819,12 @@ QWidget *main_window::setup_motor_tab()
   motor_max_current_label = new QLabel(tr("Max. current (A):"));
   motor_max_current_label->setObjectName("motor_max_current_label");
 
-  motor_max_current_forward_spinbox = new QDoubleSpinBox();
+  motor_max_current_forward_spinbox = new QSpinBox();
   motor_max_current_forward_spinbox->setObjectName("motor_max_current_forward_spinbox");
-  motor_max_current_forward_spinbox->setDecimals(0);
   motor_max_current_forward_spinbox->setRange(0, 255); // TODO: add macro in place of 255
 
-  motor_max_current_reverse_spinbox = new QDoubleSpinBox();
+  motor_max_current_reverse_spinbox = new QSpinBox();
   motor_max_current_reverse_spinbox->setObjectName("motor_max_current_reverse_spinbox");
-  motor_max_current_reverse_spinbox->setDecimals(0);
   motor_max_current_reverse_spinbox->setRange(0, 255); // TODO: add macro in place of 255
 
   motor_max_current_means_label = new QLabel(tr("(0.000 means no limit)"));
@@ -883,10 +882,12 @@ QWidget *main_window::setup_motor_tab()
   motor_brake_radio = new QRadioButton(tr("Brake"));
   motor_brake_radio->setObjectName("motor_brake_radio");
   motor_brake_radio->setChecked(true);
+  motor_brake_radio->setEnabled(false);  // does not work
 
   motor_coast_radio = new QRadioButton(tr("Coast"));
   motor_coast_radio->setObjectName("motor_coast_radio");
   motor_coast_radio->setChecked(false);
+  motor_coast_radio->setEnabled(false);  // does not work
 
   motor_off_layout->addWidget(motor_off_label,0,0);
   motor_off_layout->addWidget(motor_brake_radio,0,1);
@@ -1190,14 +1191,11 @@ void main_window::set_tab_pages_enabled(bool enabled)
     tab_widget->widget(i)->setEnabled(enabled);
   }
 
-  // tmphax: only enabled the tabs used for testing
-
+  // tmphax, disable tabs not implemented yet
   tab_widget->widget(1)->setEnabled(false);
   tab_widget->widget(2)->setEnabled(false);
   tab_widget->widget(3)->setEnabled(false);
   tab_widget->widget(5)->setEnabled(false);
-
-
 }
 
 void main_window::set_restore_defaults_enabled(bool enabled)
@@ -1219,6 +1217,18 @@ void main_window::set_open_save_settings_enabled(bool enabled)
 void main_window::set_disconnect_enabled(bool enabled)
 {
   disconnect_action->setEnabled(enabled);
+}
+
+void main_window::set_stop_motor_enabled(bool enabled)
+{
+  stop_motor_action->setEnabled(enabled);
+  stop_motor_button->setEnabled(enabled);
+}
+
+void main_window::set_run_motor_enabled(bool enabled)
+{
+  run_motor_action->setEnabled(enabled);
+  run_motor_button->setEnabled(enabled);
 }
 
 void main_window::set_error_flags_halting(uint16_t error_flags_halting)
@@ -1380,12 +1390,12 @@ void main_window::set_motor_max_deceleration_reverse(uint16_t acceleration)
 
 void main_window::set_motor_max_current_forward(uint16_t current)
 {
-  set_double_spin_box(motor_max_current_forward_spinbox, current);
+  set_spin_box(motor_max_current_forward_spinbox, current);
 }
 
 void main_window::set_motor_max_current_reverse(uint16_t current)
 {
-  set_double_spin_box(motor_max_current_reverse_spinbox, current);
+  set_spin_box(motor_max_current_reverse_spinbox, current);
 }
 
 void main_window::set_motor_coast_when_off(bool checked)
