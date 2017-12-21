@@ -64,8 +64,8 @@ struct jrk_settings
   uint8_t motor_max_current_reverse;
   int8_t motor_current_calibration_forward;
   int8_t motor_current_calibration_reverse;
-  uint8_t motor_brake_duration_forward;
-  uint8_t motor_brake_duration_reverse;
+  uint32_t motor_brake_duration_forward;
+  uint32_t motor_brake_duration_reverse;
   bool motor_coast_when_off;
   uint16_t error_enable;
   uint16_t error_latch;
@@ -862,25 +862,25 @@ int8_t jrk_settings_get_motor_current_calibration_reverse(const jrk_settings * s
   return settings->motor_current_calibration_reverse;
 }
 
-void jrk_settings_set_motor_brake_duration_forward(jrk_settings * settings, uint8_t motor_brake_duration_forward)
+void jrk_settings_set_motor_brake_duration_forward(jrk_settings * settings, uint32_t motor_brake_duration_forward)
 {
   if (settings == NULL) { return; }
   settings->motor_brake_duration_forward = motor_brake_duration_forward;
 }
 
-uint8_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings * settings)
+uint32_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->motor_brake_duration_forward;
 }
 
-void jrk_settings_set_motor_brake_duration_reverse(jrk_settings * settings, uint8_t motor_brake_duration_reverse)
+void jrk_settings_set_motor_brake_duration_reverse(jrk_settings * settings, uint32_t motor_brake_duration_reverse)
 {
   if (settings == NULL) { return; }
   settings->motor_brake_duration_reverse = motor_brake_duration_reverse;
 }
 
-uint8_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings * settings)
+uint32_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->motor_brake_duration_reverse;

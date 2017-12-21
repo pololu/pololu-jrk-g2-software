@@ -1084,27 +1084,34 @@ int8_t jrk_settings_get_motor_current_calibration_reverse(const jrk_settings *);
 
 // Sets the motor_brake_duration_forward setting.
 //
-// Units of 5 ms.
+// The number of milliseconds to spend braking before starting to drive forward.
+//
+// This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
+// between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 JRK_API
 void jrk_settings_set_motor_brake_duration_forward(jrk_settings *,
-  uint8_t motor_brake_duration_forward);
+  uint32_t motor_brake_duration_forward);
 
 // Gets the motor_brake_duration_forward setting, which is described in
 // jrk_settings_set_motor_brake_duration_forward.
 JRK_API
-uint8_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
+uint32_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
 
 // Sets the motor_brake_duration_reverse setting.
 //
-// Units of 5 ms.
+// The number of milliseconds to spend braking before starting to drive in
+// reverse.
+//
+// This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
+// between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 JRK_API
 void jrk_settings_set_motor_brake_duration_reverse(jrk_settings *,
-  uint8_t motor_brake_duration_reverse);
+  uint32_t motor_brake_duration_reverse);
 
 // Gets the motor_brake_duration_reverse setting, which is described in
 // jrk_settings_set_motor_brake_duration_reverse.
 JRK_API
-uint8_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
+uint32_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
 
 // Sets the motor_coast_when_off setting.
 //

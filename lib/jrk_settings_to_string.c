@@ -343,12 +343,12 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t motor_brake_duration_forward = jrk_settings_get_motor_brake_duration_forward(settings);
+    uint32_t motor_brake_duration_forward = jrk_settings_get_motor_brake_duration_forward(settings);
     jrk_sprintf(&str, "motor_brake_duration_forward: %u\n", motor_brake_duration_forward);
   }
 
   {
-    uint8_t motor_brake_duration_reverse = jrk_settings_get_motor_brake_duration_reverse(settings);
+    uint32_t motor_brake_duration_reverse = jrk_settings_get_motor_brake_duration_reverse(settings);
     jrk_sprintf(&str, "motor_brake_duration_reverse: %u\n", motor_brake_duration_reverse);
   }
 

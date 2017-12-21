@@ -626,14 +626,31 @@ EOF
     type: :int8_t,
   },
   {
-    name: 'motor_brake_duration_forward',  # TODO: handle units in the lib
-    type: :uint8_t,
-    comment: 'Units of 5 ms.',
+    name: 'motor_brake_duration_forward',
+    type: :uint32_t,
+    max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
+    custom_eeprom: true,
+    custom_fix: true,
+    comment: <<EOF
+The number of milliseconds to spend braking before starting to drive forward.
+
+This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
+between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
+EOF
   },
   {
     name: 'motor_brake_duration_reverse',  # TODO: handle units in the lib
-    type: :uint8_t,
-    comment: 'Units of 5 ms.',
+    type: :uint32_t,
+    max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
+    custom_eeprom: true,
+    custom_fix: true,
+    comment: <<EOF
+The number of milliseconds to spend braking before starting to drive in
+reverse.
+
+This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
+between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
+EOF
   },
   {
     name: 'motor_coast_when_off',
