@@ -95,6 +95,8 @@ public:
 
   void set_never_sleep(bool never_sleep);
 
+  void set_input_mode(uint8_t input_mode);
+  void set_feedback_mode(uint8_t feedback_mode);
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
 
   void set_motor_max_duty_cycle_forward(uint16_t);
@@ -161,7 +163,9 @@ private slots:
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();
 
-  void on_motor_pwm_frequency_combo_box_currentIndexChanged(int index);
+  void on_input_mode_combobox_currentIndexChanged(int index);
+  void on_feedback_mode_combobox_currentIndexChanged(int index);
+  void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
 
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
   void on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value);
@@ -353,7 +357,7 @@ private:
 	QWidget *motor_page_widget;
 	QGridLayout *motor_page_layout;
 	QLabel *motor_frequency_label;
-	QComboBox *motor_pwm_frequency_combo_box;
+	QComboBox *motor_pwm_frequency_combobox;
 	QCheckBox *motor_invert_checkbox;
 	QPushButton *motor_detect_motor_button;
 	QCheckBox *motor_asymmetric_checkbox;
@@ -433,7 +437,7 @@ private:
   // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified
   // value is not found.
-  void set_u8_combo_box(QComboBox * combo, uint8_t value);
+  void set_u8_combobox(QComboBox * combo, uint8_t value);
   void set_spin_box(QSpinBox * box, int value);
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);

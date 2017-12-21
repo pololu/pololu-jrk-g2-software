@@ -2,7 +2,6 @@
 #include <QtCore>
 #include "main_controller.h"
 #include "main_window.h"
-#include <iostream>  // tmphax
 
 int main(int argc, char ** argv)
 {
@@ -10,8 +9,6 @@ int main(int argc, char ** argv)
   // qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
 
   // SetProcessDPIAware();
-
-  std::cout << "main start" << std::endl;  // tmphax
 
   QApplication app(argc, argv);
   main_controller controller;

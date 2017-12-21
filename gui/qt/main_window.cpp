@@ -438,6 +438,9 @@ QWidget * main_window::setup_input_tab()
   input_mode_layout->addWidget(input_mode_label);
   input_mode_combobox = new QComboBox();
   input_mode_combobox->setObjectName("input_mode_combobox");
+  input_mode_combobox->addItem("Serial", JRK_INPUT_MODE_SERIAL);
+  input_mode_combobox->addItem("Analog", JRK_INPUT_MODE_ANALOG);
+  input_mode_combobox->addItem("Pulse width", JRK_INPUT_MODE_PULSE_WIDTH);
   input_mode_layout->addWidget(input_mode_combobox);
   column1->addLayout(input_mode_layout);
 
@@ -617,6 +620,9 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_layout->addWidget(feedback_mode_label);
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
+  feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
+  feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
+  feedback_mode_combobox->addItem("Frequency", JRK_FEEDBACK_MODE_FREQUENCY);
   feedback_mode_layout->addWidget(feedback_mode_combobox);
 
   QGridLayout *feedback_scaling_layout = new QGridLayout();
@@ -746,12 +752,12 @@ QWidget *main_window::setup_motor_tab()
   QHBoxLayout *frequency_layout = new QHBoxLayout();
   motor_frequency_label = new QLabel(tr("PVM frequency:"));
   motor_frequency_label->setObjectName("motor_frequency_label");
-  motor_pwm_frequency_combo_box = new QComboBox();
-  motor_pwm_frequency_combo_box->setObjectName("motor_pwm_frequency_combo_box");
-  motor_pwm_frequency_combo_box->addItem("20 kHz", JRK_MOTOR_PWM_FREQUENCY_20);
-  motor_pwm_frequency_combo_box->addItem("5 kHz", JRK_MOTOR_PWM_FREQUENCY_5);
+  motor_pwm_frequency_combobox = new QComboBox();
+  motor_pwm_frequency_combobox->setObjectName("motor_pwm_frequency_combobox");
+  motor_pwm_frequency_combobox->addItem("20 kHz", JRK_MOTOR_PWM_FREQUENCY_20);
+  motor_pwm_frequency_combobox->addItem("5 kHz", JRK_MOTOR_PWM_FREQUENCY_5);
   frequency_layout->addWidget(motor_frequency_label);
-  frequency_layout->addWidget(motor_pwm_frequency_combo_box);
+  frequency_layout->addWidget(motor_pwm_frequency_combobox);
   layout->addLayout(frequency_layout,0,0,Qt::AlignLeft);
 
   QHBoxLayout *invert_layout = new QHBoxLayout();
@@ -1075,10 +1081,24 @@ void main_window::on_set_target_button_clicked()
   controller->set_target(manual_target_entry_value->value());
 }
 
-void main_window::on_motor_pwm_frequency_combo_box_currentIndexChanged(int index)
+void main_window::on_input_mode_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
-  uint8_t motor_pwm_frequency = motor_pwm_frequency_combo_box->itemData(index).toUInt();
+  uint8_t input_mode = input_mode_combobox->itemData(index).toUInt();
+  controller->handle_input_mode_input(input_mode);
+}
+
+void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t feedback_mode = feedback_mode_combobox->itemData(index).toUInt();
+  controller->handle_feedback_mode_input(feedback_mode);
+}
+
+void main_window::on_motor_pwm_frequency_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t motor_pwm_frequency = motor_pwm_frequency_combobox->itemData(index).toUInt();
   controller->handle_motor_pwm_frequency_input(motor_pwm_frequency);
 }
 
@@ -1144,7 +1164,7 @@ void main_window::on_motor_brake_radio_toggled(bool checked)
   motor_coast_radio->setChecked(!checked);
 }
 
-void main_window::set_u8_combo_box(QComboBox * combo, uint8_t value)
+void main_window::set_u8_combobox(QComboBox * combo, uint8_t value)
 {
   suppress_events = true;
   combo->setCurrentIndex(combo->findData(value));
@@ -1192,8 +1212,8 @@ void main_window::set_tab_pages_enabled(bool enabled)
   }
 
   // tmphax, disable tabs not implemented yet
-  tab_widget->widget(1)->setEnabled(false);
-  tab_widget->widget(2)->setEnabled(false);
+//   tab_widget->widget(1)->setEnabled(false);
+//   tab_widget->widget(2)->setEnabled(false);
   tab_widget->widget(3)->setEnabled(false);
   tab_widget->widget(5)->setEnabled(false);
 }
@@ -1345,7 +1365,7 @@ void main_window::set_output_max(int32_t output_max)
 
 void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
 {
-  set_u8_combo_box(input_degree_combobox, input_scaling_degree);
+  set_u8_combobox(input_degree_combobox, input_scaling_degree);
 }
 
 void main_window::set_never_sleep(bool never_sleep)
@@ -1353,9 +1373,19 @@ void main_window::set_never_sleep(bool never_sleep)
   set_check_box(input_never_sleep_checkbox, never_sleep);
 }
 
+void main_window::set_input_mode(uint8_t input_mode)
+{
+  set_u8_combobox(input_mode_combobox, input_mode);
+}
+
+void main_window::set_feedback_mode(uint8_t feedback_mode)
+{
+  set_u8_combobox(feedback_mode_combobox, feedback_mode);
+}
+
 void main_window::set_motor_pwm_frequency(uint8_t pwm_frequency)
 {
-  set_u8_combo_box(motor_pwm_frequency_combo_box, pwm_frequency);
+  set_u8_combobox(motor_pwm_frequency_combobox, pwm_frequency);
 }
 
 void main_window::set_motor_max_duty_cycle_forward(uint16_t duty_cycle)
