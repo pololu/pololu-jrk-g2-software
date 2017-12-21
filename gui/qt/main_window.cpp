@@ -1676,8 +1676,6 @@ errors_control::errors_control
   setObjectName(object_name);
   er.bit_mask_label->setText(bit_mask_text);
   er.error_label->setText(error_label_text);
-  er.disabled_radio->setVisible(disabled_visible);
-  er.enabled_radio->setVisible(enabled_visible);
 
   // Set the size of the labels and buttons for the errors tab in
   // a way that can change from OS to OS.
@@ -1709,6 +1707,9 @@ errors_control::errors_control
   errors_central->addWidget(er.stopping_value,1,6,Qt::AlignLeft);
   errors_central->addWidget(er.count_value,1,7,1,2,Qt::AlignRight);
   errors_central->setColumnStretch(6,10);
+
+  er.disabled_radio->setVisible(disabled_visible);
+  er.enabled_radio->setVisible(enabled_visible);
 
   errors_central->setMargin(0);
 }
