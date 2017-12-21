@@ -79,6 +79,7 @@ public:
   void handle_serial_crc_enabled_input(bool serial_crc_enabled);
   void handle_command_timeout_input(uint16_t command_timeout);
 
+  void handle_input_mode_input(uint8_t value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_min_input(uint16_t input_min);
   void handle_input_neutral_min_input(uint16_t input_neutral_min);
@@ -87,6 +88,8 @@ public:
   void handle_output_min_input(int32_t output_min);
   void handle_output_max_input(int32_t output_max);
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
+
+  void handle_feedback_mode_input(uint8_t value);
 
   void handle_invert_motor_input(bool invert_motor);
   void handle_motor_pwm_frequency_input(uint8_t);

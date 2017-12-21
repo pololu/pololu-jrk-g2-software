@@ -595,6 +595,8 @@ void main_controller::handle_settings_changed()
 
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
+  window->set_input_mode(settings.get_input_mode());
+  window->set_feedback_mode(settings.get_feedback_mode());
 
   // for (int i = 0; i < 5; i++)
   // {
@@ -621,6 +623,14 @@ void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
   // TODO: cached_settings = settings;
+}
+
+void main_controller::handle_input_mode_input(uint8_t value)
+{
+  if (!connected()) { return; }
+  settings.set_input_mode(value);
+  settings_modified = true;
+  handle_settings_changed();
 }
 
 void main_controller::handle_serial_baud_rate_input(uint32_t serial_baud_rate)
@@ -725,6 +735,14 @@ void main_controller::handle_input_scaling_degree_input(uint8_t input_scaling_de
 {
   if (!connected()) { return; }
   jrk_settings_set_input_scaling_degree(settings.get_pointer(), input_scaling_degree);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_mode(feedback_mode);
   settings_modified = true;
   handle_settings_changed();
 }
