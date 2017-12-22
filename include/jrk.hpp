@@ -949,25 +949,25 @@ namespace jrk
     }
 
     /// Wrapper for jrk_settings_set_motor_brake_duration_forward().
-    void set_motor_brake_duration_forward(uint8_t value) noexcept
+    void set_motor_brake_duration_forward(uint32_t value) noexcept
     {
       jrk_settings_set_motor_brake_duration_forward(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_motor_brake_duration_forward().
-    uint8_t get_motor_brake_duration_forward() const noexcept
+    uint32_t get_motor_brake_duration_forward() const noexcept
     {
       return jrk_settings_get_motor_brake_duration_forward(pointer);
     }
 
     /// Wrapper for jrk_settings_set_motor_brake_duration_reverse().
-    void set_motor_brake_duration_reverse(uint8_t value) noexcept
+    void set_motor_brake_duration_reverse(uint32_t value) noexcept
     {
       jrk_settings_set_motor_brake_duration_reverse(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_motor_brake_duration_reverse().
-    uint8_t get_motor_brake_duration_reverse() const noexcept
+    uint32_t get_motor_brake_duration_reverse() const noexcept
     {
       return jrk_settings_get_motor_brake_duration_reverse(pointer);
     }

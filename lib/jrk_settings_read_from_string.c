@@ -762,7 +762,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Invalid motor_brake_duration_forward value.");
     }
-    if (motor_brake_duration_forward < 0 || motor_brake_duration_forward > UINT8_MAX)
+    if (motor_brake_duration_forward < 0 || motor_brake_duration_forward > UINT32_MAX)
     {
       return jrk_error_create(
         "The motor_brake_duration_forward value is out of range.");
@@ -776,7 +776,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Invalid motor_brake_duration_reverse value.");
     }
-    if (motor_brake_duration_reverse < 0 || motor_brake_duration_reverse > UINT8_MAX)
+    if (motor_brake_duration_reverse < 0 || motor_brake_duration_reverse > UINT32_MAX)
     {
       return jrk_error_create(
         "The motor_brake_duration_reverse value is out of range.");

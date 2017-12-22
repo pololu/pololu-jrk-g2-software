@@ -233,20 +233,21 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 // desired state of the system's output, and feeds into the PID feedback
 // algorithm.
 //
-// - If the input mode is JRK_INPUT_MODE_SERIAL, the jrk gets it input and
-//   target settings over its USB, serial, or I2C interfaces.  You would send
-//   Set Target commands to the jrk to set both the input and target variables.
+// - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
+//   input and target settings over its USB, serial, or I2C interfaces.  You
+//   would send Set Target commands to the jrk to set both the input and target
+//   variables.
 //
-// - If the input mode is JRK_INPUT_MODE_ANALOG, the jrk gets it input variable
-//   by reading the voltage on its SDA/AN pin.  A signal level of 0 V
-//   corresponds to an input value of 0, and a signal elvel of 5 V corresponds
-//   to an input value of 4092.  The jrk uses its input scaling feature to set
-//   the target variable.
+// - If the input mode is "Analog voltage" (JRK_INPUT_MODE_ANALOG), the jrk gets
+//   it input variable by reading the voltage on its SDA/AN pin.  A signal level
+//   of 0 V corresponds to an input value of 0, and a signal elvel of 5 V
+//   corresponds to an input value of 4092.  The jrk uses its input scaling
+//   feature to set the target variable.
 //
-// - If the input mode is JRK_INPUT_MODE_PULSE_WIDTH, the jrk gets it input
-//   variable by reading RC pulses on its RC pin.  The input value is the width
-//   of the most recent pulse, in units of 2/3 microseconds.  The jrk uses its
-//   input scaling feature to set the target variable.
+// - If the input mode is "Pulse width" (JRK_INPUT_MODE_PULSE_WIDTH), the jrk
+//   gets it input variable by reading RC pulses on its RC pin.  The input value
+//   is the width of the most recent pulse, in units of 2/3 microseconds.  The
+//   jrk uses its input scaling feature to set the target variable.
 JRK_API
 void jrk_settings_set_input_mode(jrk_settings *,
   uint8_t input_mode);
@@ -449,24 +450,25 @@ uint8_t jrk_settings_get_input_analog_samples_exponent(const jrk_settings *);
 // the output of the system, and if so defines what interface is used to
 // measure that feedback.
 //
-// - If the feedback mode is JRK_FEEDBACK_MODE_NONE, feedback and PID
+// - If the feedback mode is "None" (JRK_FEEDBACK_MODE_NONE), feedback and PID
 //   calculations are disabled.  The duty cycle target variable is always equal
 //   to the target variable minus 2048, instead of being the result of a PID
 //   calculation.  This means that a target of 2648 corresponds to driving the
 //   motor full speed forward, 2048 is brake, and 1448 is full-speed reverse.
 //
-// - If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, the jrk gets its
-//   feedback by measuring the voltage on the FB_A pin.  A level of 0 V
+// - If the feedback mode is "Analog" (JRK_FEEDBACK_MODE_ANALOG), the jrk gets
+//   its feedback by measuring the voltage on the FB_A pin.  A level of 0 V
 //   corresponds to a feedback value of 0, and a level of 5 V corresponds to a
-//   feedback value of 4092.  The feedback scaling algorithm computes the
-//   scaled feedback variable, and the PID algorithm uses the scaled feedback
-//   and the target to compute the duty cycle target.
+//   feedback value of 4092.  The feedback scaling algorithm computes the scaled
+//   feedback variable, and the PID algorithm uses the scaled feedback and the
+//   target to compute the duty cycle target.
 //
-// - If the feedback mode is JRK_FEEDBACK_MODE_FREQUENCY, the jrk gets it
-//   feedback by counting rising edges on its FB_T pin.  When the target is
-//   greater than 2048, the feedback value is 2048 plus the number of rising
-//   edges detected during the PID period.  Otherwise, the the feedback is
-//   2048 minus the the number of rising edges detected during the PID period.
+// - If the feedback mode is "Frequency (digital)"
+//   (JRK_FEEDBACK_MODE_FREQUENCY), the jrk gets it feedback by counting rising
+//   edges on its FB_T pin.  When the target is greater than 2048, the feedback
+//   value is 2048 plus the number of rising edges detected during the PID
+//   period.  Otherwise, the the feedback is 2048 minus the the number of rising
+//   edges detected during the PID period.
 JRK_API
 void jrk_settings_set_feedback_mode(jrk_settings *,
   uint8_t feedback_mode);
@@ -568,6 +570,16 @@ JRK_API
 bool jrk_settings_get_feedback_detect_disconnect(const jrk_settings *);
 
 // Sets the feedback_dead_zone setting.
+//
+// The jrk sets the duty cycle target to zero and resets the integral
+// whenever the magnitude of the error is smaller than this setting. This is
+// useful for preventing the motor from driving when the target is very close to
+// scaled feedback.
+//
+// The jrk uses hysteresis to keep the system from simply riding the edge of the
+// feedback dead zone; once in the dead zone, the duty cycle and integral will
+// remain zero until the magnitude of the error exceeds twice the value of the
+// dead zone.
 JRK_API
 void jrk_settings_set_feedback_dead_zone(jrk_settings *,
   uint8_t feedback_dead_zone);
@@ -609,6 +621,29 @@ JRK_API
 bool jrk_settings_get_feedback_wraparound(const jrk_settings *);
 
 // Sets the serial_mode setting.
+//
+// The serial mode determines how bytes are transferred between the jrk's UART
+// (TX and RX pins), its two USB virtual serial ports (the command port and the
+// TTL Port), and its serial command processor.
+//
+// - If the serial mode is "USB dual port" (JRK_SERIAL_MODE_USB_DUAL_PORT), the
+//   command port can be used to send commands to the jrk and receive responses
+//   from it, while the TTL port can be used to send and receives bytes on the
+//   TX and RX lines.  The baud rate you set by the USB host on the TTL port
+//   determines the baud rate used on the TX and RX lines.
+//
+// - If the serial mode is "USB chained" (JRK_SERIAL_MODE_USB_CHAINED), the
+//   comamnd port can be used to both transmit bytes on the TX line and send
+//   commands to the jrk.  The jrk's responses to those commands will be sent to
+//   the command port but not the TX line.  If the input mode is serial, bytes
+//   received on the RX line will be sent to the command put but will not be
+//   interpreted as command bytes by the jrk.  The baud rate set by the USB host
+//   on the command port determines the baud rate used on the TX and RX lines.
+//
+// - If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX liens
+//   can be used to send commands to the jrk and receive responses from it.  Any
+//   byte received on RX will be sent to the command port, but bytes sent from
+//   the command port will be ignored.
 JRK_API
 void jrk_settings_set_serial_mode(jrk_settings *,
   uint8_t serial_mode);
@@ -647,6 +682,14 @@ JRK_API
 uint16_t jrk_settings_get_serial_timeout(const jrk_settings *);
 
 // Sets the serial_device_number setting.
+//
+// This is the serial device number used in the Pololu protocol on the jrk's
+// serial interfaces, and the I2C device address used on the jrk's I2C
+// interface.
+//
+// By default, the jrk only pays attention to the lower 7 bits of this setting,
+// but if you enable 14-bit serial device numbers (see
+// serial_enable_14bit_device_number) then it will use the lower 14 bits.
 JRK_API
 void jrk_settings_set_serial_device_number(jrk_settings *,
   uint16_t serial_device_number);
@@ -657,6 +700,12 @@ JRK_API
 uint16_t jrk_settings_get_serial_device_number(const jrk_settings *);
 
 // Sets the never_sleep setting.
+//
+// By default, if the jrk is powered from a USB bus that is in suspend mode
+// (e.g. the computer is sleeping) and VIN power is not present, it will go to
+// sleep to reduce its current consumption and comply with the USB
+// specification.  If you enable the "Never sleep" option, the jrk will never go
+// to sleep.
 JRK_API
 void jrk_settings_set_never_sleep(jrk_settings *,
   bool never_sleep);
@@ -667,6 +716,10 @@ JRK_API
 bool jrk_settings_get_never_sleep(const jrk_settings *);
 
 // Sets the serial_enable_crc setting.
+//
+// If set to true, the jrk requires a 7-bit CRC byte at the end of each serial
+// command, and if the CRC byte is wrong then it ignores the command and sets
+// the serial CRC error bit.
 JRK_API
 void jrk_settings_set_serial_enable_crc(jrk_settings *,
   bool serial_enable_crc);
@@ -677,6 +730,10 @@ JRK_API
 bool jrk_settings_get_serial_enable_crc(const jrk_settings *);
 
 // Sets the serial_enable_14bit_device_number setting.
+//
+// If enabled, the jrk's Pololu protocol will require a 14-bit device number to
+// be sent with every command.  This option allows you to put more than 128 jrk
+// devices on one serial bus.
 JRK_API
 void jrk_settings_set_serial_enable_14bit_device_number(jrk_settings *,
   bool serial_enable_14bit_device_number);
@@ -687,6 +744,8 @@ JRK_API
 bool jrk_settings_get_serial_enable_14bit_device_number(const jrk_settings *);
 
 // Sets the serial_disable_compact_protocol setting.
+//
+// If enabled, the jrk will not respond to compact protocol commands.
 JRK_API
 void jrk_settings_set_serial_disable_compact_protocol(jrk_settings *,
   bool serial_disable_compact_protocol);
@@ -866,6 +925,10 @@ JRK_API
 bool jrk_settings_get_motor_invert(const jrk_settings *);
 
 // Sets the motor_max_duty_cycle_while_feedback_out_of_range setting.
+//
+// If the feedback is beyong the range specified by the feedback absolute
+// minimum and feedback absolute maximum values, then the duty cycle's magnitude
+// cannot exceed this value.
 JRK_API
 void jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(jrk_settings *,
   uint16_t motor_max_duty_cycle_while_feedback_out_of_range);
@@ -876,6 +939,11 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(const jrk_settings *);
 
 // Sets the motor_max_acceleration_forward setting.
+//
+// This is the maximum allowed acceleration in the forward direction.
+//
+// This is the maximum amount that the duty cycle can increase during each PID
+// period if the duty cycle is positive.
 JRK_API
 void jrk_settings_set_motor_max_acceleration_forward(jrk_settings *,
   uint16_t motor_max_acceleration_forward);
@@ -886,6 +954,11 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_acceleration_forward(const jrk_settings *);
 
 // Sets the motor_max_acceleration_reverse setting.
+//
+// This is the maximum allowed acceleration in the reverse direction.
+//
+// This is the maximum amount that the duty cycle can decrease during each PID
+// period if the duty cycle is negative.
 JRK_API
 void jrk_settings_set_motor_max_acceleration_reverse(jrk_settings *,
   uint16_t motor_max_acceleration_reverse);
@@ -896,6 +969,11 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_acceleration_reverse(const jrk_settings *);
 
 // Sets the motor_max_deceleration_forward setting.
+//
+// This is the maximum allowed deceleration in the forward direction.
+//
+// This is the maximum amount that the duty cycle can decrease during each PID
+// period if the duty cycle is positive.
 JRK_API
 void jrk_settings_set_motor_max_deceleration_forward(jrk_settings *,
   uint16_t motor_max_deceleration_forward);
@@ -906,6 +984,11 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_deceleration_forward(const jrk_settings *);
 
 // Sets the motor_max_deceleration_reverse setting.
+//
+// This is the maximum allowed deceleration in the reverse direction.
+//
+// This is the maximum amount that the duty cycle can increase during each PID
+// period if the duty cycle is negative.
 JRK_API
 void jrk_settings_set_motor_max_deceleration_reverse(jrk_settings *,
   uint16_t motor_max_deceleration_reverse);
@@ -916,6 +999,12 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_deceleration_reverse(const jrk_settings *);
 
 // Sets the motor_max_duty_cycle_forward setting.
+//
+// This is the maximum allowed duty cycle in the forward direction.
+//
+// Positive duty cycles cannot exceed this number.
+//
+// A value of 600 means 100%.
 JRK_API
 void jrk_settings_set_motor_max_duty_cycle_forward(jrk_settings *,
   uint16_t motor_max_duty_cycle_forward);
@@ -926,6 +1015,12 @@ JRK_API
 uint16_t jrk_settings_get_motor_max_duty_cycle_forward(const jrk_settings *);
 
 // Sets the motor_max_duty_cycle_reverse setting.
+//
+// This is the maximum allowed duty cycle in the reverse direction.
+//
+// Negative duty cycles cannot go below this number negated.
+//
+// A value of 600 means 100%.
 JRK_API
 void jrk_settings_set_motor_max_duty_cycle_reverse(jrk_settings *,
   uint16_t motor_max_duty_cycle_reverse);
@@ -940,7 +1035,8 @@ uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings *);
 // Sets the current limit to be used when driving forward.
 // This is the native current limit value stored on the device.
 // The correspondence between this setting and the actual current limit
-// in milliamps depends on what product you are using.  See als:
+// in milliamps depends on what product you are using.  See also:
+//
 // - jrk_current_limit_native_to_ma()
 // - jrk_current_limit_ma_to_native()
 // - jrk_achievable_current_limit()
@@ -988,27 +1084,34 @@ int8_t jrk_settings_get_motor_current_calibration_reverse(const jrk_settings *);
 
 // Sets the motor_brake_duration_forward setting.
 //
-// Units of 5 ms.
+// The number of milliseconds to spend braking before starting to drive forward.
+//
+// This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
+// between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 JRK_API
 void jrk_settings_set_motor_brake_duration_forward(jrk_settings *,
-  uint8_t motor_brake_duration_forward);
+  uint32_t motor_brake_duration_forward);
 
 // Gets the motor_brake_duration_forward setting, which is described in
 // jrk_settings_set_motor_brake_duration_forward.
 JRK_API
-uint8_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
+uint32_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
 
 // Sets the motor_brake_duration_reverse setting.
 //
-// Units of 5 ms.
+// The number of milliseconds to spend braking before starting to drive in
+// reverse.
+//
+// This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
+// between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 JRK_API
 void jrk_settings_set_motor_brake_duration_reverse(jrk_settings *,
-  uint8_t motor_brake_duration_reverse);
+  uint32_t motor_brake_duration_reverse);
 
 // Gets the motor_brake_duration_reverse setting, which is described in
 // jrk_settings_set_motor_brake_duration_reverse.
 JRK_API
-uint8_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
+uint32_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
 
 // Sets the motor_coast_when_off setting.
 //

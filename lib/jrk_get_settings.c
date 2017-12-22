@@ -272,16 +272,6 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t motor_brake_duration_forward = buf[JRK_SETTING_MOTOR_BRAKE_DURATION_FORWARD];
-    jrk_settings_set_motor_brake_duration_forward(settings, motor_brake_duration_forward);
-  }
-
-  {
-    uint8_t motor_brake_duration_reverse = buf[JRK_SETTING_MOTOR_BRAKE_DURATION_REVERSE];
-    jrk_settings_set_motor_brake_duration_reverse(settings, motor_brake_duration_reverse);
-  }
-
-  {
     bool motor_coast_when_off = buf[JRK_SETTING_MOTOR_COAST_WHEN_OFF] & 1;
     jrk_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
   }
@@ -307,6 +297,18 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     uint16_t brg = read_uint16_t(buf + JRK_SETTING_SERIAL_BAUD_RATE_GENERATOR);
     uint32_t baud_rate = jrk_baud_rate_from_brg(brg);
     jrk_settings_set_serial_baud_rate(settings, baud_rate);
+  }
+
+  {
+    uint32_t duration = buf[JRK_SETTING_MOTOR_BRAKE_DURATION_FORWARD]
+      * JRK_BRAKE_DURATION_UNITS;
+    jrk_settings_set_motor_brake_duration_forward(settings, duration);
+  }
+
+  {
+    uint32_t duration = buf[JRK_SETTING_MOTOR_BRAKE_DURATION_REVERSE]
+      * JRK_BRAKE_DURATION_UNITS;
+    jrk_settings_set_motor_brake_duration_reverse(settings, duration);
   }
 
   {

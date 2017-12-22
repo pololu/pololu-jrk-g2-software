@@ -509,16 +509,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t motor_brake_duration_forward = jrk_settings_get_motor_brake_duration_forward(settings);
-    jrk_settings_set_motor_brake_duration_forward(settings, motor_brake_duration_forward);
-  }
-
-  {
-    uint8_t motor_brake_duration_reverse = jrk_settings_get_motor_brake_duration_reverse(settings);
-    jrk_settings_set_motor_brake_duration_reverse(settings, motor_brake_duration_reverse);
-  }
-
-  {
     uint16_t error_enable = jrk_settings_get_error_enable(settings);
     jrk_settings_set_error_enable(settings, error_enable);
   }
@@ -569,6 +559,40 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
     baud = jrk_settings_achievable_serial_baud_rate(settings, baud);
     jrk_settings_set_serial_baud_rate(settings, baud);
+  }
+
+  {
+    uint32_t duration = jrk_settings_get_motor_brake_duration_forward(settings);
+
+    // Make it be a multiple of 5, rounding up.
+    duration = (duration + 4) / JRK_BRAKE_DURATION_UNITS * JRK_BRAKE_DURATION_UNITS;
+
+    if (duration > 255 * JRK_BRAKE_DURATION_UNITS)
+    {
+      duration = 255 * JRK_BRAKE_DURATION_UNITS;
+      jrk_sprintf(warnings,
+        "Warning: The brake duration forward was too high "
+        "so it will be changed to %u.\n", 255 * JRK_BRAKE_DURATION_UNITS);
+    }
+
+    jrk_settings_set_motor_brake_duration_forward(settings, duration);
+  }
+
+  {
+    uint32_t duration = jrk_settings_get_motor_brake_duration_reverse(settings);
+
+    // Make it be a multiple of 5, rounding up.
+    duration = (duration + 4) / JRK_BRAKE_DURATION_UNITS * JRK_BRAKE_DURATION_UNITS;
+
+    if (duration > 255 * JRK_BRAKE_DURATION_UNITS)
+    {
+      duration = 255 * JRK_BRAKE_DURATION_UNITS;
+      jrk_sprintf(warnings,
+        "Warning: The brake duration reverse was too high "
+        "so it will be changed to %u.\n", 255 * JRK_BRAKE_DURATION_UNITS);
+    }
+
+    jrk_settings_set_motor_brake_duration_reverse(settings, duration);
   }
 
   // TODO: fix invalid pin configurations here
