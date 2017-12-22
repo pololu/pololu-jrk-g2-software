@@ -442,7 +442,7 @@ void main_controller::handle_device_changed()
 
     // window->reset_error_counts();
 
-    // initialize_manual_target();
+    initialize_input_scaling();
   }
   else
   {
@@ -473,8 +473,23 @@ void main_controller::handle_device_changed()
   window->set_tab_pages_enabled(connected());
 }
 
-void main_controller::initialize_manual_target()
+void main_controller::initialize_input_scaling()
 {
+  if (variables.get_input() == JRK_INPUT_MODE_ANALOG ||
+    variables.get_input() == JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    window->set_input_invert(settings.get_input_invert());
+    window->set_input_absolute_minimum(settings.get_input_absolute_minimum());
+    window->set_input_absolute_maximum(settings.get_input_absolute_maximum());
+    window->set_input_minimum(settings.get_input_minimum());
+    window->set_input_maximum(settings.get_input_maximum());
+    window->set_input_neutral_minimum(settings.get_input_neutral_minimum());
+    window->set_input_neutral_maximum(settings.get_input_neutral_maximum());
+    window->set_input_output_minimum(settings.get_output_minimum());
+    window->set_input_output_neutral(settings.get_output_neutral());
+    window->set_input_output_maximum(settings.get_output_maximum());
+    window->set_input_scaling_degree(settings.get_input_scaling_degree());
+  }
 }
 
 void main_controller::handle_variables_changed()
@@ -596,7 +611,20 @@ void main_controller::handle_settings_changed()
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_input_mode(settings.get_input_mode());
+  window->set_input_analog_samples_exponent(settings.get_input_analog_samples_exponent());
   window->set_feedback_mode(settings.get_feedback_mode());
+  window->set_input_detect_disconnect(settings.get_input_detect_disconnect());
+  window->set_input_invert(settings.get_input_invert());
+  window->set_input_absolute_minimum(settings.get_input_absolute_minimum());
+  window->set_input_absolute_maximum(settings.get_input_absolute_maximum());
+  window->set_input_minimum(settings.get_input_minimum());
+  window->set_input_maximum(settings.get_input_maximum());
+  window->set_input_neutral_minimum(settings.get_input_neutral_minimum());
+  window->set_input_neutral_maximum(settings.get_input_neutral_maximum());
+  window->set_input_output_minimum(settings.get_output_minimum());
+  window->set_input_output_neutral(settings.get_output_neutral());
+  window->set_input_output_maximum(settings.get_output_maximum());
+  window->set_input_scaling_degree(settings.get_input_scaling_degree());
 
   // for (int i = 0; i < 5; i++)
   // {
@@ -622,13 +650,32 @@ void main_controller::handle_settings_changed()
 void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
+
+  window->set_input_scaling_enabled(input_mode_is_analog() || input_mode_is_pulse_width());
+
   // TODO: cached_settings = settings;
 }
 
-void main_controller::handle_input_mode_input(uint8_t value)
+void main_controller::handle_input_mode_input(uint8_t input_mode)
 {
   if (!connected()) { return; }
-  settings.set_input_mode(value);
+  settings.set_input_mode(input_mode);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_input_analog_samples_input(uint8_t input_analog_samples)
+{
+  if (!connected()) { return; }
+  settings.set_input_analog_samples_exponent(input_analog_samples);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_input_detect_disconnect_input(bool detect_disconnect)
+{
+  if (!connected()) { return; }
+  settings.set_input_detect_disconnect(detect_disconnect);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -678,55 +725,79 @@ void main_controller::handle_command_timeout_input(uint16_t command_timeout)
 void main_controller::handle_input_invert_input(bool input_invert)
 {
   if (!connected()) { return; }
-  jrk_settings_set_input_invert(settings.get_pointer(), input_invert);
+  settings.set_input_invert(input_invert);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_input_min_input(uint16_t input_min)
+void main_controller::handle_input_absolute_minimum_input(uint16_t input_absolute_minimum)
 {
   if (!connected()) { return; }
-  jrk_settings_set_input_minimum(settings.get_pointer(), input_min);
+  settings.set_input_absolute_minimum(input_absolute_minimum);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_input_neutral_min_input(uint16_t input_neutral_min)
+void main_controller::handle_input_absolute_maximum_input(uint16_t input_absolute_maximum)
 {
   if (!connected()) { return; }
-  jrk_settings_set_input_neutral_minimum(settings.get_pointer(), input_neutral_min);
+  settings.set_input_absolute_maximum(input_absolute_maximum);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_input_neutral_max_input(uint16_t input_neutral_max)
+void main_controller::handle_input_minimum_input(uint16_t input_minimum)
 {
   if (!connected()) { return; }
-  jrk_settings_set_input_neutral_maximum(settings.get_pointer(), input_neutral_max);
+  settings.set_input_minimum(input_minimum);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_input_max_input(uint16_t input_max)
+void main_controller::handle_input_maximum_input(uint16_t input_maximum)
 {
   if (!connected()) { return; }
-  jrk_settings_set_input_maximum(settings.get_pointer(), input_max);
+  settings.set_input_maximum(input_maximum);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_output_min_input(int32_t output_min)
+void main_controller::handle_input_neutral_minimum_input(uint16_t input_neutral_minimum)
 {
   if (!connected()) { return; }
-  jrk_settings_set_output_minimum(settings.get_pointer(), output_min);
+  settings.set_input_neutral_minimum(input_neutral_minimum);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_output_max_input(int32_t output_max)
+void main_controller::handle_input_neutral_maximum_input(uint16_t input_neutral_maximum)
 {
   if (!connected()) { return; }
-  jrk_settings_set_output_maximum(settings.get_pointer(), output_max);
+  settings.set_input_neutral_maximum(input_neutral_maximum);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_output_minimum_input(uint16_t output_minimum)
+{
+  if (!connected()) { return; }
+  settings.set_output_minimum(output_minimum);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_output_neutral_input(uint16_t output_neutral)
+{
+  if (!connected()) { return; }
+  settings.set_output_neutral(output_neutral);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_output_maximum_input(uint16_t output_maximum)
+{
+  if (!connected()) { return; }
+  settings.set_output_maximum(output_maximum);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -734,7 +805,7 @@ void main_controller::handle_output_max_input(int32_t output_max)
 void main_controller::handle_input_scaling_degree_input(uint8_t input_scaling_degree)
 {
   if (!connected()) { return; }
-  jrk_settings_set_input_scaling_degree(settings.get_pointer(), input_scaling_degree);
+  settings.set_input_scaling_degree(input_scaling_degree);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1004,4 +1075,16 @@ void main_controller::reload_variables()
     variables_update_failed = true;
     throw;
   }
+}
+
+bool main_controller::input_mode_is_analog() const
+{
+  uint8_t input_mode = settings.get_input_mode();
+  return (input_mode == JRK_INPUT_MODE_ANALOG);
+}
+
+bool main_controller::input_mode_is_pulse_width() const
+{
+  uint8_t input_mode = settings.get_input_mode();
+  return (input_mode == JRK_INPUT_MODE_PULSE_WIDTH);
 }

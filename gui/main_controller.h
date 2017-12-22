@@ -79,14 +79,19 @@ public:
   void handle_serial_crc_enabled_input(bool serial_crc_enabled);
   void handle_command_timeout_input(uint16_t command_timeout);
 
-  void handle_input_mode_input(uint8_t value);
+  void handle_input_mode_input(uint8_t input_mode);
+  void handle_input_analog_samples_input(uint8_t input_analog_samples);
+  void handle_input_detect_disconnect_input(bool detect_disconnect);
   void handle_input_invert_input(bool input_invert);
-  void handle_input_min_input(uint16_t input_min);
-  void handle_input_neutral_min_input(uint16_t input_neutral_min);
-  void handle_input_neutral_max_input(uint16_t input_neutral_max);
-  void handle_input_max_input(uint16_t input_max);
-  void handle_output_min_input(int32_t output_min);
-  void handle_output_max_input(int32_t output_max);
+  void handle_input_absolute_minimum_input(uint16_t input_absolute_minimum);
+  void handle_input_absolute_maximum_input(uint16_t input_absolute_maximum);
+  void handle_input_minimum_input(uint16_t input_minimum);
+  void handle_input_maximum_input(uint16_t input_maximum);
+  void handle_input_neutral_minimum_input(uint16_t input_neutral_minimum);
+  void handle_input_neutral_maximum_input(uint16_t input_neutral_maximum);
+  void handle_output_minimum_input(uint16_t output_minimum);
+  void handle_output_neutral_input(uint16_t output_neutral);
+  void handle_output_maximum_input(uint16_t output_maximum);
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
 
   void handle_feedback_mode_input(uint8_t value);
@@ -118,7 +123,7 @@ private:
   void handle_settings_changed();
   void handle_settings_applied();
 
-  void initialize_manual_target();
+  void initialize_input_scaling();
   // void update_motor_status_message(bool prompt_to_resume);
 
   // Holds a list of the relevant devices that are connected to the computer.
@@ -163,6 +168,9 @@ private:
 
   // Returns true if we are currently connected to a device.
   bool connected() const { return device_handle; }
+
+  bool input_mode_is_analog() const;
+  bool input_mode_is_pulse_width() const;
 
   main_window * window;
 };
