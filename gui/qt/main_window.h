@@ -146,6 +146,7 @@ public:
   void set_stop_motor_enabled(bool enabled);
   void set_run_motor_enabled(bool enabled);
 
+
 signals:
 	void pass_widget(graph_widget *widget);
 
@@ -212,8 +213,8 @@ private:
 	QGridLayout *grid_layout;
 	QHBoxLayout *horizontal_layout;
 	graph_widget *preview_window;
-        AltWindow *altw;
-        QWidget * preview_plot;
+  AltWindow *altw;
+  QWidget * preview_plot;
 
   QMenuBar * menu_bar;
   QMenu * file_menu;

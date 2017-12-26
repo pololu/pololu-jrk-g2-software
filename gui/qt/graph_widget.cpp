@@ -33,10 +33,6 @@ graph_widget::graph_widget(QWidget * parent)
   // data_timer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
 }
 
-graph_widget::~graph_widget()
-{
-}
-
 void graph_widget::setup_ui()
 // sets the gui objects in the graph window
 {
@@ -162,15 +158,15 @@ void graph_widget::setup_plots()
 {
   for(int i=0; i<all_plots.size(); i++)
   {
-    all_plots[i].plot_range->setDecimals(1);
-    all_plots[i].plot_range->setSingleStep(0.1);
-    all_plots[i].plot_range->setRange(0,1);
-    all_plots[i].plot_range->setValue(1);
+    all_plots[i].plot_range->setDecimals(0);
+    all_plots[i].plot_range->setSingleStep(1.0);
+    all_plots[i].plot_range->setRange(-4095,4095);
+    all_plots[i].plot_range->setValue(4095);
     all_plots[i].plot_display->setCheckable(true);
     all_plots[i].plot_display->setChecked(true);
 
     all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
-    all_plots[i].plot_axis->setRange(-1,1);
+    all_plots[i].plot_axis->setRange(-4095,4095);
     all_plots[i].plot_axis->setVisible(false);
 
     all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis); // yellow line
@@ -231,7 +227,7 @@ void graph_widget::realtime_data_slot()
 
   // this list is only used for demonstrations
   QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3)),
-   (sin(key+4)), (sin(key+5)), (sin(key+6)), (sin(key+7)), (sin(key+8))};
+   (sin(key+4)), (sin(key+5)), (sin(key+6)), (sin(key+7)), (static_cast<double> (this->current_value_int))};
 
   for(int i=0; i<all_plots.size(); i++)
   {

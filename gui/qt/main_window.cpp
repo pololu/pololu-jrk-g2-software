@@ -33,6 +33,8 @@
 #include <string>
 #include <QString>
 
+#include <iostream> // tmphax
+
 #include <cassert>
 #include <cmath>
 
@@ -265,6 +267,7 @@ void main_window::setup_ui()
 
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
+  connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -1652,6 +1655,9 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
 
 void main_window::set_current(uint16_t current)
 {
+  preview_window->current_value_int = current;
+  // std::cout << preview_window->current_value_int << std::endl; //tmphax
+
   current_value->setText(QString::number(current));
 }
 

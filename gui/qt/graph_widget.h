@@ -16,7 +16,6 @@ class graph_widget : public QWidget
 
 public:
 	graph_widget(QWidget * parent = 0);
-	~graph_widget();
 
 	struct plot
     {
@@ -48,6 +47,8 @@ public:
   QLabel *label2;
   QLabel *label3;
   double refreshTimer = 25;
+
+  uint16_t current_value_int = 0;
 
   QList<plot> all_plots;
   QList<QString> plot_colors = {
