@@ -669,17 +669,20 @@ uint32_t jrk_settings_get_serial_baud_rate(const jrk_settings *);
 
 // Sets the serial_timeout setting.
 //
-// This is the time in units of 10 milliseconds before the device considers
-// it to be an error if it has not received certain commands.  A value of 0
-// disables the command timeout feature.
+// This is the time in milliseconds before the device considers it to be an
+// error if it has not received certain commands.  A value of 0 disables the
+// command timeout feature.
+//
+// This setting should be a multiple of 10 (JRK_SERIAL_TIMEOUT_UNITS) and be
+// between 0 and 655350 (JRK_MAX_ALLOWED_SERIAL_TIMEOUT).
 JRK_API
 void jrk_settings_set_serial_timeout(jrk_settings *,
-  uint16_t serial_timeout);
+  uint32_t serial_timeout);
 
 // Gets the serial_timeout setting, which is described in
 // jrk_settings_set_serial_timeout.
 JRK_API
-uint16_t jrk_settings_get_serial_timeout(const jrk_settings *);
+uint32_t jrk_settings_get_serial_timeout(const jrk_settings *);
 
 // Sets the serial_device_number setting.
 //

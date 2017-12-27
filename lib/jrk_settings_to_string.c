@@ -195,7 +195,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t serial_timeout = jrk_settings_get_serial_timeout(settings);
+    uint32_t serial_timeout = jrk_settings_get_serial_timeout(settings);
     jrk_sprintf(&str, "serial_timeout: %u\n", serial_timeout);
   }
 

@@ -399,7 +399,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Invalid serial_timeout value.");
     }
-    if (serial_timeout < 0 || serial_timeout > UINT16_MAX)
+    if (serial_timeout < 0 || serial_timeout > UINT32_MAX)
     {
       return jrk_error_create(
         "The serial_timeout value is out of range.");

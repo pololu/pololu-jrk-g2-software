@@ -36,7 +36,7 @@ struct jrk_settings
   bool feedback_wraparound;
   uint8_t serial_mode;
   uint32_t serial_baud_rate;
-  uint16_t serial_timeout;
+  uint32_t serial_timeout;
   uint16_t serial_device_number;
   bool never_sleep;
   bool serial_enable_crc;
@@ -526,13 +526,13 @@ uint32_t jrk_settings_get_serial_baud_rate(const jrk_settings * settings)
   return settings->serial_baud_rate;
 }
 
-void jrk_settings_set_serial_timeout(jrk_settings * settings, uint16_t serial_timeout)
+void jrk_settings_set_serial_timeout(jrk_settings * settings, uint32_t serial_timeout)
 {
   if (settings == NULL) { return; }
   settings->serial_timeout = serial_timeout;
 }
 
-uint16_t jrk_settings_get_serial_timeout(const jrk_settings * settings)
+uint32_t jrk_settings_get_serial_timeout(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->serial_timeout;

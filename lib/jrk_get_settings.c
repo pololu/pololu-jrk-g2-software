@@ -132,11 +132,6 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint16_t serial_timeout = read_uint16_t(buf + JRK_SETTING_SERIAL_TIMEOUT);
-    jrk_settings_set_serial_timeout(settings, serial_timeout);
-  }
-
-  {
     uint16_t serial_device_number = read_uint16_t(buf + JRK_SETTING_SERIAL_DEVICE_NUMBER);
     jrk_settings_set_serial_device_number(settings, serial_device_number);
   }
@@ -309,6 +304,12 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     uint32_t duration = buf[JRK_SETTING_MOTOR_BRAKE_DURATION_REVERSE]
       * JRK_BRAKE_DURATION_UNITS;
     jrk_settings_set_motor_brake_duration_reverse(settings, duration);
+  }
+
+  {
+    uint32_t timeout = read_uint16_t(buf + JRK_SETTING_SERIAL_TIMEOUT)
+      * JRK_SERIAL_TIMEOUT_UNITS;
+    jrk_settings_set_serial_timeout(settings, timeout);
   }
 
   {

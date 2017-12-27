@@ -613,13 +613,13 @@ namespace jrk
     }
 
     /// Wrapper for jrk_settings_set_serial_timeout().
-    void set_serial_timeout(uint16_t value) noexcept
+    void set_serial_timeout(uint32_t value) noexcept
     {
       jrk_settings_set_serial_timeout(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_serial_timeout().
-    uint16_t get_serial_timeout() const noexcept
+    uint32_t get_serial_timeout() const noexcept
     {
       return jrk_settings_get_serial_timeout(pointer);
     }
