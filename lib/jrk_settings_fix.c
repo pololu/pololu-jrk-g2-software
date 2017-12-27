@@ -238,11 +238,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t serial_timeout = jrk_settings_get_serial_timeout(settings);
-    jrk_settings_set_serial_timeout(settings, serial_timeout);
-  }
-
-  {
     uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
     if (serial_device_number > 16383)
     {
@@ -567,12 +562,12 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     // Make it be a multiple of 5, rounding up.
     duration = (duration + 4) / JRK_BRAKE_DURATION_UNITS * JRK_BRAKE_DURATION_UNITS;
 
-    if (duration > 255 * JRK_BRAKE_DURATION_UNITS)
+    if (duration > JRK_MAX_ALLOWED_BRAKE_DURATION)
     {
-      duration = 255 * JRK_BRAKE_DURATION_UNITS;
+      duration = JRK_MAX_ALLOWED_BRAKE_DURATION;
       jrk_sprintf(warnings,
         "Warning: The brake duration forward was too high "
-        "so it will be changed to %u.\n", 255 * JRK_BRAKE_DURATION_UNITS);
+        "so it will be changed to %u.\n", JRK_MAX_ALLOWED_BRAKE_DURATION);
     }
 
     jrk_settings_set_motor_brake_duration_forward(settings, duration);
@@ -582,17 +577,37 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     uint32_t duration = jrk_settings_get_motor_brake_duration_reverse(settings);
 
     // Make it be a multiple of 5, rounding up.
-    duration = (duration + 4) / JRK_BRAKE_DURATION_UNITS * JRK_BRAKE_DURATION_UNITS;
+    duration = (duration + JRK_BRAKE_DURATION_UNITS - 1)
+      / JRK_BRAKE_DURATION_UNITS * JRK_BRAKE_DURATION_UNITS;
 
-    if (duration > 255 * JRK_BRAKE_DURATION_UNITS)
+    if (duration > JRK_MAX_ALLOWED_BRAKE_DURATION)
     {
-      duration = 255 * JRK_BRAKE_DURATION_UNITS;
+      duration = JRK_MAX_ALLOWED_BRAKE_DURATION;
       jrk_sprintf(warnings,
         "Warning: The brake duration reverse was too high "
-        "so it will be changed to %u.\n", 255 * JRK_BRAKE_DURATION_UNITS);
+        "so it will be changed to %u.\n", JRK_MAX_ALLOWED_BRAKE_DURATION);
     }
 
     jrk_settings_set_motor_brake_duration_reverse(settings, duration);
+  }
+
+  {
+    uint32_t timeout = jrk_settings_get_serial_timeout(settings);
+
+    // Make it be a multiple of 10, rounding up
+    // (we want to avoid changing small timeouts to 0).
+    timeout = (timeout + JRK_SERIAL_TIMEOUT_UNITS - 1)
+      / JRK_SERIAL_TIMEOUT_UNITS * JRK_SERIAL_TIMEOUT_UNITS;
+
+    if (timeout > JRK_MAX_ALLOWED_SERIAL_TIMEOUT)
+    {
+      timeout = JRK_MAX_ALLOWED_SERIAL_TIMEOUT;
+      jrk_sprintf(warnings,
+        "Warning: The serial timeout was too high "
+        "so it will be changed to %u.\n", JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
+    }
+
+    jrk_settings_set_serial_timeout(settings, timeout);
   }
 
   // TODO: fix invalid pin configurations here

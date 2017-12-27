@@ -316,7 +316,7 @@ TTL Port), and its serial command processor.
   interpreted as command bytes by the jrk.  The baud rate set by the USB host
   on the command port determines the baud rate used on the TX and RX lines.
 
-- If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX liens
+- If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX lines
   can be used to send commands to the jrk and receive responses from it.  Any
   byte received on RX will be sent to the command port, but bytes sent from
   the command port will be ignored.
@@ -334,11 +334,17 @@ EOF
   },
   {
     name: 'serial_timeout',
-    type: :uint16_t,
-    comment:
-      "This is the time in units of 10 milliseconds before the device considers\n" \
-      "it to be an error if it has not received certain commands.  A value of 0\n" \
-      "disables the command timeout feature.",
+    type: :uint32_t,
+    custom_eeprom: true,
+    custom_fix: true,
+    comment: <<EOF
+This is the time in milliseconds before the device considers it to be an
+error if it has not received certain commands.  A value of 0 disables the
+command timeout feature.
+
+This setting should be a multiple of 10 (JRK_SERIAL_TIMEOUT_UNITS) and be
+between 0 and 655350 (JRK_MAX_ALLOWED_SERIAL_TIMEOUT).
+EOF
   },
   {
     name: 'serial_device_number',
@@ -639,7 +645,7 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'motor_brake_duration_reverse',  # TODO: handle units in the lib
+    name: 'motor_brake_duration_reverse',
     type: :uint32_t,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
