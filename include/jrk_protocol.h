@@ -1,5 +1,5 @@
 // This header file contains constants needed to use the USB, serial, and I2C
-// protocols for the Tic USB Stepper Motor Controller from Pololu.
+// protocols for the Jrk G2 controllers from Pololu.
 //
 // Note: Many of these definitions are not considered to be part of the public
 // API of libpololu-jrk2, so they could change or be removed in future versions
@@ -18,8 +18,8 @@
 #define JRK_CMD_SET_TARGET_USB 0x84
 #define JRK_CMD_MOTOR_OFF_USB 0x87
 #define JRK_CMD_SET_TARGET_SERIAL 0xC0
-#define JRK_CMD_SET_TARGET_LOW_RES_FWD 0xE0
-#define JRK_CMD_SET_TARGET_LOW_RES_REV 0xE1
+#define JRK_CMD_SET_TARGET_LOW_RES_REV 0xE0
+#define JRK_CMD_SET_TARGET_LOW_RES_FWD 0xE1
 #define JRK_CMD_GET_SETTINGS 0xE3
 #define JRK_CMD_GET_VARIABLES 0xE5
 #define JRK_CMD_OVERRIDE_SETTING 0xE6
@@ -27,6 +27,9 @@
 #define JRK_CMD_GET_OVERRIDABLE_SETTINGS 0xEA
 #define JRK_CMD_MOTOR_OFF_SERIAL 0xFF
 #define JRK_CMD_START_BOOTLOADER 0xFF
+
+#define JRK_CMD_GET_VARIABLE_SERIAL_MASK 0xC0
+#define JRK_CMD_SET_TARGET_SERIAL_MASK 0xE0
 
 #define JRK_VAR_INPUT 0x00
 #define JRK_VAR_TARGET 0x02
@@ -162,8 +165,8 @@
 #define JRK_SCALING_DEGREE_QUARTIC 3
 #define JRK_SCALING_DEGREE_QUINTIC 4
 
-#define JRK_BRAKE_DURATION_UNITS 5
-#define JRK_MAX_ALLOWED_BRAKE_DURATION 1275
+#define JRK_SERIAL_TIMEOUT_UNITS 10
+#define JRK_MAX_ALLOWED_SERIAL_TIMEOUT 655350
 
 #define JRK_BAUD_RATE_GENERATOR_FACTOR 12000000
 
