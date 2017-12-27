@@ -238,18 +238,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
-    if (serial_device_number > 16383)
-    {
-      serial_device_number = 16383;
-      jrk_sprintf(warnings,
-        "Warning: The serial device number was too high "
-        "so it will be changed to %u.\n", serial_device_number);
-    }
-    jrk_settings_set_serial_device_number(settings, serial_device_number);
-  }
-
-  {
     uint16_t proportional_multiplier = jrk_settings_get_proportional_multiplier(settings);
     if (proportional_multiplier > 1023)
     {
@@ -548,8 +536,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       baud = JRK_MAX_ALLOWED_BAUD_RATE;
       jrk_sprintf(warnings,
         "Warning: The serial baud rate is too high "
-        "so it will be changed to %u.\n",
-        baud);
+        "so it will be changed to %u.\n", baud);
     }
 
     baud = jrk_settings_achievable_serial_baud_rate(settings, baud);
@@ -567,7 +554,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       duration = JRK_MAX_ALLOWED_BRAKE_DURATION;
       jrk_sprintf(warnings,
         "Warning: The brake duration forward was too high "
-        "so it will be changed to %u.\n", JRK_MAX_ALLOWED_BRAKE_DURATION);
+        "so it will be changed to %u.\n", duration);
     }
 
     jrk_settings_set_motor_brake_duration_forward(settings, duration);
@@ -585,10 +572,35 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       duration = JRK_MAX_ALLOWED_BRAKE_DURATION;
       jrk_sprintf(warnings,
         "Warning: The brake duration reverse was too high "
-        "so it will be changed to %u.\n", JRK_MAX_ALLOWED_BRAKE_DURATION);
+        "so it will be changed to %u.\n", duration);
     }
 
     jrk_settings_set_motor_brake_duration_reverse(settings, duration);
+  }
+
+  {
+    uint16_t serial_device_number = jrk_settings_get_serial_device_number(settings);
+
+    uint16_t device_number_mask;
+    if (jrk_settings_get_serial_enable_14bit_device_number(settings))
+    {
+      device_number_mask = 0x3FFF;
+    }
+    else
+    {
+      device_number_mask = 0x7F;
+    }
+
+    // Clear the ignored upper bits in the number to avoid user confusion.
+    if (serial_device_number > device_number_mask)
+    {
+      serial_device_number &= device_number_mask;
+      jrk_sprintf(warnings,
+        "Warning: The serial device number was higher than %u "
+        "so it will be changed to %u.\n", device_number_mask, serial_device_number);
+    }
+
+    jrk_settings_set_serial_device_number(settings, serial_device_number);
   }
 
   {
@@ -604,7 +616,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       timeout = JRK_MAX_ALLOWED_SERIAL_TIMEOUT;
       jrk_sprintf(warnings,
         "Warning: The serial timeout was too high "
-        "so it will be changed to %u.\n", JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
+        "so it will be changed to %u.\n", timeout);
     }
 
     jrk_settings_set_serial_timeout(settings, timeout);
