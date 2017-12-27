@@ -612,8 +612,15 @@ void main_controller::handle_settings_changed()
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_input_mode(settings.get_input_mode());
   window->set_input_analog_samples_exponent(settings.get_input_analog_samples_exponent());
-  window->set_feedback_mode(settings.get_feedback_mode());
   window->set_input_detect_disconnect(settings.get_input_detect_disconnect());
+  window->set_input_serial_mode(settings.get_serial_mode());
+  window->set_input_baud_rate(settings.get_serial_baud_rate());
+  window->set_input_enable_crc(settings.get_serial_enable_crc());
+  window->set_input_device_number(settings.get_serial_device_number());
+  window->set_input_enable_device_number(settings.get_serial_enable_14bit_device_number());
+  window->set_input_serial_timeout(settings.get_serial_timeout());
+  window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
+  window->set_input_never_sleep(settings.get_never_sleep());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_absolute_minimum(settings.get_input_absolute_minimum());
   window->set_input_absolute_maximum(settings.get_input_absolute_maximum());
@@ -625,24 +632,14 @@ void main_controller::handle_settings_changed()
   window->set_input_output_neutral(settings.get_output_neutral());
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
+  window->set_feedback_mode(settings.get_feedback_mode());
+  window->set_feedback_invert(settings.get_feedback_invert());
+  window->set_feedback_absolute_minimum(settings.get_feedback_absolute_minimum());
+  window->set_feedback_absolute_maximum(settings.get_feedback_absolute_maximum());
+  window->set_feedback_maximum(settings.get_feedback_maximum());
+  window->set_feedback_minimum(settings.get_feedback_minimum());
 
-  // for (int i = 0; i < 5; i++)
-  // {
-  //   uint8_t func = jrk_settings_get_pin_func(settings.get_pointer(), i);
-  //   bool pullup = jrk_settings_get_pin_pullup(settings.get_pointer(), i);
-  //   bool polarity = jrk_settings_get_pin_polarity(settings.get_pointer(), i);
-  //   bool analog = jrk_settings_get_pin_analog(settings.get_pointer(), i);
 
-    // bool enabled = func != TIC_PIN_FUNC_DEFAULT;
-    // bool pullup_enabled = enabled && func != TIC_PIN_FUNC_POT_POWER;
-    // bool polarity_enabled = func == TIC_PIN_FUNC_KILL_SWITCH;
-    // bool analog_enabled = enabled;
-
-    // window->set_pin_func(i, func);
-    // window->set_pin_pullup(i, pullup, pullup_enabled);
-    // window->set_pin_polarity(i, polarity, polarity_enabled);
-    // window->set_pin_analog(i, analog, analog_enabled);
-  // }
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -651,7 +648,7 @@ void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
 
-  window->set_input_scaling_enabled(input_mode_is_analog() || input_mode_is_pulse_width());
+  // window->set_input_scaling_enabled(input_mode_is_analog() || input_mode_is_pulse_width());
 
   // TODO: cached_settings = settings;
 }
@@ -680,44 +677,66 @@ void main_controller::handle_input_detect_disconnect_input(bool detect_disconnec
   handle_settings_changed();
 }
 
-void main_controller::handle_serial_baud_rate_input(uint32_t serial_baud_rate)
+void main_controller::handle_input_serial_mode_input(uint8_t value)
 {
   if (!connected()) { return; }
-  jrk_settings_set_serial_baud_rate(settings.get_pointer(), serial_baud_rate);
+  settings.set_serial_mode(value);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_serial_baud_rate_input_finished()
+void main_controller::handle_input_uart_fixed_baud_input(uint32_t value)
 {
   if (!connected()) { return; }
-  uint32_t serial_baud_rate = jrk_settings_get_serial_baud_rate(settings.get_pointer());
-  serial_baud_rate = jrk_settings_achievable_serial_baud_rate(
-    settings.get_pointer(), serial_baud_rate);
-  jrk_settings_set_serial_baud_rate(settings.get_pointer(), serial_baud_rate);
-  handle_settings_changed();
-}
-
-void main_controller::handle_serial_device_number_input(uint8_t serial_device_number)
-{
-  if (!connected()) { return; }
-  jrk_settings_set_serial_device_number(settings.get_pointer(), serial_device_number);
+  settings.set_serial_baud_rate(value);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_serial_crc_enabled_input(bool serial_crc_enabled)
+void main_controller::handle_input_enable_crc_input(bool value)
 {
   if (!connected()) { return; }
-  jrk_settings_set_serial_enable_crc(settings.get_pointer(), serial_crc_enabled);
+  settings.set_serial_enable_crc(value);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_command_timeout_input(uint16_t command_timeout)
+void main_controller::handle_input_device_input(uint16_t value)
 {
   if (!connected()) { return; }
-  jrk_settings_set_serial_timeout(settings.get_pointer(), command_timeout);
+  settings.set_serial_device_number(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_input_device_number_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_serial_enable_14bit_device_number(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_input_timeout_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_serial_timeout(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_input_disable_compact_protocol_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_serial_disable_compact_protocol(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_input_never_sleep_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -814,6 +833,54 @@ void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
 {
   if (!connected()) { return; }
   settings.set_feedback_mode(feedback_mode);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_invert_input(bool invert_feedback)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_invert(invert_feedback);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_absolute_minimum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_absolute_minimum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_absolute_maximum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_absolute_maximum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_maximum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_maximum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_minimum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_minimum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_analog_samples_input(uint8_t feedback_analog_samples)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_analog_samples_exponent(feedback_analog_samples);
   settings_modified = true;
   handle_settings_changed();
 }

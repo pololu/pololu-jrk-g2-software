@@ -1,8 +1,7 @@
 #pragma once
 
 #include "qcustomplot.h"
-
-#include <QTimer>  // TODO: remove
+#include <QHBoxLayout>
 
 class QCheckBox;
 class QDoubleSpinBox;
@@ -23,6 +22,11 @@ public:
     	QCheckBox *plot_display;
     	QCPAxis *plot_axis;
     	QCPGraph *plot_graph;
+      QLabel *range_label;
+      QHBoxLayout *graph_data_selection_bar;
+      uint16_t plot_value = 0;
+      bool double_ended_range = false;
+      double range_value = 0;
     };
 
   plot input;
@@ -36,7 +40,6 @@ public:
   plot current;
 
   double key = 0;
-  QTimer data_timer;  // TODO: remove
   QWidget *central_widget;
   QCustomPlot *custom_plot;
   QPushButton *pauseRunButton;
@@ -48,7 +51,7 @@ public:
   QLabel *label3;
   double refreshTimer = 25;
 
-  uint16_t current_value_int = 0;
+
 
   QList<plot> all_plots;
   QList<QString> plot_colors = {

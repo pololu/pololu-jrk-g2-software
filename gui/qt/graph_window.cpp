@@ -16,7 +16,6 @@ AltWindow::AltWindow(QWidget *parent)
 {
 	setup_ui();
 	grabbedWidget = 0;
-	connect(backBtn, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 AltWindow::~AltWindow()
@@ -27,27 +26,25 @@ AltWindow::~AltWindow()
 void AltWindow::setup_ui()
 {
 	setObjectName(QStringLiteral("AltWindow"));
-	resize(818,547);
+	// resize(818,547);
 	centralwidget = new QWidget(this);
 	centralwidget->setObjectName(QStringLiteral("centralwidget"));
 	verticalLayout = new QVBoxLayout(centralwidget);
 	verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-	backBtn = new QPushButton(centralwidget);
-	backBtn->setObjectName(QStringLiteral("backBtn"));
 
 	centralLayout = new QGridLayout(this);
 
-	mainLayout = new QGridLayout;
+	mainLayout = new QGridLayout();
 
-	plotLayout = new QHBoxLayout;
+	plotLayout = new QHBoxLayout();
 
-	bottomControlLayout = new QHBoxLayout;
+	bottomControlLayout = new QHBoxLayout();
 
-	plotRangeLayout = new QVBoxLayout;
+	plotRangeLayout = new QVBoxLayout();
 
-	plotVisibleLayout = new QVBoxLayout;
+	plotVisibleLayout = new QVBoxLayout();
 
-	verticalLayout->addWidget(backBtn);
+	range_label_layout = new QVBoxLayout();
 
 	horizontal_layout = new QHBoxLayout();
 	horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
@@ -92,21 +89,24 @@ void AltWindow::receive_widget(graph_widget *widget)
 
 	for(auto &x: grabbedWidget->all_plots)
 	{
-		plotRangeLayout->addWidget(x.plot_range);
-		plotVisibleLayout->addWidget(x.plot_display);
+		// graph_data_selection_bar->addWidget(x.plot_display);
+		// graph_data_selection_bar->addWidget(x.range_label, Qt::AlignCenter);
+		// graph_data_selection_bar->addWidget(x.plot_range);
+		plotVisibleLayout->addLayout(x.graph_data_selection_bar);
 	}
 
 	mainLayout->addLayout(plotLayout,0,0,Qt::AlignTop);
 	mainLayout->addLayout(bottomControlLayout,1,0);
 	centralLayout->addLayout(mainLayout,0,0);
-	centralLayout->addLayout(plotRangeLayout,0,1);
-	centralLayout->addLayout(plotVisibleLayout,0,2);
+	centralLayout->addLayout(plotVisibleLayout,0,1);
+	// centralLayout->addLayout(range_label_layout,0,2,Qt::AlignCenter);
+	// centralLayout->addLayout(plotRangeLayout,0,3);
+
 
 	horizontal_layout->addLayout(centralLayout);
 }
 
 void AltWindow::retranslate_ui()
 {
-	this->setWindowTitle(QApplication::translate("AltWindow", "Graph Popout Window", Q_NULLPTR));
-	backBtn->setText(QApplication::translate("AltWindow", "Back", Q_NULLPTR));
+	this->setWindowTitle(QApplication::translate("AltWindow", "Pololu jrk G2 Configuration Utility - Plots of Variables vs. Time", Q_NULLPTR));
 }
