@@ -668,7 +668,7 @@ QWidget * main_window::setup_input_tab()
 
   analog_samples->addWidget(input_analog_samples_combobox);
   input_analog_layout->addLayout(analog_samples);
-  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with AUX"));
+  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
   input_analog_layout->addWidget(input_detect_disconnect_checkbox);
   input_analog_groupbox->setLayout(input_analog_layout);
@@ -793,27 +793,36 @@ QWidget * main_window::setup_input_tab()
   input_scaling_groupbox->setLayout(input_scaling_layout);
   column2->addWidget(input_scaling_groupbox,-1,Qt::AlignCenter);
 
+  input_serial_mode_button_group = new QButtonGroup(this);
+  input_serial_mode_button_group->setExclusive(true);
+  input_serial_mode_button_group->setObjectName("input_serial_mode_button_group");
+
   QVBoxLayout *input_serial_layout = new QVBoxLayout();
   input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
   input_serial_groupbox->setObjectName("input_serial_groupbox");
   input_usb_dual_port_radio = new QRadioButton(tr("USB Dual Port"));
   input_usb_dual_port_radio->setObjectName("input_usb_dual_port_radio");
+  // input_usb_dual_port_radio->setChecked(true);
+  input_serial_mode_button_group->addButton(input_usb_dual_port_radio, JRK_SERIAL_MODE_USB_DUAL_PORT);
   input_serial_layout->addWidget(input_usb_dual_port_radio);
   input_usb_chained_radio = new QRadioButton(tr("USB Chained"));
   input_usb_chained_radio->setObjectName("input_usb_chained_radio");
+  input_serial_mode_button_group->addButton(input_usb_chained_radio, JRK_SERIAL_MODE_USB_CHAINED);
   input_serial_layout->addWidget(input_usb_chained_radio);
-  input_uart_detect_baud_radio = new QRadioButton(tr("UART, detect baud rate"));
-  input_uart_detect_baud_radio->setObjectName("input_uart_detect_baud_radio");
-  input_serial_layout->addWidget(input_uart_detect_baud_radio);
+
   QHBoxLayout *uart_fixed_baud_rate = new QHBoxLayout();
   input_uart_fixed_baud_radio = new QRadioButton(tr("UART, fixed baud rate: "));
   input_uart_fixed_baud_radio->setObjectName("input_uart_fixed_baud_radio");
   input_uart_fixed_baud_spinbox = new QSpinBox();
   input_uart_fixed_baud_spinbox->setObjectName("input_uart_fixed_baud_spinbox");
+  input_uart_fixed_baud_spinbox->setRange(JRK_MIN_ALLOWED_BAUD_RATE, JRK_MAX_ALLOWED_BAUD_RATE);
+  input_serial_mode_button_group->addButton(input_uart_fixed_baud_radio, JRK_SERIAL_MODE_UART);
   uart_fixed_baud_rate->addWidget(input_uart_fixed_baud_radio);
   uart_fixed_baud_rate->addWidget(input_uart_fixed_baud_spinbox);
   input_serial_layout->addLayout(uart_fixed_baud_rate);
   input_enable_crc_checkbox = new QCheckBox(tr("Enable CRC"));
+  input_enable_crc_checkbox->setObjectName("input_enable_crc_checkbox");
+  input_serial_layout->addWidget(input_enable_crc_checkbox);
   QHBoxLayout *device_number = new QHBoxLayout();
   input_device_label = new QLabel(tr("Device Number:"));
   input_device_label->setObjectName("input_device_label");
@@ -822,17 +831,28 @@ QWidget * main_window::setup_input_tab()
   device_number->addWidget(input_device_label);
   device_number->addWidget(input_device_spinbox);
   input_serial_layout->addLayout(device_number);
+  input_device_number_checkbox = new QCheckBox(tr("Enable 14-bit device number"));
+  input_device_number_checkbox->setObjectName("input_device_number_checkbox");
+  input_serial_layout->addWidget(input_device_number_checkbox);
   QHBoxLayout *timeout_row = new QHBoxLayout();
   input_timeout_label = new QLabel(tr("Timeout (s):"));
   input_timeout_label->setObjectName("input_timeout_label");
-  input_timeout_spinbox = new QDoubleSpinBox();
+  input_timeout_spinbox = new QSpinBox();
   input_timeout_spinbox->setObjectName("input_timeout_spinbox");
+  input_timeout_spinbox->setSingleStep(JRK_SERIAL_TIMEOUT_UNITS);
+  input_timeout_spinbox->setRange(0, JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
   timeout_row->addWidget(input_timeout_label);
   timeout_row->addWidget(input_timeout_spinbox);
   input_serial_layout->addLayout(timeout_row);
+  input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
+  input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
+  input_serial_layout->addWidget(input_disable_compact_protocol_checkbox);
   input_never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
   input_never_sleep_checkbox->setObjectName("input_never_sleep_checkbox");
   input_serial_layout->addWidget(input_never_sleep_checkbox);
+
+
+
   input_serial_groupbox->setLayout(input_serial_layout);
   column1->addWidget(input_serial_groupbox);
 
@@ -1346,6 +1366,54 @@ void main_window::on_input_detect_disconnect_checkbox_stateChanged(int state)
   controller->handle_input_detect_disconnect_input(state == Qt::Checked);
 }
 
+void main_window::on_input_serial_mode_button_group_buttonToggled(int id, bool checked)
+{
+  if (suppress_events) { return; }
+  if (checked) { controller->handle_input_serial_mode_input(id); }
+}
+
+void main_window::on_input_uart_fixed_baud_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_uart_fixed_baud_input(value);
+}
+
+void main_window::on_input_enable_crc_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_enable_crc_input(state == Qt::Checked);
+}
+
+void main_window::on_input_device_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_device_input(value);
+}
+
+void main_window::on_input_device_number_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_device_number_input(state == Qt::Checked);
+}
+
+void main_window::on_input_timeout_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_timeout_input(value);
+}
+
+void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_disable_compact_protocol_input(state == Qt::Checked);
+}
+
+void main_window::on_input_never_sleep_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_never_sleep_input(state == Qt::Checked);
+}
+
 void main_window::on_input_absolute_minimum_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1680,6 +1748,64 @@ void main_window::set_input_invert(bool input_invert)
 void main_window::set_input_detect_disconnect(bool input_detect_disconnect)
 {
   set_check_box(input_detect_disconnect_checkbox, input_detect_disconnect);
+}
+
+void main_window::set_input_serial_mode(uint8_t value)
+{
+  suppress_events = true;
+  QAbstractButton * radio = input_serial_mode_button_group->button(value);
+  if (radio)
+  {
+    radio->setChecked(true);
+  }
+  else
+  {
+    // The value doesn't correspond with any of the radio buttons, so clear
+    // the currently selected button, if any.
+    QAbstractButton * checked = input_serial_mode_button_group->checkedButton();
+    if (checked)
+    {
+      input_serial_mode_button_group->setExclusive(false);
+      checked->setChecked(false);
+      input_serial_mode_button_group->setExclusive(true);
+    }
+  }
+  suppress_events = false;
+}
+
+void main_window::set_input_baud_rate(uint32_t value)
+{
+  set_spin_box(input_uart_fixed_baud_spinbox, value);
+}
+
+void main_window::set_input_enable_crc(bool enabled)
+{
+  set_check_box(input_enable_crc_checkbox, enabled);
+}
+
+void main_window::set_input_device_number(uint16_t value)
+{
+  set_spin_box(input_device_spinbox, value);
+}
+
+void main_window::set_input_enable_device_number(bool enabled)
+{
+  set_check_box(input_device_number_checkbox, enabled);
+}
+
+void main_window::set_input_serial_timeout(uint16_t value)
+{
+  set_spin_box(input_timeout_spinbox, value);
+}
+
+void main_window::set_input_compact_protocol(bool enabled)
+{
+  set_check_box(input_disable_compact_protocol_checkbox, enabled);
+}
+
+void main_window::set_input_never_sleep(bool enabled)
+{
+  set_check_box(input_never_sleep_checkbox, enabled);
 }
 
 void main_window::set_input_absolute_minimum(uint16_t input_absolute_minimum)

@@ -7,6 +7,7 @@
 
 #include <QMainWindow>
 #include <QGroupBox>
+#include <QButtonGroup>
 
 #include <array>
 
@@ -116,6 +117,14 @@ public:
 
   void set_input_invert(bool input_invert);
   void set_input_detect_disconnect(bool input_detect_disconnect);
+  void set_input_serial_mode(uint8_t value);
+  void set_input_baud_rate(uint32_t value);
+  void set_input_enable_crc(bool enabled);
+  void set_input_device_number(uint16_t value);
+  void set_input_enable_device_number(bool enabled);
+  void set_input_serial_timeout(uint16_t value);
+  void set_input_compact_protocol(bool enabled);
+  void set_input_never_sleep(bool enabled);
   void set_input_absolute_minimum(uint16_t input_absolute_minimum);
   void set_input_absolute_maximum(uint16_t input_absolute_maximum);
   void set_input_minimum(uint16_t input_minimum);
@@ -181,6 +190,14 @@ private slots:
   void on_input_analog_samples_combobox_currentIndexChanged(int index);
   void on_input_invert_checkbox_stateChanged(int state);
   void on_input_detect_disconnect_checkbox_stateChanged(int state);
+  void on_input_serial_mode_button_group_buttonToggled(int id, bool checked);
+  void on_input_uart_fixed_baud_spinbox_valueChanged(int value);
+  void on_input_enable_crc_checkbox_stateChanged(int state);
+  void on_input_device_spinbox_valueChanged(int value);
+  void on_input_device_number_checkbox_stateChanged(int state);
+  void on_input_timeout_spinbox_valueChanged(int value);
+  void on_input_disable_compact_protocol_checkbox_stateChanged(int state);
+  void on_input_never_sleep_checkbox_stateChanged(int state);
   void on_input_absolute_minimum_spinbox_valueChanged(int value);
   void on_input_absolute_maximum_spinbox_valueChanged(int value);
   void on_input_minimum_spinbox_valueChanged(int value);
@@ -327,17 +344,19 @@ private:
 	// input tab "Serial interface" groupbox
 
 	QGroupBox *input_serial_groupbox;
-	QCheckBox *input_never_sleep_checkbox;
+	QButtonGroup *input_serial_mode_button_group;
+  QCheckBox *input_never_sleep_checkbox;
 	QRadioButton *input_usb_dual_port_radio;
 	QRadioButton *input_usb_chained_radio;
 	QLabel *input_device_label;
 	QSpinBox *input_device_spinbox;
 	QSpinBox *input_uart_fixed_baud_spinbox;;
-	QRadioButton *input_uart_detect_baud_radio;
 	QCheckBox *input_enable_crc_checkbox;
+  QCheckBox *input_device_number_checkbox;
 	QLabel *input_timeout_label;
 	QRadioButton *input_uart_fixed_baud_radio;
-	QDoubleSpinBox *input_timeout_spinbox;
+	QSpinBox *input_timeout_spinbox;
+  QCheckBox *input_disable_compact_protocol_checkbox;
 
 	// feedback tab
 

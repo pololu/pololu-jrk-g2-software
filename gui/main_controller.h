@@ -73,15 +73,17 @@ public:
   // These are called when the user changes a setting.
   // [all-settings]
 
-  void handle_serial_baud_rate_input(uint32_t serial_baud_rate);
-  void handle_serial_baud_rate_input_finished();
-  void handle_serial_device_number_input(uint8_t serial_device_number);
-  void handle_serial_crc_enabled_input(bool serial_crc_enabled);
-  void handle_command_timeout_input(uint16_t command_timeout);
-
   void handle_input_mode_input(uint8_t input_mode);
   void handle_input_analog_samples_input(uint8_t input_analog_samples);
   void handle_input_detect_disconnect_input(bool detect_disconnect);
+  void handle_input_serial_mode_input(uint8_t value);
+  void handle_input_uart_fixed_baud_input(uint32_t value);
+  void handle_input_enable_crc_input(bool value);
+  void handle_input_device_input(uint16_t value);
+  void handle_input_device_number_input(bool value);
+  void handle_input_timeout_input(uint16_t value);
+  void handle_input_disable_compact_protocol_input(bool value);
+  void handle_input_never_sleep_input(bool value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_absolute_minimum_input(uint16_t input_absolute_minimum);
   void handle_input_absolute_maximum_input(uint16_t input_absolute_maximum);
