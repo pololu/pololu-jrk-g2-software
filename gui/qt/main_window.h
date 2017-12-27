@@ -98,7 +98,6 @@ public:
 
   void set_input_mode(uint8_t input_mode);
   void set_input_analog_samples_exponent(uint8_t value);
-  void set_input_scaling_enabled(bool enabled);
 
 
   void set_motor_pwm_frequency(uint8_t pwm_frequency);

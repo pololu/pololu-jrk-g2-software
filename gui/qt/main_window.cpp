@@ -881,7 +881,7 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_layout->addWidget(feedback_mode_combobox);
 
   QGridLayout *feedback_scaling_layout = new QGridLayout();
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Tachometer mode only"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Tachometer mode only)"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
   feedback_invert_checkbox->setObjectName("feedback_invert_checkbox");
@@ -1728,16 +1728,37 @@ void main_window::set_never_sleep(bool never_sleep)
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
+  switch (input_mode)
+  {
+    case 0:
+      input_analog_groupbox->setEnabled(false);
+      input_serial_groupbox->setEnabled(true);
+      input_uart_fixed_baud_radio->setEnabled(true);
+      input_uart_fixed_baud_spinbox->setEnabled(true);
+      input_scaling_groupbox->setEnabled(false);
+      break;
+    case 1:
+      input_analog_groupbox->setEnabled(true);
+      input_serial_groupbox->setEnabled(true);
+      input_uart_fixed_baud_radio->setEnabled(false);
+      input_uart_fixed_baud_spinbox->setEnabled(false);
+      input_scaling_groupbox->setEnabled(true);
+      break;
+    case 2:
+      input_analog_groupbox->setEnabled(false);
+      input_serial_groupbox->setEnabled(true);
+      input_uart_fixed_baud_radio->setEnabled(false);
+      input_uart_fixed_baud_spinbox->setEnabled(false);
+      input_scaling_groupbox->setEnabled(true);
+      break;
+    default:
+      return;
+  }
 }
 
 void main_window::set_input_analog_samples_exponent(uint8_t input_analog_samples)
 {
   set_u8_combobox(input_analog_samples_combobox, input_analog_samples);
-}
-
-void main_window::set_input_scaling_enabled(bool enabled)
-{
-  input_scaling_groupbox->setEnabled(enabled);
 }
 
 void main_window::set_input_invert(bool input_invert)

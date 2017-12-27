@@ -640,23 +640,6 @@ void main_controller::handle_settings_changed()
   window->set_feedback_minimum(settings.get_feedback_minimum());
 
 
-  // for (int i = 0; i < 5; i++)
-  // {
-  //   uint8_t func = jrk_settings_get_pin_func(settings.get_pointer(), i);
-  //   bool pullup = jrk_settings_get_pin_pullup(settings.get_pointer(), i);
-  //   bool polarity = jrk_settings_get_pin_polarity(settings.get_pointer(), i);
-  //   bool analog = jrk_settings_get_pin_analog(settings.get_pointer(), i);
-
-    // bool enabled = func != TIC_PIN_FUNC_DEFAULT;
-    // bool pullup_enabled = enabled && func != TIC_PIN_FUNC_POT_POWER;
-    // bool polarity_enabled = func == TIC_PIN_FUNC_KILL_SWITCH;
-    // bool analog_enabled = enabled;
-
-    // window->set_pin_func(i, func);
-    // window->set_pin_pullup(i, pullup, pullup_enabled);
-    // window->set_pin_polarity(i, polarity, polarity_enabled);
-    // window->set_pin_analog(i, analog, analog_enabled);
-  // }
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -665,7 +648,7 @@ void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
 
-  window->set_input_scaling_enabled(input_mode_is_analog() || input_mode_is_pulse_width());
+  // window->set_input_scaling_enabled(input_mode_is_analog() || input_mode_is_pulse_width());
 
   // TODO: cached_settings = settings;
 }
