@@ -32,6 +32,7 @@ public:
   QHBoxLayout *bottomControlLayout;
   QVBoxLayout *plotRangeLayout;
   QVBoxLayout *plotVisibleLayout;
+  QVBoxLayout *range_label_layout;
   void retranslate_ui();
 
 signals:

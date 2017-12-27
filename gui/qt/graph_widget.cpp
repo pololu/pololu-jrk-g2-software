@@ -26,11 +26,6 @@ graph_widget::graph_widget(QWidget * parent)
   connect(max_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
   connect(min_y, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
   connect(domain, SIGNAL(valueChanged(int)), this, SLOT(remove_data_to_scroll()));
-
-  // connect the signal from the dataTime to call realtime_data_slot() using the refresh interval "refreshTimer"
-  // set as a constant to be used throughout the class
-  // connect(&data_timer, SIGNAL(timeout()), this, SLOT(realtime_data_slot()));
-  // data_timer.start(refreshTimer); // Interval 0 means to refresh as fast as possible
 }
 
 void graph_widget::setup_ui()
@@ -83,49 +78,85 @@ void graph_widget::setup_ui()
   domain->setValue(10); // initialized the graph to show 10 seconds of data
 
   input.plot_range = new QDoubleSpinBox();
+  input.plot_display = new QCheckBox("Input");
+  input.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #00ffff; text-align:center; font:14px; background-color:white"));
+  input.range_label = new QLabel("0-");
+  input.graph_data_selection_bar = new QHBoxLayout();
+  input.double_ended_range = false;
+  input.range_value = 4095;
 
   target.plot_range = new QDoubleSpinBox();
+  target.plot_display = new QCheckBox("Target");
+  target.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; font:14px; background-color:white"));
+  target.range_label = new QLabel("0-");
+  target.graph_data_selection_bar = new QHBoxLayout();
+  target.double_ended_range = false;
+  target.range_value = 4095;
 
   feedback.plot_range = new QDoubleSpinBox();
+  feedback.plot_display = new QCheckBox("Feedback");
+  feedback.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #ffc0cb; text-align:center; font:14px; background-color:white"));
+  feedback.range_label = new QLabel("0-");
+  feedback.graph_data_selection_bar = new QHBoxLayout();
+  feedback.double_ended_range = false;
+  feedback.range_value = 4095;
 
   scaled_feedback.plot_range = new QDoubleSpinBox();
+  scaled_feedback.plot_display = new QCheckBox("Scaled Feedback");
+  scaled_feedback.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #ff0000; text-align:center; font:14px; background-color:white"));
+  scaled_feedback.range_label = new QLabel("0-");
+  scaled_feedback.graph_data_selection_bar = new QHBoxLayout();
+  scaled_feedback.double_ended_range = false;
+  scaled_feedback.range_value = 4095;
 
   error.plot_range = new QDoubleSpinBox();
+  error.plot_display = new QCheckBox("Error");
+  error.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; font:14px; background-color:white"));
+  error.range_label = new QLabel("±");
+  error.graph_data_selection_bar = new QHBoxLayout();
+  error.double_ended_range = true;
+  error.range_value = 4095;
 
   integral.plot_range = new QDoubleSpinBox();
+  integral.plot_display = new QCheckBox("Integral");
+  integral.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; font:14px; background-color:white"));
+  integral.range_label = new QLabel("±");
+  integral.graph_data_selection_bar = new QHBoxLayout();
+  integral.double_ended_range = true;
+  integral.range_value = 1000;
 
   duty_cycle_target.plot_range = new QDoubleSpinBox();
+  duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
+  duty_cycle_target.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; font:14px; background-color:white"));
+  duty_cycle_target.range_label = new QLabel("±");
+  duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
+  duty_cycle_target.double_ended_range = true;
+  duty_cycle_target.range_value = 600;
 
   duty_cycle.plot_range = new QDoubleSpinBox();
+  duty_cycle.plot_display = new QCheckBox("Duty cycle");
+  duty_cycle.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; font:14px; background-color:white"));
+  duty_cycle.range_label = new QLabel("±");
+  duty_cycle.graph_data_selection_bar = new QHBoxLayout();
+  duty_cycle.double_ended_range = true;
+  duty_cycle.range_value = 600;
 
   current.plot_range = new QDoubleSpinBox();
-
-  input.plot_display = new QCheckBox("Input");
-  input.plot_display->setStyleSheet(QStringLiteral("background-color:#00ffff"));
-
-  target.plot_display = new QCheckBox("Target");
-  target.plot_display->setStyleSheet(QStringLiteral("background-color:#0000ff"));
-
-  feedback.plot_display = new QCheckBox("Feedback");
-  feedback.plot_display->setStyleSheet(QStringLiteral("background-color:#ffc0cb"));
-
-  scaled_feedback.plot_display = new QCheckBox("Scaled Feedback");
-  scaled_feedback.plot_display->setStyleSheet(QStringLiteral("background-color:#ff0000"));
-
-  error.plot_display = new QCheckBox("Error");
-  error.plot_display->setStyleSheet(QStringLiteral("background-color:#9400d3"));
-
-  integral.plot_display = new QCheckBox("Integral");
-  integral.plot_display->setStyleSheet(QStringLiteral("background-color:#ff8c00"));
-
-  duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
-  duty_cycle_target.plot_display->setStyleSheet(QStringLiteral("background-color:#32cd32"));
-
-  duty_cycle.plot_display = new QCheckBox("Duty cycle");
-  duty_cycle.plot_display->setStyleSheet(QStringLiteral("background-color:#006400"));
-
   current.plot_display = new QCheckBox("Current (mA)");
-  current.plot_display->setStyleSheet(QStringLiteral("background-color:#b8860b"));
+  current.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
+  current.range_label = new QLabel("±");
+  current.graph_data_selection_bar = new QHBoxLayout();
+  current.double_ended_range = true;
+  current.range_value = 5000;
 
   all_plots.push_front(current);
   all_plots.push_front(duty_cycle);
@@ -156,20 +187,47 @@ void graph_widget::setup_plots()
 // sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot.
 // connects the valueChanged signal of the plot_range to change the ranges of the plots.
 {
+
+
   for(int i=0; i<all_plots.size(); i++)
   {
     all_plots[i].plot_range->setDecimals(0);
     all_plots[i].plot_range->setSingleStep(1.0);
-    all_plots[i].plot_range->setRange(-4095,4095);
-    all_plots[i].plot_range->setValue(4095);
+
+    all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+
+    all_plots[i].plot_axis->setVisible(false);
+
+    all_plots[i].range_label->setStyleSheet(QStringLiteral("font: 14px"));
+
+    if (all_plots[i].double_ended_range == false)
+      all_plots[i].plot_axis->setRange(0, all_plots[i].range_value);
+    else
+      all_plots[i].plot_axis->setRange(-all_plots[i].range_value, all_plots[i].range_value);
+    all_plots[i].plot_range->setRange(0, all_plots[i].range_value);
+    all_plots[i].plot_range->setValue(all_plots[i].range_value);
+    // Set the size of the labels and buttons for the errors tab in
+    // a way that can change from OS to OS.
+    {
+      QLabel tmp_label2;
+      tmp_label2.setText("xxxxxxxxxx");
+      QLabel tmp_label3;
+      tmp_label3.setText("xxxxxxxxxxxxxxxxxxxxxxx");
+      all_plots[i].plot_range->setFixedWidth(tmp_label2.sizeHint().width());
+      all_plots[i].plot_display->setFixedWidth(tmp_label3.sizeHint().width());
+    }
+
     all_plots[i].plot_display->setCheckable(true);
     all_plots[i].plot_display->setChecked(true);
 
-    all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
-    all_plots[i].plot_axis->setRange(-4095,4095);
-    all_plots[i].plot_axis->setVisible(false);
+    all_plots[i].graph_data_selection_bar->setMargin(0);;
+    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_display, -1, Qt::AlignLeft);
+    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].range_label, 2, Qt::AlignRight);
+    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_range, -1, Qt::AlignRight);
 
-    all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis); // yellow line
+
+
+    all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis);
 
     all_plots[i].plot_graph->setPen(QPen(plot_colors[i]));
 
@@ -194,7 +252,6 @@ void graph_widget::on_pauseRunButton_clicked()
 // used the QMetaObject class to parse the function name and send the signal to the function.
 {
   pauseRunButton->setText(pauseRunButton->isChecked() ? "R&un" : "&Pause");
-  pauseRunButton->isChecked() ? data_timer.stop() : data_timer.start(refreshTimer);
   custom_plot->replot();
 }
 
@@ -227,7 +284,7 @@ void graph_widget::realtime_data_slot()
 
   // this list is only used for demonstrations
   QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3)),
-   (sin(key+4)), (sin(key+5)), (sin(key+6)), (sin(key+7)), (static_cast<double> (this->current_value_int))};
+   (sin(key+4)), (sin(key+5)), (sin(key+6)), (static_cast<double> (this->duty_cycle.plot_value)), (static_cast<double> (this->current.plot_value))};
 
   for(int i=0; i<all_plots.size(); i++)
   {

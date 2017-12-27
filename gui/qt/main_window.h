@@ -58,8 +58,8 @@ public:
   // Show an OK/Cancel dialog, return true if the user selects OK.
   bool confirm(const std::string & question);
 
-  void show_info_message(const std::string & message);
   void show_error_message(const std::string & message);
+  void show_info_message(const std::string & message);
 
   void set_device_name(const std::string & name, bool link_enabled);
   void set_serial_number(const std::string & serial_number);
@@ -99,7 +99,7 @@ public:
   void set_input_analog_samples_exponent(uint8_t value);
   void set_input_scaling_enabled(bool enabled);
 
-  void set_feedback_mode(uint8_t feedback_mode);
+
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
 
   void set_motor_max_duty_cycle_forward(uint16_t);
@@ -127,6 +127,12 @@ public:
   void set_input_output_maximum(uint16_t input_output_maximum);
   void set_input_scaling_degree(uint8_t input_scaling_degree);
 
+  void set_feedback_mode(uint8_t feedback_mode);
+  void set_feedback_invert(bool feedback_invert);
+  void set_feedback_absolute_minimum(uint16_t value);
+  void set_feedback_absolute_maximum(uint16_t value);
+  void set_feedback_minimum(uint16_t value);
+  void set_feedback_maximum(uint16_t value);
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
 
@@ -188,6 +194,13 @@ private slots:
   void on_input_reset_range_button_clicked();
 
   void on_feedback_mode_combobox_currentIndexChanged(int index);
+  void on_feedback_invert_checkbox_stateChanged(int state);
+  void on_feedback_absolute_minimum_spinbox_valueChanged(int value);
+  void on_feedback_absolute_maximum_spinbox_valueChanged(int value);
+  void on_feedback_maximum_spinbox_valueChanged(int value);
+  void on_feedback_minimum_spinbox_valueChanged(int value);
+  void on_feedback_reset_range_button_clicked();
+
   void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
 
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
@@ -319,7 +332,7 @@ private:
 	QRadioButton *input_usb_chained_radio;
 	QLabel *input_device_label;
 	QSpinBox *input_device_spinbox;
-	QSpinBox *input_uart_fixed_baud_spinbox;
+	QSpinBox *input_uart_fixed_baud_spinbox;;
 	QRadioButton *input_uart_detect_baud_radio;
 	QCheckBox *input_enable_crc_checkbox;
 	QLabel *input_timeout_label;
@@ -336,17 +349,17 @@ private:
 	// feedback tab "Scaling (Analog and Tachometer mode only)" groupbox
 
 	QGroupBox *feedback_scaling_groupbox;
-	QCheckBox *feedback_invert_feedback_checkbox;
+	QCheckBox *feedback_invert_checkbox;
 	QLabel *feedback_absolute_max_label;
 	QLabel *feedback_maximum_label;
 	QLabel *feedback_minimum_label;
 	QLabel *feedback_absolute_min_label;
 	QLabel *feedback_calibration_label;
 	QLabel *feedback_scaling_order_warning_label;
-	QDoubleSpinBox *feedback_absolute_max_spinbox;
-	QDoubleSpinBox *feedback_maximum_spinbox;
-	QDoubleSpinBox *feedback_minimum_spinbox;
-	QDoubleSpinBox *feedback_absolute_min_spinbox;
+	QSpinBox *feedback_absolute_maximum_spinbox;
+	QSpinBox *feedback_maximum_spinbox;
+	QSpinBox *feedback_minimum_spinbox;
+	QSpinBox *feedback_absolute_minimum_spinbox;
 	QPushButton *feedback_learn_button;
 	QPushButton *feedback_reset_range_button;
 
@@ -454,8 +467,6 @@ private:
 
 
 	void setup_ui();
-	void retranslate_ui(QMainWindow *main_window);
-
 
   // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified
@@ -475,7 +486,6 @@ class pid_constant_control : public QGroupBox
 	Q_OBJECT
 public:
 	pid_constant_control(const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
-	~pid_constant_control();
 
 private:
 	QWidget *central_widget;

@@ -612,7 +612,6 @@ void main_controller::handle_settings_changed()
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_input_mode(settings.get_input_mode());
   window->set_input_analog_samples_exponent(settings.get_input_analog_samples_exponent());
-  window->set_feedback_mode(settings.get_feedback_mode());
   window->set_input_detect_disconnect(settings.get_input_detect_disconnect());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_absolute_minimum(settings.get_input_absolute_minimum());
@@ -625,6 +624,13 @@ void main_controller::handle_settings_changed()
   window->set_input_output_neutral(settings.get_output_neutral());
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
+  window->set_feedback_mode(settings.get_feedback_mode());
+  window->set_feedback_invert(settings.get_feedback_invert());
+  window->set_feedback_absolute_minimum(settings.get_feedback_absolute_minimum());
+  window->set_feedback_absolute_maximum(settings.get_feedback_absolute_maximum());
+  window->set_feedback_maximum(settings.get_feedback_maximum());
+  window->set_feedback_minimum(settings.get_feedback_minimum());
+
 
   // for (int i = 0; i < 5; i++)
   // {
@@ -814,6 +820,54 @@ void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
 {
   if (!connected()) { return; }
   settings.set_feedback_mode(feedback_mode);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_invert_input(bool invert_feedback)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_invert(invert_feedback);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_absolute_minimum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_absolute_minimum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_absolute_maximum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_absolute_maximum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_maximum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_maximum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_minimum_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_minimum(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_analog_samples_input(uint8_t feedback_analog_samples)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_analog_samples_exponent(feedback_analog_samples);
   settings_modified = true;
   handle_settings_changed();
 }

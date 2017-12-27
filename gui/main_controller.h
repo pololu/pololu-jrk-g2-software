@@ -95,6 +95,12 @@ public:
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
 
   void handle_feedback_mode_input(uint8_t value);
+  void handle_feedback_invert_input(bool invert_feedback);
+  void handle_feedback_absolute_minimum_input(uint16_t value);
+  void handle_feedback_absolute_maximum_input(uint16_t value);
+  void handle_feedback_maximum_input(uint16_t value);
+  void handle_feedback_minimum_input(uint16_t value);
+  void handle_feedback_analog_samples_input(uint8_t feedback_analog_samples);
 
   void handle_invert_motor_input(bool invert_motor);
   void handle_motor_pwm_frequency_input(uint8_t);
