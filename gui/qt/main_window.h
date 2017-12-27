@@ -96,6 +96,9 @@ public:
   void set_never_sleep(bool never_sleep);
 
   void set_input_mode(uint8_t input_mode);
+  void set_input_analog_samples_exponent(uint8_t value);
+  void set_input_scaling_enabled(bool enabled);
+
   void set_feedback_mode(uint8_t feedback_mode);
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
 
@@ -110,15 +113,19 @@ public:
 
   void set_motor_coast_when_off(bool);
 
-  void set_input_scaling_degree(uint8_t input_scaling_degree);
 
   void set_input_invert(bool input_invert);
-  void set_input_min(uint16_t input_min);
-  void set_input_neutral_min(uint16_t input_neutral_min);
-  void set_input_neutral_max(uint16_t input_neutral_max);
-  void set_input_max(uint16_t input_max);
-  void set_output_min(int32_t output_min);
-  void set_output_max(int32_t output_max);
+  void set_input_detect_disconnect(bool input_detect_disconnect);
+  void set_input_absolute_minimum(uint16_t input_absolute_minimum);
+  void set_input_absolute_maximum(uint16_t input_absolute_maximum);
+  void set_input_minimum(uint16_t input_minimum);
+  void set_input_maximum(uint16_t input_maximum);
+  void set_input_neutral_minimum(uint16_t input_neutral_minimum);
+  void set_input_neutral_maximum(uint16_t input_neutral_maximum);
+  void set_input_output_minimum(uint16_t input_output_minimum);
+  void set_input_output_neutral(uint16_t input_output_neutral);
+  void set_input_output_maximum(uint16_t input_output_maximum);
+  void set_input_scaling_degree(uint8_t input_scaling_degree);
 
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
@@ -138,6 +145,7 @@ public:
   void set_restore_defaults_enabled(bool enabled);
   void set_stop_motor_enabled(bool enabled);
   void set_run_motor_enabled(bool enabled);
+
 
 signals:
 	void pass_widget(graph_widget *widget);
@@ -164,6 +172,21 @@ private slots:
   void on_set_target_button_clicked();
 
   void on_input_mode_combobox_currentIndexChanged(int index);
+  void on_input_analog_samples_combobox_currentIndexChanged(int index);
+  void on_input_invert_checkbox_stateChanged(int state);
+  void on_input_detect_disconnect_checkbox_stateChanged(int state);
+  void on_input_absolute_minimum_spinbox_valueChanged(int value);
+  void on_input_absolute_maximum_spinbox_valueChanged(int value);
+  void on_input_minimum_spinbox_valueChanged(int value);
+  void on_input_maximum_spinbox_valueChanged(int value);
+  void on_input_neutral_minimum_spinbox_valueChanged(int value);
+  void on_input_neutral_maximum_spinbox_valueChanged(int value);
+  void on_input_output_minimum_spinbox_valueChanged(int value);
+  void on_input_output_neutral_spinbox_valueChanged(int value);
+  void on_input_output_maximum_spinbox_valueChanged(int value);
+  void on_input_scaling_degree_combobox_currentIndexChanged(int index);
+  void on_input_reset_range_button_clicked();
+
   void on_feedback_mode_combobox_currentIndexChanged(int index);
   void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
 
@@ -190,8 +213,8 @@ private:
 	QGridLayout *grid_layout;
 	QHBoxLayout *horizontal_layout;
 	graph_widget *preview_window;
-        AltWindow *altw;
-        QWidget * preview_plot;
+  AltWindow *altw;
+  QWidget * preview_plot;
 
   QMenuBar * menu_bar;
   QMenu * file_menu;
@@ -258,7 +281,7 @@ private:
 
 	QGroupBox *input_analog_groupbox;
 	QLabel *input_analog_samples_label;
-	QCheckBox *input_disconnect_with_aux_checkbox;
+	QCheckBox *input_detect_disconnect_checkbox;
 	QComboBox *input_analog_samples_combobox;
 
 	// input tab "Scaling (Analog and Pulse Width mode only)" groupbox
@@ -266,19 +289,19 @@ private:
 	QGroupBox *input_scaling_groupbox;
 	QLabel *input_scaling_order_warning_label;
 	QLabel *input_absolute_max_label;
-	QSpinBox *input_absolute_max_spinbox;
+	QSpinBox *input_absolute_maximum_spinbox;
 	QLabel *input_maximum_label;
 	QSpinBox *input_maximum_spinbox;
 	QLabel *input_neutral_max_label;
-	QSpinBox *input_neutral_max_spinbox;
+	QSpinBox *input_neutral_maximum_spinbox;
 	QLabel *input_neutral_min_label;
-	QSpinBox *input_neutral_min_spinbox;
+	QSpinBox *input_neutral_minimum_spinbox;
 	QLabel *input_minimum_label;
 	QSpinBox *input_minimum_spinbox;
 	QLabel *input_absolute_min_label;
-	QSpinBox *input_absolute_min_spinbox;
+	QSpinBox *input_absolute_minimum_spinbox;
 	QLabel *input_degree_label;
-	QComboBox *input_degree_combobox;
+	QComboBox *input_scaling_degree_combobox;
 	QCheckBox *input_invert_checkbox;
 	QPushButton *input_learn_button;
 	QPushButton *input_reset_range_button;

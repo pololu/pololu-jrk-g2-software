@@ -33,6 +33,8 @@
 #include <string>
 #include <QString>
 
+#include <iostream> // tmphax
+
 #include <cassert>
 #include <cmath>
 
@@ -46,6 +48,8 @@ Q_IMPORT_PLUGIN (QLinuxFbIntegrationPlugin);
 Q_IMPORT_PLUGIN (QXcbIntegrationPlugin);
 #endif
 #endif
+
+#define UINT12_MAX 0xFFF // 4095
 
 main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
@@ -263,6 +267,7 @@ void main_window::setup_ui()
 
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
+  connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -454,11 +459,21 @@ QWidget * main_window::setup_input_tab()
   analog_samples->addWidget(input_analog_samples_label);
   input_analog_samples_combobox = new QComboBox();
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
+  input_analog_samples_combobox->addItem("4", 0);
+  input_analog_samples_combobox->addItem("8", 1);
+  input_analog_samples_combobox->addItem("16", 2);
+  input_analog_samples_combobox->addItem("32", 3);
+  input_analog_samples_combobox->addItem("64", 4);
+  input_analog_samples_combobox->addItem("128", 5);
+  input_analog_samples_combobox->addItem("256", 6);
+  input_analog_samples_combobox->addItem("512", 7);
+  input_analog_samples_combobox->addItem("1024", 8);
+
   analog_samples->addWidget(input_analog_samples_combobox);
   input_analog_layout->addLayout(analog_samples);
-  input_disconnect_with_aux_checkbox = new QCheckBox(tr("Detect disconnect with AUX"));
-  input_disconnect_with_aux_checkbox->setObjectName("input_disconnect_with_aux_checkbox");
-  input_analog_layout->addWidget(input_disconnect_with_aux_checkbox);
+  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with AUX"));
+  input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
+  input_analog_layout->addWidget(input_detect_disconnect_checkbox);
   input_analog_groupbox->setLayout(input_analog_layout);
   column1->addWidget(input_analog_groupbox);
 
@@ -497,39 +512,62 @@ QWidget * main_window::setup_input_tab()
   input_input_label = new QLabel(tr("Input"));
   input_input_label->setObjectName("input_input_label");
   scaling_column1_labels->addWidget(input_input_label,0,1);
-  input_absolute_max_spinbox = new QSpinBox();
-  input_absolute_max_spinbox->setObjectName("input_absolute_max_spinbox");
-  scaling_column1_labels->addWidget(input_absolute_max_spinbox,1,1);
+  input_absolute_maximum_spinbox = new QSpinBox();
+  input_absolute_maximum_spinbox->setObjectName("input_absolute_maximum_spinbox");
+  input_absolute_maximum_spinbox->setRange(0, UINT12_MAX);
+  input_absolute_maximum_spinbox->setValue(4095);
+  scaling_column1_labels->addWidget(input_absolute_maximum_spinbox,1,1);
   input_maximum_spinbox = new QSpinBox();
   input_maximum_spinbox->setObjectName("input_maximum_spinbox");
+  input_maximum_spinbox->setRange(0, UINT12_MAX);
+  input_maximum_spinbox->setValue(4095);
   scaling_column1_labels->addWidget(input_maximum_spinbox,2,1);
-  input_neutral_max_spinbox = new QSpinBox();
-  input_neutral_max_spinbox->setObjectName("input_neutral_max_spinbox");
-  scaling_column1_labels->addWidget(input_neutral_max_spinbox,3,1);
-  input_neutral_min_spinbox = new QSpinBox();
-  input_neutral_min_spinbox->setObjectName("input_neutral_min_spinbox");
-  scaling_column1_labels->addWidget(input_neutral_min_spinbox,4,1);
+  input_neutral_maximum_spinbox = new QSpinBox();
+  input_neutral_maximum_spinbox->setObjectName("input_neutral_maximum_spinbox");
+  input_neutral_maximum_spinbox->setRange(0, UINT12_MAX);
+  input_neutral_maximum_spinbox->setValue(2048);;
+  scaling_column1_labels->addWidget(input_neutral_maximum_spinbox,3,1);
+  input_neutral_minimum_spinbox = new QSpinBox();
+  input_neutral_minimum_spinbox->setObjectName("input_neutral_minimum_spinbox");
+  input_neutral_minimum_spinbox->setRange(0, UINT12_MAX);
+  input_neutral_minimum_spinbox->setValue(2048);
+  scaling_column1_labels->addWidget(input_neutral_minimum_spinbox,4,1);
   input_minimum_spinbox = new QSpinBox();
   input_minimum_spinbox->setObjectName("input_minimum_spinbox");
+  input_minimum_spinbox->setRange(0, UINT12_MAX);
+  input_minimum_spinbox->setValue(4);
   scaling_column1_labels->addWidget(input_minimum_spinbox,5,1);
-  input_absolute_min_spinbox = new QSpinBox();
-  input_absolute_min_spinbox->setObjectName("input_absolute_min_spinbox");
-  scaling_column1_labels->addWidget(input_absolute_min_spinbox,6,1);
-  input_degree_combobox = new QComboBox();
-  input_degree_combobox->setObjectName("input_degree_combobox");
-  scaling_column1_labels->addWidget(input_degree_combobox,7,1,7,2,Qt::AlignTop);
+  input_absolute_minimum_spinbox = new QSpinBox();
+  input_absolute_minimum_spinbox->setObjectName("input_absolute_minimum_spinbox");
+  input_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
+  input_absolute_minimum_spinbox->setValue(0);
+  scaling_column1_labels->addWidget(input_absolute_minimum_spinbox,6,1);
+  input_scaling_degree_combobox = new QComboBox();
+  input_scaling_degree_combobox->setObjectName("input_scaling_degree_combobox");
+  input_scaling_degree_combobox->addItem("1 - Linear", JRK_SCALING_DEGREE_LINEAR);
+  input_scaling_degree_combobox->addItem("2 - Quadratic", JRK_SCALING_DEGREE_QUADRATIC);
+  input_scaling_degree_combobox->addItem("3 - Cubic", JRK_SCALING_DEGREE_CUBIC);
+  input_scaling_degree_combobox->addItem("4 - Quartic", JRK_SCALING_DEGREE_QUARTIC);
+  input_scaling_degree_combobox->addItem("5 - Quintic", JRK_SCALING_DEGREE_QUINTIC);
+  scaling_column1_labels->addWidget(input_scaling_degree_combobox,7,1,7,2,Qt::AlignTop);
 
   input_target_label = new QLabel(tr("Target"));
   input_target_label->setObjectName("input_target_label");
   scaling_column1_labels->addWidget(input_target_label,0,2);
   input_output_maximum_spinbox = new QSpinBox();
   input_output_maximum_spinbox->setObjectName("input_output_maximum_spinbox");
+  input_output_maximum_spinbox->setRange(0, UINT12_MAX);
+  input_output_maximum_spinbox->setValue(4095);
   scaling_column1_labels->addWidget(input_output_maximum_spinbox,2,2);
   input_output_neutral_spinbox = new QSpinBox();
   input_output_neutral_spinbox->setObjectName("input_output_neutral_spinbox");
+  input_output_neutral_spinbox->setRange(0, UINT12_MAX);
+  input_output_neutral_spinbox->setValue(2048);
   scaling_column1_labels->addWidget(input_output_neutral_spinbox,3,2);
   input_output_minimum_spinbox = new QSpinBox();
   input_output_minimum_spinbox->setObjectName("input_output_minimum_spinbox");
+  input_output_minimum_spinbox->setRange(0, UINT12_MAX);
+  input_output_minimum_spinbox->setValue(0);
   scaling_column1_labels->addWidget(input_output_minimum_spinbox,4,2);
 
   scaling_column1->addLayout(scaling_column1_labels);
@@ -1088,6 +1126,101 @@ void main_window::on_input_mode_combobox_currentIndexChanged(int index)
   controller->handle_input_mode_input(input_mode);
 }
 
+void main_window::on_input_analog_samples_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t input_analog_samples = input_analog_samples_combobox->itemData(index).toUInt();
+  controller->handle_input_analog_samples_input(input_analog_samples);
+}
+
+void main_window::on_input_invert_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_invert_input(state == Qt::Checked);
+}
+
+void main_window::on_input_detect_disconnect_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_detect_disconnect_input(state == Qt::Checked);
+}
+
+void main_window::on_input_absolute_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_absolute_minimum_input(value);
+}
+
+void main_window::on_input_absolute_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_absolute_maximum_input(value);
+}
+
+void main_window::on_input_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_minimum_input(value);
+}
+
+void main_window::on_input_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_maximum_input(value);
+}
+
+void main_window::on_input_neutral_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_neutral_minimum_input(value);
+}
+
+void main_window::on_input_neutral_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_neutral_maximum_input(value);
+}
+
+void main_window::on_input_output_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_output_minimum_input(value);
+}
+
+void main_window::on_input_output_neutral_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_output_neutral_input(value);
+}
+
+void main_window::on_input_output_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_output_maximum_input(value);
+}
+
+void main_window::on_input_scaling_degree_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t input_scaling_degree = input_scaling_degree_combobox->itemData(index).toUInt();
+  controller->handle_input_scaling_degree_input(input_scaling_degree);
+}
+
+void main_window::on_input_reset_range_button_clicked()
+{
+  if (suppress_events) { return; }
+  controller->handle_input_absolute_minimum_input(0);
+  controller->handle_input_absolute_maximum_input(4095);
+  controller->handle_input_minimum_input(4);
+  controller->handle_input_maximum_input(4095);
+  controller->handle_input_neutral_minimum_input(2048);
+  controller->handle_input_neutral_maximum_input(2048);
+  controller->handle_output_minimum_input(0);
+  controller->handle_output_neutral_input(2048);
+  controller->handle_output_maximum_input(4095);
+  controller->handle_input_invert_input(false);
+}
+
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
@@ -1327,47 +1460,6 @@ void main_window::set_serial_device_number(uint8_t serial_device_number)
   set_spin_box(input_device_spinbox, serial_device_number);
 }
 
-void main_window::set_input_invert(bool input_invert)
-{
-  set_check_box(input_invert_checkbox, input_invert);
-}
-
-void main_window::set_input_min(uint16_t input_min)
-{
-  set_spin_box(input_minimum_spinbox, input_min);
-}
-
-void main_window::set_input_neutral_min(uint16_t input_neutral_min)
-{
-  set_spin_box(input_neutral_min_spinbox, input_neutral_min);
-}
-
-void main_window::set_input_neutral_max(uint16_t input_neutral_max)
-{
-  set_spin_box(input_neutral_max_spinbox, input_neutral_max);
-}
-
-void main_window::set_input_max(uint16_t input_max)
-{
-  set_spin_box(input_maximum_spinbox, input_max);
-}
-
-void main_window::set_output_min(int32_t output_min)
-{
-  set_spin_box(input_output_minimum_spinbox, output_min);
-}
-
-void main_window::set_output_max(int32_t output_max)
-{
-  set_spin_box(input_output_maximum_spinbox, output_max);
-}
-
-
-void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
-{
-  set_u8_combobox(input_degree_combobox, input_scaling_degree);
-}
-
 void main_window::set_never_sleep(bool never_sleep)
 {
   set_check_box(input_never_sleep_checkbox, never_sleep);
@@ -1376,6 +1468,76 @@ void main_window::set_never_sleep(bool never_sleep)
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
+}
+
+void main_window::set_input_analog_samples_exponent(uint8_t input_analog_samples)
+{
+  set_u8_combobox(input_analog_samples_combobox, input_analog_samples);
+}
+
+void main_window::set_input_scaling_enabled(bool enabled)
+{
+  input_scaling_groupbox->setEnabled(enabled);
+}
+
+void main_window::set_input_invert(bool input_invert)
+{
+  set_check_box(input_invert_checkbox, input_invert);
+}
+
+void main_window::set_input_detect_disconnect(bool input_detect_disconnect)
+{
+  set_check_box(input_detect_disconnect_checkbox, input_detect_disconnect);
+}
+
+void main_window::set_input_absolute_minimum(uint16_t input_absolute_minimum)
+{
+  set_spin_box(input_absolute_minimum_spinbox, input_absolute_minimum);
+}
+
+void main_window::set_input_absolute_maximum(uint16_t input_absolute_maximum)
+{
+  set_spin_box(input_absolute_maximum_spinbox, input_absolute_maximum);
+}
+
+void main_window::set_input_minimum(uint16_t input_minimum)
+{
+  set_spin_box(input_minimum_spinbox, input_minimum);
+}
+
+void main_window::set_input_maximum(uint16_t input_maximum)
+{
+  set_spin_box(input_maximum_spinbox, input_maximum);
+}
+
+void main_window::set_input_neutral_minimum(uint16_t input_neutral_minimum)
+{
+  set_spin_box(input_neutral_minimum_spinbox, input_neutral_minimum);
+}
+
+void main_window::set_input_neutral_maximum(uint16_t input_neutral_maximum)
+{
+  set_spin_box(input_neutral_maximum_spinbox, input_neutral_maximum);
+}
+
+void main_window::set_input_output_minimum(uint16_t input_output_minimum)
+{
+  set_spin_box(input_output_minimum_spinbox, input_output_minimum);
+}
+
+void main_window::set_input_output_neutral(uint16_t input_output_neutral)
+{
+  set_spin_box(input_output_neutral_spinbox, input_output_neutral);
+}
+
+void main_window::set_input_output_maximum(uint16_t input_output_maximum)
+{
+  set_spin_box(input_output_maximum_spinbox, input_output_maximum);
+}
+
+void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
+{
+  set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
 }
 
 void main_window::set_feedback_mode(uint8_t feedback_mode)
@@ -1493,6 +1655,9 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
 
 void main_window::set_current(uint16_t current)
 {
+  preview_window->current_value_int = current;
+  // std::cout << preview_window->current_value_int << std::endl; //tmphax
+
   current_value->setText(QString::number(current));
 }
 
