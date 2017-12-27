@@ -640,7 +640,7 @@ bool jrk_settings_get_feedback_wraparound(const jrk_settings *);
 //   interpreted as command bytes by the jrk.  The baud rate set by the USB host
 //   on the command port determines the baud rate used on the TX and RX lines.
 //
-// - If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX liens
+// - If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX lines
 //   can be used to send commands to the jrk and receive responses from it.  Any
 //   byte received on RX will be sent to the command port, but bytes sent from
 //   the command port will be ignored.
