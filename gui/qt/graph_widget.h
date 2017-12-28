@@ -49,7 +49,7 @@ public:
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
-  double refreshTimer = 25;
+  double refreshTimer;
 
 
 

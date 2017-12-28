@@ -16,7 +16,6 @@
 #include <array>
 #include <ctime>
 
-// double refreshTimer = 25; // used as a constant for both places the refresh rate is used
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -204,6 +203,7 @@ void graph_widget::setup_plots()
       all_plots[i].plot_axis->setRange(0, all_plots[i].range_value);
     else
       all_plots[i].plot_axis->setRange(-all_plots[i].range_value, all_plots[i].range_value);
+
     all_plots[i].plot_range->setRange(0, all_plots[i].range_value);
     all_plots[i].plot_range->setValue(all_plots[i].range_value);
     // Set the size of the labels and buttons for the errors tab in
@@ -224,8 +224,6 @@ void graph_widget::setup_plots()
     all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_display, -1, Qt::AlignLeft);
     all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].range_label, 2, Qt::AlignRight);
     all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_range, -1, Qt::AlignRight);
-
-
 
     all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis);
 
@@ -282,9 +280,19 @@ void graph_widget::realtime_data_slot()
 {
   key += (refreshTimer/1000);
 
-  // this list is only used for demonstrations
-  QList<double> value = {(sin(key)), (sin(key+1)), (sin(key+2)), (sin(key+3)),
-   (sin(key+4)), (sin(key+5)), (sin(key+6)), (static_cast<double> (this->duty_cycle.plot_value)), (static_cast<double> (this->current.plot_value))};
+  // This list is used to plot values on graph
+  QList<uint16_t> value =
+  {
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    this->duty_cycle.plot_value,
+    this->current.plot_value
+  };
 
   for(int i=0; i<all_plots.size(); i++)
   {

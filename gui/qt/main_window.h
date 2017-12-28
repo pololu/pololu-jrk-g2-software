@@ -134,6 +134,7 @@ public:
   void set_input_output_neutral(uint16_t input_output_neutral);
   void set_input_output_maximum(uint16_t input_output_maximum);
   void set_input_scaling_degree(uint8_t input_scaling_degree);
+  void set_input_scaling_order_warning_label();
 
   void set_feedback_mode(uint8_t feedback_mode);
   void set_feedback_invert(bool feedback_invert);
@@ -354,7 +355,7 @@ private:
   QCheckBox *input_device_number_checkbox;
 	QLabel *input_timeout_label;
 	QRadioButton *input_uart_fixed_baud_radio;
-	QSpinBox *input_timeout_spinbox;
+	QDoubleSpinBox *input_timeout_spinbox;
   QCheckBox *input_disable_compact_protocol_checkbox;
 
 	// feedback tab
@@ -478,6 +479,9 @@ private:
   QWidget * setup_manual_target_box();
 
   QWidget * setup_input_tab();
+  QWidget * setup_input_analog_groupbox();
+  QWidget * setup_input_serial_groupbox();
+  QWidget * setup_input_scaling_groupbox();
 	QWidget * setup_feedback_tab();
 	QWidget * setup_pid_tab();
 	QWidget * setup_motor_tab();
@@ -494,9 +498,12 @@ private:
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
 
+  bool ordered(QList<int> p);
+
   void center_at_startup_if_needed();
 
   bool start_event_reported = false;
+
 };
 
 class pid_constant_control : public QGroupBox

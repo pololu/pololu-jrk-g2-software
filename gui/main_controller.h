@@ -177,8 +177,5 @@ private:
   // Returns true if we are currently connected to a device.
   bool connected() const { return device_handle; }
 
-  bool input_mode_is_analog() const;
-  bool input_mode_is_pulse_width() const;
-
   main_window * window;
 };
