@@ -70,6 +70,7 @@ void main_window::set_update_timer_interval(uint32_t interval_ms)
   assert(update_timer);
   assert(interval_ms <= std::numeric_limits<int>::max());
   update_timer->setInterval(interval_ms);
+  preview_window->refreshTimer = static_cast<double>(interval_ms);
 }
 
 void main_window::start_update_timer()
@@ -628,32 +629,47 @@ QWidget * main_window::setup_manual_target_box()
 QWidget * main_window::setup_input_tab()
 {
   input_page_widget = new QWidget();
+
   QGridLayout *layout = input_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  QVBoxLayout *column1 = new QVBoxLayout();
-  QVBoxLayout *column2 = new QVBoxLayout();
 
-  QHBoxLayout *input_mode_layout = new QHBoxLayout();
   input_mode_label = new QLabel(tr("Input mode:"));
   input_mode_label->setObjectName("input_mode_label");
   input_mode_label->setFont(font);
-  input_mode_layout->addWidget(input_mode_label);
+
   input_mode_combobox = new QComboBox();
   input_mode_combobox->setObjectName("input_mode_combobox");
   input_mode_combobox->addItem("Serial", JRK_INPUT_MODE_SERIAL);
   input_mode_combobox->addItem("Analog", JRK_INPUT_MODE_ANALOG);
   input_mode_combobox->addItem("Pulse width", JRK_INPUT_MODE_PULSE_WIDTH);
-  input_mode_layout->addWidget(input_mode_combobox);
-  column1->addLayout(input_mode_layout);
 
-  QVBoxLayout *input_analog_layout = new QVBoxLayout();
+  QHBoxLayout *input_mode_layout = new QHBoxLayout();
+  input_mode_layout->addWidget(input_mode_label, 0, Qt::AlignLeft);
+  input_mode_layout->addWidget(input_mode_combobox, 0, Qt::AlignLeft);
+
+  layout->addLayout(input_mode_layout, 0, 0, Qt::AlignLeft);
+  layout->addWidget(setup_input_analog_groupbox(), 1, 0, Qt::AlignLeft);
+  layout->addWidget(setup_input_serial_groupbox(), 2, 0, Qt::AlignLeft);
+  layout->addWidget(setup_input_scaling_groupbox(), 0, 1, 3, 1, Qt::AlignTop);
+
+  input_page_widget->setLayout(layout);
+
+  input_page_widget->setParent(tab_widget);
+
+  return input_page_widget;
+}
+
+QWidget * main_window::setup_input_analog_groupbox()
+{
+  QGridLayout *input_analog_layout = new QGridLayout();
+
   input_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
   input_analog_groupbox->setObjectName("input_analog_groupbox");
-  QHBoxLayout *analog_samples = new QHBoxLayout();
+
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
   input_analog_samples_label->setObjectName("input_analog_samples_label");
   input_analog_samples_label->setFont(font);
-  analog_samples->addWidget(input_analog_samples_label);
+
   input_analog_samples_combobox = new QComboBox();
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
   input_analog_samples_combobox->addItem("4", 0);
@@ -666,79 +682,170 @@ QWidget * main_window::setup_input_tab()
   input_analog_samples_combobox->addItem("512", 7);
   input_analog_samples_combobox->addItem("1024", 8);
 
-  analog_samples->addWidget(input_analog_samples_combobox);
-  input_analog_layout->addLayout(analog_samples);
   input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
-  input_analog_layout->addWidget(input_detect_disconnect_checkbox);
-  input_analog_groupbox->setLayout(input_analog_layout);
-  column1->addWidget(input_analog_groupbox);
 
+  QHBoxLayout *analog_samples = new QHBoxLayout();
+  analog_samples->addWidget(input_analog_samples_label, 0, Qt::AlignLeft);
+  analog_samples->addWidget(input_analog_samples_combobox, 0, Qt::AlignLeft);
+
+  input_analog_layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
+  input_analog_layout->addWidget(input_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
+
+  input_analog_groupbox->setLayout(input_analog_layout);
+
+  return input_analog_groupbox;
+}
+
+QWidget * main_window::setup_input_serial_groupbox()
+{
+  QGridLayout *input_serial_layout = new QGridLayout();
+
+  input_serial_mode_button_group = new QButtonGroup(this);
+  input_serial_mode_button_group->setExclusive(true);
+  input_serial_mode_button_group->setObjectName("input_serial_mode_button_group");
+
+  input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
+  input_serial_groupbox->setObjectName("input_serial_groupbox");
+
+  input_usb_dual_port_radio = new QRadioButton(tr("USB Dual Port"));
+  input_usb_dual_port_radio->setObjectName("input_usb_dual_port_radio");
+
+  input_usb_chained_radio = new QRadioButton(tr("USB Chained"));
+  input_usb_chained_radio->setObjectName("input_usb_chained_radio");
+
+  input_uart_fixed_baud_radio = new QRadioButton(tr("UART, fixed baud rate: "));
+  input_uart_fixed_baud_radio->setObjectName("input_uart_fixed_baud_radio");
+
+  input_uart_fixed_baud_spinbox = new QSpinBox();
+  input_uart_fixed_baud_spinbox->setObjectName("input_uart_fixed_baud_spinbox");
+  input_uart_fixed_baud_spinbox->setRange(JRK_MIN_ALLOWED_BAUD_RATE, JRK_MAX_ALLOWED_BAUD_RATE);
+
+  input_serial_mode_button_group->addButton(input_usb_dual_port_radio, JRK_SERIAL_MODE_USB_DUAL_PORT);
+  input_serial_mode_button_group->addButton(input_usb_chained_radio, JRK_SERIAL_MODE_USB_CHAINED);
+  input_serial_mode_button_group->addButton(input_uart_fixed_baud_radio, JRK_SERIAL_MODE_UART);
+
+  input_enable_crc_checkbox = new QCheckBox(tr("Enable CRC"));
+  input_enable_crc_checkbox->setObjectName("input_enable_crc_checkbox");
+
+  input_device_label = new QLabel(tr("Device Number:"));
+  input_device_label->setObjectName("input_device_label");
+
+  input_device_spinbox = new QSpinBox();
+  input_device_spinbox->setObjectName("input_device_spinbox");
+  input_device_spinbox->setMaximum(0x3FFF);
+
+  input_device_number_checkbox = new QCheckBox(tr("Enable 14-bit device number"));
+  input_device_number_checkbox->setObjectName("input_device_number_checkbox");
+
+  input_timeout_label = new QLabel(tr("Timeout (s):"));
+  input_timeout_label->setObjectName("input_timeout_label");
+
+  input_timeout_spinbox = new QDoubleSpinBox();
+  input_timeout_spinbox->setObjectName("input_timeout_spinbox");
+  input_timeout_spinbox->setSingleStep(JRK_SERIAL_TIMEOUT_UNITS);
+  input_timeout_spinbox->setDecimals(2);
+  input_timeout_spinbox->setRange(0, JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
+
+  input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
+  input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
+
+  input_never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
+  input_never_sleep_checkbox->setObjectName("input_never_sleep_checkbox");
+
+  QHBoxLayout *uart_fixed_baud = new QHBoxLayout();
+  uart_fixed_baud->addWidget(input_uart_fixed_baud_radio, 0, Qt::AlignLeft);
+  uart_fixed_baud->addWidget(input_uart_fixed_baud_spinbox, 0, Qt::AlignLeft);
+
+  QHBoxLayout *device_layout = new QHBoxLayout();
+  device_layout->addWidget(input_device_label, 0, Qt::AlignLeft);
+  device_layout->addWidget(input_device_spinbox, 0, Qt::AlignLeft);
+
+  QHBoxLayout *timeout_layout = new QHBoxLayout();
+  timeout_layout->addWidget(input_timeout_label, 0, Qt::AlignLeft);
+  timeout_layout->addWidget(input_timeout_spinbox, 0, Qt::AlignLeft);
+
+  input_serial_layout->addWidget(input_usb_dual_port_radio, 0, 0, Qt::AlignLeft);
+  input_serial_layout->addWidget(input_usb_chained_radio, 1, 0, Qt::AlignLeft);
+
+  input_serial_layout->addLayout(uart_fixed_baud, 2, 0, Qt::AlignLeft);
+  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 3, 0);
+  input_serial_layout->addWidget(input_enable_crc_checkbox, 4, 0, Qt::AlignLeft);
+
+  input_serial_layout->addLayout(device_layout, 5, 0, Qt::AlignLeft);
+  input_serial_layout->addLayout(timeout_layout, 6, 0, Qt::AlignLeft);
+  input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 7, 0, Qt::AlignLeft);
+  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 8, 0);
+  input_serial_layout->addWidget(input_never_sleep_checkbox, 9, 0, Qt::AlignLeft);
+
+  input_serial_groupbox->setLayout(input_serial_layout);
+
+  return input_serial_groupbox;
+}
+
+QWidget * main_window::setup_input_scaling_groupbox()
+{
   QGridLayout *input_scaling_layout = new QGridLayout();
-  input_scaling_groupbox = new QGroupBox(tr("Scaling(Analog and Pulse Width mode only)"));
+  input_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Pulse Width mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
-  QVBoxLayout *scaling_column1 = new QVBoxLayout();
+
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
   input_invert_checkbox->setObjectName("input_invert_checkbox");
-  scaling_column1->addWidget(input_invert_checkbox);
-
-  QGridLayout *scaling_column1_labels = new QGridLayout();
 
   input_absolute_max_label = new QLabel(tr("Absolute max:"));
   input_absolute_max_label->setObjectName("input_absolute_max_label");
-  scaling_column1_labels->addWidget(input_absolute_max_label,1,0);
+
   input_maximum_label = new QLabel(tr("Maximum:"));
   input_maximum_label->setObjectName("input_maximum_label");
-  scaling_column1_labels->addWidget(input_maximum_label,2,0);
+
   input_neutral_max_label = new QLabel(tr("Neutral max:"));
   input_neutral_max_label->setObjectName("input_neutral_max_label");
-  scaling_column1_labels->addWidget(input_neutral_max_label,3,0);
+
   input_neutral_min_label = new QLabel(tr("Neutral min:"));
   input_neutral_min_label->setObjectName("input_neutral_min_label");
-  scaling_column1_labels->addWidget(input_neutral_min_label,4,0);
+
   input_minimum_label = new QLabel(tr("Minimum:"));
   input_minimum_label->setObjectName("input_minimum_label");
-  scaling_column1_labels->addWidget(input_minimum_label,5,0);
+
   input_absolute_min_label = new QLabel(tr("Absolute min:"));
   input_absolute_min_label->setObjectName("input_absolute_min_label");
-  scaling_column1_labels->addWidget(input_absolute_min_label,6,0);
+
   input_degree_label = new QLabel(tr("Degree:"));
   input_degree_label->setObjectName("input_degree_label");
-  scaling_column1_labels->addWidget(input_degree_label,7,0,7,0,Qt::AlignTop);
 
   input_input_label = new QLabel(tr("Input"));
   input_input_label->setObjectName("input_input_label");
-  scaling_column1_labels->addWidget(input_input_label,0,1);
+
   input_absolute_maximum_spinbox = new QSpinBox();
   input_absolute_maximum_spinbox->setObjectName("input_absolute_maximum_spinbox");
   input_absolute_maximum_spinbox->setRange(0, UINT12_MAX);
   input_absolute_maximum_spinbox->setValue(4095);
-  scaling_column1_labels->addWidget(input_absolute_maximum_spinbox,1,1);
+
   input_maximum_spinbox = new QSpinBox();
   input_maximum_spinbox->setObjectName("input_maximum_spinbox");
   input_maximum_spinbox->setRange(0, UINT12_MAX);
   input_maximum_spinbox->setValue(4095);
-  scaling_column1_labels->addWidget(input_maximum_spinbox,2,1);
+
   input_neutral_maximum_spinbox = new QSpinBox();
   input_neutral_maximum_spinbox->setObjectName("input_neutral_maximum_spinbox");
   input_neutral_maximum_spinbox->setRange(0, UINT12_MAX);
   input_neutral_maximum_spinbox->setValue(2048);;
-  scaling_column1_labels->addWidget(input_neutral_maximum_spinbox,3,1);
+
   input_neutral_minimum_spinbox = new QSpinBox();
   input_neutral_minimum_spinbox->setObjectName("input_neutral_minimum_spinbox");
   input_neutral_minimum_spinbox->setRange(0, UINT12_MAX);
   input_neutral_minimum_spinbox->setValue(2048);
-  scaling_column1_labels->addWidget(input_neutral_minimum_spinbox,4,1);
+
   input_minimum_spinbox = new QSpinBox();
   input_minimum_spinbox->setObjectName("input_minimum_spinbox");
   input_minimum_spinbox->setRange(0, UINT12_MAX);
   input_minimum_spinbox->setValue(4);
-  scaling_column1_labels->addWidget(input_minimum_spinbox,5,1);
+
   input_absolute_minimum_spinbox = new QSpinBox();
   input_absolute_minimum_spinbox->setObjectName("input_absolute_minimum_spinbox");
   input_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
   input_absolute_minimum_spinbox->setValue(0);
-  scaling_column1_labels->addWidget(input_absolute_minimum_spinbox,6,1);
+
   input_scaling_degree_combobox = new QComboBox();
   input_scaling_degree_combobox->setObjectName("input_scaling_degree_combobox");
   input_scaling_degree_combobox->addItem("1 - Linear", JRK_SCALING_DEGREE_LINEAR);
@@ -746,122 +853,67 @@ QWidget * main_window::setup_input_tab()
   input_scaling_degree_combobox->addItem("3 - Cubic", JRK_SCALING_DEGREE_CUBIC);
   input_scaling_degree_combobox->addItem("4 - Quartic", JRK_SCALING_DEGREE_QUARTIC);
   input_scaling_degree_combobox->addItem("5 - Quintic", JRK_SCALING_DEGREE_QUINTIC);
-  scaling_column1_labels->addWidget(input_scaling_degree_combobox,7,1,7,2,Qt::AlignTop);
 
   input_target_label = new QLabel(tr("Target"));
   input_target_label->setObjectName("input_target_label");
-  scaling_column1_labels->addWidget(input_target_label,0,2);
+
   input_output_maximum_spinbox = new QSpinBox();
   input_output_maximum_spinbox->setObjectName("input_output_maximum_spinbox");
   input_output_maximum_spinbox->setRange(0, UINT12_MAX);
   input_output_maximum_spinbox->setValue(4095);
-  scaling_column1_labels->addWidget(input_output_maximum_spinbox,2,2);
+
   input_output_neutral_spinbox = new QSpinBox();
   input_output_neutral_spinbox->setObjectName("input_output_neutral_spinbox");
   input_output_neutral_spinbox->setRange(0, UINT12_MAX);
   input_output_neutral_spinbox->setValue(2048);
-  scaling_column1_labels->addWidget(input_output_neutral_spinbox,3,2);
+
   input_output_minimum_spinbox = new QSpinBox();
   input_output_minimum_spinbox->setObjectName("input_output_minimum_spinbox");
   input_output_minimum_spinbox->setRange(0, UINT12_MAX);
   input_output_minimum_spinbox->setValue(0);
-  scaling_column1_labels->addWidget(input_output_minimum_spinbox,4,2);
 
-  scaling_column1->addLayout(scaling_column1_labels);
-
-
-  input_scaling_layout->addLayout(scaling_column1,0,0);
-
-  QVBoxLayout *scaling_column2 = new QVBoxLayout();
   input_learn_button = new QPushButton();
   input_learn_button->setObjectName("input_learn_button");
-  input_learn_button->setText(tr("Learn.."));
-  scaling_column2->addWidget(input_learn_button);
-
+  input_learn_button->setText(tr("Learn..."));
 
   input_reset_range_button = new QPushButton();
   input_reset_range_button->setObjectName("input_reset_range_button");
   input_reset_range_button->setText(tr("Reset to full range"));
-  scaling_column2->addWidget(input_reset_range_button);
 
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_waring_label");
   input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
-  scaling_column2->addWidget(input_scaling_order_warning_label);
-  input_scaling_layout->addLayout(scaling_column2,0,1);
+
+  input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_input_label, 1, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_target_label, 1, 2, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_absolute_max_label, 2, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_absolute_maximum_spinbox, 2, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_maximum_label, 3, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_maximum_spinbox, 3, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_output_maximum_spinbox, 3, 2, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_neutral_max_label, 4, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_neutral_maximum_spinbox, 4, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_output_neutral_spinbox, 4, 2, 2, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_neutral_min_label, 5, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_neutral_minimum_spinbox, 5, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_minimum_label, 6, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_minimum_spinbox, 6, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_output_minimum_spinbox, 6, 2, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_absolute_min_label, 7, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_absolute_minimum_spinbox, 7, 1, Qt::AlignLeft);
+  input_scaling_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 8, 0);
+  input_scaling_layout->addWidget(input_degree_label, 9, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_scaling_degree_combobox, 9, 1, 1, 2, Qt::AlignLeft);
+  input_scaling_layout->addItem(new QSpacerItem(input_scaling_degree_combobox->sizeHint().width(), 0), 0, 3);
+  input_scaling_layout->addWidget(input_learn_button, 0, 4, Qt::AlignRight);
+  input_scaling_layout->addWidget(input_reset_range_button, 1, 4, Qt::AlignRight);
+  input_scaling_layout->addWidget(input_scaling_order_warning_label, 2, 3, 7, 2, Qt::AlignCenter);
+
   input_scaling_groupbox->setLayout(input_scaling_layout);
-  column2->addWidget(input_scaling_groupbox,-1,Qt::AlignCenter);
 
-  input_serial_mode_button_group = new QButtonGroup(this);
-  input_serial_mode_button_group->setExclusive(true);
-  input_serial_mode_button_group->setObjectName("input_serial_mode_button_group");
-
-  QVBoxLayout *input_serial_layout = new QVBoxLayout();
-  input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
-  input_serial_groupbox->setObjectName("input_serial_groupbox");
-  input_usb_dual_port_radio = new QRadioButton(tr("USB Dual Port"));
-  input_usb_dual_port_radio->setObjectName("input_usb_dual_port_radio");
-  // input_usb_dual_port_radio->setChecked(true);
-  input_serial_mode_button_group->addButton(input_usb_dual_port_radio, JRK_SERIAL_MODE_USB_DUAL_PORT);
-  input_serial_layout->addWidget(input_usb_dual_port_radio);
-  input_usb_chained_radio = new QRadioButton(tr("USB Chained"));
-  input_usb_chained_radio->setObjectName("input_usb_chained_radio");
-  input_serial_mode_button_group->addButton(input_usb_chained_radio, JRK_SERIAL_MODE_USB_CHAINED);
-  input_serial_layout->addWidget(input_usb_chained_radio);
-
-  QHBoxLayout *uart_fixed_baud_rate = new QHBoxLayout();
-  input_uart_fixed_baud_radio = new QRadioButton(tr("UART, fixed baud rate: "));
-  input_uart_fixed_baud_radio->setObjectName("input_uart_fixed_baud_radio");
-  input_uart_fixed_baud_spinbox = new QSpinBox();
-  input_uart_fixed_baud_spinbox->setObjectName("input_uart_fixed_baud_spinbox");
-  input_uart_fixed_baud_spinbox->setRange(JRK_MIN_ALLOWED_BAUD_RATE, JRK_MAX_ALLOWED_BAUD_RATE);
-  input_serial_mode_button_group->addButton(input_uart_fixed_baud_radio, JRK_SERIAL_MODE_UART);
-  uart_fixed_baud_rate->addWidget(input_uart_fixed_baud_radio);
-  uart_fixed_baud_rate->addWidget(input_uart_fixed_baud_spinbox);
-  input_serial_layout->addLayout(uart_fixed_baud_rate);
-  input_enable_crc_checkbox = new QCheckBox(tr("Enable CRC"));
-  input_enable_crc_checkbox->setObjectName("input_enable_crc_checkbox");
-  input_serial_layout->addWidget(input_enable_crc_checkbox);
-  QHBoxLayout *device_number = new QHBoxLayout();
-  input_device_label = new QLabel(tr("Device Number:"));
-  input_device_label->setObjectName("input_device_label");
-  input_device_spinbox = new QSpinBox();
-  input_device_spinbox->setObjectName("input_device_spinbox");
-  device_number->addWidget(input_device_label);
-  device_number->addWidget(input_device_spinbox);
-  input_serial_layout->addLayout(device_number);
-  input_device_number_checkbox = new QCheckBox(tr("Enable 14-bit device number"));
-  input_device_number_checkbox->setObjectName("input_device_number_checkbox");
-  input_serial_layout->addWidget(input_device_number_checkbox);
-  QHBoxLayout *timeout_row = new QHBoxLayout();
-  input_timeout_label = new QLabel(tr("Timeout (s):"));
-  input_timeout_label->setObjectName("input_timeout_label");
-  input_timeout_spinbox = new QSpinBox();
-  input_timeout_spinbox->setObjectName("input_timeout_spinbox");
-  input_timeout_spinbox->setSingleStep(JRK_SERIAL_TIMEOUT_UNITS);
-  input_timeout_spinbox->setRange(0, JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
-  timeout_row->addWidget(input_timeout_label);
-  timeout_row->addWidget(input_timeout_spinbox);
-  input_serial_layout->addLayout(timeout_row);
-  input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
-  input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
-  input_serial_layout->addWidget(input_disable_compact_protocol_checkbox);
-  input_never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
-  input_never_sleep_checkbox->setObjectName("input_never_sleep_checkbox");
-  input_serial_layout->addWidget(input_never_sleep_checkbox);
-
-
-
-  input_serial_groupbox->setLayout(input_serial_layout);
-  column1->addWidget(input_serial_groupbox);
-
-  layout->addLayout(column1,0,0);
-  layout->addLayout(column2,0,1);
-
-  input_page_widget->setLayout(layout);
-  input_page_widget->setParent(tab_widget);
-  return input_page_widget;
+  return input_scaling_groupbox;
 }
 
 QWidget * main_window::setup_feedback_tab()
@@ -922,7 +974,7 @@ QWidget * main_window::setup_feedback_tab()
   feedback_absolute_minimum_spinbox->setObjectName("feedback_absolute_minimum_spinbox");
   feedback_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
   feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox,5,1);
-  feedback_learn_button = new QPushButton(tr("Learn.."));
+  feedback_learn_button = new QPushButton(tr("Learn..."));
   feedback_learn_button->setObjectName("feedback_learn_button");
   feedback_scaling_layout->addWidget(feedback_learn_button,0,5,Qt::AlignRight);
   feedback_reset_range_button = new QPushButton(tr("Reset to full range"));
@@ -1294,7 +1346,7 @@ void main_window::center_at_startup_if_needed()
 
 void main_window::showEvent(QShowEvent * event)
 {
-  // center_at_startup_if_needed();
+  center_at_startup_if_needed();
 
   if (!start_event_reported)
   {
@@ -1480,7 +1532,7 @@ void main_window::on_input_reset_range_button_clicked()
   if (suppress_events) { return; }
   controller->handle_input_absolute_minimum_input(0);
   controller->handle_input_absolute_maximum_input(4095);
-  controller->handle_input_minimum_input(4);
+  controller->handle_input_minimum_input(0);
   controller->handle_input_maximum_input(4095);
   controller->handle_input_neutral_minimum_input(2048);
   controller->handle_input_neutral_maximum_input(2048);
@@ -1488,6 +1540,7 @@ void main_window::on_input_reset_range_button_clicked()
   controller->handle_output_neutral_input(2048);
   controller->handle_output_maximum_input(4095);
   controller->handle_input_invert_input(false);
+  set_input_scaling_order_warning_label();
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
@@ -1645,6 +1698,16 @@ void main_window::set_check_box(QCheckBox * check, bool value)
   suppress_events = false;
 }
 
+bool main_window::ordered(QList<int> p)
+{
+  for (int i = 0; i < p.size(); ++i)
+  {
+    if (p[i] > p[i + 1])
+      return false;
+  }
+  return true;
+}
+
 void main_window::set_tab_pages_enabled(bool enabled)
 {
   for (int i = 0; i < tab_widget->count(); i++)
@@ -1733,22 +1796,16 @@ void main_window::set_input_mode(uint8_t input_mode)
     case 0:
       input_analog_groupbox->setEnabled(false);
       input_serial_groupbox->setEnabled(true);
-      input_uart_fixed_baud_radio->setEnabled(true);
-      input_uart_fixed_baud_spinbox->setEnabled(true);
       input_scaling_groupbox->setEnabled(false);
       break;
     case 1:
       input_analog_groupbox->setEnabled(true);
       input_serial_groupbox->setEnabled(true);
-      input_uart_fixed_baud_radio->setEnabled(false);
-      input_uart_fixed_baud_spinbox->setEnabled(false);
       input_scaling_groupbox->setEnabled(true);
       break;
     case 2:
       input_analog_groupbox->setEnabled(false);
       input_serial_groupbox->setEnabled(true);
-      input_uart_fixed_baud_radio->setEnabled(false);
-      input_uart_fixed_baud_spinbox->setEnabled(false);
       input_scaling_groupbox->setEnabled(true);
       break;
     default:
@@ -1816,7 +1873,7 @@ void main_window::set_input_enable_device_number(bool enabled)
 
 void main_window::set_input_serial_timeout(uint16_t value)
 {
-  set_spin_box(input_timeout_spinbox, value);
+  set_double_spin_box(input_timeout_spinbox, value);
 }
 
 void main_window::set_input_compact_protocol(bool enabled)
@@ -1877,6 +1934,15 @@ void main_window::set_input_output_maximum(uint16_t input_output_maximum)
 void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
 {
   set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
+}
+
+void main_window::set_input_scaling_order_warning_label()
+{
+  bool enabled =
+  !ordered({input_absolute_minimum_spinbox->value(), input_minimum_spinbox->value(),
+    input_neutral_minimum_spinbox->value(), input_neutral_maximum_spinbox->value(),
+    input_maximum_spinbox->value(), input_absolute_maximum_spinbox->value()});
+  input_scaling_order_warning_label->setVisible(enabled);
 }
 
 void main_window::set_feedback_mode(uint8_t feedback_mode)

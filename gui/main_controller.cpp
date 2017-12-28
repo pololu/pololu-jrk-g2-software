@@ -117,20 +117,6 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
-  // try
-  // {
-  //   // Reset command timeout BEFORE loading variables for the first time so we
-  //   // only count one occurrence of the command timeout error. (Otherwise, the
-  //   // Tic would again set the command_timeout bit in errors_occurred after we
-  //   // load the variables but before we reset the command timeout.)
-  //   device_handle.reset_command_timeout();
-  //   reload_variables();
-  // }
-  // catch (std::exception const & e)
-  // {
-  //   show_exception(e, "There was an error getting the status of the device.");
-  // }
-
   handle_model_changed();
 }
 
@@ -226,22 +212,12 @@ void main_controller::upgrade_firmware()
       return;
     }
 
-    // try
-    // {
-    //   device_handle.start_bootloader();
-    // }
-    // catch (std::exception const & e)
-    // {
-    //   show_exception(e);
-    // }
-
     really_disconnect();
     disconnected_by_user = true;
     connection_error = false;
     handle_model_changed();
   }
 
-  // window->open_bootloader_window();
 }
 
 // Returns true if the device list includes the specified device.
@@ -299,7 +275,6 @@ void main_controller::update()
         // indicate an active error if the command timeout interval is shorter
         // than the interval between calls to update().
         reload_variables();
-        // device_handle.reset_command_timeout();
       }
       catch (std::exception const & e)
       {
@@ -419,7 +394,7 @@ void main_controller::show_exception(std::exception const & e,
 void main_controller::handle_model_changed()
 {
   handle_device_changed();
-  //TODO: handle_variables_changed();
+  handle_variables_changed();
   handle_settings_changed();
 }
 
@@ -599,17 +574,7 @@ void main_controller::handle_settings_changed()
 {
   // [all-settings]
 
-  window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
-  window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
-  window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
-  window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
-  window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
-  window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
-  window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
-  window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
 
-  window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
-  window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_input_mode(settings.get_input_mode());
   window->set_input_analog_samples_exponent(settings.get_input_analog_samples_exponent());
   window->set_input_detect_disconnect(settings.get_input_detect_disconnect());
@@ -632,12 +597,23 @@ void main_controller::handle_settings_changed()
   window->set_input_output_neutral(settings.get_output_neutral());
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
+  window->set_input_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_invert(settings.get_feedback_invert());
   window->set_feedback_absolute_minimum(settings.get_feedback_absolute_minimum());
   window->set_feedback_absolute_maximum(settings.get_feedback_absolute_maximum());
   window->set_feedback_maximum(settings.get_feedback_maximum());
   window->set_feedback_minimum(settings.get_feedback_minimum());
+  window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
+  window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
+  window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
+  window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
+  window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
+  window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
+  window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
+  window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
+  window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
+  window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
 
 
 
@@ -648,7 +624,6 @@ void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
 
-  // window->set_input_scaling_enabled(input_mode_is_analog() || input_mode_is_pulse_width());
 
   // TODO: cached_settings = settings;
 }
@@ -1142,16 +1117,4 @@ void main_controller::reload_variables()
     variables_update_failed = true;
     throw;
   }
-}
-
-bool main_controller::input_mode_is_analog() const
-{
-  uint8_t input_mode = settings.get_input_mode();
-  return (input_mode == JRK_INPUT_MODE_ANALOG);
-}
-
-bool main_controller::input_mode_is_pulse_width() const
-{
-  uint8_t input_mode = settings.get_input_mode();
-  return (input_mode == JRK_INPUT_MODE_PULSE_WIDTH);
 }
