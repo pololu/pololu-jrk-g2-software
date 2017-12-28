@@ -131,7 +131,6 @@ private:
   void handle_settings_changed();
   void handle_settings_applied();
 
-  void initialize_input_scaling();
   // void update_motor_status_message(bool prompt_to_resume);
 
   // Holds a list of the relevant devices that are connected to the computer.
