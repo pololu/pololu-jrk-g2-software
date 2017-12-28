@@ -1698,9 +1698,9 @@ void main_window::set_check_box(QCheckBox * check, bool value)
   suppress_events = false;
 }
 
-bool main_window::ordered(QList<int> p)
+static bool ordered(QList<int> p)
 {
-  for (int i = 0; i < p.size(); ++i)
+  for (int i = 0; i < p.size()-1; i++)
   {
     if (p[i] > p[i + 1])
       return false;

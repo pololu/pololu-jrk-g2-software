@@ -498,8 +498,6 @@ private:
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
 
-  bool ordered(QList<int> p);
-
   void center_at_startup_if_needed();
 
   bool start_event_reported = false;
