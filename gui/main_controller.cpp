@@ -412,12 +412,10 @@ void main_controller::handle_device_changed()
     window->set_firmware_version(device_handle.get_firmware_version_string());
     window->set_device_reset(
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
-
     // window->set_connection_status("", false);
 
     // window->reset_error_counts();
 
-    initialize_input_scaling();
   }
   else
   {
@@ -446,25 +444,6 @@ void main_controller::handle_device_changed()
   window->set_stop_motor_enabled(connected());
   window->set_run_motor_enabled(connected());
   window->set_tab_pages_enabled(connected());
-}
-
-void main_controller::initialize_input_scaling()
-{
-  if (variables.get_input() == JRK_INPUT_MODE_ANALOG ||
-    variables.get_input() == JRK_INPUT_MODE_PULSE_WIDTH)
-  {
-    window->set_input_invert(settings.get_input_invert());
-    window->set_input_absolute_minimum(settings.get_input_absolute_minimum());
-    window->set_input_absolute_maximum(settings.get_input_absolute_maximum());
-    window->set_input_minimum(settings.get_input_minimum());
-    window->set_input_maximum(settings.get_input_maximum());
-    window->set_input_neutral_minimum(settings.get_input_neutral_minimum());
-    window->set_input_neutral_maximum(settings.get_input_neutral_maximum());
-    window->set_input_output_minimum(settings.get_output_minimum());
-    window->set_input_output_neutral(settings.get_output_neutral());
-    window->set_input_output_maximum(settings.get_output_maximum());
-    window->set_input_scaling_degree(settings.get_input_scaling_degree());
-  }
 }
 
 void main_controller::handle_variables_changed()
@@ -623,7 +602,7 @@ void main_controller::handle_settings_changed()
 void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
-
+  window->set_input_scaling_order_warning_label();
 
   // TODO: cached_settings = settings;
 }
@@ -996,7 +975,6 @@ void main_controller::apply_settings()
   {
     show_exception(e);
   }
-
   handle_settings_changed();
 }
 

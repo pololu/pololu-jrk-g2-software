@@ -882,7 +882,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
 
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
-  input_scaling_order_warning_label->setObjectName("input_scaling_order_waring_label");
+  input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
   input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
 
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
@@ -955,7 +955,7 @@ QWidget * main_window::setup_feedback_tab()
   feedback_scaling_layout->addWidget(feedback_calibration_label,1,1);
   feedback_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order"));
-  feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_waring_label");
+  feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_warning_label");
   feedback_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
   feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,5,4,5,2);
   feedback_absolute_maximum_spinbox = new QSpinBox();
@@ -1540,7 +1540,7 @@ void main_window::on_input_reset_range_button_clicked()
   controller->handle_output_neutral_input(2048);
   controller->handle_output_maximum_input(4095);
   controller->handle_input_invert_input(false);
-  set_input_scaling_order_warning_label();
+  input_scaling_order_warning_label->setVisible(false);
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
