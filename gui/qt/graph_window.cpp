@@ -12,101 +12,89 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-AltWindow::AltWindow(QWidget *parent)
+graph_window::graph_window(QWidget *parent)
 {
 	setup_ui();
-	grabbedWidget = 0;
+	grabbed_widget = 0;
 }
 
-AltWindow::~AltWindow()
+void graph_window::setup_ui()
 {
+	setObjectName(QStringLiteral("graph_window"));
 
-}
+	central_widget = new QWidget(this);
+	central_widget->setObjectName(QStringLiteral("central_widget"));
 
-void AltWindow::setup_ui()
-{
-	setObjectName(QStringLiteral("AltWindow"));
-	// resize(818,547);
-	centralwidget = new QWidget(this);
-	centralwidget->setObjectName(QStringLiteral("centralwidget"));
-	verticalLayout = new QVBoxLayout(centralwidget);
-	verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+	vertical_layout = new QVBoxLayout(central_widget);
+	vertical_layout->setObjectName(QStringLiteral("vertical_layout"));
 
-	centralLayout = new QGridLayout(this);
+	central_layout = new QGridLayout(this);
 
-	mainLayout = new QGridLayout();
+	main_layout = new QGridLayout();
 
-	plotLayout = new QHBoxLayout();
+	plot_layout = new QHBoxLayout();
 
-	bottomControlLayout = new QHBoxLayout();
+	bottom_control_layout = new QHBoxLayout();
 
-	plotRangeLayout = new QVBoxLayout();
-
-	plotVisibleLayout = new QVBoxLayout();
+	plot_visible_layout = new QVBoxLayout();
 
 	range_label_layout = new QVBoxLayout();
 
 	horizontal_layout = new QHBoxLayout();
 	horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
 
-	verticalLayout->addLayout(horizontal_layout);
-
+	vertical_layout->addLayout(horizontal_layout);
 
 	retranslate_ui();
 
 	QMetaObject::connectSlotsByName(this);
 }
 
-void AltWindow::closeEvent(QCloseEvent *event)
+void graph_window::closeEvent(QCloseEvent *event)
 {
-	grabbedWidget->custom_plot->xAxis->setTicks(false);
-	grabbedWidget->custom_plot->yAxis->setTicks(false);
-	horizontal_layout->removeWidget(grabbedWidget);
-	emit pass_widget(grabbedWidget);
-	grabbedWidget = 0;
+	grabbed_widget->custom_plot->xAxis->setTicks(false);
+	grabbed_widget->custom_plot->yAxis->setTicks(false);
+	horizontal_layout->removeWidget(grabbed_widget);
+	emit pass_widget(grabbed_widget);
+	grabbed_widget = 0;
 	QWidget::closeEvent(event);
 }
 
-void AltWindow::receive_widget(graph_widget *widget)
+void graph_window::receive_widget(graph_widget *widget)
 {
-	if(grabbedWidget != 0)
+	if(grabbed_widget != 0)
 		qWarning() << "You might have lost a widget just now.";
 
-	grabbedWidget = widget;
-	bottomControlLayout->addWidget(grabbedWidget->pauseRunButton);
-	bottomControlLayout->addWidget(grabbedWidget->label1);
-	bottomControlLayout->addWidget(grabbedWidget->min_y);
-	bottomControlLayout->addWidget(grabbedWidget->label3);
-	bottomControlLayout->addWidget(grabbedWidget->max_y);
-	bottomControlLayout->addWidget(grabbedWidget->label2);
-	bottomControlLayout->addWidget(grabbedWidget->domain);
-	grabbedWidget->custom_plot->xAxis->setTicks(true);
-	grabbedWidget->custom_plot->yAxis->setTicks(true);
-	grabbedWidget->custom_plot->setFixedSize(561,460);
-	grabbedWidget->custom_plot->setCursor(Qt::ArrowCursor);
-	grabbedWidget->custom_plot->setToolTip("");
-	plotLayout->addWidget(grabbedWidget->custom_plot,Qt::AlignTop);
+	grabbed_widget = widget;
+	bottom_control_layout->addWidget(grabbed_widget->pauseRunButton);
+	bottom_control_layout->addWidget(grabbed_widget->label1);
+	bottom_control_layout->addWidget(grabbed_widget->min_y);
+	bottom_control_layout->addWidget(grabbed_widget->label3);
+	bottom_control_layout->addWidget(grabbed_widget->max_y);
+	bottom_control_layout->addWidget(grabbed_widget->label2);
+	bottom_control_layout->addWidget(grabbed_widget->domain);
+	grabbed_widget->custom_plot->xAxis->setTicks(true);
+	grabbed_widget->custom_plot->yAxis->setTicks(true);
+	grabbed_widget->custom_plot->setFixedSize(561,460);
+	grabbed_widget->custom_plot->setCursor(Qt::ArrowCursor);
+	grabbed_widget->custom_plot->setToolTip("");
+	plot_layout->addWidget(grabbed_widget->custom_plot,Qt::AlignTop);
 
-	for(auto &x: grabbedWidget->all_plots)
+	for(auto &x: grabbed_widget->all_plots)
 	{
-		// graph_data_selection_bar->addWidget(x.plot_display);
-		// graph_data_selection_bar->addWidget(x.range_label, Qt::AlignCenter);
-		// graph_data_selection_bar->addWidget(x.plot_range);
-		plotVisibleLayout->addLayout(x.graph_data_selection_bar);
+		plot_visible_layout->addLayout(x.graph_data_selection_bar);
 	}
 
-	mainLayout->addLayout(plotLayout,0,0,Qt::AlignTop);
-	mainLayout->addLayout(bottomControlLayout,1,0);
-	centralLayout->addLayout(mainLayout,0,0);
-	centralLayout->addLayout(plotVisibleLayout,0,1);
-	// centralLayout->addLayout(range_label_layout,0,2,Qt::AlignCenter);
-	// centralLayout->addLayout(plotRangeLayout,0,3);
+	main_layout->addLayout(plot_layout,0,0,Qt::AlignTop);
+	main_layout->addLayout(bottom_control_layout,1,0);
+	central_layout->addLayout(main_layout,0,0);
+	central_layout->addLayout(plot_visible_layout,0,1);
 
-
-	horizontal_layout->addLayout(centralLayout);
+	horizontal_layout->addLayout(central_layout);
 }
 
-void AltWindow::retranslate_ui()
+void graph_window::retranslate_ui()
 {
-	this->setWindowTitle(QApplication::translate("AltWindow", "Pololu jrk G2 Configuration Utility - Plots of Variables vs. Time", Q_NULLPTR));
+	this->setWindowTitle(QApplication::translate("graph_window",
+		"Pololu jrk G2 Configuration Utility - Plots of Variables vs. Time", Q_NULLPTR));
 }
