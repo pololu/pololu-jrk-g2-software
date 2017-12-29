@@ -103,6 +103,7 @@ public:
   void handle_feedback_maximum_input(uint16_t value);
   void handle_feedback_minimum_input(uint16_t value);
   void handle_feedback_analog_samples_input(uint8_t feedback_analog_samples);
+  void handle_feedback_detect_disconnect_input(bool detect_disconnect);
 
   void handle_invert_motor_input(bool invert_motor);
   void handle_motor_pwm_frequency_input(uint8_t);

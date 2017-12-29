@@ -97,7 +97,7 @@ public:
   void set_never_sleep(bool never_sleep);
 
   void set_input_mode(uint8_t input_mode);
-  void set_input_analog_samples_exponent(uint8_t value);
+
 
 
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
@@ -115,6 +115,7 @@ public:
 
 
   void set_input_invert(bool input_invert);
+  void set_input_analog_samples_exponent(uint8_t value);
   void set_input_detect_disconnect(bool input_detect_disconnect);
   void set_input_serial_mode(uint8_t value);
   void set_input_baud_rate(uint32_t value);
@@ -142,6 +143,10 @@ public:
   void set_feedback_absolute_maximum(uint16_t value);
   void set_feedback_minimum(uint16_t value);
   void set_feedback_maximum(uint16_t value);
+  void set_feedback_scaling_order_warning_label();
+  void set_feedback_analog_samples_exponent(uint8_t value);
+  void set_feedback_detect_disconnect(bool feedback_detect_disconnect);
+
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
 
@@ -217,6 +222,8 @@ private slots:
   void on_feedback_maximum_spinbox_valueChanged(int value);
   void on_feedback_minimum_spinbox_valueChanged(int value);
   void on_feedback_reset_range_button_clicked();
+  void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
+  void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
 
   void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
 
@@ -233,8 +240,6 @@ private slots:
   void on_motor_brake_radio_toggled(bool checked);
 
 private:
-	QFont font;
-
 	std::array<error_row,32> error_rows;
 
 	QTimer *update_timer = NULL;
@@ -243,7 +248,7 @@ private:
 	QGridLayout *grid_layout;
 	QHBoxLayout *horizontal_layout;
 	graph_widget *preview_window;
-  AltWindow *altw;
+  graph_window *altw;
   QWidget * preview_plot;
 
   QMenuBar * menu_bar;
@@ -387,7 +392,7 @@ private:
 	QGroupBox *feedback_analog_groupbox;
 	QLabel *feedback_analog_samples_label;
 	QComboBox *feedback_analog_samples_combobox;
-	QCheckBox *feedback_disconnect_with_aux_checkbox;
+	QCheckBox *feedback_detect_disconnect_checkbox;
 
 	// pid tab
 
@@ -483,6 +488,8 @@ private:
   QWidget * setup_input_serial_groupbox();
   QWidget * setup_input_scaling_groupbox();
 	QWidget * setup_feedback_tab();
+  QWidget * setup_feedback_scaling_groupbox();
+  QWidget * setup_feedback_analog_groupbox();
 	QWidget * setup_pid_tab();
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();

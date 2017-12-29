@@ -277,108 +277,112 @@ void main_window::set_vin_calibration(int16_t vin_calibration)
 
 void main_window::setup_ui()
 {
-  font.setPointSizeF(8.25);
-
   setObjectName(QStringLiteral("main_window"));
   setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
+  update_timer = new QTimer(this);
+  update_timer->setObjectName("update_timer");
+
   central_widget = new QWidget();
   central_widget->setObjectName(QStringLiteral("central_widget"));
+  this->setCentralWidget(central_widget);
 
   menu_bar = new QMenuBar();
+  this->setMenuBar(menu_bar);
 
   file_menu = menu_bar->addMenu("");
   file_menu->setTitle(tr("&File"));
+
+  device_menu = menu_bar->addMenu("");
+  device_menu->setTitle(tr("&Device"));
+
+  help_menu = menu_bar->addMenu("");
+  help_menu->setTitle(tr("&Help"));
 
   open_settings_action = new QAction(this);
   open_settings_action->setObjectName("open_settings_action");
   open_settings_action->setText(tr("&Open settings file..."));
   open_settings_action->setShortcut(Qt::CTRL + Qt::Key_O);
-  file_menu->addAction(open_settings_action);
 
   save_settings_action = new QAction(this);
   save_settings_action->setObjectName("save_settings_action");
   save_settings_action->setText(tr("&Save settings file..."));
   save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
-  file_menu->addAction(save_settings_action);
-
-  file_menu->addSeparator();
 
   exit_action = new QAction(this);
   exit_action->setObjectName("exit_action");
   exit_action->setText(tr("E&xit"));
   exit_action->setShortcut(QKeySequence::Quit);
   connect(exit_action, SIGNAL(triggered()), this, SLOT(close()));
-  file_menu->addAction(exit_action);
-
-  device_menu = menu_bar->addMenu("");
-  device_menu->setTitle(tr("&Device"));
 
   disconnect_action = new QAction(this);
   disconnect_action->setObjectName("disconnect_action");
   disconnect_action->setText(tr("&Disconnect"));
   disconnect_action->setShortcut(Qt::CTRL + Qt::Key_D);
-  device_menu->addAction(disconnect_action);
-
-  device_menu->addSeparator();
 
   stop_motor_action = new QAction(this);
   stop_motor_action->setObjectName("stop_motor_action");
   stop_motor_action->setText(tr("Stop motor")); // TODO: shortcut key with &
-  device_menu->addAction(stop_motor_action);
 
   run_motor_action = new QAction(this);
   run_motor_action->setObjectName("run_motor_action");
   run_motor_action->setText(tr("Run motor")); // TODO: shortcut key with &
-  device_menu->addAction(run_motor_action);
-
-  device_menu->addSeparator();
 
   reload_settings_action = new QAction(this);
   reload_settings_action->setObjectName("reload_settings_action");
   reload_settings_action->setText(tr("Re&load settings from device"));
-  device_menu->addAction(reload_settings_action);
 
   restore_defaults_action = new QAction(this);
   restore_defaults_action->setObjectName("restore_defaults_action");
   restore_defaults_action->setText(tr("&Restore default settings"));
-  device_menu->addAction(restore_defaults_action);
 
   apply_settings_action = new QAction(this);
   apply_settings_action->setObjectName("apply_settings_action");
   apply_settings_action->setText(tr("&Apply settings"));
   apply_settings_action->setShortcut(Qt::CTRL + Qt::Key_P);
-  device_menu->addAction(apply_settings_action);
-
-  device_menu->addSeparator();
 
   upgrade_firmware_action = new QAction(this);
   upgrade_firmware_action->setObjectName("upgrade_firmware_action");
   upgrade_firmware_action->setText(tr("&Upgrade firmware..."));
-  device_menu->addAction(upgrade_firmware_action);
-
-  help_menu = menu_bar->addMenu("");
-  help_menu->setTitle(tr("&Help"));
 
   documentation_action = new QAction(this);
   documentation_action->setObjectName("documentation_action");
   documentation_action->setText(tr("&Online documentation..."));
   documentation_action->setShortcut(QKeySequence::HelpContents);
-  help_menu->addAction(documentation_action);
 
   about_action = new QAction(this);
   about_action->setObjectName("about_action");
   about_action->setText(tr("&About..."));
   about_action->setShortcut(QKeySequence::WhatsThis);
+
+  file_menu->addAction(open_settings_action);
+  file_menu->addAction(save_settings_action);
+  file_menu->addSeparator();
+  file_menu->addAction(exit_action);
+
+  device_menu->addAction(disconnect_action);
+  device_menu->addSeparator();
+  device_menu->addAction(stop_motor_action);
+  device_menu->addAction(run_motor_action);
+  device_menu->addSeparator();
+  device_menu->addAction(reload_settings_action);
+  device_menu->addAction(restore_defaults_action);
+  device_menu->addAction(apply_settings_action);
+  device_menu->addSeparator();
+  device_menu->addAction(upgrade_firmware_action);
+
+  help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
 
   header_layout = new QHBoxLayout();
 
   device_list_label = new QLabel();
   device_list_label->setText(tr("Connected to:"));
+
   device_list_value = new QComboBox();
   device_list_value->setObjectName("device_list_value");
   device_list_value->addItem(tr("Not connected"), QString()); // null value
+
   connection_status_value = new QLabel();
 
   // Make the device list wide enough to display the short name and serial
@@ -389,9 +393,7 @@ void main_window::setup_ui()
   device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
-  grid_layout = new QGridLayout(central_widget);
-  grid_layout->setSpacing(6);
-  grid_layout->setContentsMargins(11,11,11,11);
+  grid_layout = new QGridLayout();
   grid_layout->setObjectName(QStringLiteral("grid_layout"));
 
   horizontal_layout = new QHBoxLayout();
@@ -402,26 +404,16 @@ void main_window::setup_ui()
   preview_window->setObjectName(QStringLiteral("preview_window"));
   preview_window->custom_plot->xAxis->setTicks(false);
   preview_window->custom_plot->yAxis->setTicks(false);
+
   QWidget *preview_plot = preview_window->custom_plot;
   preview_plot->setCursor(Qt::PointingHandCursor);
   preview_plot->setToolTip("Click on preview to view full plot");
   preview_plot->setFixedSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
-  stop_motor->setEnabled(true);  // doesn't work yet
-
-
-
-  header_layout->addWidget(device_list_label);
-  header_layout->addWidget(device_list_value);
-  header_layout->addWidget(connection_status_value, 1, Qt::AlignLeft);
-  header_layout->addWidget(stop_motor);
-  header_layout->addWidget(preview_plot);
-
-  grid_layout->addLayout(header_layout,0,0);
+  stop_motor->setEnabled(true);  // TODO: doesn't work yet
 
   tab_widget = new QTabWidget();
-
   tab_widget->addTab(setup_status_tab(), tr("Status"));
   tab_widget->addTab(setup_input_tab(), tr("Input"));
   tab_widget->addTab(setup_feedback_tab(), tr("Feedback"));
@@ -429,49 +421,49 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
 
-  grid_layout->addWidget(tab_widget,1,0);
-
   stop_motor_button = new QPushButton();
   stop_motor_button->setObjectName("stop_motor_button");
   stop_motor_button->setText(tr("&Stop Motor"));
   stop_motor_button->setStyleSheet("background-color:red");
   stop_motor_button->setFixedSize(stop_motor_button->sizeHint());
-  connect(stop_motor_button, SIGNAL(clicked()),
-    stop_motor_action, SLOT(trigger()));
 
   run_motor_button = new QPushButton();
   run_motor_button->setObjectName("run_motor_button");
   run_motor_button->setText(tr("&Run Motor"));
   run_motor_button->setFixedSize(run_motor_button->sizeHint());
-  connect(run_motor_button, SIGNAL(clicked()),
-    run_motor_action, SLOT(trigger()));
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
   apply_settings_button->setFixedSize(apply_settings_button->sizeHint());
-  connect(apply_settings_button, SIGNAL(clicked()),
-    apply_settings_action, SLOT(trigger()));
 
-  footer_layout = new QHBoxLayout();
-  footer_layout->addWidget(stop_motor_button, Qt::AlignRight);
-  footer_layout->addWidget(run_motor_button, Qt::AlignLeft);
-  footer_layout->addSpacing(200);
-  footer_layout->addWidget(apply_settings_button, Qt::AlignRight);
-  footer_layout->setStretch(2,3);
+  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
+  stop_and_run_buttons->addWidget(stop_motor_button, Qt::AlignLeft);
+  stop_and_run_buttons->addWidget(run_motor_button, Qt::AlignLeft);
 
-  grid_layout->addLayout(footer_layout,2,0);
+  grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
+  grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
+  grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
+  grid_layout->addWidget(connection_status_value, 0, 3);
+  grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
+  grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignLeft);
+  grid_layout->addWidget(tab_widget, 1, 0, 1, 6);
+  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
+  grid_layout->addWidget(apply_settings_button, 2, 5, Qt::AlignRight);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
-  setCentralWidget(central_widget);
-  setMenuBar(menu_bar);
-
-  update_timer = new QTimer(this);
-  update_timer->setObjectName("update_timer");
-
   connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
+
+  connect(stop_motor_button, SIGNAL(clicked()),
+    stop_motor_action, SLOT(trigger()));
+
+  connect(run_motor_button, SIGNAL(clicked()),
+    run_motor_action, SLOT(trigger()));
+
+  connect(apply_settings_button, SIGNAL(clicked()),
+    apply_settings_action, SLOT(trigger()));
 
   connect(
     preview_window->pauseRunButton, &QPushButton::clicked,
@@ -482,6 +474,8 @@ void main_window::setup_ui()
       preview_window->custom_plot->replot();
     });
 
+  central_widget->setLayout(grid_layout);
+
   QMetaObject::connectSlotsByName(this);
 }
 
@@ -491,7 +485,7 @@ void main_window::on_launchGraph_clicked(QMouseEvent *event)
   horizontal_layout->removeWidget(red);
   if(altw == 0)
   {
-    altw = new AltWindow(this);
+    altw = new graph_window(this);
     connect(altw, SIGNAL(pass_widget(graph_widget*)), this,
     SLOT(receive_widget(graph_widget*)));
   }
@@ -508,7 +502,8 @@ void main_window::receive_widget(graph_widget *widget)
   widget->custom_plot->yAxis->setTicks(false);
   widget->custom_plot->setCursor(Qt::PointingHandCursor);
   widget->custom_plot->setToolTip("Click on preview to view full plot");
-  header_layout->addWidget(widget->custom_plot);
+  grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignLeft);
+  // header_layout->addWidget(widget->custom_plot);
   widgetAtHome = true;
 }
 
@@ -635,7 +630,6 @@ QWidget * main_window::setup_input_tab()
 
   input_mode_label = new QLabel(tr("Input mode:"));
   input_mode_label->setObjectName("input_mode_label");
-  input_mode_label->setFont(font);
 
   input_mode_combobox = new QComboBox();
   input_mode_combobox->setObjectName("input_mode_combobox");
@@ -648,8 +642,8 @@ QWidget * main_window::setup_input_tab()
   input_mode_layout->addWidget(input_mode_combobox, 0, Qt::AlignLeft);
 
   layout->addLayout(input_mode_layout, 0, 0, Qt::AlignLeft);
-  layout->addWidget(setup_input_analog_groupbox(), 1, 0, Qt::AlignLeft);
-  layout->addWidget(setup_input_serial_groupbox(), 2, 0, Qt::AlignLeft);
+  layout->addWidget(setup_input_analog_groupbox(), 1, 0);
+  layout->addWidget(setup_input_serial_groupbox(), 2, 0);
   layout->addWidget(setup_input_scaling_groupbox(), 0, 1, 3, 1, Qt::AlignTop);
 
   input_page_widget->setLayout(layout);
@@ -668,7 +662,6 @@ QWidget * main_window::setup_input_analog_groupbox()
 
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
   input_analog_samples_label->setObjectName("input_analog_samples_label");
-  input_analog_samples_label->setFont(font);
 
   input_analog_samples_combobox = new QComboBox();
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
@@ -767,16 +760,15 @@ QWidget * main_window::setup_input_serial_groupbox()
 
   input_serial_layout->addWidget(input_usb_dual_port_radio, 0, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_usb_chained_radio, 1, 0, Qt::AlignLeft);
-
   input_serial_layout->addLayout(uart_fixed_baud, 2, 0, Qt::AlignLeft);
   input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 3, 0);
   input_serial_layout->addWidget(input_enable_crc_checkbox, 4, 0, Qt::AlignLeft);
-
   input_serial_layout->addLayout(device_layout, 5, 0, Qt::AlignLeft);
-  input_serial_layout->addLayout(timeout_layout, 6, 0, Qt::AlignLeft);
-  input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 7, 0, Qt::AlignLeft);
-  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 8, 0);
-  input_serial_layout->addWidget(input_never_sleep_checkbox, 9, 0, Qt::AlignLeft);
+  input_serial_layout->addWidget(input_device_number_checkbox, 6, 0, Qt::AlignLeft);
+  input_serial_layout->addLayout(timeout_layout, 7, 0, Qt::AlignLeft);
+  input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 8, 0, Qt::AlignLeft);
+  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 9, 0);
+  input_serial_layout->addWidget(input_never_sleep_checkbox, 10, 0, Qt::AlignLeft);
 
   input_serial_groupbox->setLayout(input_serial_layout);
 
@@ -786,6 +778,7 @@ QWidget * main_window::setup_input_serial_groupbox()
 QWidget * main_window::setup_input_scaling_groupbox()
 {
   QGridLayout *input_scaling_layout = new QGridLayout();
+
   input_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Pulse Width mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
@@ -919,89 +912,139 @@ QWidget * main_window::setup_input_scaling_groupbox()
 QWidget * main_window::setup_feedback_tab()
 {
   feedback_page_widget = new QWidget();
+
   QGridLayout *layout = feedback_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
+
   feedback_mode_label = new QLabel(tr("Feedback mode:"));
   feedback_mode_label->setObjectName("feedback_mode_label");
-  feedback_mode_layout->addWidget(feedback_mode_label);
+
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
   feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
   feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
-  feedback_mode_combobox->addItem("Frequency", JRK_FEEDBACK_MODE_FREQUENCY);
+  feedback_mode_combobox->addItem("Frequency (digital)", JRK_FEEDBACK_MODE_FREQUENCY);
+
+  QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
+  feedback_mode_layout->addWidget(feedback_mode_label);
   feedback_mode_layout->addWidget(feedback_mode_combobox);
 
+  layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
+  layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0, Qt::AlignLeft);
+  layout->addWidget(setup_feedback_analog_groupbox(), 2, 0,Qt::AlignLeft);
+
+  feedback_page_widget->setLayout(layout);
+  return feedback_page_widget;
+}
+
+QWidget * main_window::setup_feedback_scaling_groupbox()
+{
   QGridLayout *feedback_scaling_layout = new QGridLayout();
+
+  QSizePolicy p = this->sizePolicy();
+  p.setRetainSizeWhenHidden(true);
+
   feedback_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Tachometer mode only)"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
+
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
   feedback_invert_checkbox->setObjectName("feedback_invert_checkbox");
-  feedback_scaling_layout->addWidget(feedback_invert_checkbox,0,0,0,3,Qt::AlignTop);
+
   feedback_absolute_max_label = new QLabel(tr("Absolute max:"));
   feedback_absolute_max_label->setObjectName("feedback_absolute_max_label");
-  feedback_scaling_layout->addWidget(feedback_absolute_max_label,2,0);
+
   feedback_maximum_label = new QLabel(tr("Maximum:"));
   feedback_maximum_label->setObjectName("feedback_maximum_label");
-  feedback_scaling_layout->addWidget(feedback_maximum_label,3,0);
+
   feedback_minimum_label = new QLabel(tr("Minimum:"));
   feedback_minimum_label->setObjectName("feedback_minimum_label");
-  feedback_scaling_layout->addWidget(feedback_minimum_label,4,0);
+
   feedback_absolute_min_label = new QLabel(tr("Absolute min:"));
   feedback_absolute_min_label->setObjectName("feedback_absolute_min_label");
-  feedback_scaling_layout->addWidget(feedback_absolute_min_label,5,0);
+
   feedback_calibration_label = new QLabel(tr("Calibration"));
   feedback_calibration_label->setObjectName("feedback_calibration_label");
-  feedback_scaling_layout->addWidget(feedback_calibration_label,1,1);
+
   feedback_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order"));
   feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_warning_label");
   feedback_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
-  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,5,4,5,2);
+  feedback_scaling_order_warning_label->setSizePolicy(p);
+
   feedback_absolute_maximum_spinbox = new QSpinBox();
   feedback_absolute_maximum_spinbox->setObjectName("feedback_absolute_maximum_spinbox");
   feedback_absolute_maximum_spinbox->setRange(0, UINT12_MAX);
-  feedback_scaling_layout->addWidget(feedback_absolute_maximum_spinbox,2,1);
+
   feedback_maximum_spinbox = new QSpinBox();
   feedback_maximum_spinbox->setObjectName("feedback_maximum_spinbox");
   feedback_maximum_spinbox->setRange(0, UINT12_MAX);
-  feedback_scaling_layout->addWidget(feedback_maximum_spinbox,3,1);
+
   feedback_minimum_spinbox = new QSpinBox();
   feedback_minimum_spinbox->setObjectName("feedback_minimum_spinbox");
   feedback_minimum_spinbox->setRange(0, UINT12_MAX);
-  feedback_scaling_layout->addWidget(feedback_minimum_spinbox,4,1);
+
   feedback_absolute_minimum_spinbox = new QSpinBox();
   feedback_absolute_minimum_spinbox->setObjectName("feedback_absolute_minimum_spinbox");
   feedback_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
-  feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox,5,1);
+
   feedback_learn_button = new QPushButton(tr("Learn..."));
   feedback_learn_button->setObjectName("feedback_learn_button");
-  feedback_scaling_layout->addWidget(feedback_learn_button,0,5,Qt::AlignRight);
+
   feedback_reset_range_button = new QPushButton(tr("Reset to full range"));
   feedback_reset_range_button->setObjectName("feedback_reset_range_button");
-  feedback_scaling_layout->addWidget(feedback_reset_range_button,1,4,1,2,Qt::AlignRight);
+
+  feedback_scaling_layout->addWidget(feedback_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_calibration_label, 1, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_absolute_max_label, 2, 0, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_absolute_maximum_spinbox, 2, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_maximum_label, 3, 0, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_maximum_spinbox, 3, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_minimum_label, 4, 0, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_minimum_spinbox, 4, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_absolute_min_label, 5, 0, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox, 5, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_learn_button, 0, 3, Qt::AlignRight);
+  feedback_scaling_layout->addWidget(feedback_reset_range_button, 1, 3, Qt::AlignRight);
+
+  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,2,2,4,2, Qt::AlignCenter);
+
   feedback_scaling_groupbox->setLayout(feedback_scaling_layout);
 
+  return feedback_scaling_groupbox;
+}
+
+QWidget * main_window::setup_feedback_analog_groupbox()
+{
   QGridLayout *feedback_analog_layout = new QGridLayout();
+
   feedback_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
   feedback_analog_groupbox->setObjectName("feedback_analog_groupbox");
+
   feedback_analog_samples_label = new QLabel(tr("Analog samples:"));
   feedback_analog_samples_label->setObjectName("feedback_analog_samples_label");
-  feedback_analog_layout->addWidget(feedback_analog_samples_label,0,0);
+
   feedback_analog_samples_combobox = new QComboBox();
-  feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_label");
+  feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
+  feedback_analog_samples_combobox->addItem("4", 0);
+  feedback_analog_samples_combobox->addItem("8", 1);
+  feedback_analog_samples_combobox->addItem("16", 2);
+  feedback_analog_samples_combobox->addItem("32", 3);
+  feedback_analog_samples_combobox->addItem("64", 4);
+  feedback_analog_samples_combobox->addItem("128", 5);
+  feedback_analog_samples_combobox->addItem("256", 6);
+  feedback_analog_samples_combobox->addItem("512", 7);
+  feedback_analog_samples_combobox->addItem("1024", 8);
+
+  feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
+  feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");
+
+  feedback_analog_layout->addWidget(feedback_analog_samples_label,0,0);
   feedback_analog_layout->addWidget(feedback_analog_samples_combobox,0,1,Qt::AlignLeft);
-  feedback_disconnect_with_aux_checkbox = new QCheckBox(tr("Detect disconnect with AUX"));
-  feedback_disconnect_with_aux_checkbox->setObjectName("feedback_disconnect_with_aux_checkbox");
-  feedback_analog_layout->addWidget(feedback_disconnect_with_aux_checkbox,1,0,1,2);
+  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox,1,0,1,2);
+
   feedback_analog_groupbox->setLayout(feedback_analog_layout);
 
-  layout->addLayout(feedback_mode_layout,0,0,Qt::AlignLeft);
-  layout->addWidget(feedback_scaling_groupbox,1,0,Qt::AlignLeft);
-  layout->addWidget(feedback_analog_groupbox,2,0,Qt::AlignLeft);
-
-  feedback_page_widget->setLayout(layout);
-  return feedback_page_widget;
+  return feedback_analog_groupbox;
 }
 
 QWidget * main_window::setup_pid_tab()
@@ -1589,6 +1632,19 @@ void main_window::on_feedback_reset_range_button_clicked()
   controller->handle_feedback_absolute_minimum_input(0);
 }
 
+void main_window::on_feedback_analog_samples_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t feedback_analog_samples = feedback_analog_samples_combobox->itemData(index).toUInt();
+  controller->handle_feedback_analog_samples_input(feedback_analog_samples);
+}
+
+void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_detect_disconnect_input(state == Qt::Checked);
+}
+
 void main_window::on_motor_pwm_frequency_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
@@ -1948,6 +2004,23 @@ void main_window::set_input_scaling_order_warning_label()
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
+  switch (feedback_mode)
+  {
+    case 0:
+      feedback_analog_groupbox->setEnabled(false);
+      feedback_scaling_groupbox->setEnabled(false);
+      break;
+    case 1:
+      feedback_analog_groupbox->setEnabled(true);
+      feedback_scaling_groupbox->setEnabled(true);
+      break;
+    case 2:
+      feedback_analog_groupbox->setEnabled(false);
+      feedback_scaling_groupbox->setEnabled(true);
+      break;
+    default:
+      return;
+  }
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
@@ -1973,6 +2046,24 @@ void main_window::set_feedback_minimum(uint16_t value)
 void main_window::set_feedback_maximum(uint16_t value)
 {
   set_spin_box(feedback_maximum_spinbox, value);
+}
+
+void main_window::set_feedback_scaling_order_warning_label()
+{
+  bool enabled =
+  !ordered({feedback_absolute_minimum_spinbox->value(), feedback_minimum_spinbox->value(),
+    feedback_maximum_spinbox->value(), feedback_absolute_maximum_spinbox->value()});
+  feedback_scaling_order_warning_label->setVisible(enabled);
+}
+
+void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_samples)
+{
+  set_u8_combobox(feedback_analog_samples_combobox, feedback_analog_samples);
+}
+
+void main_window::set_feedback_detect_disconnect(bool feedback_detect_disconnect)
+{
+  set_check_box(feedback_detect_disconnect_checkbox, feedback_detect_disconnect);
 }
 
 void main_window::set_motor_pwm_frequency(uint8_t pwm_frequency)

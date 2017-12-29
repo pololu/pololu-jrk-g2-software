@@ -583,6 +583,9 @@ void main_controller::handle_settings_changed()
   window->set_feedback_absolute_maximum(settings.get_feedback_absolute_maximum());
   window->set_feedback_maximum(settings.get_feedback_maximum());
   window->set_feedback_minimum(settings.get_feedback_minimum());
+  window->set_feedback_scaling_order_warning_label();
+  window->set_feedback_mode(settings.get_feedback_mode());
+  window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
   window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
   window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
   window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
@@ -603,6 +606,7 @@ void main_controller::handle_settings_applied()
 {
   // this must be last so the preceding code can compare old and new settings
   window->set_input_scaling_order_warning_label();
+  window->set_feedback_scaling_order_warning_label();
 
   // TODO: cached_settings = settings;
 }
@@ -835,6 +839,14 @@ void main_controller::handle_feedback_analog_samples_input(uint8_t feedback_anal
 {
   if (!connected()) { return; }
   settings.set_feedback_analog_samples_exponent(feedback_analog_samples);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_detect_disconnect_input(bool detect_disconnect)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_detect_disconnect(detect_disconnect);
   settings_modified = true;
   handle_settings_changed();
 }
