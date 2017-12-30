@@ -534,7 +534,7 @@ void main_controller::handle_variables_changed()
 {
   window->set_up_time(variables.get_up_time());
   window->set_duty_cycle(variables.get_duty_cycle());
-  window->set_current(variables.get_current_high_res());
+  window->set_current(variables.get_current_high_res() / 64);  // tmphax
   window->set_current_chopping_log(variables.get_current_chopping_log());
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());

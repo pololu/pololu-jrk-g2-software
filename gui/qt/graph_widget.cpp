@@ -155,7 +155,7 @@ void graph_widget::setup_ui()
   current.range_label = new QLabel("\u00B1");
   current.graph_data_selection_bar = new QHBoxLayout();
   current.double_ended_range = true;
-  current.range_value = 65535;
+  current.range_value = 1024;
 
   current_chopping_log.plot_range = new QDoubleSpinBox();
   current_chopping_log.plot_display = new QCheckBox("Current chopping log");
