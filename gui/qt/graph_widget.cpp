@@ -116,7 +116,7 @@ void graph_widget::setup_ui()
   error.plot_display = new QCheckBox("Error");
   error.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; font:14px; background-color:white"));
-  error.range_label = new QLabel("±");
+  error.range_label = new QLabel("\u00B1");
   error.graph_data_selection_bar = new QHBoxLayout();
   error.double_ended_range = true;
   error.range_value = 4095;
@@ -125,7 +125,7 @@ void graph_widget::setup_ui()
   integral.plot_display = new QCheckBox("Integral");
   integral.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; font:14px; background-color:white"));
-  integral.range_label = new QLabel("±");
+  integral.range_label = new QLabel("\u00B1");
   integral.graph_data_selection_bar = new QHBoxLayout();
   integral.double_ended_range = true;
   integral.range_value = 1000;
@@ -134,7 +134,7 @@ void graph_widget::setup_ui()
   duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
   duty_cycle_target.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; font:14px; background-color:white"));
-  duty_cycle_target.range_label = new QLabel("±");
+  duty_cycle_target.range_label = new QLabel("\u00B1");
   duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
   duty_cycle_target.double_ended_range = true;
   duty_cycle_target.range_value = 600;
@@ -143,7 +143,7 @@ void graph_widget::setup_ui()
   duty_cycle.plot_display = new QCheckBox("Duty cycle");
   duty_cycle.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; font:14px; background-color:white"));
-  duty_cycle.range_label = new QLabel("±");
+  duty_cycle.range_label = new QLabel("\u00B1");
   duty_cycle.graph_data_selection_bar = new QHBoxLayout();
   duty_cycle.double_ended_range = true;
   duty_cycle.range_value = 600;
@@ -152,11 +152,24 @@ void graph_widget::setup_ui()
   current.plot_display = new QCheckBox("Current (mA)");
   current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
-  current.range_label = new QLabel("±");
+  current.range_label = new QLabel("\u00B1");
   current.graph_data_selection_bar = new QHBoxLayout();
   current.double_ended_range = true;
-  current.range_value = 5000;
+  current.range_value = 65535;
 
+  current_chopping_log.plot_range = new QDoubleSpinBox();
+  current_chopping_log.plot_display = new QCheckBox("Current chopping log");
+  // TODO: why is the name cut off?  "log" is not shown
+  current_chopping_log.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #ff00ff; text-align:center; font:14px; background-color:white"));
+  current_chopping_log.range_label = new QLabel("0\u2013");
+   // TODO: use en dashes on the other plots too
+  current_chopping_log.graph_data_selection_bar = new QHBoxLayout();
+  current_chopping_log.double_ended_range = true;
+  current_chopping_log.range_value = 65535;
+
+  // TODO: let's not have the plots be listed in reverse order here
+  all_plots.push_front(current_chopping_log);
   all_plots.push_front(current);
   all_plots.push_front(duty_cycle);
   all_plots.push_front(duty_cycle_target);
@@ -275,8 +288,8 @@ void graph_widget::remove_data_to_scroll()
   custom_plot->replot();
 }
 
+// plots data on graph (TODO: better function name)
 void graph_widget::realtime_data_slot()
-// plots data on graph
 {
   key += (refreshTimer/1000);
 
@@ -291,7 +304,8 @@ void graph_widget::realtime_data_slot()
     0,
     0,
     this->duty_cycle.plot_value,
-    this->current.plot_value
+    this->current.plot_value,
+    this->current_chopping_log.plot_value,
   };
 
   for(int i=0; i<all_plots.size(); i++)

@@ -149,12 +149,12 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
 void main_window::set_current(uint16_t current)
 {
   preview_window->current.plot_value = current;
-
   current_value->setText(QString::number(current));
 }
 
 void main_window::set_current_chopping_log(uint16_t log)
 {
+  preview_window->current_chopping_log.plot_value = log;
   current_chopping_log_value->setText(QString::number(log));
 }
 

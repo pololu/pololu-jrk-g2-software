@@ -267,6 +267,11 @@ The jrk uses hysteresis to keep the system from simply riding the edge of the
 feedback dead zone; once in the dead zone, the duty cycle and integral will
 remain zero until the magnitude of the error exceeds twice the value of the
 dead zone.
+
+Note that this feature conflicts with deceleration limits.  If you set the
+feedback deadzone to a non-zero value, the jrk will set the duty cycle to
+zero immediately in the feedback deadzone without respecting any deceleration
+limits.
 EOF
   },
   {
@@ -351,6 +356,7 @@ EOF
     type: :uint16_t,
     max: 16383,
     default: 11,
+    custom_fix: true,
     comment: <<EOF
 This is the serial device number used in the Pololu protocol on the jrk's
 serial interfaces, and the I2C device address used on the jrk's I2C
@@ -359,6 +365,9 @@ interface.
 By default, the jrk only pays attention to the lower 7 bits of this setting,
 but if you enable 14-bit serial device numbers (see
 serial_enable_14bit_device_number) then it will use the lower 14 bits.
+
+To avoid user confusion about the ignored bits, the jrk_settings_fix()
+function clears those bits and warns the user.
 EOF
   },
   {

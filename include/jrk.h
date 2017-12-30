@@ -580,6 +580,11 @@ bool jrk_settings_get_feedback_detect_disconnect(const jrk_settings *);
 // feedback dead zone; once in the dead zone, the duty cycle and integral will
 // remain zero until the magnitude of the error exceeds twice the value of the
 // dead zone.
+//
+// Note that this feature conflicts with deceleration limits.  If you set the
+// feedback deadzone to a non-zero value, the jrk will set the duty cycle to
+// zero immediately in the feedback deadzone without respecting any deceleration
+// limits.
 JRK_API
 void jrk_settings_set_feedback_dead_zone(jrk_settings *,
   uint8_t feedback_dead_zone);
@@ -693,6 +698,9 @@ uint32_t jrk_settings_get_serial_timeout(const jrk_settings *);
 // By default, the jrk only pays attention to the lower 7 bits of this setting,
 // but if you enable 14-bit serial device numbers (see
 // serial_enable_14bit_device_number) then it will use the lower 14 bits.
+//
+// To avoid user confusion about the ignored bits, the jrk_settings_fix()
+// function clears those bits and warns the user.
 JRK_API
 void jrk_settings_set_serial_device_number(jrk_settings *,
   uint16_t serial_device_number);

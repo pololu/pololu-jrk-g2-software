@@ -95,6 +95,6 @@ void graph_window::receive_widget(graph_widget *widget)
 
 void graph_window::retranslate_ui()
 {
-	this->setWindowTitle(QApplication::translate("graph_window",
-		"Pololu jrk G2 Configuration Utility - Plots of Variables vs. Time", Q_NULLPTR));
+  this->setWindowTitle(QApplication::translate("graph_window",
+      "Pololu Jrk G2 Configuration Utility - Plots of Variables vs. Time", Q_NULLPTR));
 }
