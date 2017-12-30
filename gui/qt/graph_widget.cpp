@@ -155,7 +155,7 @@ void graph_widget::setup_ui()
   current.range_label = new QLabel("\u00B1");
   current.graph_data_selection_bar = new QHBoxLayout();
   current.double_ended_range = true;
-  current.range_value = 5000;
+  current.range_value = 65535;
 
   all_plots.push_front(current);
   all_plots.push_front(duty_cycle);
