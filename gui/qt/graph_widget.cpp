@@ -116,7 +116,7 @@ void graph_widget::setup_ui()
   error.plot_display = new QCheckBox("Error");
   error.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; font:14px; background-color:white"));
-  error.range_label = new QLabel("±");
+  error.range_label = new QLabel("\u00B1");
   error.graph_data_selection_bar = new QHBoxLayout();
   error.double_ended_range = true;
   error.range_value = 4095;
@@ -125,7 +125,7 @@ void graph_widget::setup_ui()
   integral.plot_display = new QCheckBox("Integral");
   integral.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; font:14px; background-color:white"));
-  integral.range_label = new QLabel("±");
+  integral.range_label = new QLabel("\u00B1");
   integral.graph_data_selection_bar = new QHBoxLayout();
   integral.double_ended_range = true;
   integral.range_value = 1000;
@@ -134,7 +134,7 @@ void graph_widget::setup_ui()
   duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
   duty_cycle_target.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; font:14px; background-color:white"));
-  duty_cycle_target.range_label = new QLabel("±");
+  duty_cycle_target.range_label = new QLabel("\u00B1");
   duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
   duty_cycle_target.double_ended_range = true;
   duty_cycle_target.range_value = 600;
@@ -143,7 +143,7 @@ void graph_widget::setup_ui()
   duty_cycle.plot_display = new QCheckBox("Duty cycle");
   duty_cycle.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; font:14px; background-color:white"));
-  duty_cycle.range_label = new QLabel("±");
+  duty_cycle.range_label = new QLabel("\u00B1");
   duty_cycle.graph_data_selection_bar = new QHBoxLayout();
   duty_cycle.double_ended_range = true;
   duty_cycle.range_value = 600;
@@ -152,7 +152,7 @@ void graph_widget::setup_ui()
   current.plot_display = new QCheckBox("Current (mA)");
   current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
-  current.range_label = new QLabel("±");
+  current.range_label = new QLabel("\u00B1");
   current.graph_data_selection_bar = new QHBoxLayout();
   current.double_ended_range = true;
   current.range_value = 5000;
