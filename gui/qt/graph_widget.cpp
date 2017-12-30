@@ -157,6 +157,19 @@ void graph_widget::setup_ui()
   current.double_ended_range = true;
   current.range_value = 65535;
 
+  current_chopping_log.plot_range = new QDoubleSpinBox();
+  current_chopping_log.plot_display = new QCheckBox("Current chopping log");
+  // TODO: why is the name cut off?  "log" is not shown
+  current_chopping_log.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #ff00ff; text-align:center; font:14px; background-color:white"));
+  current_chopping_log.range_label = new QLabel("0\u2013");
+   // TODO: use en dashes on the other plots too
+  current_chopping_log.graph_data_selection_bar = new QHBoxLayout();
+  current_chopping_log.double_ended_range = true;
+  current_chopping_log.range_value = 65535;
+
+  // TODO: let's not have the plots be listed in reverse order here
+  all_plots.push_front(current_chopping_log);
   all_plots.push_front(current);
   all_plots.push_front(duty_cycle);
   all_plots.push_front(duty_cycle_target);
@@ -275,8 +288,8 @@ void graph_widget::remove_data_to_scroll()
   custom_plot->replot();
 }
 
+// plots data on graph (TODO: better function name)
 void graph_widget::realtime_data_slot()
-// plots data on graph
 {
   key += (refreshTimer/1000);
 
@@ -291,7 +304,8 @@ void graph_widget::realtime_data_slot()
     0,
     0,
     this->duty_cycle.plot_value,
-    this->current.plot_value
+    this->current.plot_value,
+    this->current_chopping_log.plot_value,
   };
 
   for(int i=0; i<all_plots.size(); i++)

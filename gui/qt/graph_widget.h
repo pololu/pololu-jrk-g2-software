@@ -38,6 +38,7 @@ public:
   plot duty_cycle_target;
   plot duty_cycle;
   plot current;
+  plot current_chopping_log;
 
   double key = 0;
   QWidget *central_widget;
@@ -63,8 +64,10 @@ public:
     "#ff8c00",
     "#32cd32",
     "#006400",
-    "#b8860b"
+    "#b8860b",
+    "#ff00ff",
   };
+  // TODO: why do we have plot colors here and also in graph_widget.cpp?
 
 signals:
 
