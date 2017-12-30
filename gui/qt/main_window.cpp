@@ -101,6 +101,13 @@ void main_window::show_info_message(std::string const & message)
   mbox.exec();
 }
 
+void main_window::show_warning_message(std::string const & message)
+{
+  QMessageBox mbox(QMessageBox::Information, windowTitle(),
+    QString::fromStdString(message), QMessageBox::NoButton, this);
+  mbox.exec();
+}
+
 void main_window::set_device_name(std::string const & name, bool link_enabled)
 {
   return; //TODO: fix function
@@ -625,9 +632,6 @@ QWidget * main_window::setup_input_tab()
 {
   input_page_widget = new QWidget();
 
-  QGridLayout *layout = input_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-
   input_mode_label = new QLabel(tr("Input mode:"));
   input_mode_label->setObjectName("input_mode_label");
 
@@ -641,6 +645,8 @@ QWidget * main_window::setup_input_tab()
   input_mode_layout->addWidget(input_mode_label, 0, Qt::AlignLeft);
   input_mode_layout->addWidget(input_mode_combobox, 0, Qt::AlignLeft);
 
+  QGridLayout *layout = input_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addLayout(input_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_input_analog_groupbox(), 1, 0);
   layout->addWidget(setup_input_serial_groupbox(), 2, 0);
@@ -655,8 +661,6 @@ QWidget * main_window::setup_input_tab()
 
 QWidget * main_window::setup_input_analog_groupbox()
 {
-  QGridLayout *input_analog_layout = new QGridLayout();
-
   input_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
   input_analog_groupbox->setObjectName("input_analog_groupbox");
 
@@ -682,6 +686,7 @@ QWidget * main_window::setup_input_analog_groupbox()
   analog_samples->addWidget(input_analog_samples_label, 0, Qt::AlignLeft);
   analog_samples->addWidget(input_analog_samples_combobox, 0, Qt::AlignLeft);
 
+  QGridLayout *input_analog_layout = new QGridLayout();
   input_analog_layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
   input_analog_layout->addWidget(input_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
@@ -692,12 +697,6 @@ QWidget * main_window::setup_input_analog_groupbox()
 
 QWidget * main_window::setup_input_serial_groupbox()
 {
-  QGridLayout *input_serial_layout = new QGridLayout();
-
-  input_serial_mode_button_group = new QButtonGroup(this);
-  input_serial_mode_button_group->setExclusive(true);
-  input_serial_mode_button_group->setObjectName("input_serial_mode_button_group");
-
   input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
   input_serial_groupbox->setObjectName("input_serial_groupbox");
 
@@ -714,6 +713,9 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_uart_fixed_baud_spinbox->setObjectName("input_uart_fixed_baud_spinbox");
   input_uart_fixed_baud_spinbox->setRange(JRK_MIN_ALLOWED_BAUD_RATE, JRK_MAX_ALLOWED_BAUD_RATE);
 
+  input_serial_mode_button_group = new QButtonGroup(this);
+  input_serial_mode_button_group->setExclusive(true);
+  input_serial_mode_button_group->setObjectName("input_serial_mode_button_group");
   input_serial_mode_button_group->addButton(input_usb_dual_port_radio, JRK_SERIAL_MODE_USB_DUAL_PORT);
   input_serial_mode_button_group->addButton(input_usb_chained_radio, JRK_SERIAL_MODE_USB_CHAINED);
   input_serial_mode_button_group->addButton(input_uart_fixed_baud_radio, JRK_SERIAL_MODE_UART);
@@ -758,6 +760,7 @@ QWidget * main_window::setup_input_serial_groupbox()
   timeout_layout->addWidget(input_timeout_label, 0, Qt::AlignLeft);
   timeout_layout->addWidget(input_timeout_spinbox, 0, Qt::AlignLeft);
 
+  QGridLayout *input_serial_layout = new QGridLayout();
   input_serial_layout->addWidget(input_usb_dual_port_radio, 0, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_usb_chained_radio, 1, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(uart_fixed_baud, 2, 0, Qt::AlignLeft);
@@ -777,8 +780,6 @@ QWidget * main_window::setup_input_serial_groupbox()
 
 QWidget * main_window::setup_input_scaling_groupbox()
 {
-  QGridLayout *input_scaling_layout = new QGridLayout();
-
   input_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Pulse Width mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
@@ -878,6 +879,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
   input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
 
+  QGridLayout *input_scaling_layout = new QGridLayout();
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_input_label, 1, 1, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_target_label, 1, 2, Qt::AlignLeft);
@@ -913,9 +915,6 @@ QWidget * main_window::setup_feedback_tab()
 {
   feedback_page_widget = new QWidget();
 
-  QGridLayout *layout = feedback_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-
   feedback_mode_label = new QLabel(tr("Feedback mode:"));
   feedback_mode_label->setObjectName("feedback_mode_label");
 
@@ -929,6 +928,8 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_layout->addWidget(feedback_mode_label);
   feedback_mode_layout->addWidget(feedback_mode_combobox);
 
+  QGridLayout *layout = feedback_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0,Qt::AlignLeft);
@@ -939,8 +940,6 @@ QWidget * main_window::setup_feedback_tab()
 
 QWidget * main_window::setup_feedback_scaling_groupbox()
 {
-  QGridLayout *feedback_scaling_layout = new QGridLayout();
-
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
@@ -993,6 +992,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_reset_range_button = new QPushButton(tr("Reset to full range"));
   feedback_reset_range_button->setObjectName("feedback_reset_range_button");
 
+  QGridLayout *feedback_scaling_layout = new QGridLayout();
   feedback_scaling_layout->addWidget(feedback_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_calibration_label, 1, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_absolute_max_label, 2, 0, Qt::AlignLeft);
@@ -1005,7 +1005,6 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox, 5, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_learn_button, 0, 3, Qt::AlignRight);
   feedback_scaling_layout->addWidget(feedback_reset_range_button, 1, 3, Qt::AlignRight);
-
   feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,2,2,4,2, Qt::AlignCenter);
 
   feedback_scaling_groupbox->setLayout(feedback_scaling_layout);
@@ -1015,8 +1014,6 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
 
 QWidget * main_window::setup_feedback_analog_groupbox()
 {
-  QGridLayout *feedback_analog_layout = new QGridLayout();
-
   feedback_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
   feedback_analog_groupbox->setObjectName("feedback_analog_groupbox");
 
@@ -1038,6 +1035,7 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");
 
+  QGridLayout *feedback_analog_layout = new QGridLayout();
   feedback_analog_layout->addWidget(feedback_analog_samples_label,0,0);
   feedback_analog_layout->addWidget(feedback_analog_samples_combobox,0,1,Qt::AlignLeft);
   feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox,1,0,1,2);
@@ -1101,37 +1099,26 @@ QWidget * main_window::setup_pid_tab()
 QWidget *main_window::setup_motor_tab()
 {
   motor_page_widget = new QWidget();
-  QGridLayout *layout = motor_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  QHBoxLayout *frequency_layout = new QHBoxLayout();
+
   motor_frequency_label = new QLabel(tr("PVM frequency:"));
   motor_frequency_label->setObjectName("motor_frequency_label");
+
   motor_pwm_frequency_combobox = new QComboBox();
   motor_pwm_frequency_combobox->setObjectName("motor_pwm_frequency_combobox");
   motor_pwm_frequency_combobox->addItem("20 kHz", JRK_MOTOR_PWM_FREQUENCY_20);
   motor_pwm_frequency_combobox->addItem("5 kHz", JRK_MOTOR_PWM_FREQUENCY_5);
-  frequency_layout->addWidget(motor_frequency_label);
-  frequency_layout->addWidget(motor_pwm_frequency_combobox);
-  layout->addLayout(frequency_layout,0,0,Qt::AlignLeft);
-
-  QHBoxLayout *invert_layout = new QHBoxLayout();
 
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
-  motor_invert_checkbox->setEnabled(false); //tmphax: not ready to use
 
   motor_detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
   motor_detect_motor_button->setObjectName("motor_detect_motor_button");
   motor_detect_motor_button->setEnabled(false); //tmphax: not ready to use
 
-  invert_layout->addWidget(motor_invert_checkbox);
-  invert_layout->addWidget(motor_detect_motor_button);
-
   QGridLayout *motor_controls_layout = new QGridLayout();
 
   motor_asymmetric_checkbox = new QCheckBox(tr("Asymmetric"));
   motor_asymmetric_checkbox->setObjectName("motor_asymmetric_checkbox");
-  motor_asymmetric_checkbox->setEnabled(false); //tmphax: not ready to use
 
   motor_forward_label = new QLabel(tr("Forward"));
   motor_forward_label->setObjectName("motor_forward_label");
@@ -1193,13 +1180,13 @@ QWidget *main_window::setup_motor_tab()
   motor_calibration_label = new QLabel(tr("Current calibration:"));
   motor_calibration_label->setObjectName("motor_calibration_label");
 
-  motor_calibration_forward_spinbox = new QDoubleSpinBox();
+  motor_calibration_forward_spinbox = new QSpinBox();
   motor_calibration_forward_spinbox->setObjectName("motor_calibration_forward_spinbox");
-  motor_calibration_forward_spinbox->setEnabled(false); //tmphax: not ready to use
+  motor_calibration_forward_spinbox->setRange(1, 255);
 
-  motor_calibration_reverse_spinbox = new QDoubleSpinBox();
+  motor_calibration_reverse_spinbox = new QSpinBox();
   motor_calibration_reverse_spinbox->setObjectName("motor_calibration_reverse_spinbox");
-  motor_calibration_reverse_spinbox->setEnabled(false); //tmphax: not ready to use
+  motor_calibration_reverse_spinbox->setRange(1, 255);
 
   motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
@@ -1223,42 +1210,60 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_calibration_forward_spinbox,6,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,6,2,Qt::AlignLeft);
 
-  QHBoxLayout *deceleration_layout = new QHBoxLayout();
   motor_outofrange_label = new QLabel(tr("Max. duty cycle while feedback is out of range:"));
   motor_outofrange_label->setObjectName("motor_outofrange_label");
-  motor_outofrange_spinbox = new QDoubleSpinBox();
+
+  motor_outofrange_spinbox = new QSpinBox();
   motor_outofrange_spinbox->setObjectName("motor_outofrange_spinbox");
-  motor_outofrange_spinbox->setEnabled(false); //tmphax: not ready to use
+  motor_outofrange_spinbox->setEnabled(false); //tmphax
+
   motor_outofrange_means_label = new QLabel(tr("(600 means 100%)"));
 
-  deceleration_layout->addWidget(motor_outofrange_label);
-  deceleration_layout->addWidget(motor_outofrange_spinbox);
-  deceleration_layout->addWidget(motor_outofrange_means_label);
-
-  QGridLayout *motor_off_layout = new QGridLayout();
   motor_off_label = new QLabel(tr("When motor is off:"));
   motor_off_label->setObjectName("motor_off_label");
 
   motor_brake_radio = new QRadioButton(tr("Brake"));
   motor_brake_radio->setObjectName("motor_brake_radio");
   motor_brake_radio->setChecked(true);
-  motor_brake_radio->setEnabled(false);  // does not work
 
   motor_coast_radio = new QRadioButton(tr("Coast"));
   motor_coast_radio->setObjectName("motor_coast_radio");
   motor_coast_radio->setChecked(false);
-  motor_coast_radio->setEnabled(false);  // does not work
 
+  motor_coast_when_off_button_group = new QButtonGroup(this);
+  motor_coast_when_off_button_group->setExclusive(true);
+  motor_coast_when_off_button_group->setObjectName("motor_coast_when_off_button_group");
+  motor_coast_when_off_button_group->addButton(motor_brake_radio, 0);
+  motor_coast_when_off_button_group->addButton(motor_coast_radio, 1);
+
+  QHBoxLayout *frequency_layout = new QHBoxLayout();
+  frequency_layout->addWidget(motor_frequency_label);
+  frequency_layout->addWidget(motor_pwm_frequency_combobox);
+
+  QHBoxLayout *invert_layout = new QHBoxLayout();
+  invert_layout->addWidget(motor_invert_checkbox);
+  invert_layout->addWidget(motor_detect_motor_button);
+
+  QHBoxLayout *deceleration_layout = new QHBoxLayout();
+  deceleration_layout->addWidget(motor_outofrange_label, -1, Qt::AlignLeft);
+  deceleration_layout->addWidget(motor_outofrange_spinbox, -1, Qt::AlignLeft);
+  deceleration_layout->addWidget(motor_outofrange_means_label, -1, Qt::AlignLeft);
+
+  QGridLayout *motor_off_layout = new QGridLayout();
   motor_off_layout->addWidget(motor_off_label,0,0);
   motor_off_layout->addWidget(motor_brake_radio,0,1);
   motor_off_layout->addWidget(motor_coast_radio,1,1);
 
+  QGridLayout *layout = motor_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addLayout(frequency_layout,0,0,Qt::AlignLeft);
   layout->addLayout(invert_layout,1,0,Qt::AlignLeft);
   layout->addLayout(motor_controls_layout,2,0,Qt::AlignLeft);
   layout->addLayout(deceleration_layout,3,0,Qt::AlignLeft);
   layout->addLayout(motor_off_layout,4,0,Qt::AlignLeft);
 
   motor_page_widget->setLayout(layout);
+
   return motor_page_widget;
 }
 
@@ -1652,6 +1657,33 @@ void main_window::on_motor_pwm_frequency_combobox_currentIndexChanged(int index)
   controller->handle_motor_pwm_frequency_input(motor_pwm_frequency);
 }
 
+void main_window::on_motor_invert_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_invert_input(state == Qt::Checked);
+}
+
+void main_window::on_motor_detect_motor_button_clicked()
+{
+  if (suppress_events) { return; }
+  QMessageBox mbox(QMessageBox::Question, "Detect motor direction confirmation",
+    "Really detect motor direction?  This will drive the motor!\n"
+    "Feedback must be configured and tested before proceeding.\n"
+    "It is also recommended that you set Max. duty cycle, Max. current,\n"
+    "and enable the \"Max. current exceeded\" error for this test.", QMessageBox::Ok | QMessageBox::Cancel, this);
+  int button = mbox.exec();
+  if (!(button == QMessageBox::Ok))
+    return;
+  else
+    controller->handle_motor_detect_direction_button_clicked();
+}
+
+void main_window::on_motor_asymmetric_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_asymmetric_input(state == Qt::Checked);
+}
+
 void main_window::on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1700,18 +1732,22 @@ void main_window::on_motor_max_current_reverse_spinbox_valueChanged(int value)
   controller->handle_motor_max_current_reverse_input(value);
 }
 
-void main_window::on_motor_coast_radio_toggled(bool checked)
+void main_window::on_motor_calibration_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_motor_coast_when_off(checked);
-  motor_brake_radio->setChecked(!checked);
+  controller->handle_motor_current_calibration_forward_input(value);
 }
 
-void main_window::on_motor_brake_radio_toggled(bool checked)
+void main_window::on_motor_calibration_reverse_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_motor_coast_when_off(!checked);
-  motor_coast_radio->setChecked(!checked);
+  controller->handle_motor_current_calibration_reverse_input(value);
+}
+
+void main_window::on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked)
+{
+  if (suppress_events) { return; }
+  if (checked) { controller->handle_motor_coast_when_off_input(id); }
 }
 
 void main_window::set_u8_combobox(QComboBox * combo, uint8_t value)
@@ -2071,6 +2107,22 @@ void main_window::set_motor_pwm_frequency(uint8_t pwm_frequency)
   set_u8_combobox(motor_pwm_frequency_combobox, pwm_frequency);
 }
 
+void main_window::set_motor_invert(bool enabled)
+{
+  set_check_box(motor_invert_checkbox, enabled);
+}
+
+void main_window::set_motor_asymmetric()
+{
+  bool enabled = motor_asymmetric_checked();
+  motor_max_duty_cycle_reverse_spinbox->setEnabled(enabled);
+  motor_max_acceleration_reverse_spinbox->setEnabled(enabled);
+  motor_max_deceleration_reverse_spinbox->setEnabled(enabled);
+  motor_max_current_reverse_spinbox->setEnabled(enabled);
+  motor_calibration_reverse_spinbox->setEnabled(enabled);
+
+}
+
 void main_window::set_motor_max_duty_cycle_forward(uint16_t duty_cycle)
 {
   set_spin_box(motor_max_duty_cycle_forward_spinbox, duty_cycle);
@@ -2111,18 +2163,47 @@ void main_window::set_motor_max_current_reverse(uint16_t current)
   set_spin_box(motor_max_current_reverse_spinbox, current);
 }
 
-void main_window::set_motor_coast_when_off(bool checked)
+void main_window::set_motor_current_calibration_forward(uint16_t current)
 {
-  if (motor_coast_radio->isChecked())
-    motor_brake_radio->setChecked(false);
+  set_spin_box(motor_calibration_forward_spinbox, current);
+}
 
-  if (motor_brake_radio->isChecked())
-    motor_coast_radio->setChecked(false);
+void main_window::set_motor_current_calibration_reverse(uint16_t current)
+{
+  set_spin_box(motor_calibration_reverse_spinbox, current);
+}
+
+void main_window::set_motor_coast_when_off(uint8_t value)
+{
+  suppress_events = true;
+  QAbstractButton * radio = motor_coast_when_off_button_group->button(value);
+  if (radio)
+  {
+    radio->setChecked(true);
+  }
+  else
+  {
+    // The value doesn't correspond with any of the radio buttons, so clear
+    // the currently selected button, if any.
+    QAbstractButton * checked = motor_coast_when_off_button_group->checkedButton();
+    if (checked)
+    {
+      motor_coast_when_off_button_group->setExclusive(false);
+      checked->setChecked(false);
+      motor_coast_when_off_button_group->setExclusive(true);
+    }
+  }
+  suppress_events = false;
 }
 
 void main_window::on_update_timer_timeout()
 {
   controller->update();
+}
+
+bool main_window::motor_asymmetric_checked()
+{
+  return motor_asymmetric_checkbox->isChecked();
 }
 
 pid_constant_control::pid_constant_control(const QString& group_box_title,

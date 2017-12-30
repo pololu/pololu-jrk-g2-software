@@ -61,7 +61,7 @@ public:
 
   void show_error_message(const std::string & message);
   void show_info_message(const std::string & message);
-
+  void show_warning_message(const std::string & message);
   void set_device_name(const std::string & name, bool link_enabled);
   void set_serial_number(const std::string & serial_number);
   void set_firmware_version(const std::string & firmware_version);
@@ -96,24 +96,12 @@ public:
 
   void set_never_sleep(bool never_sleep);
 
+
+
+
+
+
   void set_input_mode(uint8_t input_mode);
-
-
-
-  void set_motor_pwm_frequency(uint8_t pwm_frequency);
-
-  void set_motor_max_duty_cycle_forward(uint16_t);
-  void set_motor_max_duty_cycle_reverse(uint16_t);
-  void set_motor_max_acceleration_forward(uint16_t);
-  void set_motor_max_acceleration_reverse(uint16_t);
-  void set_motor_max_deceleration_forward(uint16_t);
-  void set_motor_max_deceleration_reverse(uint16_t);
-  void set_motor_max_current_forward(uint16_t);
-  void set_motor_max_current_reverse(uint16_t);
-
-  void set_motor_coast_when_off(bool);
-
-
   void set_input_invert(bool input_invert);
   void set_input_analog_samples_exponent(uint8_t value);
   void set_input_detect_disconnect(bool input_detect_disconnect);
@@ -147,6 +135,21 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool feedback_detect_disconnect);
 
+  void set_motor_pwm_frequency(uint8_t pwm_frequency);
+  void set_motor_invert(bool enabled);
+  void set_motor_asymmetric();
+  void set_motor_max_duty_cycle_forward(uint16_t);
+  void set_motor_max_duty_cycle_reverse(uint16_t);
+  void set_motor_max_acceleration_forward(uint16_t);
+  void set_motor_max_acceleration_reverse(uint16_t);
+  void set_motor_max_deceleration_forward(uint16_t);
+  void set_motor_max_deceleration_reverse(uint16_t);
+  void set_motor_max_current_forward(uint16_t);
+  void set_motor_max_current_reverse(uint16_t);
+  void set_motor_current_calibration_forward(uint16_t);
+  void set_motor_current_calibration_reverse(uint16_t);
+  void set_motor_coast_when_off(uint8_t value);
+
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
 
@@ -166,6 +169,7 @@ public:
   void set_stop_motor_enabled(bool enabled);
   void set_run_motor_enabled(bool enabled);
 
+  bool motor_asymmetric_checked();
 
 signals:
 	void pass_widget(graph_widget *widget);
@@ -226,7 +230,9 @@ private slots:
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
 
   void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
-
+  void on_motor_invert_checkbox_stateChanged(int state);
+  void on_motor_detect_motor_button_clicked();
+  void on_motor_asymmetric_checkbox_stateChanged(int state);
   void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
   void on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value);
   void on_motor_max_acceleration_forward_spinbox_valueChanged(int value);
@@ -235,9 +241,9 @@ private slots:
   void on_motor_max_deceleration_reverse_spinbox_valueChanged(int value);
   void on_motor_max_current_forward_spinbox_valueChanged(int value);
   void on_motor_max_current_reverse_spinbox_valueChanged(int value);
-
-  void on_motor_coast_radio_toggled(bool checked);
-  void on_motor_brake_radio_toggled(bool checked);
+  void on_motor_calibration_forward_spinbox_valueChanged(int value);
+  void on_motor_calibration_reverse_spinbox_valueChanged(int value);
+  void on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
 private:
 	std::array<error_row,32> error_rows;
@@ -416,6 +422,7 @@ private:
 
 	QWidget *motor_page_widget;
 	QGridLayout *motor_page_layout;
+  QButtonGroup *motor_coast_when_off_button_group;
 	QLabel *motor_frequency_label;
 	QComboBox *motor_pwm_frequency_combobox;
 	QCheckBox *motor_invert_checkbox;
@@ -439,10 +446,10 @@ private:
 	QSpinBox *motor_max_current_reverse_spinbox;
 	QLabel *motor_max_current_means_label;
 	QLabel *motor_calibration_label;
-	QDoubleSpinBox *motor_calibration_forward_spinbox;
-	QDoubleSpinBox *motor_calibration_reverse_spinbox;
+	QSpinBox *motor_calibration_forward_spinbox;
+	QSpinBox *motor_calibration_reverse_spinbox;
 	QLabel *motor_outofrange_label;
-	QDoubleSpinBox *motor_outofrange_spinbox;
+	QSpinBox *motor_outofrange_spinbox;
 	QLabel *motor_outofrange_means_label;
 	QLabel *motor_off_label;
 	QRadioButton *motor_brake_radio;

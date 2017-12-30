@@ -117,6 +117,8 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
+  window->set_motor_asymmetric(); //tmphax
+
   handle_model_changed();
 }
 
@@ -378,6 +380,88 @@ bool main_controller::update_device_list()
   }
 }
 
+bool main_controller::do_motor_direction_detect()
+{
+  int scaled_feedback_stop, scaled_feedback_forward;
+  bool inverted = false;
+
+  // require that the feedback is close to its midpoint before proceeding
+  while(true)
+  {
+    scaled_feedback_stop = variables.get_scaled_feedback();
+
+    if (scaled_feedback_stop >= 1024 && scaled_feedback_stop <= 2047 + 1024)
+        break;
+
+    if (!window->confirm("Center the output, then click OK."))
+        return false;
+  }
+
+  int diff;
+  int factor = 1;
+  if (scaled_feedback_stop >= 2048)
+    factor = -1; // go downward instead of upward so that we have more range
+
+  // step up +300, trying to move the motor
+  for (diff = 32; diff <= 4095; diff += 32)
+  {
+    uint16_t target = (uint16_t)(2048 + diff * factor);
+    if (target > 4095)
+      target = 4095; // since 2048 + 2048 = 4096.
+    device_handle.set_target(target);
+    scaled_feedback_forward = variables.get_scaled_feedback();
+    if (scaled_feedback_forward > scaled_feedback_stop + 100)
+    {
+      if (factor == -1)
+          inverted = true; // because we were trying to move downward
+      break;
+    }
+    if (scaled_feedback_forward < scaled_feedback_stop - 100)
+    {
+      if (factor == 1)
+          inverted = true; // because we were trying to move upward
+      break;
+    }
+  }
+
+  int duty_cycle = variables.get_duty_cycle();;
+
+  device_handle.stop_motor();
+
+  if (diff > 4095) // we didn't break out of the loop
+  {
+    // window->show_error_message("Error detecting motor direction:  Driving the motor with a duty cyle of "
+    //     + duty_cycle + " did not change the measured feedback. "
+    //     + " Check your motor and feedback connections.");
+    return false;
+  }
+
+  // now we can set the checkbox
+  bool previously_checked = settings.get_motor_invert();
+  if(settings.get_motor_invert())
+  {
+    settings.set_motor_invert(!inverted); // since it responds backwards when it is already inverted
+  }
+  else
+  {
+    settings.set_motor_invert(inverted);
+  }
+
+  // display a nice message
+  if (previously_checked && !settings.get_motor_invert())
+  {
+    window->show_error_message("The motor is NOT inverted.  Please click the apply button to apply this setting to the jrk.");
+    return true;
+  }
+  else if (!previously_checked && settings.get_motor_invert())
+  {
+    window->show_info_message("The motor is inverted.  Please click the apply button to apply this setting to the jrk.");
+    return true;
+  }
+
+  return false;
+}
+
 void main_controller::show_exception(std::exception const & e,
     std::string const & context)
 {
@@ -586,18 +670,33 @@ void main_controller::handle_settings_changed()
   window->set_feedback_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
-  window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
-  window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
-  window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
-  window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
-  window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
-  window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
-  window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
-  window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
-  window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
+  window->set_motor_invert(settings.get_motor_invert());
+  window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
+  window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
+  window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
+  window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
+  window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
+  window->set_motor_invert(settings.get_motor_invert());
 
-
+  if (window->motor_asymmetric_checked())
+  {
+    window->set_motor_asymmetric();
+    window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
+    window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
+    window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
+    window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
+    window->set_motor_current_calibration_reverse(settings.get_motor_current_calibration_reverse());
+  }
+  else
+  {
+    window->set_motor_asymmetric();
+    window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
+    window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
+    window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
+    window->set_motor_max_current_reverse(settings.get_motor_max_current_forward());
+    window->set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
+  }
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -851,18 +950,74 @@ void main_controller::handle_feedback_detect_disconnect_input(bool detect_discon
   handle_settings_changed();
 }
 
-void main_controller::handle_invert_motor_input(bool invert_motor)
-{
-  if (!connected()) { return; }
-  jrk_settings_set_motor_invert(settings.get_pointer(), invert_motor);
-  settings_modified = true;
-  handle_settings_changed();
-}
-
 void main_controller::handle_motor_pwm_frequency_input(uint8_t motor_pwm_frequency)
 {
   if (!connected()) { return; }
   settings.set_motor_pwm_frequency(motor_pwm_frequency);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_invert_input(bool invert_motor)
+{
+  if (!connected()) { return; }
+  settings.set_motor_invert(invert_motor);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_detect_direction_button_clicked()
+{
+  if (!connected()) { return; }
+
+  if((variables.get_error_flags_halting() &
+    ~(1<<(uint16_t)JRK_ERROR_AWAITING_COMMAND | 1<<(uint16_t)JRK_ERROR_INPUT_INVALID)) != 0)
+  {
+      // there is some error stopping the motor other than just waiting for a command
+      window->show_error_message("An error is stopping the motor.  You must fix this before detecting the direction.");
+      return;
+  }
+
+  if (settings.get_feedback_mode() != JRK_FEEDBACK_MODE_ANALOG)
+  {
+      window->show_error_message("Feedback mode must be Analog to detect the motor direction.");
+      return;
+  }
+
+  device_handle.stop_motor();
+
+  settings.set_input_mode(JRK_INPUT_MODE_SERIAL);
+  settings.set_pid_period(1);
+  settings.set_proportional_exponent(3);
+  settings.set_proportional_multiplier(8);
+  settings.set_derivative_multiplier(0);
+  settings.set_integral_multiplier(0);
+  device_handle.reinitialize();
+
+  bool updated = do_motor_direction_detect();
+
+  settings.set_input_mode(settings.get_input_mode());
+  settings.set_pid_period(settings.get_pid_period());
+  settings.set_proportional_exponent(settings.get_proportional_exponent());
+  settings.set_proportional_multiplier(settings.get_proportional_multiplier());
+  settings.set_derivative_multiplier(settings.get_derivative_multiplier());
+  settings.set_integral_multiplier(settings.get_integral_multiplier());
+  device_handle.reinitialize();
+
+  device_handle.stop_motor();
+
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_asymmetric_input(bool checked)
+{
+  if (!connected()) { return; }
+  settings.set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
+  settings.set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
+  settings.set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
+  settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
+  settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
   settings_modified = true;
   handle_settings_changed();
 }
@@ -931,7 +1086,23 @@ void main_controller::handle_motor_max_current_reverse_input(uint16_t current)
   handle_settings_changed();
 }
 
-void main_controller::handle_motor_coast_when_off(bool motor_coast)
+void main_controller::handle_motor_current_calibration_forward_input(uint16_t current)
+{
+  if (!connected()) { return; }
+  settings.set_motor_current_calibration_forward(current);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_current_calibration_reverse_input(uint16_t current)
+{
+  if (!connected()) { return; }
+  settings.set_motor_current_calibration_reverse(current);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_coast_when_off_input(bool motor_coast)
 {
   if (!connected()) { return; }
   settings.set_motor_coast_when_off(motor_coast);

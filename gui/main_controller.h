@@ -53,6 +53,8 @@ private:
   // Returns true for success, false for failure.
   bool update_device_list();
 
+  bool do_motor_direction_detect();
+
   // True if device_list changed the last time update_device_list() was
   // called.
   bool device_list_changed;
@@ -105,9 +107,10 @@ public:
   void handle_feedback_analog_samples_input(uint8_t feedback_analog_samples);
   void handle_feedback_detect_disconnect_input(bool detect_disconnect);
 
-  void handle_invert_motor_input(bool invert_motor);
   void handle_motor_pwm_frequency_input(uint8_t);
-
+  void handle_motor_invert_input(bool invert_motor);
+  void handle_motor_detect_direction_button_clicked();
+  void handle_motor_asymmetric_input(bool checked);
   void handle_motor_max_duty_cycle_forward_input(uint16_t);
   void handle_motor_max_duty_cycle_reverse_input(uint16_t);
   void handle_motor_max_acceleration_forward_input(uint16_t);
@@ -116,8 +119,9 @@ public:
   void handle_motor_max_deceleration_reverse_input(uint16_t);
   void handle_motor_max_current_forward_input(uint16_t);
   void handle_motor_max_current_reverse_input(uint16_t);
-
-  void handle_motor_coast_when_off(bool);
+  void handle_motor_current_calibration_forward_input(uint16_t);
+  void handle_motor_current_calibration_reverse_input(uint16_t);
+  void handle_motor_coast_when_off_input(bool motor_coast);
 
   void handle_never_sleep_input(bool never_sleep);
   void handle_vin_calibration_input(int16_t vin_calibration);
