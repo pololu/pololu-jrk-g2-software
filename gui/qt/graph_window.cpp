@@ -86,7 +86,7 @@ void graph_window::receive_widget(graph_widget *widget)
 	}
 
 	main_layout->addLayout(plot_layout,0,0,Qt::AlignTop);
-	main_layout->addLayout(bottom_control_layout,1,0);
+	main_layout->addLayout(bottom_control_layout, 1, 0, Qt::AlignLeft);
 	central_layout->addLayout(main_layout,0,0);
 	central_layout->addLayout(plot_visible_layout,0,1);
 

@@ -676,6 +676,7 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
   window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
   window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
+  window->set_motor_max_duty_cycle_out_of_range(settings.get_motor_max_duty_cycle_while_feedback_out_of_range());
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
   window->set_motor_invert(settings.get_motor_invert());
 
@@ -1100,6 +1101,16 @@ void main_controller::handle_motor_current_calibration_reverse_input(uint16_t cu
   settings.set_motor_current_calibration_reverse(current);
   settings_modified = true;
   handle_settings_changed();
+}
+
+void main_controller::handle_motor_out_range_input(uint16_t value)
+{
+  {
+  if (!connected()) { return; }
+  settings.set_motor_max_duty_cycle_while_feedback_out_of_range(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
 }
 
 void main_controller::handle_motor_coast_when_off_input(bool motor_coast)

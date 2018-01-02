@@ -121,6 +121,7 @@ public:
   void handle_motor_max_current_reverse_input(uint16_t);
   void handle_motor_current_calibration_forward_input(uint16_t);
   void handle_motor_current_calibration_reverse_input(uint16_t);
+  void handle_motor_out_range_input(uint16_t value);
   void handle_motor_coast_when_off_input(bool motor_coast);
 
   void handle_never_sleep_input(bool never_sleep);

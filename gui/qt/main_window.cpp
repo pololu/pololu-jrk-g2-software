@@ -1048,51 +1048,64 @@ QWidget * main_window::setup_feedback_analog_groupbox()
 QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
-  QGridLayout *layout = pid_page_layout = new QGridLayout(pid_page_widget);
-  layout->setSizeConstraint(QLayout::SetFixedSize);
+
   pid_proportional_coefficient = new pid_constant_control(
     "Proportional Coefficient", "pid_proportional_coefficient");
+
   pid_integral_coefficient = new pid_constant_control(
     "Integral Coefficient", "pid_integral_coefficient");
+
   pid_derivative_coefficient = new pid_constant_control(
     "Derivative Coefficient", "pid_derivative_coefficient");
+
+  pid_period_label = new QLabel(tr("PID period (ms):"));
+  pid_period_label->setObjectName("pid_period_label");
+
+  pid_period_spinbox = new QDoubleSpinBox();
+  pid_period_spinbox->setObjectName("pid_period_spinbox");
+
+  pid_integral_limit_label = new QLabel(tr("Integral limit:"));
+  pid_integral_limit_label->setObjectName("pid_integral_limit_label");
+
+  pid_integral_limit_spinbox = new QDoubleSpinBox();
+  pid_integral_limit_spinbox->setObjectName("pid_integral_limit_spinbox");
+
+  pid_reset_integral_checkbox = new QCheckBox(
+    tr("Reset integral when proportional term exceeds max duty cycle"));
+  pid_reset_integral_checkbox->setObjectName("pid_reset_integral_checkbox");
+
+  pid_deadzone_label = new QLabel(tr("Feedback dead zone:"));
+  pid_deadzone_label->setObjectName("pid_deadzone_label");
+
+  pid_deadzone_spinbox = new QDoubleSpinBox();
+  pid_deadzone_spinbox->setObjectName("pid_deadzone_spinbox");
+
   QGridLayout *group_box_row = new QGridLayout();
-  // group_box_row->setRowStretch(0,pid_constant_control()->sizeHint().height());
   group_box_row->addWidget(pid_proportional_coefficient,0,0,Qt::AlignCenter);
   group_box_row->addWidget(pid_integral_coefficient,0,1,Qt::AlignCenter);
   group_box_row->addWidget(pid_derivative_coefficient,0,2,Qt::AlignCenter);
 
-  pid_period_label = new QLabel(tr("PID period (ms):"));
-  pid_period_label->setObjectName("pid_period_label");
-  pid_period_spinbox = new QDoubleSpinBox();
-  pid_period_spinbox->setObjectName("pid_period_spinbox");
   QHBoxLayout *period_row_layout = new QHBoxLayout();
   period_row_layout->addWidget(pid_period_label);
   period_row_layout->addWidget(pid_period_spinbox);
-  pid_integral_limit_label = new QLabel(tr("Integral limit:"));
-  pid_integral_limit_label->setObjectName("pid_integral_limit_label");
-  pid_integral_limit_spinbox = new QDoubleSpinBox();
-  pid_integral_limit_spinbox->setObjectName("pid_integral_limit_spinbox");
+
   QHBoxLayout *integral_row_layout = new QHBoxLayout();
   integral_row_layout->addWidget(pid_integral_limit_label);
   integral_row_layout->addWidget(pid_integral_limit_spinbox);
-  pid_reset_integral_checkbox = new QCheckBox(
-    tr("Reset integral when proportional term exceeds max duty cycle"));
-  pid_reset_integral_checkbox->setObjectName("pid_reset_integral_checkbox");
-  pid_deadzone_label = new QLabel(tr("Feedback dead zone:"));
-  pid_deadzone_label->setObjectName("pid_deadzone_label");
-  pid_deadzone_spinbox = new QDoubleSpinBox();
-  pid_deadzone_spinbox->setObjectName("pid_deadzone_spinbox");
+
   QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
   deadzone_row_layout->addWidget(pid_deadzone_label);
   deadzone_row_layout->addWidget(pid_deadzone_spinbox);
+
+  QGridLayout *layout = pid_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addLayout(group_box_row,0,0);
   layout->addLayout(period_row_layout,1,0,1,1,Qt::AlignLeft);
   layout->addLayout(integral_row_layout,2,0,1,1,Qt::AlignLeft);
   layout->addWidget(pid_reset_integral_checkbox,3,0,1,2,Qt::AlignLeft);
   layout->addLayout(deadzone_row_layout,4,0,1,1,Qt::AlignLeft);
 
-  // pid_page_widget->setLayout(layout);
+  pid_page_widget->setLayout(layout);
   return pid_page_widget;
 }
 
@@ -1210,12 +1223,11 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_calibration_forward_spinbox,6,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,6,2,Qt::AlignLeft);
 
-  motor_outofrange_label = new QLabel(tr("Max. duty cycle while feedback is out of range:"));
-  motor_outofrange_label->setObjectName("motor_outofrange_label");
+  motor_out_of_range_label = new QLabel(tr("Max. duty cycle while feedback is out of range:"));
+  motor_out_of_range_label->setObjectName("motor_out_of_range_label");
 
-  motor_outofrange_spinbox = new QSpinBox();
-  motor_outofrange_spinbox->setObjectName("motor_outofrange_spinbox");
-  motor_outofrange_spinbox->setEnabled(false); //tmphax
+  motor_out_of_range_spinbox = new QSpinBox();
+  motor_out_of_range_spinbox->setObjectName("motor_out_of_range_spinbox");
 
   motor_outofrange_means_label = new QLabel(tr("(600 means 100%)"));
 
@@ -1245,8 +1257,8 @@ QWidget *main_window::setup_motor_tab()
   invert_layout->addWidget(motor_detect_motor_button);
 
   QHBoxLayout *deceleration_layout = new QHBoxLayout();
-  deceleration_layout->addWidget(motor_outofrange_label, -1, Qt::AlignLeft);
-  deceleration_layout->addWidget(motor_outofrange_spinbox, -1, Qt::AlignLeft);
+  deceleration_layout->addWidget(motor_out_of_range_label, -1, Qt::AlignLeft);
+  deceleration_layout->addWidget(motor_out_of_range_spinbox, -1, Qt::AlignLeft);
   deceleration_layout->addWidget(motor_outofrange_means_label, -1, Qt::AlignLeft);
 
   QGridLayout *motor_off_layout = new QGridLayout();
@@ -1744,6 +1756,12 @@ void main_window::on_motor_calibration_reverse_spinbox_valueChanged(int value)
   controller->handle_motor_current_calibration_reverse_input(value);
 }
 
+void main_window::on_motor_out_of_range_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_out_range_input(value);
+}
+
 void main_window::on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked)
 {
   if (suppress_events) { return; }
@@ -2171,6 +2189,11 @@ void main_window::set_motor_current_calibration_forward(uint16_t current)
 void main_window::set_motor_current_calibration_reverse(uint16_t current)
 {
   set_spin_box(motor_calibration_reverse_spinbox, current);
+}
+
+void main_window::set_motor_max_duty_cycle_out_of_range(uint16_t value)
+{
+  set_spin_box(motor_out_of_range_spinbox, value);
 }
 
 void main_window::set_motor_coast_when_off(uint8_t value)

@@ -148,6 +148,7 @@ public:
   void set_motor_max_current_reverse(uint16_t);
   void set_motor_current_calibration_forward(uint16_t);
   void set_motor_current_calibration_reverse(uint16_t);
+  void set_motor_max_duty_cycle_out_of_range(uint16_t);
   void set_motor_coast_when_off(uint8_t value);
 
   void set_serial_baud_rate(uint32_t serial_baud_rate);
@@ -243,6 +244,7 @@ private slots:
   void on_motor_max_current_reverse_spinbox_valueChanged(int value);
   void on_motor_calibration_forward_spinbox_valueChanged(int value);
   void on_motor_calibration_reverse_spinbox_valueChanged(int value);
+  void on_motor_out_of_range_spinbox_valueChanged(int value);
   void on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
 private:
@@ -448,8 +450,8 @@ private:
 	QLabel *motor_calibration_label;
 	QSpinBox *motor_calibration_forward_spinbox;
 	QSpinBox *motor_calibration_reverse_spinbox;
-	QLabel *motor_outofrange_label;
-	QSpinBox *motor_outofrange_spinbox;
+	QLabel *motor_out_of_range_label;
+	QSpinBox *motor_out_of_range_spinbox;
 	QLabel *motor_outofrange_means_label;
 	QLabel *motor_off_label;
 	QRadioButton *motor_brake_radio;
