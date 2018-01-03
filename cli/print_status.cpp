@@ -62,6 +62,8 @@ void print_status(const jrk::variables & vars,
   // The output here is YAML so that people can more easily write scripts that
   // use it.
 
+  (void)settings;  // TODO: either use this for real or remove it
+
   std::cout << std::left << std::setfill(' ');
 
   std::cout << left_column << "Name: "
