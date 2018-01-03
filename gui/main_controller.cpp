@@ -110,7 +110,7 @@ void main_controller::connect_device(jrk::device const & device)
   try
   {
     settings = device_handle.get_settings();
-    handle_settings_applied();
+    handle_settings_loaded();
   }
   catch (std::exception const & e)
   {
@@ -155,7 +155,7 @@ void main_controller::reload_settings(bool ask)
   try
   {
     settings = device_handle.get_settings();
-    handle_settings_applied();
+    handle_settings_loaded();
     settings_modified = false;
   }
   catch (std::exception const & e)
@@ -673,11 +673,6 @@ void main_controller::handle_settings_changed()
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
 
-
-    window->pid_controls[0]->set_pid_multiplier(settings.get_proportional_multiplier());
-    window->pid_controls[0]->set_pid_exponent(settings.get_proportional_exponent());
-
-
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_motor_invert(settings.get_motor_invert());
 
@@ -685,18 +680,8 @@ void main_controller::handle_settings_changed()
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
   window->set_motor_invert(settings.get_motor_invert());
 
-  if ((settings.get_motor_max_duty_cycle_forward() != settings.get_motor_max_duty_cycle_reverse())
-    || (settings.get_motor_max_acceleration_forward() != settings.get_motor_max_acceleration_reverse())
-    || (settings.get_motor_max_deceleration_forward() != settings.get_motor_max_deceleration_reverse())
-    || (settings.get_motor_max_current_forward() != settings.get_motor_max_current_reverse())
-    || (settings.get_motor_current_calibration_forward() != settings.get_motor_current_calibration_reverse()))
-  {
-    motor_asymmetric = true;
-  }
-
   window->set_motor_asymmetric(motor_asymmetric);
 
-  // TODO: logic for asymmetric checkbox
   window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
   window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
   window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
@@ -709,18 +694,30 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
   window->set_motor_current_calibration_forward(settings.get_motor_current_calibration_forward());
 
-
-
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
 
-void main_controller::handle_settings_applied()
+void main_controller::handle_settings_loaded()
 {
   // this must be last so the preceding code can compare old and new settings
-  window->set_input_scaling_order_warning_label();
-  window->set_feedback_scaling_order_warning_label();
+
+  recalculate_motor_asymmetric();
 
   // TODO: cached_settings = settings;
+}
+
+void main_controller::recalculate_motor_asymmetric()
+{
+   if ((settings.get_motor_max_duty_cycle_forward() != settings.get_motor_max_duty_cycle_reverse())
+    || (settings.get_motor_max_acceleration_forward() != settings.get_motor_max_acceleration_reverse())
+    || (settings.get_motor_max_deceleration_forward() != settings.get_motor_max_deceleration_reverse())
+    || (settings.get_motor_max_current_forward() != settings.get_motor_max_current_reverse())
+    || (settings.get_motor_current_calibration_forward() != settings.get_motor_current_calibration_reverse()))
+  {
+    motor_asymmetric = true;
+  }
+  else
+    motor_asymmetric = false;
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -1085,14 +1082,6 @@ void main_controller::handle_motor_asymmetric_input(bool checked)
     settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
     settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
   }
-  else
-    {
-      settings.set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
-      settings.set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
-      settings.set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
-      settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
-      settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
-    }
 
   // TODO: implement logic for when asymmetric checkbox changes
 
@@ -1248,7 +1237,7 @@ void main_controller::apply_settings()
       settings = fixed_settings;
       device_handle.set_settings(settings);
       device_handle.reinitialize();
-      handle_settings_applied();
+      handle_settings_loaded();
       settings_modified = false;  // this must be last in case exceptions are thrown
     }
   }

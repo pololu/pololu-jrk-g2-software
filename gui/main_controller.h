@@ -133,7 +133,7 @@ public:
 
   void handle_upload_complete();
 
-  bool motor_asymmetric;
+
 
 private:
   // This is called whenever it is possible that we have connected to a
@@ -141,7 +141,9 @@ private:
   void handle_device_changed();
   void handle_variables_changed();
   void handle_settings_changed();
-  void handle_settings_applied();
+  void handle_settings_loaded();
+
+  void recalculate_motor_asymmetric();
 
   // void update_motor_status_message(bool prompt_to_resume);
 
@@ -163,6 +165,9 @@ private:
   // Holds a working copy of the settings from the device, including any
   // unapplied changes.
   jrk::settings settings;
+
+  // True if motor reverse values are different from the forward values.
+  bool motor_asymmetric = false;
 
   // Holds a cached copy of the settings from the device, without any unapplied
   // changes.
