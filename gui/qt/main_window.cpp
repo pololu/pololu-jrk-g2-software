@@ -24,6 +24,7 @@
 #include <QProcessEnvironment>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QScrollBar>
 #include <QShortcut>
 #include <QSpinBox>
 #include <QTabWidget>
@@ -271,7 +272,7 @@ void main_window::set_connection_status(std::string const & status, bool error)
 
 void main_window::set_manual_target_enabled(bool enabled)
 {
-  // manual_target_widget->setEnabled(enabled);
+  // TODO: manual_target_widget->setEnabled(enabled);
 }
 
 void main_window::set_apply_settings_enabled(bool enabled)
@@ -282,7 +283,7 @@ void main_window::set_apply_settings_enabled(bool enabled)
 
 void main_window::set_vin_calibration(int16_t vin_calibration)
 {
-  // set_spin_box(vin_calibration_value, vin_calibration);
+  // TODO: set_spin_box(vin_calibration_value, vin_calibration);
 }
 
 void main_window::setup_ui()
@@ -625,8 +626,20 @@ QWidget * main_window::setup_manual_target_box()
   set_target_button->setObjectName("set_target_button");
   set_target_button->setText(tr("Set &target"));
 
+  manual_target_scroll_bar = new QScrollBar(Qt::Horizontal);
+  manual_target_scroll_bar->setObjectName("manual_target_scroll_bar");
+
+  // TODO: scroll bar range should be based on the feedback mode in the cached
+  // settings, and set with a function named set_manual_target_range that is
+  // called from the controller, instead of just hardcoded here
+  manual_target_scroll_bar->setMinimum(2048 - 600);
+  manual_target_scroll_bar->setMaximum(2048 + 600);
+
+  manual_target_scroll_bar->setValue(2048);
+
   layout->addWidget(manual_target_entry_value, 0, 0);
   layout->addWidget(set_target_button, 0, 1);
+  layout->addWidget(manual_target_scroll_bar, 0, 2);
 
   layout->setRowStretch(1, 1);
   layout->setColumnStretch(2, 1);
@@ -1456,11 +1469,28 @@ void main_window::on_run_motor_action_triggered()
 void main_window::on_stop_motor_action_triggered()
 {
   controller->stop_motor();
+
+  // TODO: this logic should be in controller, and depend on cached settings
+  // feedback mode.
+  manual_target_scroll_bar->setValue(2048);
+  manual_target_entry_value->setValue(2048);
 }
 
 void main_window::on_set_target_button_clicked()
 {
+  // TODO: this logic should be in controller?
+  suppress_events = true;
+  manual_target_scroll_bar->setValue(manual_target_entry_value->value());
+  suppress_events = false;
+
   controller->set_target(manual_target_entry_value->value());
+}
+
+void main_window::on_manual_target_scroll_bar_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  manual_target_entry_value->setValue(value);
+  on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
 }
 
 void main_window::on_input_mode_combobox_currentIndexChanged(int index)
