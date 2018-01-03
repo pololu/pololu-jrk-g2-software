@@ -320,13 +320,29 @@ uint16_t jrk_variables_get_raw_current_mv(const jrk_variables * vars)
   return jrk_variables_get_current_high_res(vars) >> 4;
 }
 
-int32_t jrk_variables_get_scaled_current_mv(const jrk_variables * vars)
+int32_t jrk_variables_get_scaled_current_mv(const jrk_variables * vars, int32_t offset_mv)
 {
   int16_t duty_cycle = jrk_variables_get_duty_cycle(vars);
   uint16_t raw_current_mv = jrk_variables_get_raw_current_mv(vars);
 
-  // TODO: subtract the 50 mV offset from raw_current_mv?
-
+  // We can't divide by the duty cycle if it's zero.
   if (duty_cycle == 0) { return 0; }
-  return raw_current_mv * 600 / duty_cycle;
+
+  // Disallow negative offsets for now because it could cause overflows below,
+  // and does not make sense.
+  if (offset_mv < 0) { offset_mv = 0; }
+
+  // Subtract the offset, making sure we don't make the raw current negative.
+  if (raw_current_mv < offset_mv)
+  {
+    raw_current_mv = 0;
+  }
+  else
+  {
+    raw_current_mv -= offset_mv;
+  }
+
+  // Divide by the duty cycle as a number between 0 and 1.  The multiplication
+  // cannot overflow because 0xFFFF * 600 is expressible as an int32_t.
+  return (int32_t)raw_current_mv * 600 / duty_cycle;
 }

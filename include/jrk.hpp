@@ -1201,9 +1201,9 @@ namespace jrk
     }
 
     /// Wrapper for jrk_variables_get_scaled_current_mv().
-    int32_t get_scaled_current_mv() const noexcept
+    int32_t get_scaled_current_mv(int32_t offset_mv) const noexcept
     {
-      return jrk_variables_get_scaled_current_mv(pointer);
+      return jrk_variables_get_scaled_current_mv(pointer, offset_mv);
     }
   };
 

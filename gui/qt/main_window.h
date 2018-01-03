@@ -172,6 +172,8 @@ public:
   void set_stop_motor_enabled(bool enabled);
   void set_run_motor_enabled(bool enabled);
 
+  int32_t get_current_offset_mv();  // tmphax
+
   bool motor_asymmetric_checked();
 
   QList<pid_constant_control*> pid_controls;
@@ -312,6 +314,8 @@ private:
   QLabel * raw_current_value;
   QLabel * scaled_current_label;
   QLabel * scaled_current_value;
+  QLabel * current_offset_label;
+  QSpinBox * current_offset_value;
   QLabel * current_chopping_log_label;
   QLabel * current_chopping_log_value;
   QLabel * vin_voltage_label;

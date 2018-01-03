@@ -1340,8 +1340,11 @@ uint16_t jrk_variables_get_raw_current_mv(const jrk_variables *);
 
 // Gets the reading on the current sense line, in millivolts, scaled up by
 // dividing by the duty cycle (as a number between 0 and 1).
+//
+// offset_mv is the reading of raw_current_mv that we expect to see when there
+// is no current, in units of millivolts.
 JRK_API
-int32_t jrk_variables_get_scaled_current_mv(const jrk_variables *);
+int32_t jrk_variables_get_scaled_current_mv(const jrk_variables *, int32_t offset_mv);
 
 
 // jrk_device ///////////////////////////////////////////////////////////////////

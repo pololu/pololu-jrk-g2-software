@@ -591,6 +591,18 @@ QWidget * main_window::setup_variables_box()
     &raw_current_value);
   raw_current_label->setText(tr("Raw current:"));
 
+  current_offset_label = new QLabel();
+  current_offset_label->setText(tr("Current offset:"));
+  layout->addWidget(current_offset_label, row, 0, Qt::AlignLeft);
+
+  current_offset_value = new QSpinBox();
+  current_offset_value->setObjectName("current_offset_value");
+  current_offset_value->setRange(0, 5000);
+  current_offset_value->setValue(50);
+  current_offset_value->setSuffix(" mV");
+  layout->addWidget(current_offset_value, row, 1, Qt::AlignLeft);
+  row++;
+
   setup_read_only_text_field(layout, row++, &scaled_current_label,
     &scaled_current_value);
   scaled_current_label->setText(tr("Scaled current:"));
@@ -636,8 +648,8 @@ QWidget * main_window::setup_manual_target_box()
   // TODO: scroll bar range should be based on the feedback mode in the cached
   // settings, and set with a function named set_manual_target_range that is
   // called from the controller, instead of just hardcoded here
-  manual_target_scroll_bar->setMinimum(2048 - 600);
-  manual_target_scroll_bar->setMaximum(2048 + 600);
+  manual_target_scroll_bar->setMinimum(2048 - 600 - 20);
+  manual_target_scroll_bar->setMaximum(2048 + 600 + 20);
 
   manual_target_scroll_bar->setValue(2048);
 
@@ -2275,6 +2287,11 @@ bool main_window::motor_asymmetric_checked()
   return motor_asymmetric_checkbox->isChecked();
 }
 
+int32_t main_window::get_current_offset_mv()
+{
+  return current_offset_value->value();
+}
+
 pid_constant_control::pid_constant_control(int index, const QString& group_box_title,
   const QString& object_name, QWidget *parent)
   : QGroupBox(parent)
@@ -2282,7 +2299,6 @@ pid_constant_control::pid_constant_control(int index, const QString& group_box_t
   setObjectName(object_name);
   setTitle(group_box_title);
   index = index;
-  // std::cout << index << std::endl; //tmphax
 
   QFont font;
   font.setFamily(QStringLiteral("MS Shell Dlg 2"));
