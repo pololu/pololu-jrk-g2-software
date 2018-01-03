@@ -1160,6 +1160,7 @@ QWidget *main_window::setup_motor_tab()
 
   motor_asymmetric_checkbox = new QCheckBox(tr("Asymmetric"));
   motor_asymmetric_checkbox->setObjectName("motor_asymmetric_checkbox");
+  motor_asymmetric_checkbox->setEnabled(false);  // tmphax: not ready to use
 
   motor_forward_label = new QLabel(tr("Forward"));
   motor_forward_label->setObjectName("motor_forward_label");

@@ -117,7 +117,7 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
-  window->set_motor_asymmetric(); //tmphax
+  // TODO: call window->set_motor_asymmetric() ?
 
   handle_model_changed();
 }
@@ -687,24 +687,12 @@ void main_controller::handle_settings_changed()
   window->set_motor_coast_when_off(settings.get_motor_coast_when_off());
   window->set_motor_invert(settings.get_motor_invert());
 
-  if (window->motor_asymmetric_checked())
-  {
-    window->set_motor_asymmetric();
-    window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
-    window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
-    window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
-    window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
-    window->set_motor_current_calibration_reverse(settings.get_motor_current_calibration_reverse());
-  }
-  else
-  {
-    window->set_motor_asymmetric();
-    window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
-    window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
-    window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
-    window->set_motor_max_current_reverse(settings.get_motor_max_current_forward());
-    window->set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
-  }
+  // TODO: logic for asymmetric checkbox
+  window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
+  window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
+  window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
+  window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
+  window->set_motor_current_calibration_reverse(settings.get_motor_current_calibration_reverse());
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -1070,13 +1058,15 @@ void main_controller::handle_motor_detect_direction_button_clicked()
 void main_controller::handle_motor_asymmetric_input(bool checked)
 {
   if (!connected()) { return; }
-  settings.set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
-  settings.set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
-  settings.set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
-  settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
-  settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
-  settings_modified = true;
-  handle_settings_changed();
+
+  // TODO: implement logic for when asymmetric checkbox changes
+  //settings.set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
+  //settings.set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
+  //settings.set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
+  //settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
+  //settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
+  //settings_modified = true;
+  //handle_settings_changed();
 }
 
 void main_controller::handle_motor_max_duty_cycle_forward_input(uint16_t duty_cycle)
