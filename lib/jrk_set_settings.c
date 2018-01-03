@@ -248,16 +248,6 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
-    buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD] = motor_max_current_forward;
-  }
-
-  {
-    uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
-    buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE] = motor_max_current_reverse;
-  }
-
-  {
     int8_t motor_current_calibration_forward = jrk_settings_get_motor_current_calibration_forward(settings);
     buf[JRK_SETTING_MOTOR_CURRENT_CALIBRATION_FORWARD] = motor_current_calibration_forward;
   }
@@ -311,6 +301,16 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     write_uint16_t(buf + JRK_SETTING_SERIAL_TIMEOUT,
       jrk_settings_get_serial_timeout(settings)
       / JRK_SERIAL_TIMEOUT_UNITS);
+  }
+
+  {
+    uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
+    buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD] = motor_max_current_forward * 4;
+  }
+
+  {
+    uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
+    buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE] = motor_max_current_reverse * 4;
   }
 
   {

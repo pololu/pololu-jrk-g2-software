@@ -1044,6 +1044,9 @@ uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings *);
 // Sets the motor_max_current_forward setting.
 //
 // Sets the current limit to be used when driving forward.
+//
+// THE COMMENTS BELOW ARE OUTDATED (TODO).
+//
 // This is the native current limit value stored on the device.
 // The correspondence between this setting and the actual current limit
 // in milliamps depends on what product you are using.  See also:

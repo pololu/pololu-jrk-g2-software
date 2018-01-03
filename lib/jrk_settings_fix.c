@@ -473,11 +473,25 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
+    if (motor_max_current_forward > 31)
+    {
+      motor_max_current_forward = 31;
+      jrk_sprintf(warnings,
+        "Warning: The motor max current forward was too high "
+        "so it will be changed to %u.\n", motor_max_current_forward);
+    }
     jrk_settings_set_motor_max_current_forward(settings, motor_max_current_forward);
   }
 
   {
     uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
+    if (motor_max_current_reverse > 31)
+    {
+      motor_max_current_reverse = 31;
+      jrk_sprintf(warnings,
+        "Warning: The motor max current reverse was too high "
+        "so it will be changed to %u.\n", motor_max_current_reverse);
+    }
     jrk_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
   }
 
