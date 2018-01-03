@@ -707,16 +707,19 @@ void main_controller::handle_settings_loaded()
 
 void main_controller::recalculate_motor_asymmetric()
 {
-   if ((settings.get_motor_max_duty_cycle_forward() != settings.get_motor_max_duty_cycle_reverse())
-    || (settings.get_motor_max_acceleration_forward() != settings.get_motor_max_acceleration_reverse())
-    || (settings.get_motor_max_deceleration_forward() != settings.get_motor_max_deceleration_reverse())
-    || (settings.get_motor_max_current_forward() != settings.get_motor_max_current_reverse())
-    || (settings.get_motor_current_calibration_forward() != settings.get_motor_current_calibration_reverse()))
-  {
-    motor_asymmetric = true;
-  }
-  else
-    motor_asymmetric = false;
+  motor_asymmetric =
+    (settings.get_motor_max_duty_cycle_forward() !=
+      settings.get_motor_max_duty_cycle_reverse()) ||
+    (settings.get_motor_max_acceleration_forward() !=
+      settings.get_motor_max_acceleration_reverse()) ||
+    (settings.get_motor_max_deceleration_forward() !=
+      settings.get_motor_max_deceleration_reverse()) ||
+    (settings.get_motor_brake_duration_forward() !=
+      settings.get_motor_brake_duration_reverse()) ||
+    (settings.get_motor_max_current_forward() !=
+      settings.get_motor_max_current_reverse()) ||
+    (settings.get_motor_current_calibration_forward() !=
+      settings.get_motor_current_calibration_reverse());
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
