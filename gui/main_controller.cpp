@@ -685,12 +685,14 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_reverse());
   window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
   window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
+  window->set_motor_brake_duration_reverse(settings.get_motor_brake_duration_reverse());
   window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
   window->set_motor_current_calibration_reverse(settings.get_motor_current_calibration_reverse());
 
   window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
   window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
   window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
+  window->set_motor_brake_duration_forward(settings.get_motor_brake_duration_forward());
   window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
   window->set_motor_current_calibration_forward(settings.get_motor_current_calibration_forward());
 
@@ -711,6 +713,7 @@ void main_controller::recalculate_motor_asymmetric()
    if ((settings.get_motor_max_duty_cycle_forward() != settings.get_motor_max_duty_cycle_reverse())
     || (settings.get_motor_max_acceleration_forward() != settings.get_motor_max_acceleration_reverse())
     || (settings.get_motor_max_deceleration_forward() != settings.get_motor_max_deceleration_reverse())
+    || (settings.get_motor_brake_duration_forward() != settings.get_motor_brake_duration_reverse())
     || (settings.get_motor_max_current_forward() != settings.get_motor_max_current_reverse())
     || (settings.get_motor_current_calibration_forward() != settings.get_motor_current_calibration_reverse()))
   {
@@ -1079,6 +1082,7 @@ void main_controller::handle_motor_asymmetric_input(bool checked)
     settings.set_motor_max_duty_cycle_reverse(settings.get_motor_max_duty_cycle_forward());
     settings.set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
     settings.set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
+    settings.set_motor_brake_duration_reverse(settings.get_motor_brake_duration_forward());
     settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
     settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
   }
@@ -1139,6 +1143,24 @@ void main_controller::handle_motor_max_deceleration_reverse_input(uint16_t decel
 {
   if (!connected()) { return; }
   settings.set_motor_max_deceleration_reverse(deceleration);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_brake_duration_forward_input(uint32_t deceleration)
+{
+  if (!connected()) { return; }
+  settings.set_motor_brake_duration_forward(deceleration);
+  if (!motor_asymmetric)
+    settings.set_motor_brake_duration_reverse(deceleration);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_motor_brake_duration_reverse_input(uint32_t deceleration)
+{
+  if (!connected()) { return; }
+  settings.set_motor_brake_duration_reverse(deceleration);
   settings_modified = true;
   handle_settings_changed();
 }

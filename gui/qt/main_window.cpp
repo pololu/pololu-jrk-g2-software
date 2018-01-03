@@ -1206,7 +1206,7 @@ QWidget *main_window::setup_motor_tab()
 
   motor_max_acceleration_means_label = new QLabel(tr("(600 means no limit)"));
 
-  motor_max_deceleration_label = new QLabel(tr("Brake duration (ms):"));
+  motor_max_deceleration_label = new QLabel(tr("Max. deceleration:"));
   motor_max_deceleration_label->setObjectName("motor_max_deceleration_label");
 
   motor_max_deceleration_forward_spinbox = new QSpinBox();
@@ -1216,6 +1216,21 @@ QWidget *main_window::setup_motor_tab()
   motor_max_deceleration_reverse_spinbox = new QSpinBox();
   motor_max_deceleration_reverse_spinbox->setObjectName("motor_max_deceleration_reverse_spinbox");
   motor_max_deceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+
+  motor_max_deceleration_means_label = new QLabel(tr("(600 means no limit)"));
+
+  motor_brake_duration_label = new QLabel(tr("Brake duration (ms):"));
+  motor_brake_duration_label->setObjectName("motor_brake_duration_label");
+
+  motor_brake_duration_forward_spinbox = new QSpinBox();
+  motor_brake_duration_forward_spinbox->setObjectName("motor_brake_duration_forward_spinbox");
+  motor_brake_duration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
+  motor_brake_duration_forward_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
+
+  motor_brake_duration_reverse_spinbox = new QSpinBox();
+  motor_brake_duration_reverse_spinbox->setObjectName("motor_brake_duration_reverse_spinbox");
+  motor_brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
+  motor_brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
   motor_max_current_label = new QLabel(tr("Max. current:"));
   motor_max_current_label->setObjectName("motor_max_current_label");
@@ -1256,13 +1271,17 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_max_deceleration_label,4,0,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_max_deceleration_forward_spinbox,4,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_max_deceleration_reverse_spinbox,4,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_label,5,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_forward_spinbox,5,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_reverse_spinbox,5,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_means_label,5,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_calibration_label,6,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_calibration_forward_spinbox,6,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,6,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_deceleration_means_label,4,3,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_brake_duration_label,5,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_brake_duration_forward_spinbox,5,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_brake_duration_reverse_spinbox,5,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_label,6,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_forward_spinbox,6,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_reverse_spinbox,6,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_max_current_means_label,6,3,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_calibration_label,7,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_calibration_forward_spinbox,7,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,7,2,Qt::AlignLeft);
 
   motor_out_of_range_label = new QLabel(tr("Max. duty cycle while feedback is out of range:"));
   motor_out_of_range_label->setObjectName("motor_out_of_range_label");
@@ -1790,6 +1809,18 @@ void main_window::on_motor_max_deceleration_reverse_spinbox_valueChanged(int val
   controller->handle_motor_max_deceleration_reverse_input(value);
 }
 
+void main_window::on_motor_brake_duration_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_brake_duration_forward_input(value);
+}
+
+void main_window::on_motor_brake_duration_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_brake_duration_reverse_input(value);
+}
+
 void main_window::on_motor_max_current_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -2194,6 +2225,7 @@ void main_window::set_motor_asymmetric(bool checked)
   motor_max_duty_cycle_reverse_spinbox->setEnabled(checked);
   motor_max_acceleration_reverse_spinbox->setEnabled(checked);
   motor_max_deceleration_reverse_spinbox->setEnabled(checked);
+  motor_brake_duration_reverse_spinbox->setEnabled(checked);
   motor_max_current_reverse_spinbox->setEnabled(checked);
   motor_calibration_reverse_spinbox->setEnabled(checked);
 
@@ -2227,6 +2259,16 @@ void main_window::set_motor_max_deceleration_forward(uint16_t acceleration)
 void main_window::set_motor_max_deceleration_reverse(uint16_t acceleration)
 {
   set_spin_box(motor_max_deceleration_reverse_spinbox, acceleration);
+}
+
+void main_window::set_motor_brake_duration_forward(uint32_t brake_duration)
+{
+  set_spin_box(motor_brake_duration_forward_spinbox, brake_duration);
+}
+
+void main_window::set_motor_brake_duration_reverse(uint32_t brake_duration)
+{
+  set_spin_box(motor_brake_duration_reverse_spinbox, brake_duration);
 }
 
 void main_window::set_motor_max_current_forward(uint16_t current)

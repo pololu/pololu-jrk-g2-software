@@ -121,6 +121,8 @@ public:
   void handle_motor_max_acceleration_reverse_input(uint16_t);
   void handle_motor_max_deceleration_forward_input(uint16_t);
   void handle_motor_max_deceleration_reverse_input(uint16_t);
+  void handle_motor_brake_duration_forward_input(uint32_t);
+  void handle_motor_brake_duration_reverse_input(uint32_t);
   void handle_motor_max_current_forward_input(uint16_t);
   void handle_motor_max_current_reverse_input(uint16_t);
   void handle_motor_current_calibration_forward_input(uint16_t);

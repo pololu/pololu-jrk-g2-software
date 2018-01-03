@@ -146,6 +146,8 @@ public:
   void set_motor_max_acceleration_reverse(uint16_t);
   void set_motor_max_deceleration_forward(uint16_t);
   void set_motor_max_deceleration_reverse(uint16_t);
+  void set_motor_brake_duration_forward(uint32_t);
+  void set_motor_brake_duration_reverse(uint32_t);
   void set_motor_max_current_forward(uint16_t);
   void set_motor_max_current_reverse(uint16_t);
   void set_motor_current_calibration_forward(uint16_t);
@@ -247,6 +249,8 @@ private slots:
   void on_motor_max_acceleration_reverse_spinbox_valueChanged(int value);
   void on_motor_max_deceleration_forward_spinbox_valueChanged(int value);
   void on_motor_max_deceleration_reverse_spinbox_valueChanged(int value);
+  void on_motor_brake_duration_forward_spinbox_valueChanged(int value);
+  void on_motor_brake_duration_reverse_spinbox_valueChanged(int value);
   void on_motor_max_current_forward_spinbox_valueChanged(int value);
   void on_motor_max_current_reverse_spinbox_valueChanged(int value);
   void on_motor_calibration_forward_spinbox_valueChanged(int value);
@@ -459,6 +463,10 @@ private:
 	QLabel *motor_max_deceleration_label;
 	QSpinBox *motor_max_deceleration_forward_spinbox;
 	QSpinBox *motor_max_deceleration_reverse_spinbox;
+  QLabel *motor_max_deceleration_means_label;
+  QLabel *motor_brake_duration_label;
+  QSpinBox *motor_brake_duration_forward_spinbox;
+  QSpinBox *motor_brake_duration_reverse_spinbox;
 	QLabel *motor_max_current_label;
 	QSpinBox *motor_max_current_forward_spinbox;
 	QSpinBox *motor_max_current_reverse_spinbox;
