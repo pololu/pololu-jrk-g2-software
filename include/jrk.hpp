@@ -1193,6 +1193,18 @@ namespace jrk
     {
       return jrk_variables_get_error(pointer);
     }
+
+    /// Wrapper for jrk_variables_get_raw_current_mv().
+    uint16_t get_raw_current_mv() const noexcept
+    {
+      return jrk_variables_get_raw_current_mv(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_scaled_current_mv().
+    int32_t get_scaled_current_mv() const noexcept
+    {
+      return jrk_variables_get_scaled_current_mv(pointer);
+    }
   };
 
   /// Represents a jrk that is or was connected to the computer.  Can also be in

@@ -1334,6 +1334,15 @@ uint16_t jrk_variables_get_current_chopping_log(const jrk_variables *);
 JRK_API
 int16_t jrk_variables_get_error(const jrk_variables *);
 
+// Gets the raw reading on the current sense line, in millivolts.
+JRK_API
+uint16_t jrk_variables_get_raw_current_mv(const jrk_variables *);
+
+// Gets the reading on the current sense line, in millivolts, scaled up by
+// dividing by the duty cycle (as a number between 0 and 1).
+JRK_API
+int32_t jrk_variables_get_scaled_current_mv(const jrk_variables *);
+
 
 // jrk_device ///////////////////////////////////////////////////////////////////
 

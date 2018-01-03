@@ -314,3 +314,19 @@ int16_t jrk_variables_get_error(const jrk_variables * vars)
   if (vars == NULL) { return 0; }
   return vars->scaled_feedback - vars->target;
 }
+
+uint16_t jrk_variables_get_raw_current_mv(const jrk_variables * vars)
+{
+  return jrk_variables_get_current_high_res(vars) >> 4;
+}
+
+int32_t jrk_variables_get_scaled_current_mv(const jrk_variables * vars)
+{
+  int16_t duty_cycle = jrk_variables_get_duty_cycle(vars);
+  uint16_t raw_current_mv = jrk_variables_get_raw_current_mv(vars);
+
+  // TODO: subtract the 50 mV offset from raw_current_mv?
+
+  if (duty_cycle == 0) { return 0; }
+  return raw_current_mv * 600 / duty_cycle;
+}
