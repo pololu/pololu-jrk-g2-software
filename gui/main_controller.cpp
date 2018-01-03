@@ -542,98 +542,6 @@ void main_controller::handle_variables_changed()
   // TODO: window->increment_errors_occurred(variables.get_errors_occurred());
 }
 
-// void main_controller::update_motor_status_message(bool prompt_to_resume)
-// {
-//   std::string msg;
-//   bool stopped = true;
-//   uint16_t error_status = variables.get_error_status();
-
-//   if (!connected())
-//   {
-//     msg = "";
-//   }
-//   else if (!error_status)
-//   {
-//     msg = "Driving";
-//     stopped = false;
-//   }
-//   else if (error_status & (1 << TIC_ERROR_MOTOR_DRIVER_ERROR))
-//   {
-//     msg = "Motor de-energized because of motor driver error.";
-//   }
-//   else if (error_status & (1 << TIC_ERROR_LOW_VIN))
-//   {
-//     msg = "Motor de-energized because VIN is too low.";
-//   }
-//   else if (error_status & (1 << TIC_ERROR_INTENTIONALLY_DEENERGIZED))
-//   {
-//     msg = "Motor intentionally de-energized.";
-//   }
-//   else
-//   {
-//     msg = "Motor ";
-
-//     if (!variables.get_energized())
-//     {
-//       msg += "de-energized ";
-//     }
-//     else if (variables.get_current_velocity() == 0)
-//     {
-//       msg += "holding ";
-//     }
-//     else if (variables.get_planning_mode() == TIC_PLANNING_MODE_TARGET_VELOCITY)
-//     {
-//       msg += "decelerating ";
-//     }
-//     else if (variables.get_planning_mode() == TIC_PLANNING_MODE_TARGET_POSITION)
-//     {
-//       msg += "moving to error position ";
-//     }
-
-//     if (error_status & (1 << TIC_ERROR_KILL_SWITCH))
-//     {
-//       msg += "because kill switch is active.";
-//     }
-//     else if (error_status & (1 << TIC_ERROR_REQUIRED_INPUT_INVALID))
-//     {
-//       msg += "because required input is invalid.";
-//     }
-//     else if (error_status & (1 << TIC_ERROR_SERIAL_ERROR))
-//     {
-//       msg += "because of serial error.";
-//     }
-    // else if (error_status & (1 << TIC_ERROR_COMMAND_TIMEOUT))
-    // {
-    //   msg += "because of command timeout.";
-    // }
-    // else if (error_status & (1 << TIC_ERROR_SAFE_START_VIOLATION))
-    // {
-    //   msg += "because of safe start violation.";
-
-    //   uint8_t control_mode = jrk_settings_get_control_mode(
-    //     cached_settings.get_pointer());
-    //   switch (control_mode)
-    //   {
-    //   case TIC_CONTROL_MODE_RC_SPEED:
-    //   case TIC_CONTROL_MODE_ANALOG_SPEED:
-    //   case TIC_CONTROL_MODE_ENCODER_SPEED:
-    //     msg += "  Center the input.";
-    //   }
-    // }
-    // else if (error_status & (1 << TIC_ERROR_ERR_LINE_HIGH))
-    // {
-    //   msg += "because ERR line is high.";
-    // }
-//   }
-
-//   if (prompt_to_resume)
-//   {
-//     msg += "  Press Resume to start.";
-//   }
-
-//   window->set_motor_status_message(msg, stopped);
-// }
-
 void main_controller::handle_settings_changed()
 {
   // [all-settings]
@@ -700,7 +608,7 @@ void main_controller::handle_settings_loaded()
 {
   recalculate_motor_asymmetric();
 
-  // TODO: cached_settings = settings;
+  cached_settings = settings;
 
   settings_modified = false;
 }
@@ -1239,7 +1147,7 @@ void main_controller::apply_settings()
       settings = fixed_settings;
       device_handle.set_settings(settings);
       device_handle.reinitialize();
-      handle_settings_loaded();
+      cached_settings = settings;
       settings_modified = false;  // this must be last in case exceptions are thrown
     }
   }
