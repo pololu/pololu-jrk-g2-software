@@ -304,7 +304,7 @@ void graph_widget::realtime_data_slot()
   key += (refreshTimer/1000);
 
   // This list is used to plot values on graph
-  QList<uint16_t> value =
+  QList<int32_t> value =
   {
     0,
     0,

@@ -24,7 +24,7 @@ public:
     	QCPGraph *plot_graph;
       QLabel *range_label;
       QHBoxLayout *graph_data_selection_bar;
-      uint16_t plot_value = 0;
+      int32_t plot_value = 0;
       bool double_ended_range = false;
       double range_value = 0;
     };
