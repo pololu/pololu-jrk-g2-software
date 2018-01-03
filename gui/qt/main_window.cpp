@@ -147,11 +147,14 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
   duty_cycle_value->setText(QString::number(duty_cycle));
 }
 
-void main_window::set_current(uint16_t current)
+void main_window::set_raw_current_mv(uint16_t current)
 {
   preview_window->raw_current.plot_value = current;
   raw_current_value->setText(QString::number(current));
+}
 
+void main_window::set_scaled_current_mv(uint16_t current)
+{
   preview_window->scaled_current.plot_value = current;
   scaled_current_value->setText(QString::number(current));
 }
