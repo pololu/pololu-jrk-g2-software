@@ -152,10 +152,10 @@ void graph_widget::setup_ui()
   raw_current.plot_display = new QCheckBox("Raw current (mV)");
   raw_current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
-  raw_current.range_label = new QLabel("\u00B1");
+  raw_current.range_label = new QLabel("0\u2013");
   raw_current.graph_data_selection_bar = new QHBoxLayout();
   raw_current.double_ended_range = true;
-  raw_current.range_value = 1024;
+  raw_current.range_value = 4095;
 
   scaled_current.plot_range = new QDoubleSpinBox();
   scaled_current.plot_display = new QCheckBox("Scaled current (mV)");
@@ -164,7 +164,7 @@ void graph_widget::setup_ui()
   scaled_current.range_label = new QLabel("\u00B1");
   scaled_current.graph_data_selection_bar = new QHBoxLayout();
   scaled_current.double_ended_range = true;
-  scaled_current.range_value = 1024;
+  scaled_current.range_value = 2457000;
 
   current_chopping_log.plot_range = new QDoubleSpinBox();
   current_chopping_log.plot_display = new QCheckBox("Current chopping log");
