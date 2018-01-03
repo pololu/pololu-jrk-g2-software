@@ -1200,7 +1200,7 @@ QWidget *main_window::setup_motor_tab()
   motor_max_deceleration_reverse_spinbox->setObjectName("motor_max_deceleration_reverse_spinbox");
   motor_max_deceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
-  motor_max_current_label = new QLabel(tr("Max. current (A):"));
+  motor_max_current_label = new QLabel(tr("Max. current:"));
   motor_max_current_label->setObjectName("motor_max_current_label");
 
   motor_max_current_forward_spinbox = new QSpinBox();
@@ -1211,7 +1211,7 @@ QWidget *main_window::setup_motor_tab()
   motor_max_current_reverse_spinbox->setObjectName("motor_max_current_reverse_spinbox");
   motor_max_current_reverse_spinbox->setRange(0, 31); // TODO: add macro for max
 
-  motor_max_current_means_label = new QLabel(tr("(0.000 means no limit)"));
+  motor_max_current_means_label = new QLabel(tr("(0 to 31)"));
   motor_max_current_means_label->setObjectName("motor_max_current_means_label");
 
   motor_calibration_label = new QLabel(tr("Current calibration:"));
