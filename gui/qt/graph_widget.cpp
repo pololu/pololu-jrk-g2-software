@@ -148,14 +148,23 @@ void graph_widget::setup_ui()
   duty_cycle.double_ended_range = true;
   duty_cycle.range_value = 600;
 
-  current.plot_range = new QDoubleSpinBox();
-  current.plot_display = new QCheckBox("Current (mA)");
-  current.plot_display->
+  raw_current.plot_range = new QDoubleSpinBox();
+  raw_current.plot_display = new QCheckBox("Raw current (mV)");
+  raw_current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
-  current.range_label = new QLabel("\u00B1");
-  current.graph_data_selection_bar = new QHBoxLayout();
-  current.double_ended_range = true;
-  current.range_value = 1024;
+  raw_current.range_label = new QLabel("\u00B1");
+  raw_current.graph_data_selection_bar = new QHBoxLayout();
+  raw_current.double_ended_range = true;
+  raw_current.range_value = 1024;
+
+  scaled_current.plot_range = new QDoubleSpinBox();
+  scaled_current.plot_display = new QCheckBox("Scaled current (mV)");
+  scaled_current.plot_display->
+    setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; font:14px; background-color:white"));
+  scaled_current.range_label = new QLabel("\u00B1");
+  scaled_current.graph_data_selection_bar = new QHBoxLayout();
+  scaled_current.double_ended_range = true;
+  scaled_current.range_value = 1024;
 
   current_chopping_log.plot_range = new QDoubleSpinBox();
   current_chopping_log.plot_display = new QCheckBox("Current chopping log");
@@ -170,7 +179,8 @@ void graph_widget::setup_ui()
 
   // TODO: let's not have the plots be listed in reverse order here
   all_plots.push_front(current_chopping_log);
-  all_plots.push_front(current);
+  all_plots.push_front(scaled_current);
+  all_plots.push_front(raw_current);
   all_plots.push_front(duty_cycle);
   all_plots.push_front(duty_cycle_target);
   all_plots.push_front(integral);
@@ -304,7 +314,8 @@ void graph_widget::realtime_data_slot()
     0,
     0,
     this->duty_cycle.plot_value,
-    this->current.plot_value,
+    this->raw_current.plot_value, //TODO: correct values for raw current
+    this->scaled_current.plot_value, //TODO: correct values for scaled current
     this->current_chopping_log.plot_value,
   };
 

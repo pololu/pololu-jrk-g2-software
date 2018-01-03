@@ -107,6 +107,10 @@ public:
   void handle_feedback_analog_samples_input(uint8_t feedback_analog_samples);
   void handle_feedback_detect_disconnect_input(bool detect_disconnect);
 
+  void handle_pid_constant_control_multiplier(int index, uint16_t multiplier);
+  void handle_pid_constant_control_exponent(int index, uint16_t exponent);
+  void handle_pid_constant_control_constant(int index, double constant);
+
   void handle_motor_pwm_frequency_input(uint8_t);
   void handle_motor_invert_input(bool invert_motor);
   void handle_motor_detect_direction_button_clicked();

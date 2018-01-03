@@ -670,6 +670,12 @@ void main_controller::handle_settings_changed()
   window->set_feedback_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
+
+
+    window->pid_controls[0]->set_pid_multiplier(settings.get_proportional_multiplier());
+    window->pid_controls[0]->set_pid_exponent(settings.get_proportional_exponent());
+
+
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_motor_invert(settings.get_motor_invert());
   window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
@@ -947,6 +953,55 @@ void main_controller::handle_feedback_detect_disconnect_input(bool detect_discon
 {
   if (!connected()) { return; }
   settings.set_feedback_detect_disconnect(detect_disconnect);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_constant_control_multiplier(int index, uint16_t multiplier)
+{
+  if (!connected()) { return; }
+  uint16_t exponent;
+  double x = multiplier;
+  std::cout << index << std::endl;
+  switch (index)
+  {
+    case 0:
+      exponent = settings.get_proportional_exponent();
+      for (int i = 0; i < exponent; ++i)
+      {
+        x /= 2;
+      }
+      window->pid_controls[0]->set_pid_constant(x);
+      settings.set_proportional_multiplier(multiplier);
+      break;
+    default:
+      return;
+  }
+
+
+
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_constant_control_exponent(int index, uint16_t exponent)
+{
+  if (!connected()) { return; }
+
+
+
+
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_constant_control_constant(int index, double constant)
+{
+  if (!connected()) { return; }
+
+
+
+
   settings_modified = true;
   handle_settings_changed();
 }

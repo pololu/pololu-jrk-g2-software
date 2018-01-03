@@ -148,8 +148,11 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
 
 void main_window::set_current(uint16_t current)
 {
-  preview_window->current.plot_value = current;
-  current_value->setText(QString::number(current));
+  preview_window->raw_current.plot_value = current;
+  raw_current_value->setText(QString::number(current));
+
+  preview_window->scaled_current.plot_value = current;
+  scaled_current_value->setText(QString::number(current));
 }
 
 void main_window::set_current_chopping_log(uint16_t log)
@@ -579,9 +582,13 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++, &duty_cycle_label, &duty_cycle_value);
   duty_cycle_label->setText(tr("Duty cycle:"));
 
-  setup_read_only_text_field(layout, row++, &current_label,
-    &current_value);
-  current_label->setText(tr("Current:"));
+  setup_read_only_text_field(layout, row++, &raw_current_label,
+    &raw_current_value);
+  raw_current_label->setText(tr("Raw current:"));
+
+  setup_read_only_text_field(layout, row++, &scaled_current_label,
+    &scaled_current_value);
+  scaled_current_label->setText(tr("Scaled current:"));
 
   setup_read_only_text_field(layout, row++,
     &current_chopping_log_label, &current_chopping_log_value);
@@ -1049,14 +1056,18 @@ QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
 
-  pid_proportional_coefficient = new pid_constant_control(
-    "Proportional Coefficient", "pid_proportional_coefficient");
+  pid_proportional_coefficient = new pid_constant_control(0,
+    "Proportional Coefficient", "pid_proportional_coefficient", this);
 
-  pid_integral_coefficient = new pid_constant_control(
+  pid_integral_coefficient = new pid_constant_control(1,
     "Integral Coefficient", "pid_integral_coefficient");
 
-  pid_derivative_coefficient = new pid_constant_control(
+  pid_derivative_coefficient = new pid_constant_control(2,
     "Derivative Coefficient", "pid_derivative_coefficient");
+
+  pid_controls.push_back(pid_proportional_coefficient);
+  pid_controls.push_back(pid_integral_coefficient);
+  pid_controls.push_back(pid_integral_coefficient);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -2229,46 +2240,59 @@ bool main_window::motor_asymmetric_checked()
   return motor_asymmetric_checkbox->isChecked();
 }
 
-pid_constant_control::pid_constant_control(const QString& group_box_title,
+pid_constant_control::pid_constant_control(int index, const QString& group_box_title,
   const QString& object_name, QWidget *parent)
   : QGroupBox(parent)
 {
   setObjectName(object_name);
   setTitle(group_box_title);
+  index = index;
+  // std::cout << index << std::endl; //tmphax
 
-  pid_base_label = new QLabel();
-  pid_base_label->setObjectName("pid_base_label");
   QFont font;
   font.setFamily(QStringLiteral("MS Shell Dlg 2"));
   font.setPointSize(16);
   font.setBold(true);
   font.setWeight(75);
+
+  QFont font1;
+  font1.setPointSize(12);
+  font1.setBold(true);
+  font1.setWeight(75);
+
+  pid_base_label = new QLabel();
+  pid_base_label->setObjectName("pid_base_label");
   pid_base_label->setFont(font);
   pid_base_label->setLayoutDirection(Qt::LeftToRight);
   pid_base_label->setAlignment(Qt::AlignCenter);
   pid_base_label->setText(tr("2"));
+
   pid_control_frame = new QFrame();
   pid_control_frame->setObjectName(QStringLiteral("pid_control_frame"));
   pid_control_frame->setFrameShadow(QFrame::Plain);
   pid_control_frame->setLineWidth(4);
   pid_control_frame->setFrameShape(QFrame::HLine);
+
   pid_multiplier_spinbox = new QSpinBox();
   pid_multiplier_spinbox->setObjectName("pid_multiplier_spinbox");
   pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
+
   pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
+  pid_exponent_spinbox->setRange(0, 18);
+
   pid_equal_label = new QLabel();
   pid_equal_label->setObjectName("pid_equal_label");
   pid_equal_label->setText(tr("="));
-  QFont font1;
-  font1.setPointSize(12);
-  font1.setBold(true);
-  font1.setWeight(75);
+
   pid_equal_label->setFont(font1);
   pid_equal_label->setAlignment(Qt::AlignCenter);
-  pid_constant_control_textbox = new QLineEdit();
+
+  pid_constant_control_textbox = new QDoubleSpinBox();
   pid_constant_control_textbox->setObjectName("pid_constant_control_textbox");
+  pid_constant_control_textbox->setDecimals(5);
+  pid_constant_control_textbox->setRange(0.00003, 1024);
 
   QGridLayout *group_box_layout = new QGridLayout();
   group_box_layout->addWidget(pid_base_label,3,1,3,2);
@@ -2282,6 +2306,76 @@ pid_constant_control::pid_constant_control(const QString& group_box_title,
   setLayout(group_box_layout);
 
   QMetaObject::connectSlotsByName(this);
+}
+
+void pid_constant_control::set_pid_multiplier(uint16_t value)
+{
+  set_spin_box(pid_multiplier_spinbox, value);
+}
+
+void pid_constant_control::set_pid_exponent(uint16_t value)
+{
+  set_spin_box(pid_exponent_spinbox, value);
+}
+
+void pid_constant_control::set_pid_constant(double value)
+{
+  set_double_spin_box(pid_constant_control_textbox, value);
+}
+
+bool pid_constant_control::window_suppress_events() const
+{
+  return ((main_window *)parent())->suppress_events;
+}
+
+void pid_constant_control::set_window_suppress_events(bool suppress_events)
+{
+  ((main_window *)parent())->suppress_events = suppress_events;
+}
+
+main_controller * pid_constant_control::window_controller() const
+{
+  return ((main_window *)parent())->controller;
+}
+
+void pid_constant_control::on_pid_multiplier_spinbox_valueChanged(int value)
+{
+  if (window_suppress_events()) { return; }
+  window_controller()->handle_pid_constant_control_multiplier(index, value);
+}
+
+void pid_constant_control::on_pid_exponent_spinbox_valueChanged(int value)
+{
+  if (window_suppress_events()) { return; }
+  window_controller()->handle_pid_constant_control_exponent(index, value);
+}
+
+void pid_constant_control::on_pid_constant_control_textbox_valueChanged(double value)
+{
+  if (window_suppress_events()) { return; }
+  window_controller()->handle_pid_constant_control_constant(index, value);
+}
+
+void pid_constant_control::set_spin_box(QSpinBox * spin, int value)
+{
+  // Only set the QSpinBox's value if the new value is numerically different.
+  // This prevents, for example, a value of "0000" from being changed to "0"
+  // while you're trying to change "10000" to "20000".
+  if (spin->value() != value)
+  {
+    spin->setValue(value);
+  }
+}
+
+void pid_constant_control::set_double_spin_box(QDoubleSpinBox * spin, double value)
+{
+  // Only set the QSpinBox's value if the new value is numerically different.
+  // This prevents, for example, a value of "0000" from being changed to "0"
+  // while you're trying to change "10000" to "20000".
+  if (spin->value() != value)
+  {
+    spin->setValue(value);
+  }
 }
 
 errors_control::errors_control

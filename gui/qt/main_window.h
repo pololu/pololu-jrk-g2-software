@@ -172,6 +172,8 @@ public:
 
   bool motor_asymmetric_checked();
 
+  QList<pid_constant_control*> pid_controls;
+
 signals:
 	void pass_widget(graph_widget *widget);
 
@@ -303,6 +305,10 @@ private:
   QLabel * duty_cycle_value;
   QLabel * current_label;
   QLabel * current_value;
+  QLabel * raw_current_label;
+  QLabel * raw_current_value;
+  QLabel * scaled_current_label;
+  QLabel * scaled_current_value;
   QLabel * current_chopping_log_label;
   QLabel * current_chopping_log_value;
   QLabel * vin_voltage_label;
@@ -500,6 +506,8 @@ private:
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
 	QWidget * setup_pid_tab();
+
+
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
 
@@ -518,23 +526,42 @@ private:
 
   bool start_event_reported = false;
 
+  friend class pid_constant_control;
 };
 
 class pid_constant_control : public QGroupBox
 {
 	Q_OBJECT
 public:
-	pid_constant_control(const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
+	pid_constant_control(int index, const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
+  void set_pid_multiplier(uint16_t value);
+  void set_pid_exponent(uint16_t value);
+  void set_pid_constant(double value);
 
 private:
-	QWidget *central_widget;
+  bool window_suppress_events() const;
+  void set_window_suppress_events(bool suppress_events);
+  main_controller * window_controller() const;
+
+	int index;
+  QWidget *central_widget;
 	QFrame *pid_control_frame;
 	QFrame *pid_proportion_frame;
-	QLineEdit *pid_constant_control_textbox;
+	QDoubleSpinBox *pid_constant_control_textbox;
 	QLabel *pid_equal_label;
 	QSpinBox *pid_multiplier_spinbox;
 	QLabel *pid_base_label;
 	QSpinBox *pid_exponent_spinbox;
+
+private slots:
+  void on_pid_multiplier_spinbox_valueChanged(int value);
+  void on_pid_exponent_spinbox_valueChanged(int value);
+  void on_pid_constant_control_textbox_valueChanged(double value);
+
+private:
+  friend class main_window;
+  void set_spin_box(QSpinBox * spin, int value);
+  void set_double_spin_box(QDoubleSpinBox * spin, double value);
 };
 
 class errors_control : public QWidget
