@@ -1172,7 +1172,7 @@ QWidget *main_window::setup_motor_tab()
 
   motor_asymmetric_checkbox = new QCheckBox(tr("Asymmetric"));
   motor_asymmetric_checkbox->setObjectName("motor_asymmetric_checkbox");
-  motor_asymmetric_checkbox->setEnabled(false);  // tmphax: not ready to use
+  // motor_asymmetric_checkbox->setEnabled(false);  // tmphax: not ready to use
 
   motor_forward_label = new QLabel(tr("Forward"));
   motor_forward_label->setObjectName("motor_forward_label");
@@ -2188,14 +2188,14 @@ void main_window::set_motor_invert(bool enabled)
   set_check_box(motor_invert_checkbox, enabled);
 }
 
-void main_window::set_motor_asymmetric()
+void main_window::set_motor_asymmetric(bool checked)
 {
-  bool enabled = motor_asymmetric_checked();
-  motor_max_duty_cycle_reverse_spinbox->setEnabled(enabled);
-  motor_max_acceleration_reverse_spinbox->setEnabled(enabled);
-  motor_max_deceleration_reverse_spinbox->setEnabled(enabled);
-  motor_max_current_reverse_spinbox->setEnabled(enabled);
-  motor_calibration_reverse_spinbox->setEnabled(enabled);
+  set_check_box(motor_asymmetric_checkbox, checked);
+  motor_max_duty_cycle_reverse_spinbox->setEnabled(checked);
+  motor_max_acceleration_reverse_spinbox->setEnabled(checked);
+  motor_max_deceleration_reverse_spinbox->setEnabled(checked);
+  motor_max_current_reverse_spinbox->setEnabled(checked);
+  motor_calibration_reverse_spinbox->setEnabled(checked);
 
 }
 

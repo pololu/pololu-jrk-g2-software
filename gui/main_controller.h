@@ -133,6 +133,8 @@ public:
 
   void handle_upload_complete();
 
+  bool motor_asymmetric;
+
 private:
   // This is called whenever it is possible that we have connected to a
   // different device.

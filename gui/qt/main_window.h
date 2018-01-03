@@ -139,7 +139,7 @@ public:
 
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
   void set_motor_invert(bool enabled);
-  void set_motor_asymmetric();
+  void set_motor_asymmetric(bool checked);
   void set_motor_max_duty_cycle_forward(uint16_t);
   void set_motor_max_duty_cycle_reverse(uint16_t);
   void set_motor_max_acceleration_forward(uint16_t);
