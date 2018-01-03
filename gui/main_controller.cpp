@@ -156,7 +156,6 @@ void main_controller::reload_settings(bool ask)
   {
     settings = device_handle.get_settings();
     handle_settings_loaded();
-    settings_modified = false;
   }
   catch (std::exception const & e)
   {
@@ -699,11 +698,11 @@ void main_controller::handle_settings_changed()
 
 void main_controller::handle_settings_loaded()
 {
-  // this must be last so the preceding code can compare old and new settings
-
   recalculate_motor_asymmetric();
 
   // TODO: cached_settings = settings;
+
+  settings_modified = false;
 }
 
 void main_controller::recalculate_motor_asymmetric()
