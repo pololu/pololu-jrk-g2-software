@@ -21,6 +21,7 @@ class QHBoxLayout;
 class QLineEdit;
 class QMenu;
 class QRadioButton;
+class QScrollBar;
 class QShowEvent;
 class QSpinBox;
 
@@ -195,6 +196,7 @@ private slots:
   void on_stop_motor_action_triggered();
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();
+  void on_manual_target_scroll_bar_valueChanged(int value);
 
   void on_input_mode_combobox_currentIndexChanged(int index);
   void on_input_analog_samples_combobox_currentIndexChanged(int index);
@@ -310,8 +312,11 @@ private:
   QLabel * error_flags_halting_label;
   QLabel * error_flags_halting_value;
 
+  // Manually set target box
+
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
+  QScrollBar * manual_target_scroll_bar;
 
 	// input tab
 
