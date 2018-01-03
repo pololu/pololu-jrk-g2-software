@@ -612,9 +612,14 @@ EOF
   {
     name: 'motor_max_current_forward',
     type: :uint8_t,
-    default: 42,
+    default: 10,
+    max: 31,
+    custom_eeprom: true,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
+
+THE COMMENTS BELOW ARE OUTDATED (TODO).
+
 This is the native current limit value stored on the device.
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
@@ -627,7 +632,9 @@ EOF
   {
     name: 'motor_max_current_reverse',
     type: :uint8_t,
-    default: 42,
+    default: 10,
+    max: 31,
+    custom_eeprom: true,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
       "See the documentation of motor_max_current_forward."

@@ -1194,11 +1194,11 @@ QWidget *main_window::setup_motor_tab()
 
   motor_max_current_forward_spinbox = new QSpinBox();
   motor_max_current_forward_spinbox->setObjectName("motor_max_current_forward_spinbox");
-  motor_max_current_forward_spinbox->setRange(0, 255); // TODO: add macro in place of 255
+  motor_max_current_forward_spinbox->setRange(0, 31); // TODO: add macro for max
 
   motor_max_current_reverse_spinbox = new QSpinBox();
   motor_max_current_reverse_spinbox->setObjectName("motor_max_current_reverse_spinbox");
-  motor_max_current_reverse_spinbox->setRange(0, 255); // TODO: add macro in place of 255
+  motor_max_current_reverse_spinbox->setRange(0, 31); // TODO: add macro for max
 
   motor_max_current_means_label = new QLabel(tr("(0.000 means no limit)"));
   motor_max_current_means_label->setObjectName("motor_max_current_means_label");

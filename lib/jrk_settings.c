@@ -121,8 +121,8 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_motor_max_deceleration_reverse(settings, 600);
   jrk_settings_set_motor_max_duty_cycle_forward(settings, 600);
   jrk_settings_set_motor_max_duty_cycle_reverse(settings, 600);
-  jrk_settings_set_motor_max_current_forward(settings, 42);
-  jrk_settings_set_motor_max_current_reverse(settings, 42);
+  jrk_settings_set_motor_max_current_forward(settings, 10);
+  jrk_settings_set_motor_max_current_reverse(settings, 10);
 
   // End of auto-generated settings defaults.
 }
