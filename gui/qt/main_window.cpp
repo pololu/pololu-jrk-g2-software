@@ -1103,24 +1103,24 @@ QWidget * main_window::setup_pid_tab()
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
 
-  pid_period_spinbox = new QDoubleSpinBox();
+  pid_period_spinbox = new QSpinBox();
   pid_period_spinbox->setObjectName("pid_period_spinbox");
 
   pid_integral_limit_label = new QLabel(tr("Integral limit:"));
   pid_integral_limit_label->setObjectName("pid_integral_limit_label");
 
-  pid_integral_limit_spinbox = new QDoubleSpinBox();
+  pid_integral_limit_spinbox = new QSpinBox();
   pid_integral_limit_spinbox->setObjectName("pid_integral_limit_spinbox");
 
   pid_reset_integral_checkbox = new QCheckBox(
     tr("Reset integral when proportional term exceeds max duty cycle"));
   pid_reset_integral_checkbox->setObjectName("pid_reset_integral_checkbox");
 
-  pid_deadzone_label = new QLabel(tr("Feedback dead zone:"));
-  pid_deadzone_label->setObjectName("pid_deadzone_label");
+  pid_feedback_dead_zone_label = new QLabel(tr("Feedback dead zone:"));
+  pid_feedback_dead_zone_label->setObjectName("pid_feedback_dead_zone_label");
 
-  pid_deadzone_spinbox = new QDoubleSpinBox();
-  pid_deadzone_spinbox->setObjectName("pid_deadzone_spinbox");
+  pid_feedback_dead_zone_spinbox = new QSpinBox();
+  pid_feedback_dead_zone_spinbox->setObjectName("pid_feedback_dead_zone_spinbox");
 
   QGridLayout *group_box_row = new QGridLayout();
   group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0, Qt::AlignCenter);
@@ -1136,8 +1136,8 @@ QWidget * main_window::setup_pid_tab()
   integral_row_layout->addWidget(pid_integral_limit_spinbox);
 
   QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
-  deadzone_row_layout->addWidget(pid_deadzone_label);
-  deadzone_row_layout->addWidget(pid_deadzone_spinbox);
+  deadzone_row_layout->addWidget(pid_feedback_dead_zone_label);
+  deadzone_row_layout->addWidget(pid_feedback_dead_zone_spinbox);
 
   QGridLayout *layout = pid_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
@@ -1740,6 +1740,30 @@ void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
   controller->handle_feedback_detect_disconnect_input(state == Qt::Checked);
 }
 
+void main_window::on_pid_period_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_period_input(value);
+}
+
+void main_window::on_pid_integral_limit_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_integral_limit_input(value);
+}
+
+void main_window::on_pid_reset_integral_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_reset_integral_input(state == Qt::Checked);
+}
+
+void main_window::on_pid_feedback_dead_zone_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_feedback_dead_zone_input(value);
+}
+
 void main_window::on_motor_pwm_frequency_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
@@ -2228,6 +2252,26 @@ void main_window::set_pid_constant(int index, double value)
   set_double_spin_box(spin, value);
 }
 
+void main_window::set_pid_period(uint16_t value)
+{
+  set_spin_box(pid_period_spinbox, value);
+}
+
+void main_window::set_pid_integral_limit(uint16_t value)
+{
+  set_spin_box(pid_integral_limit_spinbox, value);
+}
+
+void main_window::set_pid_reset_integral(bool enabled)
+{
+  set_check_box(pid_reset_integral_checkbox, enabled);
+}
+
+void main_window::set_feedback_dead_zone(uint8_t value)
+{
+  set_spin_box(pid_feedback_dead_zone_spinbox, value);
+}
+
 void main_window::set_motor_pwm_frequency(uint8_t pwm_frequency)
 {
   set_u8_combobox(motor_pwm_frequency_combobox, pwm_frequency);
@@ -2389,7 +2433,7 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
-  pid_exponent_spinbox->setRange(0, 18);
+  pid_exponent_spinbox->setRange(0, 15);
   connect(pid_exponent_spinbox, SIGNAL(valueChanged(int)), this,
     SLOT(on_pid_exponent_spinbox_valueChanged(int)));
 
@@ -2400,11 +2444,11 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_equal_label->setFont(font1);
   pid_equal_label->setAlignment(Qt::AlignCenter);
 
-  pid_constant_spinbox = new QDoubleSpinBox(); // TODO: set range
+  pid_constant_spinbox = new QDoubleSpinBox();
   pid_constant_spinbox->setObjectName("pid_constant_spinbox");
   pid_constant_spinbox->setDecimals(5);
   pid_constant_spinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-  pid_constant_spinbox->setRange(0, 1024);
+  pid_constant_spinbox->setRange(0, 1023);
   connect(pid_constant_spinbox, SIGNAL(valueChanged(double)), this,
     SLOT(on_pid_constant_spinbox_valueChanged(double)));
 

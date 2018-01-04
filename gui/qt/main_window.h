@@ -140,6 +140,10 @@ public:
   void set_pid_multiplier(int index, uint16_t value);
   void set_pid_exponent(int index, uint16_t value);
   void set_pid_constant(int index, double value);
+  void set_pid_period(uint16_t value);
+  void set_pid_integral_limit(uint16_t value);
+  void set_pid_reset_integral(bool enabled);
+  void set_feedback_dead_zone(uint8_t value);
 
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
   void set_motor_invert(bool enabled);
@@ -240,6 +244,11 @@ private slots:
   void on_feedback_reset_range_button_clicked();
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
+
+  void on_pid_period_spinbox_valueChanged(int value);
+  void on_pid_integral_limit_spinbox_valueChanged(int value);
+  void on_pid_reset_integral_checkbox_stateChanged(int state);
+  void on_pid_feedback_dead_zone_spinbox_valueChanged(int value);
 
   void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
   void on_motor_invert_checkbox_stateChanged(int state);
@@ -429,12 +438,12 @@ private:
 	QWidget *pid_page_widget;
 	QGridLayout *pid_page_layout;
 	QLabel *pid_period_label;
-	QDoubleSpinBox *pid_period_spinbox;
+	QSpinBox *pid_period_spinbox;
 	QLabel *pid_integral_limit_label;
-	QDoubleSpinBox *pid_integral_limit_spinbox;
+	QSpinBox *pid_integral_limit_spinbox;
 	QCheckBox *pid_reset_integral_checkbox;
-	QLabel *pid_deadzone_label;
-	QDoubleSpinBox *pid_deadzone_spinbox;
+	QLabel *pid_feedback_dead_zone_label;
+	QSpinBox *pid_feedback_dead_zone_spinbox;
 
 	// pid tab constant controls
   std::array<pid_constant_control *, 3> pid_constant_controls;

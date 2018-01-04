@@ -580,15 +580,10 @@ void main_controller::handle_settings_changed()
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
 
-  // window->set_pid_multiplier(0, settings.get_proportional_multiplier()); //tmphax
-  // window->set_pid_exponent(0, settings.get_proportional_exponent()); //tmphax
-  // window->set_pid_multiplier(1, settings.get_integral_multiplier()); //tmphax
-  // window->set_pid_exponent(1, settings.get_integral_exponent()); //tmphax
-  // window->set_pid_multiplier(2, settings.get_derivative_multiplier()); //tmphax
-  // window->set_pid_exponent(2, settings.get_derivative_exponent()); //tmphax
-
-
-
+  window->set_pid_period(settings.get_pid_period());
+  window->set_pid_integral_limit(settings.get_pid_integral_limit());
+  window->set_pid_reset_integral(settings.get_pid_reset_integral());
+  window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_motor_invert(settings.get_motor_invert());
@@ -1043,6 +1038,38 @@ void main_controller::handle_pid_constant_control_constant(int index, double con
     recalculate_pid_coefficients(i);
   }
 
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_period_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_pid_period(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_integral_limit_input(uint16_t value)
+{
+  if (!connected()) { return; }
+  settings.set_pid_integral_limit(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_reset_integral_input(bool checked)
+{
+  if (!connected()) { return; }
+  settings.set_pid_reset_integral(checked);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_feedback_dead_zone_input(uint8_t value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_dead_zone(value);
   settings_modified = true;
   handle_settings_changed();
 }

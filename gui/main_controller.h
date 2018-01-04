@@ -110,6 +110,10 @@ public:
   void handle_pid_constant_control_multiplier(int index, uint16_t multiplier);
   void handle_pid_constant_control_exponent(int index, uint16_t exponent);
   void handle_pid_constant_control_constant(int index, double constant);
+  void handle_pid_period_input(uint16_t value);
+  void handle_pid_integral_limit_input(uint16_t value);
+  void handle_pid_reset_integral_input(bool checked);
+  void handle_pid_feedback_dead_zone_input(uint8_t value);
 
   void handle_motor_pwm_frequency_input(uint8_t);
   void handle_motor_invert_input(bool invert_motor);
