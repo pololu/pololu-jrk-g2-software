@@ -145,6 +145,8 @@ private:
   void handle_settings_changed();
   void handle_settings_loaded();
 
+  void recalculate_pid_coefficients(int index);
+
   void recalculate_motor_asymmetric();
 
   // void update_motor_status_message(bool prompt_to_resume);

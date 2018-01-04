@@ -580,6 +580,16 @@ void main_controller::handle_settings_changed()
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
 
+  // window->set_pid_multiplier(0, settings.get_proportional_multiplier()); //tmphax
+  // window->set_pid_exponent(0, settings.get_proportional_exponent()); //tmphax
+  // window->set_pid_multiplier(1, settings.get_integral_multiplier()); //tmphax
+  // window->set_pid_exponent(1, settings.get_integral_exponent()); //tmphax
+  // window->set_pid_multiplier(2, settings.get_derivative_multiplier()); //tmphax
+  // window->set_pid_exponent(2, settings.get_derivative_exponent()); //tmphax
+
+
+
+
   window->set_motor_pwm_frequency(settings.get_motor_pwm_frequency());
   window->set_motor_invert(settings.get_motor_invert());
 
@@ -603,6 +613,8 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
   window->set_motor_current_calibration_forward(settings.get_motor_current_calibration_forward());
 
+
+
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
 
@@ -610,9 +622,62 @@ void main_controller::handle_settings_loaded()
 {
   recalculate_motor_asymmetric();
 
+  for (int i = 0; i < 3; ++i)
+  {
+    recalculate_pid_coefficients(i);
+  }
+
   cached_settings = settings;
 
   settings_modified = false;
+}
+
+void main_controller::recalculate_pid_coefficients(int index)
+{
+  if (!connected()) { return; }
+  double multiplier;
+  uint16_t exponent;
+  switch (index)
+  {
+    case 0:
+      multiplier = settings.get_proportional_multiplier();
+      exponent = settings.get_proportional_exponent();
+      window->set_pid_multiplier(index, multiplier);
+      window->set_pid_exponent(index, exponent);
+      for (int i = 0; i < exponent; ++i)
+      {
+        multiplier /= 2;
+      }
+      window->set_pid_constant(index, multiplier);
+      break;
+    case 1:
+      multiplier = settings.get_integral_multiplier();
+      exponent = settings.get_integral_exponent();
+      window->set_pid_multiplier(index, multiplier);
+      window->set_pid_exponent(index, exponent);
+      for (int i = 0; i < exponent; ++i)
+      {
+        multiplier /= 2;
+      }
+      window->set_pid_constant(index, multiplier);
+      break;
+    case 2:
+      multiplier = settings.get_derivative_multiplier();
+      exponent = settings.get_derivative_exponent();
+      window->set_pid_multiplier(index, multiplier);
+      window->set_pid_exponent(index, exponent);
+      for (int i = 0; i < exponent; ++i)
+      {
+        multiplier /= 2;
+      }
+      window->set_pid_constant(index, multiplier);
+      break;
+    default:
+      return;
+  }
+
+  // settings_modified = true;
+  // handle_settings_changed();
 }
 
 void main_controller::recalculate_motor_asymmetric()
@@ -875,25 +940,28 @@ void main_controller::handle_feedback_detect_disconnect_input(bool detect_discon
 void main_controller::handle_pid_constant_control_multiplier(int index, uint16_t multiplier)
 {
   if (!connected()) { return; }
-  uint16_t exponent;
   double x = multiplier;
-  std::cout << index << std::endl;
+  uint16_t exponent;
+
   switch (index)
   {
     case 0:
-      exponent = settings.get_proportional_exponent();
-      for (int i = 0; i < exponent; ++i)
-      {
-        x /= 2;
-      }
-      window->pid_controls[0]->set_pid_constant(x);
       settings.set_proportional_multiplier(multiplier);
+      break;
+    case 1:
+      settings.set_integral_multiplier(multiplier);
+      break;
+    case 2:
+      settings.set_derivative_multiplier(multiplier);
       break;
     default:
       return;
   }
 
-
+  for (int i = 0; i < 3; ++i)
+  {
+    recalculate_pid_coefficients(i);
+  }
 
   settings_modified = true;
   handle_settings_changed();
@@ -902,9 +970,27 @@ void main_controller::handle_pid_constant_control_multiplier(int index, uint16_t
 void main_controller::handle_pid_constant_control_exponent(int index, uint16_t exponent)
 {
   if (!connected()) { return; }
+  double x;
 
+  switch (index)
+  {
+    case 0:
+      settings.set_proportional_exponent(exponent);
+      break;
+    case 1:
+      settings.set_integral_exponent(exponent);
+      break;
+    case 2:
+      settings.set_derivative_exponent(exponent);
+      break;
+    default:
+      return;
+  }
 
-
+  for (int i = 0; i < 3; ++i)
+  {
+    recalculate_pid_coefficients(i);
+  }
 
   settings_modified = true;
   handle_settings_changed();
@@ -913,9 +999,49 @@ void main_controller::handle_pid_constant_control_exponent(int index, uint16_t e
 void main_controller::handle_pid_constant_control_constant(int index, double constant)
 {
   if (!connected()) { return; }
+  uint16_t largest_divisor = 1;
+  int i;
 
+  for (i = 0; i < 18; i++)
+  {
+    largest_divisor *= 2;
+    if ((largest_divisor * constant) > 1023)
+    {
+      largest_divisor /= 2;
+      break;
+    }
+  }
 
+  uint16_t multiplier = largest_divisor * constant;
+  int exponent = i;
 
+  while (multiplier % 2 == 0 && exponent != 0)
+  {
+    multiplier /= 2;
+    exponent -= 1;
+  }
+
+  switch (index)
+  {
+    case 0:
+      settings.set_proportional_multiplier(multiplier);
+      settings.set_proportional_exponent(exponent);
+      break;
+    case 1:
+      settings.set_integral_multiplier(multiplier);
+      settings.set_integral_exponent(exponent);
+      break;
+    case 2:
+      settings.set_derivative_multiplier(multiplier);
+      settings.set_derivative_exponent(exponent);
+    default:
+      return;
+  }
+
+  for (int i = 0; i < 3; ++i)
+  {
+    recalculate_pid_coefficients(i);
+  }
 
   settings_modified = true;
   handle_settings_changed();

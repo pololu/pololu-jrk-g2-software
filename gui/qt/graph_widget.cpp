@@ -233,7 +233,7 @@ void graph_widget::setup_plots()
     // a way that can change from OS to OS.
     {
       QLabel tmp_label2;
-      tmp_label2.setText("xxxxxxxxxx");
+      tmp_label2.setText("xxxxxxxxxxxxx");
       QLabel tmp_label3;
       tmp_label3.setText("xxxxxxxxxxxxxxxxxxxxxxx");
       all_plots[i].plot_range->setFixedWidth(tmp_label2.sizeHint().width());

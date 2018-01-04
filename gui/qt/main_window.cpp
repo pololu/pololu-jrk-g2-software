@@ -1085,18 +1085,20 @@ QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
 
-  pid_proportional_coefficient = new pid_constant_control(0,
-    "Proportional Coefficient", "pid_proportional_coefficient", this);
+  pid_proportional_coefficient_groupbox = new QGroupBox();
+  pid_proportional_coefficient_groupbox->setTitle("Proportional coefficient");
+  pid_constant_controls[0] = new pid_constant_control(0, this);
+  pid_constant_controls[0]->setup(pid_proportional_coefficient_groupbox);
 
-  pid_integral_coefficient = new pid_constant_control(1,
-    "Integral Coefficient", "pid_integral_coefficient");
+  pid_integral_coefficient_groupbox = new QGroupBox();
+  pid_integral_coefficient_groupbox->setTitle("Integral coefficient");
+  pid_constant_controls[1] = new pid_constant_control(1, this);
+  pid_constant_controls[1]->setup(pid_integral_coefficient_groupbox);
 
-  pid_derivative_coefficient = new pid_constant_control(2,
-    "Derivative Coefficient", "pid_derivative_coefficient");
-
-  pid_controls.push_back(pid_proportional_coefficient);
-  pid_controls.push_back(pid_integral_coefficient);
-  pid_controls.push_back(pid_integral_coefficient);
+  pid_derivative_coefficient_groupbox = new QGroupBox();
+  pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
+  pid_constant_controls[2] = new pid_constant_control(2, this);
+  pid_constant_controls[2]->setup(pid_derivative_coefficient_groupbox);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -1121,9 +1123,9 @@ QWidget * main_window::setup_pid_tab()
   pid_deadzone_spinbox->setObjectName("pid_deadzone_spinbox");
 
   QGridLayout *group_box_row = new QGridLayout();
-  group_box_row->addWidget(pid_proportional_coefficient,0,0,Qt::AlignCenter);
-  group_box_row->addWidget(pid_integral_coefficient,0,1,Qt::AlignCenter);
-  group_box_row->addWidget(pid_derivative_coefficient,0,2,Qt::AlignCenter);
+  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0, Qt::AlignCenter);
+  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1, Qt::AlignCenter);
+  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2, Qt::AlignCenter);
 
   QHBoxLayout *period_row_layout = new QHBoxLayout();
   period_row_layout->addWidget(pid_period_label);
@@ -1172,7 +1174,6 @@ QWidget *main_window::setup_motor_tab()
 
   motor_asymmetric_checkbox = new QCheckBox(tr("Asymmetric"));
   motor_asymmetric_checkbox->setObjectName("motor_asymmetric_checkbox");
-  // motor_asymmetric_checkbox->setEnabled(false);  // tmphax: not ready to use
 
   motor_forward_label = new QLabel(tr("Forward"));
   motor_forward_label->setObjectName("motor_forward_label");
@@ -1915,9 +1916,9 @@ void main_window::set_tab_pages_enabled(bool enabled)
   }
 
   // tmphax, disable tabs not implemented yet
-//   tab_widget->widget(1)->setEnabled(false);
-//   tab_widget->widget(2)->setEnabled(false);
-  tab_widget->widget(3)->setEnabled(false);
+  // tab_widget->widget(1)->setEnabled(false);
+  // tab_widget->widget(2)->setEnabled(false);
+  // tab_widget->widget(3)->setEnabled(false);
   tab_widget->widget(5)->setEnabled(false);
 }
 
@@ -2209,6 +2210,24 @@ void main_window::set_feedback_detect_disconnect(bool feedback_detect_disconnect
   set_check_box(feedback_detect_disconnect_checkbox, feedback_detect_disconnect);
 }
 
+void main_window::set_pid_multiplier(int index, uint16_t value)
+{
+  QSpinBox *spin = pid_constant_controls[index]->pid_multiplier_spinbox;
+  set_spin_box(spin, value);
+}
+
+void main_window::set_pid_exponent(int index, uint16_t value)
+{
+  QSpinBox *spin = pid_constant_controls[index]->pid_exponent_spinbox;
+  set_spin_box(spin, value);
+}
+
+void main_window::set_pid_constant(int index, double value)
+{
+  QDoubleSpinBox *spin = pid_constant_controls[index]->pid_constant_spinbox;
+  set_double_spin_box(spin, value);
+}
+
 void main_window::set_motor_pwm_frequency(uint8_t pwm_frequency)
 {
   set_u8_combobox(motor_pwm_frequency_combobox, pwm_frequency);
@@ -2334,14 +2353,8 @@ int32_t main_window::get_current_offset_mv()
   return current_offset_value->value();
 }
 
-pid_constant_control::pid_constant_control(int index, const QString& group_box_title,
-  const QString& object_name, QWidget *parent)
-  : QGroupBox(parent)
+void pid_constant_control::setup(QGroupBox * groupbox)
 {
-  setObjectName(object_name);
-  setTitle(group_box_title);
-  index = index;
-
   QFont font;
   font.setFamily(QStringLiteral("MS Shell Dlg 2"));
   font.setPointSize(16);
@@ -2369,11 +2382,16 @@ pid_constant_control::pid_constant_control(int index, const QString& group_box_t
   pid_multiplier_spinbox = new QSpinBox();
   pid_multiplier_spinbox->setObjectName("pid_multiplier_spinbox");
   pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
+  pid_multiplier_spinbox->setRange(0, 1023);
+  connect(pid_multiplier_spinbox, SIGNAL(valueChanged(int)), this,
+    SLOT(on_pid_multiplier_spinbox_valueChanged(int)));
 
   pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
   pid_exponent_spinbox->setRange(0, 18);
+  connect(pid_exponent_spinbox, SIGNAL(valueChanged(int)), this,
+    SLOT(on_pid_exponent_spinbox_valueChanged(int)));
 
   pid_equal_label = new QLabel();
   pid_equal_label->setObjectName("pid_equal_label");
@@ -2382,10 +2400,13 @@ pid_constant_control::pid_constant_control(int index, const QString& group_box_t
   pid_equal_label->setFont(font1);
   pid_equal_label->setAlignment(Qt::AlignCenter);
 
-  pid_constant_control_textbox = new QDoubleSpinBox();
-  pid_constant_control_textbox->setObjectName("pid_constant_control_textbox");
-  pid_constant_control_textbox->setDecimals(5);
-  pid_constant_control_textbox->setRange(0.00003, 1024);
+  pid_constant_spinbox = new QDoubleSpinBox(); // TODO: set range
+  pid_constant_spinbox->setObjectName("pid_constant_spinbox");
+  pid_constant_spinbox->setDecimals(5);
+  pid_constant_spinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
+  pid_constant_spinbox->setRange(0, 1024);
+  connect(pid_constant_spinbox, SIGNAL(valueChanged(double)), this,
+    SLOT(on_pid_constant_spinbox_valueChanged(double)));
 
   QGridLayout *group_box_layout = new QGridLayout();
   group_box_layout->addWidget(pid_base_label,3,1,3,2);
@@ -2393,27 +2414,12 @@ pid_constant_control::pid_constant_control(int index, const QString& group_box_t
   group_box_layout->addWidget(pid_multiplier_spinbox,1,2,1,3);
   group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
   group_box_layout->addWidget(pid_equal_label,2,7,1,2);
-  group_box_layout->addWidget(pid_constant_control_textbox,1,9,3,1,Qt::AlignCenter);
+  group_box_layout->addWidget(pid_constant_spinbox,1,9,3,1,Qt::AlignCenter);
   group_box_layout->setSizeConstraint(QLayout::SetFixedSize);
 
-  setLayout(group_box_layout);
+  groupbox->setLayout(group_box_layout);
 
   QMetaObject::connectSlotsByName(this);
-}
-
-void pid_constant_control::set_pid_multiplier(uint16_t value)
-{
-  set_spin_box(pid_multiplier_spinbox, value);
-}
-
-void pid_constant_control::set_pid_exponent(uint16_t value)
-{
-  set_spin_box(pid_exponent_spinbox, value);
-}
-
-void pid_constant_control::set_pid_constant(double value)
-{
-  set_double_spin_box(pid_constant_control_textbox, value);
 }
 
 bool pid_constant_control::window_suppress_events() const
@@ -2443,32 +2449,10 @@ void pid_constant_control::on_pid_exponent_spinbox_valueChanged(int value)
   window_controller()->handle_pid_constant_control_exponent(index, value);
 }
 
-void pid_constant_control::on_pid_constant_control_textbox_valueChanged(double value)
+void pid_constant_control::on_pid_constant_spinbox_valueChanged(double value)
 {
   if (window_suppress_events()) { return; }
   window_controller()->handle_pid_constant_control_constant(index, value);
-}
-
-void pid_constant_control::set_spin_box(QSpinBox * spin, int value)
-{
-  // Only set the QSpinBox's value if the new value is numerically different.
-  // This prevents, for example, a value of "0000" from being changed to "0"
-  // while you're trying to change "10000" to "20000".
-  if (spin->value() != value)
-  {
-    spin->setValue(value);
-  }
-}
-
-void pid_constant_control::set_double_spin_box(QDoubleSpinBox * spin, double value)
-{
-  // Only set the QSpinBox's value if the new value is numerically different.
-  // This prevents, for example, a value of "0000" from being changed to "0"
-  // while you're trying to change "10000" to "20000".
-  if (spin->value() != value)
-  {
-    spin->setValue(value);
-  }
 }
 
 errors_control::errors_control

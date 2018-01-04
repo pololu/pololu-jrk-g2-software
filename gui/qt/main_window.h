@@ -137,6 +137,10 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool feedback_detect_disconnect);
 
+  void set_pid_multiplier(int index, uint16_t value);
+  void set_pid_exponent(int index, uint16_t value);
+  void set_pid_constant(int index, double value);
+
   void set_motor_pwm_frequency(uint8_t pwm_frequency);
   void set_motor_invert(bool enabled);
   void set_motor_asymmetric(bool checked);
@@ -177,8 +181,6 @@ public:
   int32_t get_current_offset_mv();  // tmphax
 
   bool motor_asymmetric_checked();
-
-  QList<pid_constant_control*> pid_controls;
 
 signals:
 	void pass_widget(graph_widget *widget);
@@ -435,10 +437,11 @@ private:
 	QDoubleSpinBox *pid_deadzone_spinbox;
 
 	// pid tab constant controls
+  std::array<pid_constant_control *, 3> pid_constant_controls;
 
-	pid_constant_control *pid_proportional_coefficient;
-	pid_constant_control *pid_integral_coefficient;
-	pid_constant_control *pid_derivative_coefficient;
+	QGroupBox *pid_proportional_coefficient_groupbox;
+	QGroupBox *pid_integral_coefficient_groupbox;
+	QGroupBox *pid_derivative_coefficient_groupbox;
 
 	// motor tab
 
@@ -547,14 +550,17 @@ private:
   friend class pid_constant_control;
 };
 
-class pid_constant_control : public QGroupBox
+class pid_constant_control : public QObject
 {
 	Q_OBJECT
+
 public:
-	pid_constant_control(int index, const QString& group_box_title, const QString& object_name, QWidget *parent = 0);
-  void set_pid_multiplier(uint16_t value);
-  void set_pid_exponent(uint16_t value);
-  void set_pid_constant(double value);
+  explicit pid_constant_control(QObject * parent = Q_NULLPTR) : QObject(parent)
+    {}
+  explicit pid_constant_control(int index, QObject * parent = Q_NULLPTR)
+    : index(index), QObject(parent)
+    {}
+	void setup(QGroupBox * groupbox);
 
 private:
   bool window_suppress_events() const;
@@ -565,7 +571,7 @@ private:
   QWidget *central_widget;
 	QFrame *pid_control_frame;
 	QFrame *pid_proportion_frame;
-	QDoubleSpinBox *pid_constant_control_textbox;
+	QDoubleSpinBox *pid_constant_spinbox;
 	QLabel *pid_equal_label;
 	QSpinBox *pid_multiplier_spinbox;
 	QLabel *pid_base_label;
@@ -574,12 +580,10 @@ private:
 private slots:
   void on_pid_multiplier_spinbox_valueChanged(int value);
   void on_pid_exponent_spinbox_valueChanged(int value);
-  void on_pid_constant_control_textbox_valueChanged(double value);
+  void on_pid_constant_spinbox_valueChanged(double value);
 
 private:
   friend class main_window;
-  void set_spin_box(QSpinBox * spin, int value);
-  void set_double_spin_box(QDoubleSpinBox * spin, double value);
 };
 
 class errors_control : public QWidget
