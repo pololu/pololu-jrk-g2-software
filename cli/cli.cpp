@@ -10,6 +10,8 @@ static const char help[] =
   "  --full                       When used with --status, shows more.\n"
   "  -d SERIALNUMBER              Specifies the serial number of the device.\n"
   "  -l, --list                   List devices connected to computer.\n"
+  "  --cmd-port                   Print the name of the command port.\n"
+  "  --ttl-port                   Print the name of the TTL port.\n"
   "  --pause                      Pause program at the end.\n"
   "  --pause-on-error             Pause program at the end if an error happens.\n"
   "  -h, --help                   Show this help screen.\n"
@@ -48,6 +50,10 @@ struct arguments
   std::string serial_number;
 
   bool show_list = false;
+
+  bool show_cmd_port = false;
+
+  bool show_ttl_port = false;
 
   bool pause = false;
 
@@ -88,6 +94,8 @@ struct arguments
   {
     return show_status ||
       show_list ||
+      show_cmd_port ||
+      show_ttl_port ||
       show_help ||
       set_target ||
       override_duty_cycle ||
@@ -190,6 +198,15 @@ static arguments parse_args(int argc, char ** argv)
     else if (arg == "--list" || arg == "-l")
     {
       args.show_list = true;
+    }
+    else if (arg == "--cmd-port" || arg == "--cmd-serial-port" ||
+      arg == "--command-port" || arg == "--command-serial-port")
+    {
+      args.show_cmd_port = true;
+    }
+    else if (arg == "--ttl-port" || arg == "--ttl-serial-port")
+    {
+      args.show_ttl_port = true;
     }
     else if (arg == "--pause")
     {
@@ -411,6 +428,18 @@ static void run(const arguments & args)
   {
     print_list(selector);
     return;
+  }
+
+  // Useful for connecting to the jrk from a script and useful for getting an
+  // error message if the other displays of the port name are not working.
+  if (args.show_cmd_port)
+  {
+    std::cout << selector.select_device().get_cmd_port_name() << std::endl;
+  }
+
+  if (args.show_ttl_port)
+  {
+    std::cout << selector.select_device().get_ttl_port_name() << std::endl;
   }
 
   if (args.fix_settings)
