@@ -72,27 +72,6 @@ const bootloader_type * bootloader_type_lookup(
   return NULL;
 }
 
-template <typename T>
-static std::vector<T> fetchByIds(
-  std::vector<T> items, const std::vector<uint32_t> & ids)
-{
-  std::vector<T> r;
-
-  for (uint32_t id : ids)
-  {
-    for (const T & item : items)
-    {
-      if (item.id == id)
-      {
-        r.push_back(item);
-        break;
-      }
-    }
-  }
-
-  return r;
-}
-
 std::vector<bootloader_instance> bootloader_list_connected_devices()
 {
   // Get a list of all connected USB devices.
@@ -131,9 +110,10 @@ std::vector<bootloader_instance> bootloader_list_connected_devices()
   return list;
 }
 
-bootloader_handle::bootloader_handle(bootloader_instance instance) : type(instance.type)
+bootloader_handle::bootloader_handle(bootloader_instance instance)
+  : type(instance.type)
 {
-  handle = libusbp::generic_handle(instance.usbInterface);
+  handle = libusbp::generic_handle(instance.usb_interface);
 }
 
 // This can be called after a USB request for writing EEPROM or flash fails.  If

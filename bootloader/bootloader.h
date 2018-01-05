@@ -59,7 +59,7 @@ class bootloader_instance
 {
 public:
   bootloader_type type;
-  std::string serialNumber;
+  std::string serial_number;
 
   bootloader_instance()
   {
@@ -67,14 +67,14 @@ public:
 
   bootloader_instance(const bootloader_type type,
     libusbp::generic_interface gi,
-    std::string serialNumber)
-    : type(type), serialNumber(serialNumber), usbInterface(gi)
+    std::string serial_number)
+    : type(type), serial_number(serial_number), usb_interface(gi)
   {
   }
 
   operator bool()
   {
-    return usbInterface;
+    return usb_interface;
   }
 
   std::string get_short_name() const
@@ -84,12 +84,12 @@ public:
 
   std::string get_serial_number() const
   {
-    return serialNumber;
+    return serial_number;
   }
 
   std::string get_os_id() const
   {
-    return usbInterface.get_os_id();
+    return usb_interface.get_os_id();
   }
 
   uint16_t get_vendor_id() const
@@ -102,7 +102,7 @@ public:
     return type.usb_product_id;
   }
 
-  libusbp::generic_interface usbInterface;
+  libusbp::generic_interface usb_interface;
 };
 
 const bootloader_type * bootloader_type_lookup(
