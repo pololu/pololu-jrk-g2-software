@@ -242,9 +242,9 @@ void bootloader_window::on_program_button_clicked()
   {
     {
       bootloader_handle handle(device);
-      handle.setStatusListener(this);
-      handle.applyImage(*image);
-      handle.restartDevice();
+      handle.set_status_listener(this);
+      handle.apply_image(*image);
+      handle.restart_device();
     }
     set_status("Upload complete.", 100, 100);
     emit upload_complete();

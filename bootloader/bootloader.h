@@ -112,12 +112,11 @@ const bootloader_type * bootloader_type_lookup(
 // computer.
 std::vector<bootloader_instance> bootloader_list_connected_devices();
 
-
 class bootloder_status_listener
 {
 public:
   virtual void set_status(const char * status,
-    uint32_t progress, uint32_t maxProgress) = 0;
+    uint32_t progress, uint32_t max_progress) = 0;
 };
 
 class bootloader_handle
@@ -136,37 +135,32 @@ public:
 
   // Sends a request to the bootloader to initialize a particular type of
   // upload.  This is usually required before erasing or writing to flash.
-  void initialize(uint16_t uploadType);
-
-  // Calls initialize with some upload type that is known to work.  This is
-  // useful for users that don't care about the upload type because they just
-  // want to erase the device.
-  void initialize();
+  void initialize(uint16_t upload_type);
 
   // Erases the entire application flash region.
-  void eraseFlash();
+  void erase_flash();
 
   // Sends the Restart command, which causes the device to reset.  This is
   // usually used to allow a newly-loaded application to start running.
-  void restartDevice();
+  void restart_device();
 
   // Erases flash and performs any other steps needed to apply the firmware
   // image to the device
-  void applyImage(const firmware_archive::image & image);
+  void apply_image(const firmware_archive::image & image);
 
   bootloader_type type;
 
-  void setStatusListener(bootloder_status_listener * listener)
+  void set_status_listener(bootloder_status_listener * listener)
   {
     this->listener = listener;
   }
 
 private:
-  void writeFlashBlock(const uint32_t address, const uint8_t * data, size_t size);
-  void writeEepromBlock(const uint32_t address, const uint8_t * data, size_t size);
-  void eraseEepromFirstByte();
+  void write_flash_block(const uint32_t address, const uint8_t * data, size_t size);
+  void write_eeprom_block(const uint32_t address, const uint8_t * data, size_t size);
+  void erase_eeprom_first_byte();
 
-  void reportError(const libusbp::error & error, std::string context)
+  void report_error(const libusbp::error & error, const std::string & context)
     __attribute__((noreturn));
 
   bootloder_status_listener * listener;

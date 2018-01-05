@@ -26,36 +26,36 @@
 #define REQUEST_START_BOOTLOADER  0xFF
 
 // Error codes returned by REQUEST_ERASE_FLASH and REQUEST_GET_LAST_ERROR.
-#define PLOADER_ERROR_STATE                1
-#define PLOADER_ERROR_LENGTH               2
-#define PLOADER_ERROR_PROGRAMMING          3
-#define PLOADER_ERROR_WRITE_PROTECTION     4
-#define PLOADER_ERROR_VERIFICATION         5
-#define PLOADER_ERROR_ADDRESS_RANGE        6
-#define PLOADER_ERROR_ADDRESS_ORDER        7
-#define PLOADER_ERROR_ADDRESS_ALIGNMENT    8
-#define PLOADER_ERROR_WRITE                9
-#define PLOADER_ERROR_EEPROM_VERIFICATION 10
+#define BOOTLOADER_ERROR_STATE                1
+#define BOOTLOADER_ERROR_LENGTH               2
+#define BOOTLOADER_ERROR_PROGRAMMING          3
+#define BOOTLOADER_ERROR_WRITE_PROTECTION     4
+#define BOOTLOADER_ERROR_VERIFICATION         5
+#define BOOTLOADER_ERROR_ADDRESS_RANGE        6
+#define BOOTLOADER_ERROR_ADDRESS_ORDER        7
+#define BOOTLOADER_ERROR_ADDRESS_ALIGNMENT    8
+#define BOOTLOADER_ERROR_WRITE                9
+#define BOOTLOADER_ERROR_EEPROM_VERIFICATION 10
 
 // Other bootloader constants
 #define DEVICE_CODE_SIZE           16
 
-static std::string ploaderGetErrorDescription(uint8_t errorCode)
+static std::string bootloader_get_error_description(uint8_t error_code)
 {
-  switch (errorCode)
+  switch (error_code)
   {
   case 0: return "Success.";
-  case PLOADER_ERROR_STATE: return "Device is not in the correct state.";
-  case PLOADER_ERROR_LENGTH: return "Invalid data length.";
-  case PLOADER_ERROR_PROGRAMMING: return "Programming error.";
-  case PLOADER_ERROR_WRITE_PROTECTION: return "Write protection error.";
-  case PLOADER_ERROR_VERIFICATION: return "Verification error.";
-  case PLOADER_ERROR_ADDRESS_RANGE: return "Address is not in the correct range.";
-  case PLOADER_ERROR_ADDRESS_ORDER: return "Address was not accessed in the correct order.";
-  case PLOADER_ERROR_ADDRESS_ALIGNMENT: return "Address does not have the correct alignment.";
-  case PLOADER_ERROR_WRITE: return "Write error.";
-  case PLOADER_ERROR_EEPROM_VERIFICATION: return "EEPROM verification error.";
-  default: return std::string("Unknown error code: ") + std::to_string(errorCode) + ".";
+  case BOOTLOADER_ERROR_STATE: return "Device is not in the correct state.";
+  case BOOTLOADER_ERROR_LENGTH: return "Invalid data length.";
+  case BOOTLOADER_ERROR_PROGRAMMING: return "Programming error.";
+  case BOOTLOADER_ERROR_WRITE_PROTECTION: return "Write protection error.";
+  case BOOTLOADER_ERROR_VERIFICATION: return "Verification error.";
+  case BOOTLOADER_ERROR_ADDRESS_RANGE: return "Address is not in the correct range.";
+  case BOOTLOADER_ERROR_ADDRESS_ORDER: return "Address was not accessed in the correct order.";
+  case BOOTLOADER_ERROR_ADDRESS_ALIGNMENT: return "Address does not have the correct alignment.";
+  case BOOTLOADER_ERROR_WRITE: return "Write error.";
+  case BOOTLOADER_ERROR_EEPROM_VERIFICATION: return "EEPROM verification error.";
+  default: return std::string("Unknown error code: ") + std::to_string(error_code) + ".";
   }
 }
 
@@ -120,7 +120,8 @@ bootloader_handle::bootloader_handle(bootloader_instance instance)
 // appropriate, it attempts to make another request to get a more specific error
 // code from the device, and then throws an error with that information in it.
 // If anything goes wrong, it just throws the original USB error.
-void bootloader_handle::reportError(const libusbp::error & error, std::string context)
+void bootloader_handle::report_error(const libusbp::error & error,
+  const std::string & context)
 {
   if (!error.has_code(LIBUSBP_ERROR_STALL))
   {
@@ -131,12 +132,12 @@ void bootloader_handle::reportError(const libusbp::error & error, std::string co
     throw error;
   }
 
-  uint8_t errorCode = 0;
+  uint8_t error_code = 0;
   size_t transferred = 0;
   try
   {
     handle.control_transfer(0xC0, REQUEST_GET_LAST_ERROR, 0, 0,
-      &errorCode, 1, &transferred);
+      &error_code, 1, &transferred);
   }
   catch(const libusbp::error & second_error)
   {
@@ -148,7 +149,7 @@ void bootloader_handle::reportError(const libusbp::error & error, std::string co
     throw error;
   }
 
-  std::string message = context + ": " + ploaderGetErrorDescription(errorCode);
+  std::string message = context + ": " + bootloader_get_error_description(error_code);
   throw std::runtime_error(message);
 }
 
@@ -161,7 +162,7 @@ static std::runtime_error transfer_length_error(std::string context,
     "got " + std::to_string(actual) + ".");
 }
 
-void bootloader_handle::initialize(uint16_t uploadType)
+void bootloader_handle::initialize(uint16_t upload_type)
 {
   if (type.device_code != NULL)
   {
@@ -186,7 +187,7 @@ void bootloader_handle::initialize(uint16_t uploadType)
 
   try
   {
-    handle.control_transfer(0x40, REQUEST_INITIALIZE, uploadType, 0);
+    handle.control_transfer(0x40, REQUEST_INITIALIZE, upload_type, 0);
   }
   catch(const libusbp::error & error)
   {
@@ -196,14 +197,9 @@ void bootloader_handle::initialize(uint16_t uploadType)
   }
 }
 
-void bootloader_handle::initialize()
+void bootloader_handle::erase_flash()
 {
-  initialize(UPLOAD_TYPE_STANDARD);
-}
-
-void bootloader_handle::eraseFlash()
-{
-  int maxProgress = 0;
+  int max_progress = 0;
 
   while (true)
   {
@@ -215,33 +211,34 @@ void bootloader_handle::eraseFlash()
     {
       throw transfer_length_error("erasing flash", 2, transferred);
     }
-    uint8_t errorCode = response[0];
-    uint8_t progressLeft = response[1];
-    if (errorCode)
+    uint8_t error_code = response[0];
+    uint8_t progress_left = response[1];
+    if (error_code)
     {
       throw std::runtime_error("Error erasing page: " +
-        ploaderGetErrorDescription(errorCode) + ".");
+        bootloader_get_error_description(error_code) + ".");
     }
 
-    if (maxProgress < progressLeft)
+    if (max_progress < progress_left)
     {
-      maxProgress = progressLeft + 1;
+      max_progress = progress_left + 1;
     }
 
     if (listener)
     {
-      uint32_t progress = maxProgress - progressLeft;
-      listener->set_status("Erasing flash...", progress, maxProgress);
+      uint32_t progress = max_progress - progress_left;
+      listener->set_status("Erasing flash...", progress, max_progress);
     }
 
-    if (progressLeft == 0)
+    if (progress_left == 0)
     {
       return;
     }
   }
 }
 
-void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, size_t size)
+void bootloader_handle::write_flash_block(uint32_t address,
+  const uint8_t * data, size_t size)
 {
   size_t transferred;
   try
@@ -252,7 +249,7 @@ void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, 
   }
   catch(const libusbp::error & error)
   {
-    reportError(error, "Failed to write flash");
+    report_error(error, "Failed to write flash");
   }
 
   if (transferred != size)
@@ -262,7 +259,7 @@ void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, 
   }
 }
 
-void bootloader_handle::writeEepromBlock(uint32_t address,
+void bootloader_handle::write_eeprom_block(uint32_t address,
   const uint8_t * data, size_t size)
 {
   size_t transferred;
@@ -274,7 +271,7 @@ void bootloader_handle::writeEepromBlock(uint32_t address,
   }
   catch(const libusbp::error & error)
   {
-    reportError(error, "Failed to write EEPROM");
+    report_error(error, "Failed to write EEPROM");
   }
   if (transferred != size)
   {
@@ -282,27 +279,27 @@ void bootloader_handle::writeEepromBlock(uint32_t address,
   }
 }
 
-void bootloader_handle::eraseEepromFirstByte()
+void bootloader_handle::erase_eeprom_first_byte()
 {
-  uint8_t blankByte = 0xFF;
-  writeEepromBlock(0, &blankByte, 1);
+  uint8_t blank_byte = 0xFF;
+  write_eeprom_block(0, &blank_byte, 1);
 }
 
-void bootloader_handle::applyImage(const firmware_archive::image & image)
+void bootloader_handle::apply_image(const firmware_archive::image & image)
 {
   initialize(image.upload_type);
 
-  eraseFlash();
+  erase_flash();
 
   // We erase the first byte of EEPROM so that the firmware is able to
   // know it has been upgraded and not accidentally use invalid settings
   // from an older version of the firmware.
-  eraseEepromFirstByte();
+  erase_eeprom_first_byte();
 
   size_t progress = 0;
   for (const firmware_archive::block & block : image.blocks)
   {
-    writeFlashBlock(block.address, &block.data[0], block.data.size());
+    write_flash_block(block.address, &block.data[0], block.data.size());
 
     if (listener)
     {
@@ -312,12 +309,12 @@ void bootloader_handle::applyImage(const firmware_archive::image & image)
   }
 }
 
-void bootloader_handle::restartDevice()
+void bootloader_handle::restart_device()
 {
-  const uint16_t durationMs = 100;
+  const uint16_t duration_ms = 100;
   try
   {
-    handle.control_transfer(0x40, REQUEST_RESTART, durationMs, 0);
+    handle.control_transfer(0x40, REQUEST_RESTART, duration_ms, 0);
   }
   catch(const libusbp::error & error)
   {
