@@ -4,13 +4,13 @@
 #include <libusbp.hpp>
 #include <vector>
 
-typedef std::vector<uint8_t> MemoryImage;
+typedef std::vector<uint8_t> memory_image;
 
 #define UPLOAD_TYPE_STANDARD 0
 #define UPLOAD_TYPE_DEVICE_SPECIFIC 1
 #define UPLOAD_TYPE_PLAIN 2
 
-enum MemorySet
+enum memory_set
 {
   MEMORY_SET_ALL,
   MEMORY_SET_FLASH,
@@ -43,17 +43,17 @@ extern const std::vector<bootloader_app_type> bootloader_app_types;
 
 // Represents a specific device connected to the system
 // that we could use to start a bootloader.
-class PloaderAppInstance
+class bootloader_app_instance
 {
 public:
   bootloader_app_type type;
   std::string serialNumber;
 
-  PloaderAppInstance()
+  bootloader_app_instance()
   {
   }
 
-  PloaderAppInstance(const bootloader_app_type type,
+  bootloader_app_instance(const bootloader_app_type type,
     libusbp::generic_interface gi,
     std::string serialNumber)
     : type(type), serialNumber(serialNumber), usbInterface(gi)
@@ -119,14 +119,14 @@ public:
 
   std::vector<uint32_t> matchingAppTypes;
 
-  bool memorySetIncludesFlash(MemorySet ms) const;
-  bool memorySetIncludesEeprom(MemorySet ms) const;
+  bool memorySetIncludesFlash(memory_set ms) const;
+  bool memorySetIncludesEeprom(memory_set ms) const;
 
   // Raises an exception if reading from the specified memories is not allowed.
-  void ensureReading(MemorySet ms) const;
+  void ensureReading(memory_set ms) const;
 
   // Raises an exception if erasing the specified memories is not allowed.
-  void ensureErasing(MemorySet ms) const;
+  void ensureErasing(memory_set ms) const;
 
   // Raises an exception if reading and writing from EEPROM is not allowed.
   void ensureEepromAccess() const;
@@ -209,31 +209,31 @@ const bootloader_type * bootloader_type_lookup(
   uint16_t usb_vendor_id, uint16_t usb_product_id);
 
 // Detects all the known apps that are currently connected to the computer.
-std::vector<PloaderAppInstance> ploaderListApps();
+std::vector<bootloader_app_instance> bootloader_list_apps();
 
 // Detects all the known bootloaders that are currently connected to the
 // computer.
-std::vector<bootloader_instance> ploaderListBootloaders();
+std::vector<bootloader_instance> bootloader_list_bootloaders();
 
-class PloaderStatusListener
+class bootloder_status_listener
 {
 public:
   virtual void set_status(const char * status,
     uint32_t progress, uint32_t maxProgress) = 0;
 };
 
-class PloaderHandle
+class bootloader_handle
 {
 public:
-  PloaderHandle(bootloader_instance);
+  bootloader_handle(bootloader_instance);
 
-  PloaderHandle() { }
+  bootloader_handle() { }
 
   operator bool() const noexcept { return handle; }
 
   void close()
   {
-    *this = PloaderHandle();
+    *this = bootloader_handle();
   }
 
   // Sends a request to the bootloader to initialize a particular type of
@@ -281,7 +281,7 @@ public:
 
   bootloader_type type;
 
-  void setStatusListener(PloaderStatusListener * listener)
+  void setStatusListener(bootloder_status_listener * listener)
   {
     this->listener = listener;
   }
@@ -294,7 +294,7 @@ private:
   void reportError(const libusbp::error & error, std::string context)
     __attribute__((noreturn));
 
-  PloaderStatusListener * listener;
+  bootloder_status_listener * listener;
 
   libusbp::generic_handle handle;
 };

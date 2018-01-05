@@ -111,18 +111,18 @@ std::vector<bootloader_app_type> bootloader_type::getMatchingAppTypes() const
   return fetchByIds(bootloader_app_types, matchingAppTypes);
 }
 
-bool bootloader_type::memorySetIncludesFlash(MemorySet ms) const
+bool bootloader_type::memorySetIncludesFlash(memory_set ms) const
 {
   return ms == MEMORY_SET_FLASH || ms == MEMORY_SET_ALL;
 }
 
-bool bootloader_type::memorySetIncludesEeprom(MemorySet ms) const
+bool bootloader_type::memorySetIncludesEeprom(memory_set ms) const
 {
   return ms == MEMORY_SET_EEPROM ||
     (ms == MEMORY_SET_ALL && supportsEepromAccess);
 }
 
-void bootloader_type::ensureReading(MemorySet ms) const
+void bootloader_type::ensureReading(memory_set ms) const
 {
   if (this->memorySetIncludesFlash(ms))
   {
@@ -135,7 +135,7 @@ void bootloader_type::ensureReading(MemorySet ms) const
   }
 }
 
-void bootloader_type::ensureErasing(MemorySet ms) const
+void bootloader_type::ensureErasing(memory_set ms) const
 {
   if (ms == MEMORY_SET_ALL)
   {
@@ -191,12 +191,12 @@ void bootloader_type::ensureFlashPlainWriting() const
   }
 }
 
-std::vector<PloaderAppInstance> ploaderListApps()
+std::vector<bootloader_app_instance> ploaderListApps()
 {
   // Get a list of all connected USB devices.
   std::vector<libusbp::device> devices = libusbp::list_connected_devices();
 
-  std::vector<PloaderAppInstance> list;
+  std::vector<bootloader_app_instance> list;
 
   for (const libusbp::device & device : devices)
   {
@@ -223,14 +223,14 @@ std::vector<PloaderAppInstance> ploaderListApps()
       throw;
     }
 
-    PloaderAppInstance instance(*type, usb_interface, device.get_serial_number());
+    bootloader_app_instance instance(*type, usb_interface, device.get_serial_number());
     list.push_back(instance);
   }
 
   return list;
 }
 
-void PloaderAppInstance::launchBootloader()
+void bootloader_app_instance::launchBootloader()
 {
   try
   {
@@ -287,7 +287,7 @@ std::vector<bootloader_instance> bootloader::list_connected_devices()
   return ploaderListBootloaders();
 }
 
-PloaderHandle::PloaderHandle(bootloader_instance instance) : type(instance.type)
+bootloader_handle::bootloader_handle(bootloader_instance instance) : type(instance.type)
 {
   handle = libusbp::generic_handle(instance.usbInterface);
 }
@@ -296,7 +296,7 @@ PloaderHandle::PloaderHandle(bootloader_instance instance) : type(instance.type)
 // appropriate, it attempts to make another request to get a more specific error
 // code from the device, and then throws an error with that information in it.
 // If anything goes wrong, it just throws the original USB error.
-void PloaderHandle::reportError(const libusbp::error & error, std::string context)
+void bootloader_handle::reportError(const libusbp::error & error, std::string context)
 {
   if (!error.has_code(LIBUSBP_ERROR_STALL))
   {
@@ -337,7 +337,7 @@ static std::runtime_error transfer_length_error(std::string context,
     "got " + std::to_string(actual) + ".");
 }
 
-void PloaderHandle::initialize(uint16_t uploadType)
+void bootloader_handle::initialize(uint16_t uploadType)
 {
   if (type.deviceCode != NULL)
   {
@@ -372,7 +372,7 @@ void PloaderHandle::initialize(uint16_t uploadType)
   }
 }
 
-void PloaderHandle::initialize()
+void bootloader_handle::initialize()
 {
   uint16_t defaultUploadType;
   if (type.supportsFlashPlainWriting)
@@ -387,7 +387,7 @@ void PloaderHandle::initialize()
   initialize(defaultUploadType);
 }
 
-void PloaderHandle::eraseFlash()
+void bootloader_handle::eraseFlash()
 {
   int maxProgress = 0;
 
@@ -427,7 +427,7 @@ void PloaderHandle::eraseFlash()
   }
 }
 
-void PloaderHandle::writeFlashBlock(uint32_t address, const uint8_t * data, size_t size)
+void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, size_t size)
 {
   size_t transferred;
   try
@@ -448,7 +448,7 @@ void PloaderHandle::writeFlashBlock(uint32_t address, const uint8_t * data, size
   }
 }
 
-void PloaderHandle::writeFlash(const uint8_t * image)
+void bootloader_handle::writeFlash(const uint8_t * image)
 {
   assert(image != NULL);
 
@@ -499,7 +499,7 @@ void PloaderHandle::writeFlash(const uint8_t * image)
   }
 }
 
-void PloaderHandle::readFlash(uint8_t * image)
+void bootloader_handle::readFlash(uint8_t * image)
 {
   assert(image != NULL);
   type.ensureFlashReading();
@@ -531,15 +531,15 @@ void PloaderHandle::readFlash(uint8_t * image)
   }
 }
 
-void PloaderHandle::eraseEeprom()
+void bootloader_handle::eraseEeprom()
 {
   type.ensureEepromAccess();
 
-  MemoryImage image(type.eepromSize, 0xFF);
+  memory_image image(type.eepromSize, 0xFF);
   writeEeprom(&image[0]);
 }
 
-void PloaderHandle::writeEepromBlock(uint32_t address,
+void bootloader_handle::writeEepromBlock(uint32_t address,
   const uint8_t * data, size_t size)
 {
   type.ensureEepromAccess();
@@ -561,7 +561,7 @@ void PloaderHandle::writeEepromBlock(uint32_t address,
   }
 }
 
-void PloaderHandle::eraseEepromFirstByte()
+void bootloader_handle::eraseEepromFirstByte()
 {
   type.ensureEepromAccess();
 
@@ -569,7 +569,7 @@ void PloaderHandle::eraseEepromFirstByte()
   writeEepromBlock(0, &blankByte, 1);
 }
 
-void PloaderHandle::writeEeprom(const uint8_t * image)
+void bootloader_handle::writeEeprom(const uint8_t * image)
 {
   type.ensureEepromAccess();
 
@@ -604,7 +604,7 @@ void PloaderHandle::writeEeprom(const uint8_t * image)
   }
 }
 
-void PloaderHandle::readEeprom(uint8_t * image)
+void bootloader_handle::readEeprom(uint8_t * image)
 {
   type.ensureEepromAccess();
 
@@ -635,7 +635,7 @@ void PloaderHandle::readEeprom(uint8_t * image)
   }
 }
 
-void PloaderHandle::applyImage(const firmware_archive::image & image)
+void bootloader_handle::applyImage(const firmware_archive::image & image)
 {
   initialize(image.upload_type);
 
@@ -662,7 +662,7 @@ void PloaderHandle::applyImage(const firmware_archive::image & image)
   }
 }
 
-void PloaderHandle::restartDevice()
+void bootloader_handle::restartDevice()
 {
   const uint16_t durationMs = 100;
   try
@@ -676,7 +676,7 @@ void PloaderHandle::restartDevice()
   }
 }
 
-bool PloaderHandle::checkApplication()
+bool bootloader_handle::checkApplication()
 {
   uint8_t response;
   size_t transferred;

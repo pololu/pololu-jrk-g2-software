@@ -241,7 +241,7 @@ void bootloader_window::on_program_button_clicked()
   try
   {
     {
-      PloaderHandle handle(device);
+      bootloader_handle handle(device);
       handle.setStatusListener(this);
       handle.applyImage(*image);
       handle.restartDevice();
