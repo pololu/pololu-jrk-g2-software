@@ -448,97 +448,6 @@ void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, 
   }
 }
 
-void bootloader_handle::writeFlash(const uint8_t * image)
-{
-  assert(image != NULL);
-
-  const char * message = "Writing flash...";
-
-  type.ensureFlashPlainWriting();
-
-  uint32_t address = type.appAddress + type.appSize;
-  while (address > type.appAddress)
-  {
-    // Advance to the next block.
-    address -= type.writeBlockSize;
-    assert((address % type.writeBlockSize) == 0);
-    const uint8_t * block = &image[address - type.appAddress];
-
-    // If the block is empty, don't write to it.
-    bool blockIsEmpty = true;
-    for (uint32_t i = 0; i < type.writeBlockSize; i++)
-    {
-      if (block[i] != 0xFF)
-      {
-        blockIsEmpty = false;
-        break;
-      }
-    }
-    if (blockIsEmpty)
-    {
-      continue;
-    }
-
-    // Write the block to flash.
-    writeFlashBlock(address, block, type.writeBlockSize);
-
-    if (listener)
-    {
-      // These progress numbers aren't very good because they don't
-      // account for how many blocks actually need to be written to flash.
-      uint32_t progress = type.appSize - (address - type.appAddress);
-      listener->set_status(message, progress, type.appSize);
-    }
-  }
-
-  // Make sure we report that writing to flash is done.  The loop above
-  // will not do that if the last few blocks are empty.
-  if (listener)
-  {
-    listener->set_status(message, type.appSize, type.appSize);
-  }
-}
-
-void bootloader_handle::readFlash(uint8_t * image)
-{
-  assert(image != NULL);
-  type.ensureFlashReading();
-
-  const uint32_t endAddress = type.appAddress + type.appSize;
-
-  const size_t blockSize = 1024;
-  uint32_t address = type.appAddress;
-  while(address < endAddress)
-  {
-    assert(address + blockSize <= endAddress);
-
-    size_t transferred;
-    handle.control_transfer(0xC0, REQUEST_READ_FLASH,
-      address & 0xFFFF, address >> 16 & 0xFFFF,
-      &image[address - type.appAddress], blockSize, &transferred);
-    if (transferred != blockSize)
-    {
-      throw transfer_length_error("reading flash", blockSize, transferred);
-    }
-
-    address += blockSize;
-
-    if (listener)
-    {
-      listener->set_status("Reading flash...",
-        address - type.appAddress, type.appSize);
-    }
-  }
-}
-
-void bootloader_handle::eraseEeprom()
-{
-  type.ensureEepromAccess();
-
-  memory_image image(type.eepromSize, 0xFF);
-  writeEeprom(&image[0]);
-}
-
 void bootloader_handle::writeEepromBlock(uint32_t address,
   const uint8_t * data, size_t size)
 {
@@ -567,72 +476,6 @@ void bootloader_handle::eraseEepromFirstByte()
 
   uint8_t blankByte = 0xFF;
   writeEepromBlock(0, &blankByte, 1);
-}
-
-void bootloader_handle::writeEeprom(const uint8_t * image)
-{
-  type.ensureEepromAccess();
-
-  const uint32_t endAddress = type.eepromAddress + type.eepromSize;
-
-  // Set the message to "Erasing EEPROM..." if the image happens to be all 0xFF.
-  // This is less surprising for people who were not intentionally trying to
-  // put anything in EEPROM using software that calls this function to erase it.
-  const char * message = "Erasing EEPROM...";
-  for (uint32_t i = 0; i < type.eepromSize; i++)
-  {
-    if (image[i] != 0xFF)
-    {
-      message = "Writing EEPROM...";
-      break;
-    }
-  }
-
-  const uint32_t blockSize = 32;
-  uint32_t address = type.eepromAddress;
-  while (address < endAddress)
-  {
-    assert(address + blockSize <= endAddress);
-
-    writeEepromBlock(address, image + address, blockSize);
-    address += blockSize;
-    if (listener)
-    {
-      uint32_t progress = address - type.eepromAddress;
-      listener->set_status(message, progress, type.eepromSize);
-    }
-  }
-}
-
-void bootloader_handle::readEeprom(uint8_t * image)
-{
-  type.ensureEepromAccess();
-
-  const uint32_t endAddress = type.eepromAddress + type.eepromSize;
-
-  uint32_t address = type.eepromAddress;
-  while (address < endAddress)
-  {
-    const uint32_t blockSize = 32;
-    assert(address + blockSize <= endAddress);
-
-    size_t transferred;
-    handle.control_transfer(0xC0, REQUEST_READ_EEPROM,
-      address & 0xFFFF, address >> 16 & 0xFFFF,
-      &image[address], blockSize, &transferred);
-    if (transferred != blockSize)
-    {
-      throw transfer_length_error("reading EEPROM", blockSize, transferred);
-    }
-
-    address += blockSize;
-
-    if (listener)
-    {
-      uint32_t progress = address - type.eepromAddress;
-      listener->set_status("Reading EEPROM...", progress, endAddress);
-    }
-  }
 }
 
 void bootloader_handle::applyImage(const firmware_archive::image & image)
@@ -674,18 +517,5 @@ void bootloader_handle::restartDevice()
     throw std::runtime_error(
       std::string("Failed to restart device.") + error.what());
   }
-}
-
-bool bootloader_handle::checkApplication()
-{
-  uint8_t response;
-  size_t transferred;
-  handle.control_transfer(0xC0, REQUEST_CHECK_APPLICATION, 0, 0,
-    &response, 1, &transferred);
-  if (transferred != 1)
-  {
-    throw transfer_length_error("checking application", 1, transferred);
-  }
-  return response;
 }
 

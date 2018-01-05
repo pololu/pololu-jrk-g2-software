@@ -248,32 +248,9 @@ public:
   // Erases the entire application flash region.
   void eraseFlash();
 
-  // Writes an arbitrary image to flash.  Before doing this,
-  // you will need to initialize and erase.
-  void writeFlash(const uint8_t * image);
-
-  // Takes care of all the details of reading an app image from the flash on
-  // a device.  image must be a pointer to a memory block of the right size which
-  // will be written to by this function.  This function takes care of getting the
-  // Wixel in to bootloader mode (if needed) and reading the image.
-  void readFlash(uint8_t * image);
-
-  // Erases the EEPROM (sets to 0xFF).
-  void eraseEeprom();
-
-  // Just like writeFlash, but for EEPROM instead/
-  void writeEeprom(const uint8_t * image);
-
-  // Just like readFlash, but for EEPROM instead.
-  void readEeprom(uint8_t * image);
-
   // Sends the Restart command, which causes the device to reset.  This is
   // usually used to allow a newly-loaded application to start running.
   void restartDevice();
-
-  // Asks the bootloader if the currently-loaded application is valid or not.
-  // Returns true if the application is valid.
-  bool checkApplication();
 
   // Erases flash and performs any other steps needed to apply the firmware
   // image to the device
