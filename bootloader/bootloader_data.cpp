@@ -41,12 +41,3 @@ const std::vector<PloaderType> ploaderTypes = {
     /* matchingAppTypes */ { ID_JRK_2017_APP },
   },
 };
-
-// TODO: remove this
-const std::vector<PloaderUserType> ploaderUserTypes = {
-  {
-    /* codeName */ "jrk",
-    /* name */ "Jrk Controller",
-    /* memberIds */ { ID_JRK_2017_APP, ID_JRK_2017_BOOTLOADER },
-  },
-};

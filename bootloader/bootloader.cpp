@@ -83,18 +83,6 @@ const PloaderType * ploaderTypeLookup(uint16_t usbVendorId, uint16_t usbProductI
   return NULL;
 }
 
-const PloaderUserType * ploaderUserTypeLookup(std::string codeName)
-{
-  for (const PloaderUserType & t : ploaderUserTypes)
-  {
-    if (codeName == t.codeName)
-    {
-      return &t;
-    }
-  }
-  return NULL;
-}
-
 template <typename T>
 static std::vector<T> fetchByIds(
   std::vector<T> items, const std::vector<uint32_t> & ids)
@@ -119,16 +107,6 @@ static std::vector<T> fetchByIds(
 std::vector<PloaderAppType> PloaderType::getMatchingAppTypes() const
 {
   return fetchByIds(ploaderAppTypes, matchingAppTypes);
-}
-
-std::vector<PloaderAppType> PloaderUserType::getMatchingAppTypes() const
-{
-  return fetchByIds(ploaderAppTypes, memberIds);
-}
-
-std::vector<PloaderType> PloaderUserType::getMatchingTypes() const
-{
-  return fetchByIds(ploaderTypes, memberIds);
 }
 
 bool PloaderType::memorySetIncludesFlash(MemorySet ms) const

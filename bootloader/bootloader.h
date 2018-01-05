@@ -202,34 +202,9 @@ public:
   libusbp::generic_interface usbInterface;
 };
 
-// Represents a high-level device type or device family that can be used in
-// communications with the user.  Each "user type" can correspond to multiple
-// specific app types and bootloader types.
-class PloaderUserType
-{
-public:
-  // A lowercase name with no spaces that can be used for a command-line
-  // argument.
-  const char * codeName;
-
-  // A friendly English name for the device type/family.
-  const char * name;
-
-  // IDs of PloaderAppType and PloaderBootloaderType objects
-  // that belong to this type/family.
-  std::vector<uint32_t> memberIds;
-
-  std::vector<PloaderType> getMatchingTypes() const;
-  std::vector<PloaderAppType> getMatchingAppTypes() const;
-};
-
-extern const std::vector<PloaderUserType> ploaderUserTypes;
-
 const PloaderAppType * ploaderAppTypeLookup(uint16_t usbVendorId, uint16_t usbProductId);
 
 const PloaderType * ploaderTypeLookup(uint16_t usbVendorId, uint16_t usbProductId);
-
-const PloaderUserType * ploaderUserTypeLookup(std::string codeName);
 
 // Detects all the known apps that are currently connected to the computer.
 std::vector<PloaderAppInstance> ploaderListApps();
