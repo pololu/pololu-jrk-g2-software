@@ -80,7 +80,7 @@ void main_window::start_update_timer()
   update_timer->start();
 }
 
-bool main_window::confirm(std::string const & question)
+bool main_window::confirm(const std::string & question)
 {
   QMessageBox mbox(QMessageBox::Question, windowTitle(),
     QString::fromStdString(question), QMessageBox::Ok | QMessageBox::Cancel, this);
@@ -88,21 +88,21 @@ bool main_window::confirm(std::string const & question)
   return button == QMessageBox::Ok;
 }
 
-void main_window::show_error_message(std::string const & message)
+void main_window::show_error_message(const std::string & message)
 {
   QMessageBox mbox(QMessageBox::Critical, windowTitle(),
     QString::fromStdString(message), QMessageBox::NoButton, this);
   mbox.exec();
 }
 
-void main_window::show_info_message(std::string const & message)
+void main_window::show_info_message(const std::string & message)
 {
   QMessageBox mbox(QMessageBox::Information, windowTitle(),
     QString::fromStdString(message), QMessageBox::NoButton, this);
   mbox.exec();
 }
 
-void main_window::show_warning_message(std::string const & message)
+void main_window::show_warning_message(const std::string & message)
 {
   QMessageBox mbox(QMessageBox::Information, windowTitle(),
     QString::fromStdString(message), QMessageBox::NoButton, this);
@@ -119,9 +119,8 @@ void main_window::open_bootloader_window()
   window->show();
 }
 
-void main_window::set_device_name(std::string const & name, bool link_enabled)
+void main_window::set_device_name(const std::string & name, bool link_enabled)
 {
-  return; //TODO: fix function
   QString text = QString::fromStdString(name);
   if (link_enabled)
   {
@@ -130,18 +129,27 @@ void main_window::set_device_name(std::string const & name, bool link_enabled)
   device_name_value->setText(text);
 }
 
-void main_window::set_serial_number(std::string const & serial_number)
+void main_window::set_serial_number(const std::string & serial_number)
 {
-  return; //TODO: fix function
   serial_number_value->setText(QString::fromStdString(serial_number));
 }
 
-void main_window::set_firmware_version(std::string const & firmware_version)
+void main_window::set_firmware_version(const std::string & firmware_version)
 {
   firmware_version_value->setText(QString::fromStdString(firmware_version));
 }
 
-void main_window::set_device_reset(std::string const & device_reset)
+void main_window::set_cmd_port(const std::string & cmd_port)
+{
+  cmd_port_value->setText(QString::fromStdString(cmd_port));
+}
+
+void main_window::set_ttl_port(const std::string & ttl_port)
+{
+  ttl_port_value->setText(QString::fromStdString(ttl_port));
+}
+
+void main_window::set_device_reset(const std::string & device_reset)
 {
   device_reset_value->setText(QString::fromStdString(device_reset));
 }
@@ -583,9 +591,25 @@ QWidget * main_window::setup_variables_box()
 
   int row = 0;
 
+  setup_read_only_text_field(layout, row++, &device_name_label,
+    &device_name_value);
+  device_name_label->setText(tr("Name:"));
+
+  setup_read_only_text_field(layout, row++, &serial_number_label,
+    &serial_number_value);
+  serial_number_label->setText(tr("Serial number:"));
+
   setup_read_only_text_field(layout, row++, &firmware_version_label,
     &firmware_version_value);
   firmware_version_label->setText(tr("Firmware version:"));
+
+  setup_read_only_text_field(layout, row++, &cmd_port_label,
+    &cmd_port_value);
+  cmd_port_label->setText(tr("Command port:"));
+
+  setup_read_only_text_field(layout, row++, &ttl_port_label,
+    &ttl_port_value);
+  ttl_port_label->setText(tr("TTL port:"));
 
   setup_read_only_text_field(layout, row++,
     &device_reset_label, &device_reset_value);

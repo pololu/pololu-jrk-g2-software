@@ -69,6 +69,8 @@ public:
   void set_device_name(const std::string & name, bool link_enabled);
   void set_serial_number(const std::string & serial_number);
   void set_firmware_version(const std::string & firmware_version);
+  void set_cmd_port(const std::string & cmd_port);
+  void set_ttl_port(const std::string & ttl_port);
   void set_device_reset(const std::string & device_reset);
   void set_up_time(uint32_t);
   void set_duty_cycle(int16_t);
@@ -322,6 +324,10 @@ private:
   QLabel * serial_number_value;
   QLabel * firmware_version_label;
   QLabel * firmware_version_value;
+  QLabel * cmd_port_label;
+  QLabel * cmd_port_value;
+  QLabel * ttl_port_label;
+  QLabel * ttl_port_value;
   QLabel * device_reset_label;
   QLabel * device_reset_value;
   QLabel * up_time_label;

@@ -99,7 +99,7 @@ void main_controller::connect_device(jrk::device const & device)
     // Open a handle to the specified device.
     device_handle = jrk::handle(device);
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
     set_connection_error("Failed to connect to device.");
     show_exception(e, "There was an error connecting to the device.");
@@ -107,17 +107,36 @@ void main_controller::connect_device(jrk::device const & device)
     return;
   }
 
+  // Get the command port name.
+  try
+  {
+    cmd_port = device.get_cmd_port_name();
+  }
+  catch (const jrk::error &)
+  {
+    cmd_port = "?";
+  }
+
+  // Get the TTL port name.
+  try
+  {
+    ttl_port = device.get_ttl_port_name();
+  }
+  catch (const jrk::error &)
+  {
+    ttl_port = "?";
+  }
+
+  // Load the settings from the device.
   try
   {
     settings = device_handle.get_settings();
     handle_settings_loaded();
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
     show_exception(e, "There was an error loading settings from the device.");
   }
-
-  // TODO: call window->set_motor_asymmetric() ?
 
   handle_model_changed();
 }
@@ -506,27 +525,32 @@ void main_controller::handle_device_changed()
 
     window->set_device_list_selected(device);
 
-    // TODO:
-    // window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
-    // window->set_serial_number(device.get_serial_number());
+    window->set_device_name(jrk_look_up_product_name_ui(device.get_product()), true);
+    window->set_serial_number(device.get_serial_number());
     window->set_firmware_version(device_handle.get_firmware_version_string());
+
+    window->set_cmd_port(cmd_port);
+    window->set_ttl_port(ttl_port);
+
     window->set_device_reset(
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
+
+    // TODO:
     // window->set_connection_status("", false);
-
     // window->reset_error_counts();
-
   }
   else
   {
     window->set_device_list_selected(jrk::device()); // show "Not connected"
 
     std::string na = "N/A";
-    //TODO:
-    // window->set_device_name(na, false);
-    // window->set_serial_number(na);
+    window->set_device_name(na, false);
+    window->set_serial_number(na);
     window->set_firmware_version(na);
+    window->set_cmd_port(na);
+    window->set_ttl_port(na);
 
+    // TODO:
     // if (connection_error)
     // {
     //   window->set_connection_status(connection_error_message, true);
@@ -1165,8 +1189,6 @@ void main_controller::handle_motor_asymmetric_input(bool checked)
     settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
     settings.set_motor_current_calibration_reverse(settings.get_motor_current_calibration_forward());
   }
-
-  // TODO: implement logic for when asymmetric checkbox changes
 
   settings_modified = true;
   handle_settings_changed();
