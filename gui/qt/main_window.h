@@ -63,6 +63,9 @@ public:
   void show_error_message(const std::string & message);
   void show_info_message(const std::string & message);
   void show_warning_message(const std::string & message);
+
+  void open_bootloader_window();
+
   void set_device_name(const std::string & name, bool link_enabled);
   void set_serial_number(const std::string & serial_number);
   void set_firmware_version(const std::string & firmware_version);
@@ -206,6 +209,8 @@ private slots:
   void on_launchGraph_clicked(QMouseEvent *);
   void on_device_list_value_currentIndexChanged(int index);
   void on_apply_settings_action_triggered();
+  void on_upgrade_firmware_action_triggered();
+  void upgrade_firmware_complete();
   void on_stop_motor_action_triggered();
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();

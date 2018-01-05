@@ -1,9 +1,11 @@
 #include "main_window.h"
 #include "main_controller.h"
-#include "qcustomplot.h"
 #include "graph_window.h"
+#include "bootloader_window.h"
 
 #include "to_string.h"
+
+#include "qcustomplot.h"
 
 #include <QApplication>
 #include <QButtonGroup>
@@ -33,8 +35,6 @@
 #include <QVBoxLayout>
 #include <string>
 #include <QString>
-
-#include <iostream> // tmphax
 
 #include <cassert>
 #include <cmath>
@@ -107,6 +107,16 @@ void main_window::show_warning_message(std::string const & message)
   QMessageBox mbox(QMessageBox::Information, windowTitle(),
     QString::fromStdString(message), QMessageBox::NoButton, this);
   mbox.exec();
+}
+
+void main_window::open_bootloader_window()
+{
+  bootloader_window * window = new bootloader_window(this);
+  connect(window, &bootloader_window::upload_complete,
+    this, &main_window::upgrade_firmware_complete);
+  window->setWindowModality(Qt::ApplicationModal);
+  window->setAttribute(Qt::WA_DeleteOnClose);
+  window->show();
 }
 
 void main_window::set_device_name(std::string const & name, bool link_enabled)
@@ -1496,6 +1506,16 @@ void main_window::on_device_list_value_currentIndexChanged(int index)
 void main_window::on_apply_settings_action_triggered()
 {
   controller->apply_settings();
+}
+
+void main_window::on_upgrade_firmware_action_triggered()
+{
+  controller->upgrade_firmware();
+}
+
+void main_window::upgrade_firmware_complete()
+{
+  controller->upgrade_firmware_complete();
 }
 
 void main_window::on_run_motor_action_triggered()

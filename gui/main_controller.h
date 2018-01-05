@@ -32,6 +32,9 @@ public:
   // This is called when the user wants to upgrade some firmware.
   void upgrade_firmware();
 
+  // Called when the upgrade has been complete.
+  void upgrade_firmware_complete();
+
   // This is called regularly to do various updates.
   void update();
 

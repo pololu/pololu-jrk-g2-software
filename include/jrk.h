@@ -1553,6 +1553,11 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_reinitialize(jrk_handle * handle);
 
+/// Sends a "Start bootloader" command, which tells the jrk to get into
+/// bootloader mode.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_start_bootloader(jrk_handle * handle);
+
 /// \cond
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);

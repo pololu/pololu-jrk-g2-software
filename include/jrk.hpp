@@ -1369,6 +1369,12 @@ namespace jrk
       throw_if_needed(jrk_reinitialize(pointer));
     }
 
+    /// Wrapperfor jrk_start_bootloader()
+    void start_bootloader()
+    {
+      throw_if_needed(jrk_start_bootloader(pointer));
+    }
+
     /// \cond
     void get_debug_data(std::vector<uint8_t> & data)
     {
@@ -1377,7 +1383,6 @@ namespace jrk
       data.resize(size);
     }
     /// \endcond
-
   };
 #ifdef __cplusplus
 }

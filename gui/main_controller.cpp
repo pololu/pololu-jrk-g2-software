@@ -213,12 +213,29 @@ void main_controller::upgrade_firmware()
       return;
     }
 
+    try
+    {
+      device_handle.start_bootloader();
+    }
+    catch (const std::exception & e)
+    {
+      show_exception(e);
+    }
+
     really_disconnect();
     disconnected_by_user = true;
     connection_error = false;
     handle_model_changed();
   }
 
+  window->open_bootloader_window();
+}
+
+void main_controller::upgrade_firmware_complete()
+{
+  // After a firmware upgrade is complete, allow the GUI to reconnect to the
+  // device automatically.
+  disconnected_by_user = false;
 }
 
 // Returns true if the device list includes the specified device.
