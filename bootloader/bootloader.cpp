@@ -59,19 +59,6 @@ static std::string ploaderGetErrorDescription(uint8_t errorCode)
   }
 }
 
-const bootloader_app_type * bootloader_app_type_lookup(
-  uint16_t usb_vendor_id, uint16_t usb_product_id)
-{
-  for (const bootloader_app_type & t : bootloader_app_types)
-  {
-    if (t.usb_vendor_id == usb_vendor_id && t.usb_product_id == usb_product_id)
-    {
-      return &t;
-    }
-  }
-  return NULL;
-}
-
 const bootloader_type * bootloader_type_lookup(
   uint16_t usb_vendor_id, uint16_t usb_product_id)
 {
@@ -104,11 +91,6 @@ static std::vector<T> fetchByIds(
   }
 
   return r;
-}
-
-std::vector<bootloader_app_type> bootloader_type::getMatchingAppTypes() const
-{
-  return fetchByIds(bootloader_app_types, matchingAppTypes);
 }
 
 bool bootloader_type::memorySetIncludesFlash(memory_set ms) const
@@ -188,59 +170,6 @@ void bootloader_type::ensureFlashPlainWriting() const
   {
     throw std::runtime_error(
       "This bootloader is not compatible with writing plain data to flash.");
-  }
-}
-
-std::vector<bootloader_app_instance> ploaderListApps()
-{
-  // Get a list of all connected USB devices.
-  std::vector<libusbp::device> devices = libusbp::list_connected_devices();
-
-  std::vector<bootloader_app_instance> list;
-
-  for (const libusbp::device & device : devices)
-  {
-    // Filter out things that are not known apps.
-    const bootloader_app_type * type = bootloader_app_type_lookup(device.get_vendor_id(),
-      device.get_product_id());
-    if (!type) { continue; }
-
-    // Get the generic interface object.
-    libusbp::generic_interface usb_interface;
-    try
-    {
-      usb_interface = libusbp::generic_interface(device,
-        type->interfaceNumber, type->composite);
-    }
-    catch(const libusbp::error & error)
-    {
-      if (error.has_code(LIBUSBP_ERROR_NOT_READY))
-      {
-        // This interface is not ready to be used yet.
-        // This is normal if it was recently enumerated.
-        continue;
-      }
-      throw;
-    }
-
-    bootloader_app_instance instance(*type, usb_interface, device.get_serial_number());
-    list.push_back(instance);
-  }
-
-  return list;
-}
-
-void bootloader_app_instance::launchBootloader()
-{
-  try
-  {
-    libusbp::generic_handle handle(usbInterface);
-    handle.control_transfer(0x40, REQUEST_START_BOOTLOADER, 0, 0);
-  }
-  catch(const libusbp::error & error)
-  {
-    throw std::runtime_error(
-      std::string("Failed to start bootloader.  ") + error.what());
   }
 }
 

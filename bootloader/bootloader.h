@@ -17,60 +17,6 @@ enum memory_set
   MEMORY_SET_EEPROM,
 };
 
-// Represents a type of USB device that can be used to start a bootloader.
-// Currently, just native USB interfaces are supported, but we could add more
-// fields in the future to support USB serial ports and USB HIDs.
-class bootloader_app_type
-{
-public:
-  uint32_t id;
-
-  uint16_t usb_vendor_id, usb_product_id;
-
-  const char * name;
-
-  bool composite;
-
-  uint8_t interfaceNumber;
-
-  bool operator ==(const bootloader_app_type & other) const
-  {
-    return id == other.id;
-  }
-};
-
-extern const std::vector<bootloader_app_type> bootloader_app_types;
-
-// Represents a specific device connected to the system
-// that we could use to start a bootloader.
-class bootloader_app_instance
-{
-public:
-  bootloader_app_type type;
-  std::string serialNumber;
-
-  bootloader_app_instance()
-  {
-  }
-
-  bootloader_app_instance(const bootloader_app_type type,
-    libusbp::generic_interface gi,
-    std::string serialNumber)
-    : type(type), serialNumber(serialNumber), usbInterface(gi)
-  {
-  }
-
-  operator bool() const
-  {
-    return usbInterface;
-  }
-
-  void launchBootloader();
-
-private:
-  libusbp::generic_interface usbInterface;
-};
-
 // Represents a type of bootloader.
 class bootloader_type
 {
@@ -137,11 +83,6 @@ public:
   // Raises an exception if writing plain data to flash is not allowed.
   void ensureFlashPlainWriting() const;
 
-  // Returns a vector of the app types that correspond to this bootloader.
-  // When trying to write to this bootloader, these are the apps that you
-  // should consider restarting.
-  std::vector<bootloader_app_type> getMatchingAppTypes() const;
-
   bool operator ==(const bootloader_type & other) const
   {
     return id == other.id;
@@ -201,9 +142,6 @@ public:
 
   libusbp::generic_interface usbInterface;
 };
-
-const bootloader_app_type * bootloader_app_type_lookup(
-  uint16_t usb_vendor_id, uint16_t usb_product_id);
 
 const bootloader_type * bootloader_type_lookup(
   uint16_t usb_vendor_id, uint16_t usb_product_id);

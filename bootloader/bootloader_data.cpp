@@ -6,18 +6,6 @@ enum bootloader_type_ids
 {
   ID_NONE = 0,
   ID_JRK_2017_BOOTLOADER,
-  ID_JRK_2017_APP,
-};
-
-const std::vector<bootloader_app_type> bootloader_app_types = {
-  {
-    /* id */ ID_JRK_2017_APP,
-    /* usb_vendor_id */ 0x1FFB,
-    /* usb_product_id */ 0x00B7,
-    /* name */ "Pololu Jrk 2017",
-    /* composite */ true,
-    /* interface_number */ 0,
-  },
 };
 
 const std::vector<bootloader_type> bootloader_types = {
@@ -38,6 +26,5 @@ const std::vector<bootloader_type> bootloader_types = {
     /* eeprom_size */ 0x100,
     /* supports_eeprom_access */ true,
     /* device_code */ NULL,
-    /* matching_app_types */ { ID_JRK_2017_APP },
   },
 };
