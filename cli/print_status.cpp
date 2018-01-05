@@ -57,6 +57,8 @@ void print_status(const jrk::variables & vars,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
+  const std::string & cmd_port,
+  const std::string & ttl_port,
   bool full_output)
 {
   // The output here is YAML so that people can more easily write scripts that
@@ -74,6 +76,12 @@ void print_status(const jrk::variables & vars,
 
   std::cout << left_column << "Firmware version: "
     << firmware_version << std::endl;
+
+  std::cout << left_column << "Command port: "
+    << cmd_port << std::endl;
+
+  std::cout << left_column << "TTL port: "
+    << ttl_port << std::endl;
 
   std::cout << left_column << "Last reset: "
     << jrk_look_up_device_reset_name_ui(vars.get_device_reset())

@@ -300,7 +300,29 @@ static void get_status(device_selector & selector, bool full_output)
   std::string name = jrk_look_up_product_name_ui(device.get_product());
   std::string serial_number = device.get_serial_number();
   std::string firmware_version = handle.get_firmware_version_string();
-  print_status(vars, settings, name, serial_number, firmware_version, full_output);
+
+  std::string cmd_port;
+  try
+  {
+    cmd_port = device.get_cmd_port_name();
+  }
+  catch (const jrk::error &)
+  {
+    cmd_port = "?";
+  }
+
+  std::string ttl_port;
+  try
+  {
+    ttl_port = device.get_ttl_port_name();
+  }
+  catch (const jrk::error &)
+  {
+    ttl_port = "?";
+  }
+
+  print_status(vars, settings, name, serial_number, firmware_version,
+    cmd_port, ttl_port, full_output);
 }
 
 static void get_settings(device_selector & selector,

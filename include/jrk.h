@@ -1408,6 +1408,18 @@ const char * jrk_device_get_os_id(const jrk_device *);
 JRK_API JRK_WARN_UNUSED
 uint16_t jrk_device_get_firmware_version(const jrk_device *);
 
+/// Gets the command port name (e.g. "COM4").
+/// Does not do any caching.
+/// The retrieved string must be freed with jrk_string_free().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_device_get_cmd_port_name(const jrk_device *, char ** name);
+
+/// Gets the TTL port name (e.g. "COM5").
+/// Does not do any caching.
+/// The retrieved string must be freed with jrk_string_free().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_device_get_ttl_port_name(const jrk_device *, char ** name);
+
 
 // jrk_handle ///////////////////////////////////////////////////////////////////
 
