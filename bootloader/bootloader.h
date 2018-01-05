@@ -10,13 +10,6 @@ typedef std::vector<uint8_t> memory_image;
 #define UPLOAD_TYPE_DEVICE_SPECIFIC 1
 #define UPLOAD_TYPE_PLAIN 2
 
-enum memory_set
-{
-  MEMORY_SET_ALL,
-  MEMORY_SET_FLASH,
-  MEMORY_SET_EEPROM,
-};
-
 // Represents a type of bootloader.
 class bootloader_type
 {
@@ -39,15 +32,6 @@ public:
   // The number of bytes you have to write at once while writing to flash.
   uint16_t writeBlockSize;
 
-  // True if the erase action does something to the EEPROM.
-  bool erasingFlashAffectsEeprom;
-
-  // True if you can write plaintext data to flash.
-  bool supportsFlashPlainWriting;
-
-  // True if you can read from flash.
-  bool supportsFlashReading;
-
   // The address of the first byte of EEPROM (used in the USB protocol).
   uint32_t eepromAddress;
 
@@ -59,29 +43,9 @@ public:
   // EEPROM.
   uint32_t eepromSize;
 
-  bool supportsEepromAccess;
-
   const uint8_t * deviceCode;
 
   std::vector<uint32_t> matchingAppTypes;
-
-  bool memorySetIncludesFlash(memory_set ms) const;
-  bool memorySetIncludesEeprom(memory_set ms) const;
-
-  // Raises an exception if reading from the specified memories is not allowed.
-  void ensureReading(memory_set ms) const;
-
-  // Raises an exception if erasing the specified memories is not allowed.
-  void ensureErasing(memory_set ms) const;
-
-  // Raises an exception if reading and writing from EEPROM is not allowed.
-  void ensureEepromAccess() const;
-
-  // Raises an exception if reading from flash is not allowed.
-  void ensureFlashReading() const;
-
-  // Raises an exception if writing plain data to flash is not allowed.
-  void ensureFlashPlainWriting() const;
 
   bool operator ==(const bootloader_type & other) const
   {

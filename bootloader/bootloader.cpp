@@ -93,86 +93,6 @@ static std::vector<T> fetchByIds(
   return r;
 }
 
-bool bootloader_type::memorySetIncludesFlash(memory_set ms) const
-{
-  return ms == MEMORY_SET_FLASH || ms == MEMORY_SET_ALL;
-}
-
-bool bootloader_type::memorySetIncludesEeprom(memory_set ms) const
-{
-  return ms == MEMORY_SET_EEPROM ||
-    (ms == MEMORY_SET_ALL && supportsEepromAccess);
-}
-
-void bootloader_type::ensureReading(memory_set ms) const
-{
-  if (this->memorySetIncludesFlash(ms))
-  {
-    ensureFlashReading();
-  }
-
-  if (this->memorySetIncludesEeprom(ms))
-  {
-    ensureEepromAccess();
-  }
-}
-
-void bootloader_type::ensureErasing(memory_set ms) const
-{
-  if (ms == MEMORY_SET_ALL)
-  {
-    // All devices support a full erase of all memories.
-  }
-  else if (ms == MEMORY_SET_FLASH)
-  {
-    if (erasingFlashAffectsEeprom)
-    {
-      throw std::runtime_error(
-        "This bootloader does not support erasing flash "
-        "without affecting EEPROM.");
-    }
-  }
-  else if (ms == MEMORY_SET_EEPROM)
-  {
-    ensureEepromAccess();
-  }
-  else
-  {
-    assert(0);
-    throw std::runtime_error("Unrecognized memory set.");
-  }
-}
-
-void bootloader_type::ensureEepromAccess() const
-{
-  if (eepromSize == 0)
-  {
-    throw std::runtime_error("This device does not have EEPROM.");
-  }
-
-  if (!supportsEepromAccess)
-  {
-    throw std::runtime_error("This bootloader does not support accessing EEPROM.");
-  }
-}
-
-void bootloader_type::ensureFlashReading() const
-{
-  if (!supportsFlashReading)
-  {
-    throw std::runtime_error("This bootloader does not support reading flash memory.");
-  }
-}
-
-void bootloader_type::ensureFlashPlainWriting() const
-{
-  if (!supportsFlashPlainWriting)
-  {
-    throw std::runtime_error(
-      "This bootloader is not compatible with writing plain data to flash.");
-  }
-}
-
 std::vector<bootloader_instance> bootloader_list_connected_devices()
 {
   // Get a list of all connected USB devices.
@@ -298,17 +218,7 @@ void bootloader_handle::initialize(uint16_t uploadType)
 
 void bootloader_handle::initialize()
 {
-  uint16_t defaultUploadType;
-  if (type.supportsFlashPlainWriting)
-  {
-    defaultUploadType = UPLOAD_TYPE_PLAIN;
-  }
-  else
-  {
-    defaultUploadType = UPLOAD_TYPE_STANDARD;
-  }
-
-  initialize(defaultUploadType);
+  initialize(UPLOAD_TYPE_STANDARD);
 }
 
 void bootloader_handle::eraseFlash()
@@ -375,8 +285,6 @@ void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, 
 void bootloader_handle::writeEepromBlock(uint32_t address,
   const uint8_t * data, size_t size)
 {
-  type.ensureEepromAccess();
-
   size_t transferred;
   try
   {
@@ -396,8 +304,6 @@ void bootloader_handle::writeEepromBlock(uint32_t address,
 
 void bootloader_handle::eraseEepromFirstByte()
 {
-  type.ensureEepromAccess();
-
   uint8_t blankByte = 0xFF;
   writeEepromBlock(0, &blankByte, 1);
 }
@@ -408,13 +314,10 @@ void bootloader_handle::applyImage(const firmware_archive::image & image)
 
   eraseFlash();
 
-  if (type.supportsEepromAccess)
-  {
-    // We erase the first byte of EEPROM so that the firmware is able to
-    // know it has been upgraded and not accidentally use invalid settings
-    // from an older version of the firmware.
-    eraseEepromFirstByte();
-  }
+  // We erase the first byte of EEPROM so that the firmware is able to
+  // know it has been upgraded and not accidentally use invalid settings
+  // from an older version of the firmware.
+  eraseEepromFirstByte();
 
   size_t progress = 0;
   for (const firmware_archive::block & block : image.blocks)

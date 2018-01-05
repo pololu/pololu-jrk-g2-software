@@ -18,13 +18,9 @@ const std::vector<bootloader_type> bootloader_types = {
     /* app_address */ 0x2000,
     /* app_size */ 0x6000,
     /* write_block_size */ 0x40,
-    /* erasing_flash_affects_eeprom */ true,
-    /* supports_plain_flash_writing */ false,
-    /* supports_flash_reading */ false,
     /* eeprom_address */ 0,
     /* eeprom_address_hex_file */ 0xF00000,
     /* eeprom_size */ 0x100,
-    /* supports_eeprom_access */ true,
     /* device_code */ NULL,
   },
 };
