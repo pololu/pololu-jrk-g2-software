@@ -1,9 +1,10 @@
+#include "config.h"
 #include "main_window.h"
 #include "main_controller.h"
 #include "graph_window.h"
 #include "bootloader_window.h"
 
-#include "to_string.h"
+#include <to_string.h>
 
 #include "qcustomplot.h"
 
@@ -593,6 +594,8 @@ QWidget * main_window::setup_variables_box()
 
   setup_read_only_text_field(layout, row++, &device_name_label,
     &device_name_value);
+  device_name_value->setObjectName("device_name_value");
+  device_name_value->setTextInteractionFlags(Qt::TextBrowserInteraction);
   device_name_label->setText(tr("Name:"));
 
   setup_read_only_text_field(layout, row++, &serial_number_label,
@@ -1517,6 +1520,27 @@ void main_window::closeEvent(QCloseEvent * event)
     // User canceled exit when prompted about settings that have not been applied.
     event->ignore();
   }
+}
+
+void main_window::on_device_name_value_linkActivated()
+{
+  on_documentation_action_triggered();
+}
+
+void main_window::on_documentation_action_triggered()
+{
+  QDesktopServices::openUrl(QUrl(DOCUMENTATION_URL));
+}
+
+void main_window::on_about_action_triggered()
+{
+  QMessageBox::about(this, tr("About") + " " + windowTitle(),
+    QString("<h2>") + windowTitle() + "</h2>" +
+    tr("<h4>Version %1</h4>"
+      "<h4>Copyright &copy; %2 Pololu Corporation</h4>"
+      "<p>See LICENSE.html for copyright and license information.</p>"
+      "<p><a href=\"%3\">Online documentation</a></p>")
+    .arg(SOFTWARE_VERSION_STRING, SOFTWARE_YEAR, DOCUMENTATION_URL));
 }
 
 void main_window::on_device_list_value_currentIndexChanged(int index)

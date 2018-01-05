@@ -209,6 +209,9 @@ private slots:
   void on_update_timer_timeout();
   void receive_widget(graph_widget * widget);
   void on_launchGraph_clicked(QMouseEvent *);
+  void on_device_name_value_linkActivated();
+  void on_documentation_action_triggered();
+  void on_about_action_triggered();
   void on_device_list_value_currentIndexChanged(int index);
   void on_apply_settings_action_triggered();
   void on_upgrade_firmware_action_triggered();
