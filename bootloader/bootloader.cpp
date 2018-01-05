@@ -59,11 +59,12 @@ static std::string ploaderGetErrorDescription(uint8_t errorCode)
   }
 }
 
-const PloaderAppType * ploaderAppTypeLookup(uint16_t usbVendorId, uint16_t usbProductId)
+const bootloader_app_type * bootloader_app_type_lookup(
+  uint16_t usb_vendor_id, uint16_t usb_product_id)
 {
-  for (const PloaderAppType & t : ploaderAppTypes)
+  for (const bootloader_app_type & t : bootloader_app_types)
   {
-    if (t.usbVendorId == usbVendorId && t.usbProductId == usbProductId)
+    if (t.usb_vendor_id == usb_vendor_id && t.usb_product_id == usb_product_id)
     {
       return &t;
     }
@@ -71,11 +72,12 @@ const PloaderAppType * ploaderAppTypeLookup(uint16_t usbVendorId, uint16_t usbPr
   return NULL;
 }
 
-const PloaderType * ploaderTypeLookup(uint16_t usbVendorId, uint16_t usbProductId)
+const bootloader_type * bootloader_type_lookup(
+  uint16_t usb_vendor_id, uint16_t usb_product_id)
 {
-  for (const PloaderType & t : ploaderTypes)
+  for (const bootloader_type & t : bootloader_types)
   {
-    if (t.usbVendorId == usbVendorId && t.usbProductId == usbProductId)
+    if (t.usb_vendor_id == usb_vendor_id && t.usb_product_id == usb_product_id)
     {
       return &t;
     }
@@ -104,23 +106,23 @@ static std::vector<T> fetchByIds(
   return r;
 }
 
-std::vector<PloaderAppType> PloaderType::getMatchingAppTypes() const
+std::vector<bootloader_app_type> bootloader_type::getMatchingAppTypes() const
 {
-  return fetchByIds(ploaderAppTypes, matchingAppTypes);
+  return fetchByIds(bootloader_app_types, matchingAppTypes);
 }
 
-bool PloaderType::memorySetIncludesFlash(MemorySet ms) const
+bool bootloader_type::memorySetIncludesFlash(MemorySet ms) const
 {
   return ms == MEMORY_SET_FLASH || ms == MEMORY_SET_ALL;
 }
 
-bool PloaderType::memorySetIncludesEeprom(MemorySet ms) const
+bool bootloader_type::memorySetIncludesEeprom(MemorySet ms) const
 {
   return ms == MEMORY_SET_EEPROM ||
     (ms == MEMORY_SET_ALL && supportsEepromAccess);
 }
 
-void PloaderType::ensureReading(MemorySet ms) const
+void bootloader_type::ensureReading(MemorySet ms) const
 {
   if (this->memorySetIncludesFlash(ms))
   {
@@ -133,7 +135,7 @@ void PloaderType::ensureReading(MemorySet ms) const
   }
 }
 
-void PloaderType::ensureErasing(MemorySet ms) const
+void bootloader_type::ensureErasing(MemorySet ms) const
 {
   if (ms == MEMORY_SET_ALL)
   {
@@ -159,7 +161,7 @@ void PloaderType::ensureErasing(MemorySet ms) const
   }
 }
 
-void PloaderType::ensureEepromAccess() const
+void bootloader_type::ensureEepromAccess() const
 {
   if (eepromSize == 0)
   {
@@ -172,7 +174,7 @@ void PloaderType::ensureEepromAccess() const
   }
 }
 
-void PloaderType::ensureFlashReading() const
+void bootloader_type::ensureFlashReading() const
 {
   if (!supportsFlashReading)
   {
@@ -180,7 +182,7 @@ void PloaderType::ensureFlashReading() const
   }
 }
 
-void PloaderType::ensureFlashPlainWriting() const
+void bootloader_type::ensureFlashPlainWriting() const
 {
   if (!supportsFlashPlainWriting)
   {
@@ -199,7 +201,7 @@ std::vector<PloaderAppInstance> ploaderListApps()
   for (const libusbp::device & device : devices)
   {
     // Filter out things that are not known apps.
-    const PloaderAppType * type = ploaderAppTypeLookup(device.get_vendor_id(),
+    const bootloader_app_type * type = bootloader_app_type_lookup(device.get_vendor_id(),
       device.get_product_id());
     if (!type) { continue; }
 
@@ -242,18 +244,18 @@ void PloaderAppInstance::launchBootloader()
   }
 }
 
-std::vector<PloaderInstance> ploaderListBootloaders()
+std::vector<bootloader_instance> ploaderListBootloaders()
 {
   // Get a list of all connected USB devices.
   std::vector<libusbp::device> devices = libusbp::list_connected_devices();
 
-  std::vector<PloaderInstance> list;
+  std::vector<bootloader_instance> list;
 
   for (const libusbp::device & device : devices)
   {
     // Filter out things that are not bootloaders.
-    const PloaderType * type = ploaderTypeLookup(device.get_vendor_id(),
-      device.get_product_id());
+    const bootloader_type * type = bootloader_type_lookup(
+      device.get_vendor_id(), device.get_product_id());
     if (!type) { continue; }
 
     // Get the generic interface object for interface 0.
@@ -273,19 +275,19 @@ std::vector<PloaderInstance> ploaderListBootloaders()
       throw;
     }
 
-    PloaderInstance instance(*type, usb_interface, device.get_serial_number());
+    bootloader_instance instance(*type, usb_interface, device.get_serial_number());
     list.push_back(instance);
   }
 
   return list;
 }
 
-std::vector<PloaderInstance> bootloader::list_connected_devices()
+std::vector<bootloader_instance> bootloader::list_connected_devices()
 {
   return ploaderListBootloaders();
 }
 
-PloaderHandle::PloaderHandle(PloaderInstance instance) : type(instance.type)
+PloaderHandle::PloaderHandle(bootloader_instance instance) : type(instance.type)
 {
   handle = libusbp::generic_handle(instance.usbInterface);
 }

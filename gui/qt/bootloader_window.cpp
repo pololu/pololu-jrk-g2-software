@@ -209,7 +209,7 @@ void bootloader_window::on_program_button_clicked()
 
   // Make sure the bootloader is still connected and get its details.
   auto device_list = bootloader::list_connected_devices();
-  PloaderInstance device;
+  bootloader_instance device;
   for (const auto & candidate : device_list)
   {
     if (candidate.get_os_id() == bootloader_id)

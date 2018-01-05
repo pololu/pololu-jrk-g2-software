@@ -20,12 +20,12 @@ enum MemorySet
 // Represents a type of USB device that can be used to start a bootloader.
 // Currently, just native USB interfaces are supported, but we could add more
 // fields in the future to support USB serial ports and USB HIDs.
-class PloaderAppType
+class bootloader_app_type
 {
 public:
   uint32_t id;
 
-  uint16_t usbVendorId, usbProductId;
+  uint16_t usb_vendor_id, usb_product_id;
 
   const char * name;
 
@@ -33,27 +33,27 @@ public:
 
   uint8_t interfaceNumber;
 
-  bool operator ==(const PloaderAppType & other) const
+  bool operator ==(const bootloader_app_type & other) const
   {
     return id == other.id;
   }
 };
 
-extern const std::vector<PloaderAppType> ploaderAppTypes;
+extern const std::vector<bootloader_app_type> bootloader_app_types;
 
 // Represents a specific device connected to the system
 // that we could use to start a bootloader.
 class PloaderAppInstance
 {
 public:
-  PloaderAppType type;
+  bootloader_app_type type;
   std::string serialNumber;
 
   PloaderAppInstance()
   {
   }
 
-  PloaderAppInstance(const PloaderAppType type,
+  PloaderAppInstance(const bootloader_app_type type,
     libusbp::generic_interface gi,
     std::string serialNumber)
     : type(type), serialNumber(serialNumber), usbInterface(gi)
@@ -72,11 +72,11 @@ private:
 };
 
 // Represents a type of bootloader.
-class PloaderType
+class bootloader_type
 {
 public:
   uint32_t id;
-  uint16_t usbVendorId, usbProductId;
+  uint16_t usb_vendor_id, usb_product_id;
 
   // A pointer to an ASCII string with the name of the bootloader.
   // Should be the same as the USB product string descriptor.
@@ -140,29 +140,29 @@ public:
   // Returns a vector of the app types that correspond to this bootloader.
   // When trying to write to this bootloader, these are the apps that you
   // should consider restarting.
-  std::vector<PloaderAppType> getMatchingAppTypes() const;
+  std::vector<bootloader_app_type> getMatchingAppTypes() const;
 
-  bool operator ==(const PloaderType & other) const
+  bool operator ==(const bootloader_type & other) const
   {
     return id == other.id;
   }
 };
 
-extern const std::vector<PloaderType> ploaderTypes;
+extern const std::vector<bootloader_type> bootloader_types;
 
 // Represents a specific bootloader connected to the system
 // and ready to be used.
-class PloaderInstance
+class bootloader_instance
 {
 public:
-  PloaderType type;
+  bootloader_type type;
   std::string serialNumber;
 
-  PloaderInstance()
+  bootloader_instance()
   {
   }
 
-  PloaderInstance(const PloaderType type,
+  bootloader_instance(const bootloader_type type,
     libusbp::generic_interface gi,
     std::string serialNumber)
     : type(type), serialNumber(serialNumber), usbInterface(gi)
@@ -191,27 +191,29 @@ public:
 
   uint16_t get_vendor_id() const
   {
-    return type.usbVendorId;
+    return type.usb_vendor_id;
   }
 
   uint16_t get_product_id() const
   {
-    return type.usbProductId;
+    return type.usb_product_id;
   }
 
   libusbp::generic_interface usbInterface;
 };
 
-const PloaderAppType * ploaderAppTypeLookup(uint16_t usbVendorId, uint16_t usbProductId);
+const bootloader_app_type * bootloader_app_type_lookup(
+  uint16_t usb_vendor_id, uint16_t usb_product_id);
 
-const PloaderType * ploaderTypeLookup(uint16_t usbVendorId, uint16_t usbProductId);
+const bootloader_type * bootloader_type_lookup(
+  uint16_t usb_vendor_id, uint16_t usb_product_id);
 
 // Detects all the known apps that are currently connected to the computer.
 std::vector<PloaderAppInstance> ploaderListApps();
 
 // Detects all the known bootloaders that are currently connected to the
 // computer.
-std::vector<PloaderInstance> ploaderListBootloaders();
+std::vector<bootloader_instance> ploaderListBootloaders();
 
 class PloaderStatusListener
 {
@@ -223,7 +225,7 @@ public:
 class PloaderHandle
 {
 public:
-  PloaderHandle(PloaderInstance);
+  PloaderHandle(bootloader_instance);
 
   PloaderHandle() { }
 
@@ -277,7 +279,7 @@ public:
   // image to the device
   void applyImage(const firmware_archive::image & image);
 
-  PloaderType type;
+  bootloader_type type;
 
   void setStatusListener(PloaderStatusListener * listener)
   {
@@ -299,5 +301,5 @@ private:
 
 namespace bootloader
 {
-  std::vector<PloaderInstance> list_connected_devices();
+  std::vector<bootloader_instance> list_connected_devices();
 }
