@@ -244,7 +244,7 @@ void bootloader_app_instance::launchBootloader()
   }
 }
 
-std::vector<bootloader_instance> ploaderListBootloaders()
+std::vector<bootloader_instance> bootloader_list_connected_devices()
 {
   // Get a list of all connected USB devices.
   std::vector<libusbp::device> devices = libusbp::list_connected_devices();
@@ -280,11 +280,6 @@ std::vector<bootloader_instance> ploaderListBootloaders()
   }
 
   return list;
-}
-
-std::vector<bootloader_instance> bootloader::list_connected_devices()
-{
-  return ploaderListBootloaders();
 }
 
 bootloader_handle::bootloader_handle(bootloader_instance instance) : type(instance.type)

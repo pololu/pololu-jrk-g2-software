@@ -208,12 +208,10 @@ const bootloader_app_type * bootloader_app_type_lookup(
 const bootloader_type * bootloader_type_lookup(
   uint16_t usb_vendor_id, uint16_t usb_product_id);
 
-// Detects all the known apps that are currently connected to the computer.
-std::vector<bootloader_app_instance> bootloader_list_apps();
-
 // Detects all the known bootloaders that are currently connected to the
 // computer.
-std::vector<bootloader_instance> bootloader_list_bootloaders();
+std::vector<bootloader_instance> bootloader_list_connected_devices();
+
 
 class bootloder_status_listener
 {
@@ -275,8 +273,3 @@ private:
 
   libusbp::generic_handle handle;
 };
-
-namespace bootloader
-{
-  std::vector<bootloader_instance> list_connected_devices();
-}
