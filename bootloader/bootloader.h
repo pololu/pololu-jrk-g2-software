@@ -51,6 +51,9 @@ public:
 
 extern const std::vector<bootloader_type> bootloader_types;
 
+const bootloader_type * bootloader_type_lookup(
+  uint16_t usb_vendor_id, uint16_t usb_product_id);
+
 // Represents a specific bootloader connected to the system
 // and ready to be used.
 class bootloader_instance
@@ -103,9 +106,6 @@ public:
   libusbp::generic_interface usb_interface;
 };
 
-const bootloader_type * bootloader_type_lookup(
-  uint16_t usb_vendor_id, uint16_t usb_product_id);
-
 // Detects all the known bootloaders that are currently connected to the
 // computer.
 std::vector<bootloader_instance> bootloader_list_connected_devices();
@@ -146,12 +146,12 @@ public:
   // image to the device
   void apply_image(const firmware_archive::image & image);
 
-  bootloader_type type;
-
   void set_status_listener(bootloder_status_listener * listener)
   {
     this->listener = listener;
   }
+
+  bootloader_type type;
 
 private:
   void write_flash_block(const uint32_t address, const uint8_t * data, size_t size);

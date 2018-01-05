@@ -116,52 +116,6 @@ bootloader_handle::bootloader_handle(bootloader_instance instance)
   handle = libusbp::generic_handle(instance.usb_interface);
 }
 
-// This can be called after a USB request for writing EEPROM or flash fails.  If
-// appropriate, it attempts to make another request to get a more specific error
-// code from the device, and then throws an error with that information in it.
-// If anything goes wrong, it just throws the original USB error.
-void bootloader_handle::report_error(const libusbp::error & error,
-  const std::string & context)
-{
-  if (!error.has_code(LIBUSBP_ERROR_STALL))
-  {
-    // This is an unusual error that was not just caused by a STALL packet,
-    // so don't attempt to do anything.  Maybe the device didn't even see
-    // the original USB request so the value returned by REQUEST_GET_LAST_ERROR
-    // would be meaningless.
-    throw error;
-  }
-
-  uint8_t error_code = 0;
-  size_t transferred = 0;
-  try
-  {
-    handle.control_transfer(0xC0, REQUEST_GET_LAST_ERROR, 0, 0,
-      &error_code, 1, &transferred);
-  }
-  catch(const libusbp::error & second_error)
-  {
-    throw error;
-  }
-
-  if (transferred != 1)
-  {
-    throw error;
-  }
-
-  std::string message = context + ": " + bootloader_get_error_description(error_code);
-  throw std::runtime_error(message);
-}
-
-static std::runtime_error transfer_length_error(std::string context,
-  size_t expected, size_t actual)
-{
-  return std::runtime_error(
-    std::string("Incorrect transfer length while ") + context + ": "
-    "expected " + std::to_string(expected) + ", "
-    "got " + std::to_string(actual) + ".");
-}
-
 void bootloader_handle::initialize(uint16_t upload_type)
 {
   try
@@ -174,6 +128,15 @@ void bootloader_handle::initialize(uint16_t upload_type)
       std::string("Failed to initialize bootloader: ") +
       error.message());
   }
+}
+
+static std::runtime_error transfer_length_error(std::string context,
+  size_t expected, size_t actual)
+{
+  return std::runtime_error(
+    std::string("Incorrect transfer length while ") + context + ": "
+    "expected " + std::to_string(expected) + ", "
+    "got " + std::to_string(actual) + ".");
 }
 
 void bootloader_handle::erase_flash()
@@ -212,6 +175,44 @@ void bootloader_handle::erase_flash()
     if (progress_left == 0)
     {
       return;
+    }
+  }
+}
+
+void bootloader_handle::restart_device()
+{
+  const uint16_t duration_ms = 100;
+  try
+  {
+    handle.control_transfer(0x40, REQUEST_RESTART, duration_ms, 0);
+  }
+  catch(const libusbp::error & error)
+  {
+    throw std::runtime_error(
+      std::string("Failed to restart device.") + error.what());
+  }
+}
+
+void bootloader_handle::apply_image(const firmware_archive::image & image)
+{
+  initialize(image.upload_type);
+
+  erase_flash();
+
+  // We erase the first byte of EEPROM so that the firmware is able to
+  // know it has been upgraded and not accidentally use invalid settings
+  // from an older version of the firmware.
+  erase_eeprom_first_byte();
+
+  size_t progress = 0;
+  for (const firmware_archive::block & block : image.blocks)
+  {
+    write_flash_block(block.address, &block.data[0], block.data.size());
+
+    if (listener)
+    {
+      progress++;
+      listener->set_status("Writing flash...", progress, image.blocks.size());
     }
   }
 }
@@ -264,41 +265,39 @@ void bootloader_handle::erase_eeprom_first_byte()
   write_eeprom_block(0, &blank_byte, 1);
 }
 
-void bootloader_handle::apply_image(const firmware_archive::image & image)
+// This can be called after a USB request for writing EEPROM or flash fails.  If
+// appropriate, it attempts to make another request to get a more specific error
+// code from the device, and then throws an error with that information in it.
+// If anything goes wrong, it just throws the original USB error.
+void bootloader_handle::report_error(const libusbp::error & error,
+  const std::string & context)
 {
-  initialize(image.upload_type);
-
-  erase_flash();
-
-  // We erase the first byte of EEPROM so that the firmware is able to
-  // know it has been upgraded and not accidentally use invalid settings
-  // from an older version of the firmware.
-  erase_eeprom_first_byte();
-
-  size_t progress = 0;
-  for (const firmware_archive::block & block : image.blocks)
+  if (!error.has_code(LIBUSBP_ERROR_STALL))
   {
-    write_flash_block(block.address, &block.data[0], block.data.size());
-
-    if (listener)
-    {
-      progress++;
-      listener->set_status("Writing flash...", progress, image.blocks.size());
-    }
+    // This is an unusual error that was not just caused by a STALL packet,
+    // so don't attempt to do anything.  Maybe the device didn't even see
+    // the original USB request so the value returned by REQUEST_GET_LAST_ERROR
+    // would be meaningless.
+    throw error;
   }
-}
 
-void bootloader_handle::restart_device()
-{
-  const uint16_t duration_ms = 100;
+  uint8_t error_code = 0;
+  size_t transferred = 0;
   try
   {
-    handle.control_transfer(0x40, REQUEST_RESTART, duration_ms, 0);
+    handle.control_transfer(0xC0, REQUEST_GET_LAST_ERROR, 0, 0,
+      &error_code, 1, &transferred);
   }
-  catch(const libusbp::error & error)
+  catch(const libusbp::error & second_error)
   {
-    throw std::runtime_error(
-      std::string("Failed to restart device.") + error.what());
+    throw error;
   }
-}
 
+  if (transferred != 1)
+  {
+    throw error;
+  }
+
+  std::string message = context + ": " + bootloader_get_error_description(error_code);
+  throw std::runtime_error(message);
+}
