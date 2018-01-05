@@ -21,6 +21,5 @@ const std::vector<bootloader_type> bootloader_types = {
     /* eeprom_address */ 0,
     /* eeprom_address_hex_file */ 0xF00000,
     /* eeprom_size */ 0x100,
-    /* device_code */ NULL,
   },
 };

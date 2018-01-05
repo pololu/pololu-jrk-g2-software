@@ -43,8 +43,6 @@ public:
   // EEPROM.
   uint32_t eeprom_size;
 
-  const uint8_t * device_code;
-
   bool operator ==(const bootloader_type & other) const
   {
     return id == other.id;

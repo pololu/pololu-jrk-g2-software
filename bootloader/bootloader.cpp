@@ -164,27 +164,6 @@ static std::runtime_error transfer_length_error(std::string context,
 
 void bootloader_handle::initialize(uint16_t upload_type)
 {
-  if (type.device_code != NULL)
-  {
-    // The device code might be stored in read-only memory, which can cause
-    // WinUSB to give error code 0x3e6 when we try to send it over USB.
-    // Copy it to the stack.
-    uint8_t b[DEVICE_CODE_SIZE];
-    memcpy(b, type.device_code, DEVICE_CODE_SIZE);
-
-    try
-    {
-      handle.control_transfer(0x40, REQUEST_SET_DEVICE_CODE, 0, 0,
-        (void *)b, DEVICE_CODE_SIZE);
-    }
-    catch(const libusbp::error & error)
-    {
-      throw std::runtime_error(
-        std::string("Failed to send device code: ") +
-        error.message());
-    }
-  }
-
   try
   {
     handle.control_transfer(0x40, REQUEST_INITIALIZE, upload_type, 0);
