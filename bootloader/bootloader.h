@@ -24,28 +24,26 @@ public:
   const char * short_name;
 
   // The address of the first byte of the app (used in the USB protocol).
-  uint32_t appAddress;
+  uint32_t app_address;
 
   // The number of bytes in the app.
-  uint32_t appSize;
+  uint32_t app_size;
 
   // The number of bytes you have to write at once while writing to flash.
-  uint16_t writeBlockSize;
+  uint16_t write_block_size;
 
   // The address of the first byte of EEPROM (used in the USB protocol).
-  uint32_t eepromAddress;
+  uint32_t eeprom_address;
 
   // The address used for the first byte of EEPROM in the HEX file.
-  uint32_t eepromAddressHexFile;
+  uint32_t eeprom_address_hex_file;
 
   // The number of bytes in EEPROM.  Set this to a non-zero number for devices
   // that have EEPROM, even if the bootloader does not support accessing
   // EEPROM.
-  uint32_t eepromSize;
+  uint32_t eeprom_size;
 
-  const uint8_t * deviceCode;
-
-  std::vector<uint32_t> matchingAppTypes;
+  const uint8_t * device_code;
 
   bool operator ==(const bootloader_type & other) const
   {

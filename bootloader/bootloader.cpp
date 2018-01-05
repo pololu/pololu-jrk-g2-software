@@ -183,13 +183,13 @@ static std::runtime_error transfer_length_error(std::string context,
 
 void bootloader_handle::initialize(uint16_t uploadType)
 {
-  if (type.deviceCode != NULL)
+  if (type.device_code != NULL)
   {
     // The device code might be stored in read-only memory, which can cause
     // WinUSB to give error code 0x3e6 when we try to send it over USB.
     // Copy it to the stack.
     uint8_t b[DEVICE_CODE_SIZE];
-    memcpy(b, type.deviceCode, DEVICE_CODE_SIZE);
+    memcpy(b, type.device_code, DEVICE_CODE_SIZE);
 
     try
     {
@@ -268,7 +268,7 @@ void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, 
   {
     handle.control_transfer(0x40, REQUEST_WRITE_FLASH_BLOCK,
       address & 0xFFFF, address >> 16 & 0xFFFF,
-      (uint8_t *)data, type.writeBlockSize, &transferred);
+      (uint8_t *)data, type.write_block_size, &transferred);
   }
   catch(const libusbp::error & error)
   {
@@ -278,7 +278,7 @@ void bootloader_handle::writeFlashBlock(uint32_t address, const uint8_t * data, 
   if (transferred != size)
   {
     throw transfer_length_error("writing flash",
-      type.writeBlockSize, transferred);
+      type.write_block_size, transferred);
   }
 }
 
