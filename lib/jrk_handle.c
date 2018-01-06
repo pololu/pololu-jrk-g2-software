@@ -437,6 +437,25 @@ jrk_error * jrk_reinitialize(jrk_handle * handle)
   return error;
 }
 
+jrk_error * jrk_start_bootloader(jrk_handle * handle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
+    0x40, JRK_CMD_START_BOOTLOADER, 0, 0, NULL, 0, NULL));
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error starting the bootloader.");
+  }
+
+  return error;
+}
+
 jrk_error * jrk_get_debug_data(jrk_handle * handle, uint8_t * data, size_t * size)
 {
   if (handle == NULL)

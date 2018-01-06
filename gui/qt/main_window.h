@@ -63,9 +63,14 @@ public:
   void show_error_message(const std::string & message);
   void show_info_message(const std::string & message);
   void show_warning_message(const std::string & message);
+
+  void open_bootloader_window();
+
   void set_device_name(const std::string & name, bool link_enabled);
   void set_serial_number(const std::string & serial_number);
   void set_firmware_version(const std::string & firmware_version);
+  void set_cmd_port(const std::string & cmd_port);
+  void set_ttl_port(const std::string & ttl_port);
   void set_device_reset(const std::string & device_reset);
   void set_up_time(uint32_t);
   void set_duty_cycle(int16_t);
@@ -206,6 +211,8 @@ private slots:
   void on_launchGraph_clicked(QMouseEvent *);
   void on_device_list_value_currentIndexChanged(int index);
   void on_apply_settings_action_triggered();
+  void on_upgrade_firmware_action_triggered();
+  void upgrade_firmware_complete();
   void on_stop_motor_action_triggered();
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();
@@ -317,6 +324,10 @@ private:
   QLabel * serial_number_value;
   QLabel * firmware_version_label;
   QLabel * firmware_version_value;
+  QLabel * cmd_port_label;
+  QLabel * cmd_port_value;
+  QLabel * ttl_port_label;
+  QLabel * ttl_port_value;
   QLabel * device_reset_label;
   QLabel * device_reset_value;
   QLabel * up_time_label;

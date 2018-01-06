@@ -27,7 +27,8 @@ endif ()
 add_executable (gui
   main.cpp
   main_controller.cpp
-  qt/graph_window
+  qt/bootloader_window.cpp
+  qt/graph_window.cpp
   qt/graph_widget.cpp
   qt/main_window.cpp
   qt/qcustomplot.cpp
@@ -46,6 +47,6 @@ if (WIN32)
   )
 endif ()
 
-target_link_libraries (gui Qt5::Widgets lib) # TODO: add 'bootloader'
+target_link_libraries (gui Qt5::Widgets lib bootloader)
 
 install(TARGETS gui DESTINATION bin)

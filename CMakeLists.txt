@@ -112,7 +112,7 @@ file(WRITE "${CMAKE_BINARY_DIR}/version.txt" "${SOFTWARE_VERSION}")
 
 add_subdirectory (lib)
 add_subdirectory (cli)
-# TODO: add_subdirectory (bootloader)
+add_subdirectory (bootloader)
 
 if (ENABLE_GUI)
   add_subdirectory (gui)

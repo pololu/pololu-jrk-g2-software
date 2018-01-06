@@ -25,4 +25,6 @@ void print_status(const jrk::variables & vars,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
+  const std::string & cmd_port,
+  const std::string & ttl_port,
   bool full_output);

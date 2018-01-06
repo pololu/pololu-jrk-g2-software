@@ -274,7 +274,9 @@ namespace jrk
     {
       char * str;
       throw_if_needed(jrk_settings_to_string(pointer, &str));
-      return std::string(str);
+      std::string result = std::string(str);
+      jrk_string_free(str);
+      return result;
     }
 
     /// Wrapper for jrk_settings_read_from_string().
@@ -1246,6 +1248,26 @@ namespace jrk
     {
       return jrk_device_get_firmware_version(pointer);
     }
+
+    /// Wrapper for jrk_device_get_cmd_port_name().
+    std::string get_cmd_port_name() const
+    {
+      char * str;
+      throw_if_needed(jrk_device_get_cmd_port_name(pointer, &str));
+      std::string result = std::string(str);
+      jrk_string_free(str);
+      return result;
+    }
+
+    /// Wrapper for jrk_device_get_ttl_port_name().
+    std::string get_ttl_port_name() const
+    {
+      char * str;
+      throw_if_needed(jrk_device_get_ttl_port_name(pointer, &str));
+      std::string result = std::string(str);
+      jrk_string_free(str);
+      return result;
+    }
   };
 
   /// Finds all the supported jrk devices connected to the computer via USB and
@@ -1369,6 +1391,12 @@ namespace jrk
       throw_if_needed(jrk_reinitialize(pointer));
     }
 
+    /// Wrapperfor jrk_start_bootloader()
+    void start_bootloader()
+    {
+      throw_if_needed(jrk_start_bootloader(pointer));
+    }
+
     /// \cond
     void get_debug_data(std::vector<uint8_t> & data)
     {
@@ -1377,7 +1405,6 @@ namespace jrk
       data.resize(size);
     }
     /// \endcond
-
   };
 #ifdef __cplusplus
 }

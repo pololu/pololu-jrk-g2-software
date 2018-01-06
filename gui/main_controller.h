@@ -32,6 +32,9 @@ public:
   // This is called when the user wants to upgrade some firmware.
   void upgrade_firmware();
 
+  // Called when the upgrade has been complete.
+  void upgrade_firmware_complete();
+
   // This is called regularly to do various updates.
   void update();
 
@@ -160,6 +163,11 @@ private:
 
   // Holds an open handle to a device or a null handle if we are not connected.
   jrk::handle device_handle;
+
+  // The command port and TTL port names for the device we are currently
+  // connected to, or "?" if there was an error getting them.
+  std::string cmd_port;
+  std::string ttl_port;
 
   // True if the last connection or connection attempt resulted in an error.  If
   // true, connection_error_essage provides some information about the error.

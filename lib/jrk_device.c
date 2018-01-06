@@ -4,6 +4,7 @@
 
 struct jrk_device
 {
+  libusbp_device * usb_device;
   libusbp_generic_interface * usb_interface;
   char * serial_number;
   char * os_id;
@@ -95,6 +96,10 @@ jrk_error * jrk_list_connected_devices(
     }
     jrk_device_list[jrk_device_count++] = new_device;
 
+    // Move the usb_device out of the list into the new jrk_device.
+    new_device->usb_device = usb_device;
+    usb_device_list[i] = NULL;
+
     // Store the USB interface.  Must do this here so that it will get freed
     // if any of the calls below fail.
     new_device->usb_interface = usb_interface;
@@ -184,8 +189,14 @@ jrk_error * jrk_device_copy(const jrk_device * source, jrk_device ** dest)
 
   if (error == NULL)
   {
+    error = jrk_usb_error(libusbp_device_copy(
+      source->usb_device, &new_device->usb_device));
+  }
+
+  if (error == NULL)
+  {
     error = jrk_usb_error(libusbp_generic_interface_copy(
-        source->usb_interface, &new_device->usb_interface));
+      source->usb_interface, &new_device->usb_interface));
   }
 
   if (error == NULL)
@@ -274,6 +285,68 @@ uint16_t jrk_device_get_firmware_version(const jrk_device * device)
 {
   if (device == NULL) { return 0xFFFF; }
   return device->firmware_version;
+}
+
+static jrk_error * jrk_device_get_port_name(const jrk_device * device,
+  uint8_t interface_number, char ** name)
+{
+  if (name == NULL)
+  {
+    return jrk_error_create("Name output pointer is NULL.");
+  }
+
+  *name = NULL;
+
+  if (device == NULL)
+  {
+    return jrk_error_create("Device pointer is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  // Get the serial port object.
+  libusbp_serial_port * port = NULL;
+  if (error == NULL)
+  {
+    bool composite = true;
+    error = jrk_usb_error(libusbp_serial_port_create(device->usb_device,
+      interface_number, composite, &port));
+  }
+
+  // Get its name.  (Must be freed later by libusbp.)
+  char * usb_name = NULL;
+  if (error == NULL)
+  {
+    error = jrk_usb_error(libusbp_serial_port_get_name(port, &usb_name));
+  }
+
+  // Convert the string to one that can be freed by jrk_string_free()
+  // and pass it to the caller at the same time.
+  if (error == NULL)
+  {
+    *name = strdup(usb_name);
+    if (*name == NULL) { error = &jrk_error_no_memory; }
+  }
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error getting a serial port name.");
+  }
+
+  libusbp_string_free(usb_name);
+  libusbp_serial_port_free(port);
+  return error;
+}
+
+jrk_error * jrk_device_get_cmd_port_name(const jrk_device * device, char ** name)
+{
+  return jrk_device_get_port_name(device, 1, name);
+}
+
+jrk_error * jrk_device_get_ttl_port_name(const jrk_device * device, char ** name)
+{
+  return jrk_device_get_port_name(device, 3, name);
 }
 
 const libusbp_generic_interface *
