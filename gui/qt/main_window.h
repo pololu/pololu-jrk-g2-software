@@ -570,17 +570,18 @@ public:
     : index(index), QObject(parent)
     {}
 	void setup(QGroupBox * groupbox);
+  int index;
 
 private:
   bool window_suppress_events() const;
   void set_window_suppress_events(bool suppress_events);
   main_controller * window_controller() const;
 
-	int index;
+
   QWidget *central_widget;
 	QFrame *pid_control_frame;
 	QFrame *pid_proportion_frame;
-	QDoubleSpinBox *pid_constant_spinbox;
+	QLineEdit *pid_constant_lineedit;
 	QLabel *pid_equal_label;
 	QSpinBox *pid_multiplier_spinbox;
 	QLabel *pid_base_label;
@@ -589,7 +590,7 @@ private:
 private slots:
   void on_pid_multiplier_spinbox_valueChanged(int value);
   void on_pid_exponent_spinbox_valueChanged(int value);
-  void on_pid_constant_spinbox_valueChanged(double value);
+  void on_pid_constant_lineedit_textEdited(const QString&);
 
 private:
   friend class main_window;

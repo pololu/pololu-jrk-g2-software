@@ -31,10 +31,10 @@
 #include <QTimer>
 #include <QUrl>
 #include <QVBoxLayout>
-#include <string>
 #include <QString>
 
 #include <iostream> // tmphax
+#include <QTextStream> //tmphax
 
 #include <cassert>
 #include <cmath>
@@ -1123,9 +1123,9 @@ QWidget * main_window::setup_pid_tab()
   pid_feedback_dead_zone_spinbox->setObjectName("pid_feedback_dead_zone_spinbox");
 
   QGridLayout *group_box_row = new QGridLayout();
-  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0, Qt::AlignCenter);
-  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1, Qt::AlignCenter);
-  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2, Qt::AlignCenter);
+  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0, Qt::AlignLeft);
+  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1, Qt::AlignLeft);
+  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2, Qt::AlignLeft);
 
   QHBoxLayout *period_row_layout = new QHBoxLayout();
   period_row_layout->addWidget(pid_period_label);
@@ -2248,8 +2248,16 @@ void main_window::set_pid_exponent(int index, uint16_t value)
 
 void main_window::set_pid_constant(int index, double value)
 {
-  QDoubleSpinBox *spin = pid_constant_controls[index]->pid_constant_spinbox;
-  set_double_spin_box(spin, value);
+  suppress_events = true;
+  QLineEdit *spin = pid_constant_controls[index]->pid_constant_lineedit;
+
+  if (value < 0.0001 && value != 0)
+  {
+    spin->setText(QString::number(value, 'f', 7));
+  }
+  else
+    spin->setText(QString::number(value, 'f', 5));
+  suppress_events = false;
 }
 
 void main_window::set_pid_period(uint16_t value)
@@ -2427,13 +2435,15 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_multiplier_spinbox->setObjectName("pid_multiplier_spinbox");
   pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
   pid_multiplier_spinbox->setRange(0, 1023);
+
   connect(pid_multiplier_spinbox, SIGNAL(valueChanged(int)), this,
     SLOT(on_pid_multiplier_spinbox_valueChanged(int)));
 
   pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
-  pid_exponent_spinbox->setRange(0, 15);
+  pid_exponent_spinbox->setRange(0, 18);
+
   connect(pid_exponent_spinbox, SIGNAL(valueChanged(int)), this,
     SLOT(on_pid_exponent_spinbox_valueChanged(int)));
 
@@ -2444,13 +2454,21 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_equal_label->setFont(font1);
   pid_equal_label->setAlignment(Qt::AlignCenter);
 
-  pid_constant_spinbox = new QDoubleSpinBox();
-  pid_constant_spinbox->setObjectName("pid_constant_spinbox");
-  pid_constant_spinbox->setDecimals(5);
-  pid_constant_spinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-  pid_constant_spinbox->setRange(0, 1023);
-  connect(pid_constant_spinbox, SIGNAL(valueChanged(double)), this,
-    SLOT(on_pid_constant_spinbox_valueChanged(double)));
+  pid_constant_lineedit = new QLineEdit();
+  pid_constant_lineedit->setObjectName("pid_constant_lineedit");
+
+  {
+    QLineEdit tmp_line;
+    tmp_line.setText("0.0000000");
+    pid_constant_lineedit->setFixedWidth(tmp_line.sizeHint().width());
+  }
+
+  QDoubleValidator *constant_validator = new QDoubleValidator(0, 1023, 7, this);
+  constant_validator->setNotation(QDoubleValidator::StandardNotation);
+  pid_constant_lineedit->setValidator(constant_validator);
+
+  connect(pid_constant_lineedit, SIGNAL(textEdited(const QString&)), this,
+    SLOT(on_pid_constant_lineedit_textEdited(const QString&)));
 
   QGridLayout *group_box_layout = new QGridLayout();
   group_box_layout->addWidget(pid_base_label,3,1,3,2);
@@ -2458,7 +2476,7 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   group_box_layout->addWidget(pid_multiplier_spinbox,1,2,1,3);
   group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
   group_box_layout->addWidget(pid_equal_label,2,7,1,2);
-  group_box_layout->addWidget(pid_constant_spinbox,1,9,3,1,Qt::AlignCenter);
+  group_box_layout->addWidget(pid_constant_lineedit,1,9,3,1,Qt::AlignCenter);
   group_box_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   groupbox->setLayout(group_box_layout);
@@ -2493,9 +2511,10 @@ void pid_constant_control::on_pid_exponent_spinbox_valueChanged(int value)
   window_controller()->handle_pid_constant_control_exponent(index, value);
 }
 
-void pid_constant_control::on_pid_constant_spinbox_valueChanged(double value)
+void pid_constant_control::on_pid_constant_lineedit_textEdited(const QString& text)
 {
   if (window_suppress_events()) { return; }
+  double value = pid_constant_lineedit->displayText().toDouble();
   window_controller()->handle_pid_constant_control_constant(index, value);
 }
 
