@@ -498,6 +498,8 @@ EOF
   {
     name: 'pid_reset_integral',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_PID_RESET_INTEGRAL',
     comment:
       "If this setting is set to true, the PID algorithm will reset the accumulated\n" \
       "error (also known as error sum) whenever the absolute value of the\n" \
@@ -518,6 +520,8 @@ EOF
   {
     name: 'motor_invert',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_MOTOR_INVERT',
     comment:
       "By default, a positive duty cycle (which we call \"forward\") corresponds\n" \
       "to current flowing from output A to output B.  If enabled, this setting flips\n" \
@@ -640,11 +644,11 @@ EOF
       "See the documentation of motor_max_current_forward."
   },
   {
-    name: 'motor_current_calibration_forward',  # TODO: hide this or document it
+    name: 'motor_current_calibration_forward',  # TODO: document this
     type: :int8_t,
   },
   {
-    name: 'motor_current_calibration_reverse',  # TODO: hide this or document it
+    name: 'motor_current_calibration_reverse',  # TODO: document this, remove separate calibrations for forward and reverse
     type: :int8_t,
   },
   {
@@ -677,6 +681,8 @@ EOF
   {
     name: 'motor_coast_when_off',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_MOTOR_COAST_WHEN_OFF',
     comment:
       "By default, the jrk drives both motor outputs low when the motor is\n" \
       "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \

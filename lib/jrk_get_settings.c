@@ -197,7 +197,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool pid_reset_integral = buf[JRK_SETTING_PID_RESET_INTEGRAL] & 1;
+    bool pid_reset_integral = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_PID_RESET_INTEGRAL & 1;
     jrk_settings_set_pid_reset_integral(settings, pid_reset_integral);
   }
 
@@ -207,7 +207,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool motor_invert = buf[JRK_SETTING_MOTOR_INVERT] & 1;
+    bool motor_invert = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_MOTOR_INVERT & 1;
     jrk_settings_set_motor_invert(settings, motor_invert);
   }
 
@@ -257,7 +257,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool motor_coast_when_off = buf[JRK_SETTING_MOTOR_COAST_WHEN_OFF] & 1;
+    bool motor_coast_when_off = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_MOTOR_COAST_WHEN_OFF & 1;
     jrk_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
   }
 
