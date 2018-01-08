@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include <QGroupBox>
 #include <QButtonGroup>
+#include <QValidator>
 
 #include <array>
 
@@ -27,6 +28,7 @@ class QSpinBox;
 
 class pid_constant_control;
 class errors_control;
+class pid_constant_validator;
 class main_controller;
 
 struct error_row
@@ -588,7 +590,7 @@ private:
   void set_window_suppress_events(bool suppress_events);
   main_controller * window_controller() const;
 
-
+  QFocusEvent *pid_focus_event;
   QWidget *central_widget;
 	QFrame *pid_control_frame;
 	QFrame *pid_proportion_frame;
@@ -602,6 +604,7 @@ private slots:
   void on_pid_multiplier_spinbox_valueChanged(int value);
   void on_pid_exponent_spinbox_valueChanged(int value);
   void on_pid_constant_lineedit_textEdited(const QString&);
+  void on_pid_constant_lineedit_editingFinished();
 
 private:
   friend class main_window;
@@ -617,6 +620,48 @@ public:
 
 	QGridLayout *errors_central;
 	QWidget *errors_frame;
+};
 
+class pid_constant_validator : public QDoubleValidator
+{
+public:
+  pid_constant_validator(double bottom, double top, int decimals, QObject * parent) :
+    QDoubleValidator(bottom, top, decimals, parent) {}
 
+  QValidator::State validate(QString &s, int &i) const
+  {
+    if (s.isEmpty())
+    {
+      return QValidator::Intermediate;
+    }
+
+    if (s == "-")
+    {
+      return QValidator::Invalid;
+    }
+
+    QChar decimalPoint = locale().decimalPoint();
+
+    if(s.indexOf(decimalPoint) != -1)
+    {
+      int charsAfterPoint = s.length() - s.indexOf(decimalPoint) - 1;
+
+      if (charsAfterPoint > decimals())
+      {
+        return QValidator::Invalid;
+      }
+    }
+
+    bool ok;
+    double d = locale().toDouble(s, &ok);
+
+    if (ok && d >= bottom() && d <= top())
+    {
+      return QValidator::Acceptable;
+    }
+    else
+    {
+      return QValidator::Invalid;
+    }
+  }
 };

@@ -580,7 +580,7 @@ void main_controller::handle_variables_changed()
   window->set_current_chopping_log(variables.get_current_chopping_log());
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());
-  // TODO: window->increment_errors_occurred(variables.get_errors_occurred());
+  window->increment_errors_occurred(variables.get_error());
 }
 
 void main_controller::handle_settings_changed()
@@ -676,8 +676,6 @@ void main_controller::recompute_constant(int index, uint16_t multiplier, uint16_
   window->set_pid_constant(index, x);
   window->set_pid_multiplier(index, multiplier);
   window->set_pid_exponent(index, exponent);
-  settings_modified = true;
-  handle_settings_changed();
 }
 
 void main_controller::handle_pid_constant_control_constant(int index, double constant)
@@ -753,6 +751,8 @@ void main_controller::handle_pid_constant_control_multiplier(int index, uint16_t
   }
 
   recompute_constant(index, multiplier, exponent);
+  settings_modified = true;
+  handle_settings_changed();
 }
 
 void main_controller::handle_pid_constant_control_exponent(int index, uint16_t exponent)
@@ -777,6 +777,8 @@ void main_controller::handle_pid_constant_control_exponent(int index, uint16_t e
   }
 
   recompute_constant(index, multiplier, exponent);
+  settings_modified = true;
+  handle_settings_changed();
 }
 void main_controller::recalculate_motor_asymmetric()
 {

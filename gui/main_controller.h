@@ -142,7 +142,7 @@ public:
 
   void handle_upload_complete();
 
-
+  void recompute_constant(int index, uint16_t multiplier, uint16_t exponent);
 
 private:
   // This is called whenever it is possible that we have connected to a
@@ -151,8 +151,6 @@ private:
   void handle_variables_changed();
   void handle_settings_changed();
   void handle_settings_loaded();
-
-  void recompute_constant(int index, uint16_t multiplier, uint16_t exponent);
 
   void recalculate_motor_asymmetric();
 
