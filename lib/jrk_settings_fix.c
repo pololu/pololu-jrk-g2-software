@@ -11,7 +11,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_mode = JRK_INPUT_MODE_SERIAL;
       jrk_sprintf(warnings,
         "Warning: The input mode was invalid "
-        "so it will be changed to serial.");
+        "so it will be changed to serial.\n");
     }
     jrk_settings_set_input_mode(settings, input_mode);
   }
@@ -131,7 +131,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       input_scaling_degree = JRK_SCALING_DEGREE_LINEAR;
       jrk_sprintf(warnings,
         "Warning: The input scaling degree was invalid "
-        "so it will be changed to linear.");
+        "so it will be changed to linear.\n");
     }
     jrk_settings_set_input_scaling_degree(settings, input_scaling_degree);
   }
@@ -155,7 +155,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       feedback_mode = JRK_FEEDBACK_MODE_ANALOG;
       jrk_sprintf(warnings,
         "Warning: The feedback mode was invalid "
-        "so it will be changed to analog.");
+        "so it will be changed to analog.\n");
     }
     jrk_settings_set_feedback_mode(settings, feedback_mode);
   }
@@ -232,7 +232,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       serial_mode = JRK_SERIAL_MODE_USB_DUAL_PORT;
       jrk_sprintf(warnings,
         "Warning: The serial mode was invalid "
-        "so it will be changed to USB dual port.");
+        "so it will be changed to USB dual port.\n");
     }
     jrk_settings_set_serial_mode(settings, serial_mode);
   }
@@ -347,7 +347,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
       motor_pwm_frequency = JRK_MOTOR_PWM_FREQUENCY_20;
       jrk_sprintf(warnings,
         "Warning: The motor pwm frequency was invalid "
-        "so it will be changed to 20 kHz.");
+        "so it will be changed to 20 kHz.\n");
     }
     jrk_settings_set_motor_pwm_frequency(settings, motor_pwm_frequency);
   }

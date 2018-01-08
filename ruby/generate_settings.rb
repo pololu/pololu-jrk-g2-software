@@ -144,7 +144,7 @@ def generate_settings_fixing_code(stream)
       stream.puts "    #{name} = #{default};"
       stream.puts "    jrk_sprintf(warnings,"
       stream.puts "      \"Warning: The #{english_name} was invalid \""
-      stream.puts "      \"so it will be changed to #{english_default}.\");"
+      stream.puts "      \"so it will be changed to #{english_default}.\\n\");"
       stream.puts "  }"
     else
       if setting_info[:range]
