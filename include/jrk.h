@@ -49,6 +49,7 @@ extern "C" {
 /// Certain functions in the library return a newly-created string and require
 /// the caller to call this function to free the string.  Passing a NULL pointer
 /// to this function is OK.  Do not free the same non-NULL string twice.
+JRK_API
 void jrk_string_free(char *);
 
 

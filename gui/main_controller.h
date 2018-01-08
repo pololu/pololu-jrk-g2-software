@@ -152,7 +152,7 @@ private:
   void handle_settings_changed();
   void handle_settings_loaded();
 
-  void recalculate_pid_coefficients(int index);
+  void recompute_constant(int index, uint16_t multiplier, uint16_t exponent);
 
   void recalculate_motor_asymmetric();
 
