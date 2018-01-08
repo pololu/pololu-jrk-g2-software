@@ -126,6 +126,8 @@ EOF
   {
     name: 'input_invert',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_INPUT_INVERT',
     comment:
       "This is one of the parameters of the input scaling, as described in the\n" \
       "input_minimum documentation."
@@ -144,6 +146,8 @@ EOF
   {
     name: 'input_detect_disconnect',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_INPUT_DETECT_DISCONNECT',
     comment:
       "If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the jrk to\n" \
       "drive its designated potentiometer power pins (SCL and/or AUX) low once per\n" \
@@ -238,6 +242,8 @@ EOF
   {
     name: 'feedback_invert',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_FEEDBACK_INVERT',
     comment:
       "This is one of the parameters of the feedback scaling described in\n" \
       "the feedback_minimum documentation."
@@ -245,6 +251,8 @@ EOF
   {
     name: 'feedback_detect_disconnect',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_FEEDBACK_DETECT_DISCONNECT',
     comment:
       "If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the jrk\n" \
       "to drive its designated potentiometer power pins (SCL and/or AUX) low once\n" \
@@ -286,6 +294,8 @@ EOF
   {
     name: 'feedback_wraparound',
     type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_FEEDBACK_WRAPAROUND',
     comment:
       "Normally, the error variable used by the PID algorithm is simply the scaled\n" \
       "feedback minus the target.  With this setting enabled, the PID algorithm\n" \
@@ -498,8 +508,8 @@ EOF
   {
     name: 'pid_reset_integral',
     type: :bool,
-    address: 'JRK_SETTING_OPTIONS_BYTE2',
-    bit_address: 'JRK_OPTIONS_BYTE2_PID_RESET_INTEGRAL',
+    address: 'JRK_SETTING_OPTIONS_BYTE3',
+    bit_address: 'JRK_OPTIONS_BYTE3_PID_RESET_INTEGRAL',
     comment:
       "If this setting is set to true, the PID algorithm will reset the accumulated\n" \
       "error (also known as error sum) whenever the absolute value of the\n" \
@@ -520,8 +530,8 @@ EOF
   {
     name: 'motor_invert',
     type: :bool,
-    address: 'JRK_SETTING_OPTIONS_BYTE1',
-    bit_address: 'JRK_OPTIONS_BYTE1_MOTOR_INVERT',
+    address: 'JRK_SETTING_OPTIONS_BYTE2',
+    bit_address: 'JRK_OPTIONS_BYTE2_MOTOR_INVERT',
     comment:
       "By default, a positive duty cycle (which we call \"forward\") corresponds\n" \
       "to current flowing from output A to output B.  If enabled, this setting flips\n" \
@@ -681,8 +691,8 @@ EOF
   {
     name: 'motor_coast_when_off',
     type: :bool,
-    address: 'JRK_SETTING_OPTIONS_BYTE2',
-    bit_address: 'JRK_OPTIONS_BYTE2_MOTOR_COAST_WHEN_OFF',
+    address: 'JRK_SETTING_OPTIONS_BYTE3',
+    bit_address: 'JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF',
     comment:
       "By default, the jrk drives both motor outputs low when the motor is\n" \
       "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \

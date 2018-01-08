@@ -57,7 +57,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool input_invert = buf[JRK_SETTING_INPUT_INVERT] & 1;
+    bool input_invert = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_INPUT_INVERT & 1;
     jrk_settings_set_input_invert(settings, input_invert);
   }
 
@@ -67,7 +67,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool input_detect_disconnect = buf[JRK_SETTING_INPUT_DETECT_DISCONNECT] & 1;
+    bool input_detect_disconnect = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_INPUT_DETECT_DISCONNECT & 1;
     jrk_settings_set_input_detect_disconnect(settings, input_detect_disconnect);
   }
 
@@ -102,12 +102,12 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool feedback_invert = buf[JRK_SETTING_FEEDBACK_INVERT] & 1;
+    bool feedback_invert = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_FEEDBACK_INVERT & 1;
     jrk_settings_set_feedback_invert(settings, feedback_invert);
   }
 
   {
-    bool feedback_detect_disconnect = buf[JRK_SETTING_FEEDBACK_DETECT_DISCONNECT] & 1;
+    bool feedback_detect_disconnect = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_FEEDBACK_DETECT_DISCONNECT & 1;
     jrk_settings_set_feedback_detect_disconnect(settings, feedback_detect_disconnect);
   }
 
@@ -122,7 +122,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool feedback_wraparound = buf[JRK_SETTING_FEEDBACK_WRAPAROUND] & 1;
+    bool feedback_wraparound = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_FEEDBACK_WRAPAROUND & 1;
     jrk_settings_set_feedback_wraparound(settings, feedback_wraparound);
   }
 
@@ -197,7 +197,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool pid_reset_integral = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_PID_RESET_INTEGRAL & 1;
+    bool pid_reset_integral = buf[JRK_SETTING_OPTIONS_BYTE3] >> JRK_OPTIONS_BYTE3_PID_RESET_INTEGRAL & 1;
     jrk_settings_set_pid_reset_integral(settings, pid_reset_integral);
   }
 
@@ -207,7 +207,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool motor_invert = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_MOTOR_INVERT & 1;
+    bool motor_invert = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_MOTOR_INVERT & 1;
     jrk_settings_set_motor_invert(settings, motor_invert);
   }
 
@@ -257,7 +257,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    bool motor_coast_when_off = buf[JRK_SETTING_OPTIONS_BYTE2] >> JRK_OPTIONS_BYTE2_MOTOR_COAST_WHEN_OFF & 1;
+    bool motor_coast_when_off = buf[JRK_SETTING_OPTIONS_BYTE3] >> JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF & 1;
     jrk_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
   }
 
