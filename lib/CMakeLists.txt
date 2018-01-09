@@ -39,9 +39,11 @@ add_library (lib
   jrk_current.c
   jrk_device.c
   jrk_error.c
+  jrk_get_overridable_settings.c
   jrk_get_settings.c
   jrk_handle.c
   jrk_names.c
+  jrk_overridable_settings.c
   jrk_set_settings.c
   jrk_settings.c
   jrk_settings_fix.c

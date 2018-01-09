@@ -170,7 +170,7 @@ jrk_error * jrk_settings_create(jrk_settings ** settings);
 /// free the settings later by calling jrk_settings_free().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_settings_copy(
-  const jrk_settings * source ,
+  const jrk_settings * source,
   jrk_settings ** dest);
 
 /// Frees a jrk_settings object.  It is OK to pass a NULL pointer to this
@@ -1234,6 +1234,28 @@ JRK_API
 bool jrk_settings_get_pin_analog(const jrk_settings *, uint8_t pin);
 
 
+// jrk_overridable_settings /////////////////////////////////////////////////////
+
+/// Represents the settings that can be changed temporarily at run time
+/// without modifying the jrk's EEPROM.
+typedef struct jrk_overridable_settings jrk_overridable_settings;
+
+/// Copies a jrk_overridable_settings object.  If this function is successful,
+/// the caller must free the settings later by calling
+/// jrk_overridable_settings_free().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_overridable_settings_copy(
+  const jrk_overridable_settings * source,
+  jrk_overridable_settings ** dest);
+
+/// Frees an overridable settings object.
+JRK_API
+void jrk_overridable_settings_free(jrk_overridable_settings *);
+
+// Beginning of auto-generated overridable settings accessor prototypes.
+// End of auto-generated settings accessor prototypes.
+
+
 // jrk_variables ////////////////////////////////////////////////////////////////
 
 /// Represents run-time variables that have been read from the jrk.
@@ -1538,7 +1560,7 @@ jrk_error * jrk_override_duty_cycle(jrk_handle *,
 /// if this function is successful.  The caller must free the settings later by
 /// calling jrk_settings_free().
 ///
-/// To access fields in the variables, see the jrk_settings_* functions.
+/// To access fields in the settings, see the jrk_settings_* functions.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
 
@@ -1556,6 +1578,32 @@ jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
 /// jrk's EEPROM, which is rated for only 100,000 write cycles.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_set_settings(jrk_handle *, const jrk_settings *);
+
+/// Reads the jrk's overridable settings.
+///
+/// The overridable_settings parameter should be a non-null pointer to a
+/// jrk_overridable_settings pointer, which will receive a pointer to a new
+/// object if and only if this function is successful.  The caller must free the
+/// overridable settings later by calling jrk_overridable_settings_free().
+///
+/// To access fields in the settings, see the jrk_overridable_settings_*
+/// functions.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_overridable_settings(jrk_handle *,
+  jrk_overridable_settings ** overridable_settings);
+
+/// Overrides the values for the jrk's overridable settings.
+///
+/// Note that unlike jrk_set_settings(), this function does not fix any problems
+/// with the settings, so it is possible to set invalid values that cause
+/// unexpected behavior.
+///
+/// You can use this command to temporarily change settings such as PID
+/// coefficients and motor limits without modifying EEPROM or reinitializing the
+/// jrk.  This command takes effect immediately.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_set_overridable_settings(jrk_handle *,
+  const jrk_overridable_settings *);
 
 /// Resets the jrk's settings to their factory default values.
 JRK_API JRK_WARN_UNUSED

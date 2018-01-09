@@ -20,8 +20,9 @@
 #include <string>
 #include <thread>
 
-void print_status(const jrk::variables & vars,
-  const jrk::settings & settings,
+void print_status(
+  const jrk::variables & vars,
+  const jrk::overridable_settings & overridable_settings,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,

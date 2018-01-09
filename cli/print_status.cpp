@@ -53,7 +53,7 @@ static void print_errors(uint32_t errors, const char * error_set_name)
 }
 
 void print_status(const jrk::variables & vars,
-  const jrk::settings & settings,
+  const jrk::overridable_settings & overridable_settings,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
@@ -63,8 +63,6 @@ void print_status(const jrk::variables & vars,
 {
   // The output here is YAML so that people can more easily write scripts that
   // use it.
-
-  (void)settings;  // TODO: either use this for real or remove it
 
   std::cout << std::left << std::setfill(' ');
 
@@ -164,5 +162,9 @@ void print_status(const jrk::variables & vars,
 
   std::cout << std::endl;
 
-  // TODO: print analog readings from pins and the pin states
+  if (full_output)
+  {
+    // TODO: print overridable settings
+    // TODO: print analog readings from pins and the pin states
+  }
 }

@@ -1,9 +1,5 @@
 #include "jrk_internal.h"
 
-// Note: When we have multiple jrk models with different units for their current
-// settings, we will need some new functions for converting the settings from
-// one product to another while keepign the currents roughly the same.
-
 struct jrk_settings
 {
   uint32_t product;

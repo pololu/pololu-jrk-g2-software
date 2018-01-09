@@ -70,6 +70,21 @@ namespace jrk
     return copy;
   }
 
+  /// Wrapper for jrk_overridable_settings_free().
+  inline void pointer_free(jrk_overridable_settings * p) noexcept
+  {
+    jrk_overridable_settings_free(p);
+  }
+
+  /// Wrapper for jrk_overridable_settings_copy().
+  inline jrk_overridable_settings * pointer_copy(
+    const jrk_overridable_settings * p)
+  {
+    jrk_overridable_settings * copy;
+    throw_if_needed(jrk_overridable_settings_copy(p, &copy));
+    return copy;
+  }
+
   /// Wrapper for jrk_device_free().
   inline void pointer_free(jrk_device * p) noexcept
   {
@@ -1061,6 +1076,23 @@ namespace jrk
     }
   };
 
+  /// Represents the settings that can be changed temporarily at run time
+  /// without modifying the jrk's EEPROM.
+  class overridable_settings :
+    public unique_pointer_wrapper_with_copy<jrk_overridable_settings>
+  {
+  public:
+
+    /// Constructor that takes a pointer from the C API.
+    explicit overridable_settings(jrk_overridable_settings * p = NULL) noexcept :
+      unique_pointer_wrapper_with_copy(p)
+    {
+    }
+
+    // Start of auto-generated overridable settings C++ accessors.
+    // End of auto-generated overridable settings C++ accessors.
+  };
+
   /// Represents the variables read from a jrk.  This object just stores plain
   /// old data; it does not have any pointer or handles for other resources.
   class variables : public unique_pointer_wrapper_with_copy<jrk_variables>
@@ -1341,6 +1373,26 @@ namespace jrk
       return settings(s);
     }
 
+    /// Wrapper for jrk_set_settings().
+    void set_settings(const settings & settings)
+    {
+      throw_if_needed(jrk_set_settings(pointer, settings.get_pointer()));
+    }
+
+    /// Wrapper for jrk_get_overridable_settings().
+    overridable_settings get_overridable_settings()
+    {
+      jrk_overridable_settings * s;
+      throw_if_needed(jrk_get_overridable_settings(pointer, &s));
+      return overridable_settings(s);
+    }
+
+    /// Wrapper for jrk_set_overridable_settings().
+    void set_overridable_settings(const overridable_settings & s)
+    {
+      throw_if_needed(jrk_set_overridable_settings(pointer, s.get_pointer()));
+    }
+
     /// Wrapper for jrk_set_target().
     void set_target(uint16_t target)
     {
@@ -1371,12 +1423,6 @@ namespace jrk
       uint16_t error_flags;
       throw_if_needed(jrk_clear_errors(pointer, &error_flags));
       return error_flags;
-    }
-
-    /// Wrapper for jrk_set_settings().
-    void set_settings(const settings & settings)
-    {
-      throw_if_needed(jrk_set_settings(pointer, settings.get_pointer()));
     }
 
     /// Wrapper for jrk_restore_defaults().

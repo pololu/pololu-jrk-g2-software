@@ -310,8 +310,13 @@ static void get_status(device_selector & selector, bool full_output)
   jrk::device device = selector.select_device();
   jrk::handle handle(device);
 
-  // TODO: maybe we don't need the settings to print the status?
-  jrk::settings settings = handle.get_settings();
+  jrk::overridable_settings overridable_settings;
+
+  if (full_output)
+  {
+    overridable_settings = handle.get_overridable_settings();
+  }
+
   jrk::variables vars = handle.get_variables(false, true);
 
   std::string name = jrk_look_up_product_name_ui(device.get_product());
@@ -338,8 +343,8 @@ static void get_status(device_selector & selector, bool full_output)
     ttl_port = "?";
   }
 
-  print_status(vars, settings, name, serial_number, firmware_version,
-    cmd_port, ttl_port, full_output);
+  print_status(vars, overridable_settings, name, serial_number,
+    firmware_version, cmd_port, ttl_port, full_output);
 }
 
 static void get_settings(device_selector & selector,

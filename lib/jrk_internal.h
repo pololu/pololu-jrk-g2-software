@@ -81,6 +81,9 @@ void jrk_variables_set_from_device(jrk_variables *, const uint8_t * buffer);
 uint32_t jrk_baud_rate_from_brg(uint16_t brg);
 uint16_t jrk_baud_rate_to_brg(uint32_t baud_rate);
 
+// Internal jrk_overridable_settings functions.
+
+jrk_error * jrk_overridable_settings_create(jrk_overridable_settings **);
 
 // Internal jrk_device functions.
 
@@ -94,7 +97,10 @@ jrk_error * jrk_set_setting_byte(jrk_handle * handle,
   uint8_t address, uint8_t byte);
 
 jrk_error * jrk_get_setting_segment(jrk_handle * handle,
-  uint8_t address, size_t length, uint8_t * output);
+  size_t index, size_t length, uint8_t * output);
+
+jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
+  size_t index, size_t length, uint8_t * output);
 
 jrk_error * jrk_get_variable_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * buf,
