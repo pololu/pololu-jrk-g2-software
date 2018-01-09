@@ -1381,7 +1381,7 @@ QWidget *main_window::setup_errors_tab()
   font.setBold(true);
   font.setWeight(75);
 
-  errors_bit_mask_label = new QLabel(tr("Bit mask\n"));
+  errors_bit_mask_label = new QLabel(tr(" Bit mask\n"));
   errors_bit_mask_label->setObjectName("errors_bit_mask_label");
   errors_bit_mask_label->setFont(font);
 
@@ -1403,7 +1403,7 @@ QWidget *main_window::setup_errors_tab()
   errors_occurence_count_label->setAlignment(Qt::AlignCenter);
   errors_occurence_count_label->setFont(font);
 
-  errors_clear_errors = new QPushButton(tr("&Clear Errors"));
+  errors_clear_errors = new QPushButton(tr("&Clear errors"));
   errors_clear_errors->setObjectName("errors_clear_errors");
 
   errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
@@ -2613,6 +2613,14 @@ errors_control::errors_control
 
   er.latched_radio = new QRadioButton(tr("Enabled and latched"));
   er.latched_radio->setObjectName("latched_radio");
+  er.latched_radio->setChecked(true);
+
+  er.error_enable_group = new QButtonGroup(this);
+  er.error_enable_group->setObjectName("error_enable_group");
+  er.error_enable_group->setExclusive(true);
+  er.error_enable_group->addButton(er.disabled_radio, 0);
+  er.error_enable_group->addButton(er.enabled_radio, 1);
+  er.error_enable_group->addButton(er.latched_radio, 2);
 
   er.stopping_value = new QLabel(tr("No"));
   er.stopping_value->setObjectName("stopping_value");
@@ -2636,7 +2644,7 @@ errors_control::errors_control
     QLabel tmp_label;
     tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
     QLabel tmp_label2;
-    tmp_label2.setText("xxxxxxx");
+    tmp_label2.setText("xxxxxxxxxxx");
     QLabel tmp_label3;
     tmp_label3.setText("xxxxxxxxxxxxxxx");
     er.bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
@@ -2648,7 +2656,6 @@ errors_control::errors_control
     er.count_value->setFixedWidth(tmp_label3.sizeHint().width());
   }
 
-
   errors_central->addWidget(er.errors_frame,0,0,3,8);
   errors_central->addWidget(er.bit_mask_label,1,1);
   errors_central->addWidget(er.error_label,1,2);
@@ -2657,7 +2664,6 @@ errors_control::errors_control
   errors_central->addWidget(er.latched_radio,1,5);
   errors_central->addWidget(er.stopping_value,1,6);
   errors_central->addWidget(er.count_value,1,7);
-  // errors_central->setColumnStretch(6,10);
 
   er.disabled_radio->setVisible(disabled_visible);
   er.enabled_radio->setVisible(enabled_visible);

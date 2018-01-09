@@ -38,6 +38,7 @@ struct error_row
 	QLabel *error_label = NULL;
 	QRadioButton *disabled_radio;
 	QRadioButton *enabled_radio;
+  QButtonGroup *error_enable_group;
 	QRadioButton *latched_radio;
 	QLabel *stopping_value = NULL;
 	QLabel *count_value = NULL;
@@ -654,7 +655,6 @@ public:
 
     bool ok;
     double d = locale().toDouble(s, &ok);
-
     if (ok && d >= bottom() && d <= top())
     {
       return QValidator::Acceptable;
