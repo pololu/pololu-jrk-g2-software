@@ -44,6 +44,7 @@ add_library (lib
   jrk_handle.c
   jrk_names.c
   jrk_overridable_settings.c
+  jrk_set_overridable_settings.c
   jrk_set_settings.c
   jrk_settings.c
   jrk_settings_fix.c

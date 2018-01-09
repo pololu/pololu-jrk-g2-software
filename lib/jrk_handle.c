@@ -326,6 +326,32 @@ jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   return NULL;
 }
 
+jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
+  size_t index, size_t length, const uint8_t * buf)
+{
+  assert(handle != NULL);
+  assert(buf != NULL);
+  assert(length);
+
+  size_t transferred;
+  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
+    0x40, JRK_CMD_SET_OVERRIDABLE_SETTINGS, 0, index,
+    (uint8_t *)buf, length, &transferred));
+  if (error != NULL)
+  {
+    return error;
+  }
+
+  if (transferred != length)
+  {
+    return jrk_error_create(
+      "Failed to set overridable settings.  Expected %u bytes, got %u.\n",
+      (unsigned int)length, (unsigned int)transferred);
+  }
+
+  return NULL;
+}
+
 jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output)
 {

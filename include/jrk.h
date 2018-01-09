@@ -1940,13 +1940,20 @@ jrk_error * jrk_get_overridable_settings(jrk_handle *,
 
 /// Overrides the values for the jrk's overridable settings.
 ///
-/// Note that unlike jrk_set_settings(), this function does not fix any problems
-/// with the settings, so it is possible to set invalid values that cause
-/// unexpected behavior.
+/// Unlike jrk_set_settings(), this function does not fix any problems with the
+/// settings, so it may be possible to set invalid values that cause unexpected
+/// behavior.  (Note: This might change in the future.)
 ///
 /// You can use this command to temporarily change settings such as PID
 /// coefficients and motor limits without modifying EEPROM or reinitializing the
 /// jrk.  This command takes effect immediately.
+///
+/// Note that this command works by overriding *all* of the jrk's overridable
+/// settings, so it needs knowledge of what those settings are.  If you are
+/// writing your own USB code, you can do something simpler by just overwriting
+/// the settings that you know and care about.  See the internal library
+/// function jrk_set_overridable_setting_segment, which takes an arbitrary index
+/// and length.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_set_overridable_settings(jrk_handle *,
   const jrk_overridable_settings *);

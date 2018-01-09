@@ -27,6 +27,8 @@
 // A descriptor type from USB 2.0 Table 9-5
 #define USB_DESCRIPTOR_TYPE_STRING 3
 
+// TODO: remove this and remove custom_eeprom on the max current settings
+#define TMPHAX_CURRENT_UNITS 4
 
 // Internal string manipulation library.
 
@@ -98,6 +100,9 @@ jrk_error * jrk_set_setting_byte(jrk_handle * handle,
 
 jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output);
+
+jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
+  size_t index, size_t length, const uint8_t * buf);
 
 jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output);

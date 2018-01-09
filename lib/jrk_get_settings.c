@@ -303,12 +303,14 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t motor_max_current_forward = buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD] / 4;
+    uint8_t motor_max_current_forward = buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD]
+      / TMPHAX_CURRENT_UNITS;
     jrk_settings_set_motor_max_current_forward(settings, motor_max_current_forward);
   }
 
   {
-    uint8_t motor_max_current_reverse = buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE] / 4;
+    uint8_t motor_max_current_reverse = buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE]
+      / TMPHAX_CURRENT_UNITS;
     jrk_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
   }
 

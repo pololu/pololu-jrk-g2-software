@@ -41,7 +41,7 @@ def generate_fragment(fragment_name, indent, filename)
     generate_overridable_settings_cpp_accessors(stream)
   when 'buffer-to-overridable-settings code'
     generate_buffer_to_overridable_settings_code(stream)
-  when 'settings-to-overridable-buffer code'
+  when 'overridable-settings-to-buffer code'
     generate_overridable_settings_to_buffer_code(stream)
   when 'variables struct members'
     generate_variables_struct_members(stream)

@@ -25,15 +25,20 @@ static const char help[] =
   "  --run                        Run the motor\n"
   "  --clear-errors               Clear latched errors\n"
   "\n"
-  //"Temporary settings:\n"
-  // TODO: stuff for setting PID variables
-  // TODO: stuff for temporarily setting duty cycle
-  //"\n"
   "Permanent settings:\n"
   "  --restore-defaults           Restore device's factory settings\n"
   "  --settings FILE              Load settings file into device.\n"
   "  --get-settings FILE          Read device settings and write to file.\n"
   "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
+  "\n"
+  "Override settings temporarily:\n"
+  "  --proportional MULT EXP      Set proportional coefficient to MULT/(2^EXP)\n"
+  "  --integral MULT EXP          Set integral coefficient to MULT/(2^EXP)\n"
+  "  --derivative MULT EXP        Set derivative coefficient to MULT/(2^EXP)\n"
+  "  --max-duty-cycle NUM         Set max duty cycle to NUM (0 to 600)\n"
+  "  --max-duty-cycle-fwd NUM     Set max duty cycle forward to NUM (0 to 600)\n"
+  "  --max-duty-cycle-rev NUM     Set max duty cycle reverse to NUM (0 to 600)\n"
+  // TODO: add options for the rest of the overridable settings
   "\n"
   "For more help, see: " DOCUMENTATION_URL "\n"
   "\n";
@@ -86,6 +91,24 @@ struct arguments
   std::string fix_settings_input_filename;
   std::string fix_settings_output_filename;
 
+  bool override_proportional_coefficient = false;
+  uint16_t proportional_multiplier;
+  uint8_t proportional_exponent;
+
+  bool override_integral_coefficient = false;
+  uint16_t integral_multiplier;
+  uint8_t integral_exponent;
+
+  bool override_derivative_coefficient = false;
+  uint16_t derivative_multiplier;
+  uint8_t derivative_exponent;
+
+  bool override_max_duty_cycle_forward = false;
+  uint16_t max_duty_cycle_forward;
+
+  bool override_max_duty_cycle_reverse = false;
+  uint16_t max_duty_cycle_reverse;
+
   bool get_debug_data = false;
 
   uint32_t test_procedure = 0;
@@ -106,11 +129,23 @@ struct arguments
       set_settings ||
       get_settings ||
       fix_settings ||
+      override_settings() ||
       get_debug_data ||
       test_procedure;
   }
+
+  bool override_settings() const
+  {
+    return override_proportional_coefficient ||
+      override_integral_coefficient ||
+      override_derivative_coefficient ||
+      override_max_duty_cycle_forward ||
+      override_max_duty_cycle_reverse;
+  }
 };
 
+// Read the next argument and parse it as an integer, with nice error messages
+// if it cannot be represented.
 template <typename T>
 static T parse_arg_int(arg_reader & arg_reader)
 {
@@ -137,6 +172,28 @@ static T parse_arg_int(arg_reader & arg_reader)
   {
     throw exception_with_exit_code(EXIT_BAD_ARGS,
       "The number after '" + std::string(arg_reader.last()) + "' is invalid.");
+  }
+
+  return result;
+}
+
+// Read the next integer and parse it as an integer, with nice error messages if
+// it cannot be represented or is outside the specified range.
+template <typename T>
+static T parse_arg_int(arg_reader & arg_reader, T min, T max)
+{
+  T result = parse_arg_int<T>(arg_reader);
+
+  if (result < min)
+  {
+    throw exception_with_exit_code(EXIT_BAD_ARGS,
+      "The number after '" + std::string(arg_reader.last()) + "' is too small.");
+  }
+
+  if (result > max)
+  {
+    throw exception_with_exit_code(EXIT_BAD_ARGS,
+      "The number after '" + std::string(arg_reader.last()) + "' is too large.");
   }
 
   return result;
@@ -273,6 +330,42 @@ static arguments parse_args(int argc, char ** argv)
       args.fix_settings_input_filename = parse_arg_string(arg_reader);
       args.fix_settings_output_filename = parse_arg_string(arg_reader);
     }
+    else if (arg == "--proportional")
+    {
+      args.override_proportional_coefficient = true;
+      args.proportional_multiplier = parse_arg_int<uint16_t>(arg_reader, 0, 1023);
+      args.proportional_exponent = parse_arg_int<uint8_t>(arg_reader, 0, 18);
+    }
+    else if (arg == "--integral")
+    {
+      args.override_integral_coefficient = true;
+      args.integral_multiplier = parse_arg_int<uint16_t>(arg_reader, 0, 1023);
+      args.integral_exponent = parse_arg_int<uint8_t>(arg_reader, 0, 18);
+    }
+    else if (arg == "--derivative")
+    {
+      args.override_derivative_coefficient = true;
+      args.derivative_multiplier = parse_arg_int<uint16_t>(arg_reader, 0, 1023);
+      args.derivative_exponent = parse_arg_int<uint8_t>(arg_reader, 0, 18);
+    }
+    else if (arg == "--max-duty-cycle")
+    {
+      uint16_t duty_cycle = parse_arg_int<uint16_t>(arg_reader, 0, 600);
+      args.override_max_duty_cycle_forward = true;
+      args.override_max_duty_cycle_reverse = true;
+      args.max_duty_cycle_forward = duty_cycle;
+      args.max_duty_cycle_reverse = duty_cycle;
+    }
+    else if (arg == "--max-duty-cycle-fwd")
+    {
+      args.override_max_duty_cycle_forward = true;
+      args.max_duty_cycle_forward = parse_arg_int<uint16_t>(arg_reader, 0, 600);
+    }
+    else if (arg == "--max-duty-cycle-rev")
+    {
+      args.override_max_duty_cycle_reverse = true;
+      args.max_duty_cycle_reverse = parse_arg_int<uint16_t>(arg_reader, 0, 600);
+    }
     else if (arg == "--debug")
     {
       // This is an unadvertized option for helping customers troubleshoot
@@ -396,13 +489,48 @@ static void fix_settings(const std::string & input_filename,
   write_string_to_file_or_pipe(output_filename, settings.to_string());
 }
 
+static void override_settings(device_selector & selector,
+  const arguments & args)
+{
+  jrk::handle handle = jrk::handle(selector.select_device());
+
+  jrk::overridable_settings s = handle.get_overridable_settings();
+
+  if (args.override_proportional_coefficient)
+  {
+    s.set_proportional_multiplier(args.proportional_multiplier);
+    s.set_proportional_exponent(args.proportional_exponent);
+  }
+
+  if (args.override_derivative_coefficient)
+  {
+    s.set_derivative_multiplier(args.derivative_multiplier);
+    s.set_derivative_exponent(args.derivative_exponent);
+  }
+
+  if (args.override_integral_coefficient)
+  {
+    s.set_integral_multiplier(args.integral_multiplier);
+    s.set_integral_exponent(args.integral_exponent);
+  }
+
+  if (args.override_max_duty_cycle_forward)
+  {
+    s.set_motor_max_duty_cycle_forward(args.max_duty_cycle_forward);
+  }
+
+  if (args.override_max_duty_cycle_reverse)
+  {
+    s.set_motor_max_duty_cycle_reverse(args.max_duty_cycle_reverse);
+  }
+
+  handle.set_overridable_settings(s);
+}
+
 static void print_debug_data(device_selector & selector)
 {
-  jrk::device device = selector.select_device();
-  jrk::handle handle(device);
-
   std::vector<uint8_t> data(4096, 0);
-  handle.get_debug_data(data);
+  handle(selector).get_debug_data(data);
 
   for (const uint8_t & byte : data)
   {
@@ -466,6 +594,11 @@ static void run(const arguments & args)
   if (args.set_settings)
   {
     set_settings(selector, args.set_settings_filename);
+  }
+
+  if (args.override_settings())
+  {
+    override_settings(selector, args);
   }
 
   if (args.clear_errors)

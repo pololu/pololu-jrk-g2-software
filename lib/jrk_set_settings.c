@@ -305,12 +305,14 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
-    buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD] = motor_max_current_forward * 4;
+    buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD] =
+      motor_max_current_forward * TMPHAX_CURRENT_UNITS;
   }
 
   {
     uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
-    buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE] = motor_max_current_reverse * 4;
+    buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE] =
+      motor_max_current_reverse * TMPHAX_CURRENT_UNITS;
   }
 
   {
@@ -386,7 +388,10 @@ jrk_error * jrk_set_settings(jrk_handle * handle, const jrk_settings * settings)
   // Construct a buffer holding the bytes we want to write.
   uint8_t buf[JRK_SETTINGS_SIZE];
   memset(buf, 0, sizeof(buf));
-  jrk_write_settings_to_buffer(fixed_settings, buf);
+  if (error == NULL)
+  {
+    jrk_write_settings_to_buffer(fixed_settings, buf);
+  }
 
   // Write the bytes to the device.
   for (uint8_t i = 1; i < sizeof(buf) && error == NULL; i++)

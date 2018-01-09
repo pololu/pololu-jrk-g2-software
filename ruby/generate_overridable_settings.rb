@@ -73,6 +73,34 @@ def generate_overridable_settings_cpp_accessors(stream)
   end
 end
 
+def generate_overridable_settings_to_buffer_code(stream)
+  OverridableSettings.each do |setting_info|
+    next if setting_info[:custom_eeprom]
+
+    name = setting_info.fetch(:name)
+    type = setting_integer_type(setting_info)
+    addr = setting_info.fetch(:address, "JRK_SETTING_#{name.upcase}")
+    offset = 'JRK_OVERRIDABLE_SETTINGS_START'
+    bit_addr = setting_info.fetch(:bit_address, 0)
+
+    stream.puts "{"
+    stream.puts "  #{type} #{name} = jrk_overridable_settings_get_#{name}(settings);"
+    if type == :bool
+      shift = " << #{bit_addr}" if bit_addr != 0
+      stream.puts "  buf[#{addr} - #{offset}] |="
+      stream.puts "    #{name}#{shift};"
+    elsif [:uint8_t, :int8_t].include?(type)
+      stream.puts "  buf[#{addr} - #{offset}] ="
+      stream.puts "    #{name};"
+    else
+      stream.puts "  write_#{type}(buf + (JRK_SETTING_#{name.upcase} - #{offset}),"
+      stream.puts "    #{name});"
+    end
+    stream.puts "}"
+    stream.puts
+  end
+end
+
 def generate_buffer_to_overridable_settings_code(stream)
   OverridableSettings.each do |setting_info|
     next if setting_info[:custom_eeprom]
@@ -100,3 +128,4 @@ def generate_buffer_to_overridable_settings_code(stream)
     stream.puts
   end
 end
+
