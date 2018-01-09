@@ -727,6 +727,7 @@ EOF
     type: :uint16_t,
     comment:
       "This setting is a bitmap specifying which errors are enabled.\n" \
+      "This includes errors that are enabled and latched.\n" \
       "The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are\n" \
       "always enabled, so the jrk ignores the bits for those errors."
   },

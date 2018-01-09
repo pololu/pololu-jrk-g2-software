@@ -1146,6 +1146,7 @@ bool jrk_settings_get_motor_coast_when_off(const jrk_settings *);
 // Sets the error_enable setting.
 //
 // This setting is a bitmap specifying which errors are enabled.
+// This includes errors that are enabled and latched.
 // The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are
 // always enabled, so the jrk ignores the bits for those errors.
 JRK_API
