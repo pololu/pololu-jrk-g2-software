@@ -1089,7 +1089,284 @@ namespace jrk
     {
     }
 
-    // Start of auto-generated overridable settings C++ accessors.
+    // Beginning of auto-generated overridable settings C++ accessors.
+
+    /// Wrapper for jrk_overridable_settings_set_proportional_multiplier().
+    void set_proportional_multiplier(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_proportional_multiplier(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_proportional_multiplier().
+    uint16_t get_proportional_multiplier() const noexcept
+    {
+      return jrk_overridable_settings_get_proportional_multiplier(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_proportional_exponent().
+    void set_proportional_exponent(uint8_t value) noexcept
+    {
+      jrk_overridable_settings_set_proportional_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_proportional_exponent().
+    uint8_t get_proportional_exponent() const noexcept
+    {
+      return jrk_overridable_settings_get_proportional_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_integral_multiplier().
+    void set_integral_multiplier(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_integral_multiplier(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_integral_multiplier().
+    uint16_t get_integral_multiplier() const noexcept
+    {
+      return jrk_overridable_settings_get_integral_multiplier(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_integral_exponent().
+    void set_integral_exponent(uint8_t value) noexcept
+    {
+      jrk_overridable_settings_set_integral_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_integral_exponent().
+    uint8_t get_integral_exponent() const noexcept
+    {
+      return jrk_overridable_settings_get_integral_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_derivative_multiplier().
+    void set_derivative_multiplier(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_derivative_multiplier(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_derivative_multiplier().
+    uint16_t get_derivative_multiplier() const noexcept
+    {
+      return jrk_overridable_settings_get_derivative_multiplier(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_derivative_exponent().
+    void set_derivative_exponent(uint8_t value) noexcept
+    {
+      jrk_overridable_settings_set_derivative_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_derivative_exponent().
+    uint8_t get_derivative_exponent() const noexcept
+    {
+      return jrk_overridable_settings_get_derivative_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_pid_period().
+    void set_pid_period(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_pid_period(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_pid_period().
+    uint16_t get_pid_period() const noexcept
+    {
+      return jrk_overridable_settings_get_pid_period(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_pid_integral_limit().
+    void set_pid_integral_limit(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_pid_integral_limit(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_pid_integral_limit().
+    uint16_t get_pid_integral_limit() const noexcept
+    {
+      return jrk_overridable_settings_get_pid_integral_limit(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_pid_reset_integral().
+    void set_pid_reset_integral(bool value) noexcept
+    {
+      jrk_overridable_settings_set_pid_reset_integral(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_pid_reset_integral().
+    bool get_pid_reset_integral() const noexcept
+    {
+      return jrk_overridable_settings_get_pid_reset_integral(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_duty_cycle_while_feedback_out_of_range().
+    void set_motor_max_duty_cycle_while_feedback_out_of_range(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_duty_cycle_while_feedback_out_of_range().
+    uint16_t get_motor_max_duty_cycle_while_feedback_out_of_range() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_acceleration_forward().
+    void set_motor_max_acceleration_forward(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_acceleration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_acceleration_forward().
+    uint16_t get_motor_max_acceleration_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_acceleration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_acceleration_reverse().
+    void set_motor_max_acceleration_reverse(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_acceleration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_acceleration_reverse().
+    uint16_t get_motor_max_acceleration_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_acceleration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_deceleration_forward().
+    void set_motor_max_deceleration_forward(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_deceleration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_deceleration_forward().
+    uint16_t get_motor_max_deceleration_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_deceleration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_deceleration_reverse().
+    void set_motor_max_deceleration_reverse(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_deceleration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_deceleration_reverse().
+    uint16_t get_motor_max_deceleration_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_deceleration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_duty_cycle_forward().
+    void set_motor_max_duty_cycle_forward(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_duty_cycle_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_duty_cycle_forward().
+    uint16_t get_motor_max_duty_cycle_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_duty_cycle_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_duty_cycle_reverse().
+    void set_motor_max_duty_cycle_reverse(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_duty_cycle_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_duty_cycle_reverse().
+    uint16_t get_motor_max_duty_cycle_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_duty_cycle_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_current_forward().
+    void set_motor_max_current_forward(uint8_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_current_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_current_forward().
+    uint8_t get_motor_max_current_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_current_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_max_current_reverse().
+    void set_motor_max_current_reverse(uint8_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_max_current_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_max_current_reverse().
+    uint8_t get_motor_max_current_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_max_current_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_current_calibration_forward().
+    void set_motor_current_calibration_forward(int8_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_current_calibration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_current_calibration_forward().
+    int8_t get_motor_current_calibration_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_current_calibration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_current_calibration_reverse().
+    void set_motor_current_calibration_reverse(int8_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_current_calibration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_current_calibration_reverse().
+    int8_t get_motor_current_calibration_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_current_calibration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_brake_duration_forward().
+    void set_motor_brake_duration_forward(uint32_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_brake_duration_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_brake_duration_forward().
+    uint32_t get_motor_brake_duration_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_brake_duration_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_brake_duration_reverse().
+    void set_motor_brake_duration_reverse(uint32_t value) noexcept
+    {
+      jrk_overridable_settings_set_motor_brake_duration_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_brake_duration_reverse().
+    uint32_t get_motor_brake_duration_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_brake_duration_reverse(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_motor_coast_when_off().
+    void set_motor_coast_when_off(bool value) noexcept
+    {
+      jrk_overridable_settings_set_motor_coast_when_off(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_motor_coast_when_off().
+    bool get_motor_coast_when_off() const noexcept
+    {
+      return jrk_overridable_settings_get_motor_coast_when_off(pointer);
+    }
+
     // End of auto-generated overridable settings C++ accessors.
   };
 

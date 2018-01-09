@@ -427,6 +427,7 @@ EOF
   {
     name: 'proportional_multiplier',
     type: :uint16_t,
+    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -439,6 +440,7 @@ EOF
   {
     name: 'proportional_exponent',
     type: :uint8_t,
+    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -447,6 +449,7 @@ EOF
   {
     name: 'integral_multiplier',
     type: :uint16_t,
+    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -462,6 +465,7 @@ EOF
   {
     name: 'integral_exponent',
     type: :uint8_t,
+    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -470,6 +474,7 @@ EOF
   {
     name: 'derivative_multiplier',
     type: :uint16_t,
+    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -482,6 +487,7 @@ EOF
   {
     name: 'derivative_exponent',
     type: :uint8_t,
+    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -490,6 +496,7 @@ EOF
   {
     name: 'pid_period',
     type: :uint16_t,
+    overridable: true,
     range: 1..8191,
     default: 10,
     comment:
@@ -499,6 +506,7 @@ EOF
   {
     name: 'pid_integral_limit',
     type: :uint16_t,
+    overridable: true,
     default: 1000,
     max: 0x7FFF,
     comment:
@@ -508,6 +516,7 @@ EOF
   {
     name: 'pid_reset_integral',
     type: :bool,
+    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_PID_RESET_INTEGRAL',
     comment:
@@ -541,6 +550,7 @@ EOF
   {
     name: 'motor_max_duty_cycle_while_feedback_out_of_range',
     type: :uint16_t,
+    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -552,6 +562,7 @@ EOF
   {
     name: 'motor_max_acceleration_forward',
     type: :uint16_t,
+    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -564,6 +575,7 @@ EOF
   {
     name: 'motor_max_acceleration_reverse',
     type: :uint16_t,
+    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -576,6 +588,7 @@ EOF
   {
     name: 'motor_max_deceleration_forward',
     type: :uint16_t,
+    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -588,6 +601,7 @@ EOF
   {
     name: 'motor_max_deceleration_reverse',
     type: :uint16_t,
+    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -600,6 +614,7 @@ EOF
   {
     name: 'motor_max_duty_cycle_forward',
     type: :uint16_t,
+    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -613,6 +628,7 @@ EOF
   {
     name: 'motor_max_duty_cycle_reverse',
     type: :uint16_t,
+    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -626,9 +642,10 @@ EOF
   {
     name: 'motor_max_current_forward',
     type: :uint8_t,
+    overridable: true,
     default: 10,
     max: 31,
-    custom_eeprom: true,
+    custom_eeprom: true,  # tmphax just so we could divide by 4
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
@@ -646,9 +663,10 @@ EOF
   {
     name: 'motor_max_current_reverse',
     type: :uint8_t,
+    overridable: true,
     default: 10,
     max: 31,
-    custom_eeprom: true,
+    custom_eeprom: true,  # tmphax just so we could divide by 4
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
       "See the documentation of motor_max_current_forward."
@@ -656,14 +674,17 @@ EOF
   {
     name: 'motor_current_calibration_forward',  # TODO: document this
     type: :int8_t,
+    overridable: true,
   },
   {
     name: 'motor_current_calibration_reverse',  # TODO: document this, remove separate calibrations for forward and reverse
     type: :int8_t,
+    overridable: true,
   },
   {
     name: 'motor_brake_duration_forward',
     type: :uint32_t,
+    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -677,6 +698,7 @@ EOF
   {
     name: 'motor_brake_duration_reverse',
     type: :uint32_t,
+    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -691,6 +713,7 @@ EOF
   {
     name: 'motor_coast_when_off',
     type: :bool,
+    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF',
     comment:

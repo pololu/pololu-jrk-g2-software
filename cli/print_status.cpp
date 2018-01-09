@@ -53,7 +53,7 @@ static void print_errors(uint32_t errors, const char * error_set_name)
 }
 
 void print_status(const jrk::variables & vars,
-  const jrk::overridable_settings & overridable_settings,
+  const jrk::overridable_settings & osettings,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
@@ -164,7 +164,94 @@ void print_status(const jrk::variables & vars,
 
   if (full_output)
   {
-    // TODO: print overridable settings
+    std::cout << left_column
+      << "Reset integral when proportional term exceeds max duty cycle: "
+      << (osettings.get_pid_reset_integral() ? "Yes" : "No")
+      << std::endl;
+
+    std::cout << left_column << "Coast when motor is off: "
+      << (osettings.get_motor_coast_when_off() ? "Yes" : "No")
+      << std::endl;
+
+    std::cout << left_column << "Proportional multiplier: "
+      << osettings.get_proportional_multiplier()
+      << std::endl;
+
+    std::cout << left_column << "Proportional exponent: "
+      << (uint32_t)osettings.get_proportional_exponent()
+      << std::endl;
+
+    std::cout << left_column << "Integral multiplier: "
+      << osettings.get_integral_multiplier()
+      << std::endl;
+
+    std::cout << left_column << "Integral exponent: "
+      << (uint32_t)osettings.get_integral_exponent()
+      << std::endl;
+
+    std::cout << left_column << "Derivative multiplier: "
+      << osettings.get_derivative_multiplier()
+      << std::endl;
+
+    std::cout << left_column << "Derivative exponent: "
+      << (uint32_t)osettings.get_derivative_exponent()
+      << std::endl;
+
+    std::cout << left_column << "PID period: "
+      << osettings.get_pid_period()
+      << " ms" << std::endl;
+
+    std::cout << left_column << "Integral limit: "
+      << osettings.get_pid_integral_limit()
+      << std::endl;
+
+    std::cout << left_column << "Max. duty cycle while feedback is out of range: "
+      << osettings.get_motor_max_duty_cycle_while_feedback_out_of_range()
+      << std::endl;
+
+    std::cout << left_column << "Max. duty cycle forward: "
+      << osettings.get_motor_max_duty_cycle_forward()
+      << std::endl;
+
+    std::cout << left_column << "Max. duty cycle reverse: "
+      << osettings.get_motor_max_duty_cycle_reverse()
+      << std::endl;
+
+    std::cout << left_column << "Max. acceleration forward: "
+      << osettings.get_motor_max_acceleration_forward()
+      << std::endl;
+
+    std::cout << left_column << "Max. acceleration reverse: "
+      << osettings.get_motor_max_acceleration_reverse()
+      << std::endl;
+
+    std::cout << left_column << "Max. deceleration forward: "
+      << osettings.get_motor_max_deceleration_forward()
+      << std::endl;
+
+    std::cout << left_column << "Max. deceleration reverse: "
+      << osettings.get_motor_max_deceleration_reverse()
+      << std::endl;
+
+    // TODO: fix the current readings below; they are 0 because we marked the
+    // current settings as custom_eeprom.
+
+    std::cout << left_column << "Max. current forward: "
+      << (uint32_t)osettings.get_motor_max_current_forward()  // TODO: format in amps
+      << std::endl;
+
+    std::cout << left_column << "Max. current reverse: "
+      << (uint32_t)osettings.get_motor_max_current_reverse()  // TODO: format in amps
+      << std::endl;
+
+    std::cout << left_column << "Brake duration forward: "
+      << osettings.get_motor_brake_duration_forward()
+      << " ms" << std::endl;
+
+    std::cout << left_column << "Brake duration reverse: "
+      << osettings.get_motor_brake_duration_reverse()
+      << " ms" << std::endl;
+
     // TODO: print analog readings from pins and the pin states
   }
 }

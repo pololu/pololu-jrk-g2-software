@@ -1253,7 +1253,353 @@ JRK_API
 void jrk_overridable_settings_free(jrk_overridable_settings *);
 
 // Beginning of auto-generated overridable settings accessor prototypes.
-// End of auto-generated settings accessor prototypes.
+
+// Sets the proportional_multiplier setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_proportional_multiplier() for more info.
+JRK_API
+void jrk_overridable_settings_set_proportional_multiplier(jrk_overridable_settings *,
+  uint16_t proportional_multiplier);
+
+// Gets the proportional_multiplier setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_proportional_multiplier() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_proportional_multiplier(const jrk_overridable_settings *);
+
+// Sets the proportional_exponent setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_proportional_exponent() for more info.
+JRK_API
+void jrk_overridable_settings_set_proportional_exponent(jrk_overridable_settings *,
+  uint8_t proportional_exponent);
+
+// Gets the proportional_exponent setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_proportional_exponent() for more info.
+JRK_API
+uint8_t jrk_overridable_settings_get_proportional_exponent(const jrk_overridable_settings *);
+
+// Sets the integral_multiplier setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_integral_multiplier() for more info.
+JRK_API
+void jrk_overridable_settings_set_integral_multiplier(jrk_overridable_settings *,
+  uint16_t integral_multiplier);
+
+// Gets the integral_multiplier setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_integral_multiplier() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_integral_multiplier(const jrk_overridable_settings *);
+
+// Sets the integral_exponent setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_integral_exponent() for more info.
+JRK_API
+void jrk_overridable_settings_set_integral_exponent(jrk_overridable_settings *,
+  uint8_t integral_exponent);
+
+// Gets the integral_exponent setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_integral_exponent() for more info.
+JRK_API
+uint8_t jrk_overridable_settings_get_integral_exponent(const jrk_overridable_settings *);
+
+// Sets the derivative_multiplier setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_derivative_multiplier() for more info.
+JRK_API
+void jrk_overridable_settings_set_derivative_multiplier(jrk_overridable_settings *,
+  uint16_t derivative_multiplier);
+
+// Gets the derivative_multiplier setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_derivative_multiplier() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_derivative_multiplier(const jrk_overridable_settings *);
+
+// Sets the derivative_exponent setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_derivative_exponent() for more info.
+JRK_API
+void jrk_overridable_settings_set_derivative_exponent(jrk_overridable_settings *,
+  uint8_t derivative_exponent);
+
+// Gets the derivative_exponent setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_derivative_exponent() for more info.
+JRK_API
+uint8_t jrk_overridable_settings_get_derivative_exponent(const jrk_overridable_settings *);
+
+// Sets the pid_period setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_pid_period() for more info.
+JRK_API
+void jrk_overridable_settings_set_pid_period(jrk_overridable_settings *,
+  uint16_t pid_period);
+
+// Gets the pid_period setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_pid_period() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_pid_period(const jrk_overridable_settings *);
+
+// Sets the pid_integral_limit setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_pid_integral_limit() for more info.
+JRK_API
+void jrk_overridable_settings_set_pid_integral_limit(jrk_overridable_settings *,
+  uint16_t pid_integral_limit);
+
+// Gets the pid_integral_limit setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_pid_integral_limit() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_pid_integral_limit(const jrk_overridable_settings *);
+
+// Sets the pid_reset_integral setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_pid_reset_integral() for more info.
+JRK_API
+void jrk_overridable_settings_set_pid_reset_integral(jrk_overridable_settings *,
+  bool pid_reset_integral);
+
+// Gets the pid_reset_integral setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_pid_reset_integral() for more info.
+JRK_API
+bool jrk_overridable_settings_get_pid_reset_integral(const jrk_overridable_settings *);
+
+// Sets the motor_max_duty_cycle_while_feedback_out_of_range setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(jrk_overridable_settings *,
+  uint16_t motor_max_duty_cycle_while_feedback_out_of_range);
+
+// Gets the motor_max_duty_cycle_while_feedback_out_of_range setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(const jrk_overridable_settings *);
+
+// Sets the motor_max_acceleration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_acceleration_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_acceleration_forward(jrk_overridable_settings *,
+  uint16_t motor_max_acceleration_forward);
+
+// Gets the motor_max_acceleration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_acceleration_forward() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_acceleration_forward(const jrk_overridable_settings *);
+
+// Sets the motor_max_acceleration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_acceleration_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_acceleration_reverse(jrk_overridable_settings *,
+  uint16_t motor_max_acceleration_reverse);
+
+// Gets the motor_max_acceleration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_acceleration_reverse() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_acceleration_reverse(const jrk_overridable_settings *);
+
+// Sets the motor_max_deceleration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_deceleration_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_deceleration_forward(jrk_overridable_settings *,
+  uint16_t motor_max_deceleration_forward);
+
+// Gets the motor_max_deceleration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_deceleration_forward() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_deceleration_forward(const jrk_overridable_settings *);
+
+// Sets the motor_max_deceleration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_deceleration_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_deceleration_reverse(jrk_overridable_settings *,
+  uint16_t motor_max_deceleration_reverse);
+
+// Gets the motor_max_deceleration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_deceleration_reverse() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_deceleration_reverse(const jrk_overridable_settings *);
+
+// Sets the motor_max_duty_cycle_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_duty_cycle_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_duty_cycle_forward(jrk_overridable_settings *,
+  uint16_t motor_max_duty_cycle_forward);
+
+// Gets the motor_max_duty_cycle_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_duty_cycle_forward() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_forward(const jrk_overridable_settings *);
+
+// Sets the motor_max_duty_cycle_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_duty_cycle_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_duty_cycle_reverse(jrk_overridable_settings *,
+  uint16_t motor_max_duty_cycle_reverse);
+
+// Gets the motor_max_duty_cycle_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_duty_cycle_reverse() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_reverse(const jrk_overridable_settings *);
+
+// Sets the motor_max_current_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_current_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_current_forward(jrk_overridable_settings *,
+  uint8_t motor_max_current_forward);
+
+// Gets the motor_max_current_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_current_forward() for more info.
+JRK_API
+uint8_t jrk_overridable_settings_get_motor_max_current_forward(const jrk_overridable_settings *);
+
+// Sets the motor_max_current_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_current_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_max_current_reverse(jrk_overridable_settings *,
+  uint8_t motor_max_current_reverse);
+
+// Gets the motor_max_current_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_max_current_reverse() for more info.
+JRK_API
+uint8_t jrk_overridable_settings_get_motor_max_current_reverse(const jrk_overridable_settings *);
+
+// Sets the motor_current_calibration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_current_calibration_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_current_calibration_forward(jrk_overridable_settings *,
+  int8_t motor_current_calibration_forward);
+
+// Gets the motor_current_calibration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_current_calibration_forward() for more info.
+JRK_API
+int8_t jrk_overridable_settings_get_motor_current_calibration_forward(const jrk_overridable_settings *);
+
+// Sets the motor_current_calibration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_current_calibration_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_current_calibration_reverse(jrk_overridable_settings *,
+  int8_t motor_current_calibration_reverse);
+
+// Gets the motor_current_calibration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_current_calibration_reverse() for more info.
+JRK_API
+int8_t jrk_overridable_settings_get_motor_current_calibration_reverse(const jrk_overridable_settings *);
+
+// Sets the motor_brake_duration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_brake_duration_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_brake_duration_forward(jrk_overridable_settings *,
+  uint32_t motor_brake_duration_forward);
+
+// Gets the motor_brake_duration_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_brake_duration_forward() for more info.
+JRK_API
+uint32_t jrk_overridable_settings_get_motor_brake_duration_forward(const jrk_overridable_settings *);
+
+// Sets the motor_brake_duration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_brake_duration_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_brake_duration_reverse(jrk_overridable_settings *,
+  uint32_t motor_brake_duration_reverse);
+
+// Gets the motor_brake_duration_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_brake_duration_reverse() for more info.
+JRK_API
+uint32_t jrk_overridable_settings_get_motor_brake_duration_reverse(const jrk_overridable_settings *);
+
+// Sets the motor_coast_when_off setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_coast_when_off() for more info.
+JRK_API
+void jrk_overridable_settings_set_motor_coast_when_off(jrk_overridable_settings *,
+  bool motor_coast_when_off);
+
+// Gets the motor_coast_when_off setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_motor_coast_when_off() for more info.
+JRK_API
+bool jrk_overridable_settings_get_motor_coast_when_off(const jrk_overridable_settings *);
+
+// End of auto-generated overridable settings accessor prototypes.
 
 
 // jrk_variables ////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@
 
 require 'pathname'
 require_relative 'generate_settings'
+require_relative 'generate_overridable_settings'
 require_relative 'generate_variables'
 
 def generate_fragment(fragment_name, indent, filename)
@@ -30,6 +31,18 @@ def generate_fragment(fragment_name, indent, filename)
     generate_settings_file_parsing_code(stream)
   when 'settings file printing code'
     generate_settings_file_printing_code(stream)
+  when 'overridable settings struct members'
+    generate_overridable_settings_struct_members(stream)
+  when 'overridable settings accessor prototypes'
+    generate_overridable_settings_accessor_prototypes(stream)
+  when 'overridable settings accessors'
+    generate_overridable_settings_accessors(stream)
+  when 'overridable settings C++ accessors'
+    generate_overridable_settings_cpp_accessors(stream)
+  when 'buffer-to-overridable-settings code'
+    generate_buffer_to_overridable_settings_code(stream)
+  when 'settings-to-overridable-buffer code'
+    generate_overridable_settings_to_buffer_code(stream)
   when 'variables struct members'
     generate_variables_struct_members(stream)
   when 'variables getter prototypes'
