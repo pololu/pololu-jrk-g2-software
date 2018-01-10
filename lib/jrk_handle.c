@@ -255,8 +255,8 @@ jrk_error * jrk_run_motor(jrk_handle * handle)
   uint8_t buffer[2];
   if (error == NULL)
   {
-    error = jrk_get_variable_segment(handle,
-      JRK_VAR_TARGET, 2, buffer, true, false);
+    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
+    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
   }
   uint16_t target = buffer[0] | (buffer[1] << 8);
 
@@ -284,8 +284,9 @@ jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
 
   // Get the halting error flags and clear them at the same time.
   uint8_t buffer[2];
+  uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
   jrk_error * error = jrk_get_variable_segment(handle,
-    JRK_VAR_ERROR_FLAGS_HALTING, 2, buffer, true, false);
+    JRK_VAR_ERROR_FLAGS_HALTING, 2, buffer, flags);
 
   if (error == NULL && error_flags != NULL)
   {
@@ -378,20 +379,15 @@ jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
 }
 
 jrk_error * jrk_get_variable_segment(jrk_handle * handle,
-  size_t index, size_t length, uint8_t * output,
-  bool clear_error_flags_halting, bool clear_error_flags_occurred)
+  size_t index, size_t length, uint8_t * output, uint16_t flags)
 {
   assert(handle != NULL);
   assert(output != NULL);
   assert(length && length <= JRK_MAX_USB_RESPONSE_SIZE);
 
-  uint16_t value = 0;
-  if (clear_error_flags_halting) { value |= 1; }
-  if (clear_error_flags_occurred) { value |= 2; }
-
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0xC0, JRK_CMD_GET_VARIABLES, value, index, output, length, &transferred));
+    0xC0, JRK_CMD_GET_VARIABLES, flags, index, output, length, &transferred));
   if (error != NULL)
   {
     return error;

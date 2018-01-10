@@ -1650,13 +1650,10 @@ namespace jrk
     }
 
     /// Wrapper for jrk_get_variables().
-    variables get_variables(
-      bool clear_error_flags_halting = false,
-      bool clear_error_flags_occurred = false)
+    variables get_variables(uint16_t flags)
     {
       jrk_variables * v;
-      throw_if_needed(jrk_get_variables(pointer, &v,
-          clear_error_flags_halting, clear_error_flags_occurred));
+      throw_if_needed(jrk_get_variables(pointer, &v, flags));
       return variables(v);
     }
 

@@ -1884,6 +1884,17 @@ jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
 /// To read information from the variables object, see the jrk_variables_get_*
 /// functions.
 ///
+/// The flags argument should be zero or a bitwise-or combination of some
+/// these flags:
+/// - `(1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING)`:
+///   Clears the errors indicated in the "Error flags halting" variable
+///   as a side effect (except "Awaiting command").
+/// - `(1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_OCCURRED)`:
+///   Clears the errors indicated in the "Error flags occurred" variable
+///   as a side effect.
+/// - `(1 << JRK_GET_VARIABLES_FLAG_CLEAR_CURRENT_CHOPPING_OCCURRENCE_COUNT)`:
+///   Clears the "Current chopping occurrence count" variable as a side effect.
+///
 /// The clear_errors_halting option should be true if you want to clear the
 /// error bits in the device's "Error flags halting" variable (except for the
 /// Awaiting Command error bit).
@@ -1892,7 +1903,7 @@ jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
 /// bits in the device's "Error flags occurred" variable as a side effect.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
-  bool clear_error_flags_halting, bool clear_error_flags_occurred);
+  uint16_t flags);
 
 /// Sends an "Override duty cycle" command to the jrk.
 ///

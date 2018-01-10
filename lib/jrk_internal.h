@@ -108,8 +108,7 @@ jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output);
 
 jrk_error * jrk_get_variable_segment(jrk_handle * handle,
-  size_t index, size_t length, uint8_t * buf,
-  bool clear_error_flags_halting, bool clear_error_flags_occurred);
+  size_t index, size_t length, uint8_t * buf, uint16_t flags);
 
 
 // Error creation functions.

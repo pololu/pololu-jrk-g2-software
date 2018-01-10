@@ -308,9 +308,6 @@ void main_controller::update()
       // Reload the variables from the device.
       try
       {
-        // Reset command timeout AFTER reloading the variables so we can
-        // indicate an active error if the command timeout interval is shorter
-        // than the interval between calls to update().
         reload_variables();
       }
       catch (std::exception const & e)
@@ -1433,7 +1430,9 @@ void main_controller::reload_variables()
 
   try
   {
-    variables = device_handle.get_variables(true);
+    uint16_t flags = (1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_OCCURRED) |
+      (1 << JRK_GET_VARIABLES_FLAG_CLEAR_CURRENT_CHOPPING_OCCURRENCE_COUNT);
+    variables = device_handle.get_variables(flags);
     variables_update_failed = false;
   }
   catch (...)

@@ -141,7 +141,7 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
 }
 
 jrk_error * jrk_get_variables(jrk_handle * handle, jrk_variables ** variables,
-  bool clear_error_flags_halting, bool clear_error_flags_occurred)
+  uint16_t flags)
 {
   if (variables == NULL)
   {
@@ -169,8 +169,7 @@ jrk_error * jrk_get_variables(jrk_handle * handle, jrk_variables ** variables,
   if (error == NULL)
   {
     size_t index = 0;
-    error = jrk_get_variable_segment(handle, index, sizeof(buf), buf,
-      clear_error_flags_halting, clear_error_flags_occurred);
+    error = jrk_get_variable_segment(handle, index, sizeof(buf), buf, flags);
   }
 
   // Store the variables in the new variables object.

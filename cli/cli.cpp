@@ -410,7 +410,9 @@ static void get_status(device_selector & selector, bool full_output)
     overridable_settings = handle.get_overridable_settings();
   }
 
-  jrk::variables vars = handle.get_variables(false, true);
+  uint16_t flags = (1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_OCCURRED) |
+    (1 << JRK_GET_VARIABLES_FLAG_CLEAR_CURRENT_CHOPPING_OCCURRENCE_COUNT);
+  jrk::variables vars = handle.get_variables(flags);
 
   std::string name = jrk_look_up_product_name_ui(device.get_product());
   std::string serial_number = device.get_serial_number();
