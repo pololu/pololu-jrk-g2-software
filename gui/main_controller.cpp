@@ -646,6 +646,8 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
   window->set_motor_current_calibration_forward(settings.get_motor_current_calibration_forward());
 
+  window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
 
@@ -1267,6 +1269,34 @@ void main_controller::handle_motor_coast_when_off_input(bool motor_coast)
 {
   if (!connected()) { return; }
   settings.set_motor_coast_when_off(motor_coast);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_error_enable_input(int index, int id)
+{
+  if (!connected()) { return; }
+  uint16_t enable_value = settings.get_error_enable();
+  uint16_t latch_value = settings.get_error_latch();
+
+  if (id == 0)
+  {
+    enable_value &= ~(1 << index);
+    latch_value &= ~(1 << index);
+  }
+  else if (id == 1)
+  {
+    enable_value |= 1 << index;
+    latch_value &= ~(1 << index);
+  }
+  else
+  {
+    enable_value |= 1 << index;
+    latch_value |= 1 << index;
+  }
+  settings.set_error_enable(enable_value);
+  settings.set_error_latch(latch_value);
+
   settings_modified = true;
   handle_settings_changed();
 }

@@ -137,6 +137,8 @@ public:
   void handle_motor_out_range_input(uint16_t value);
   void handle_motor_coast_when_off_input(bool motor_coast);
 
+  void handle_error_enable_input(int index, int id);
+
   void handle_never_sleep_input(bool never_sleep);
   void handle_vin_calibration_input(int16_t vin_calibration);
 

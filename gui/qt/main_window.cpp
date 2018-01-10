@@ -226,7 +226,7 @@ void main_window::set_error_flags_halting(uint16_t error_flags_halting)
 
 void main_window::increment_errors_occurred(uint16_t errors_occurred)
 {
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < 16; i++)
   {
     if (error_rows[i].count_value == NULL) { continue; }
 
@@ -240,7 +240,7 @@ void main_window::increment_errors_occurred(uint16_t errors_occurred)
 
 void main_window::reset_error_counts()
 {
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < 16; i++)
   {
     if (error_rows[i].count_value == NULL) { continue; }
 
@@ -1427,43 +1427,43 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
   layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
   layout->addWidget(new errors_control(++row_number,
-    "awaiting_command", "0x0001", "Awaiting command", false, false, error_rows[JRK_ERROR_AWAITING_COMMAND])
+    "awaiting_command", "0x0001", "Awaiting command", false, false, error_rows[JRK_ERROR_AWAITING_COMMAND], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "no_power", "0x0002", "No power", false, true, error_rows[JRK_ERROR_NO_POWER])
+    "no_power", "0x0002", "No power", false, true, error_rows[JRK_ERROR_NO_POWER], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "motor_driver_error", "0x0004", "Motor driver error", false, true, error_rows[JRK_ERROR_MOTOR_DRIVER])
+    "motor_driver_error", "0x0004", "Motor driver error", false, true, error_rows[JRK_ERROR_MOTOR_DRIVER], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "input_invalid", "0x0008", "Input invalid", false, true, error_rows[JRK_ERROR_INPUT_INVALID])
+    "input_invalid", "0x0008", "Input invalid", false, true, error_rows[JRK_ERROR_INPUT_INVALID], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "input_disconnect", "0x0010", "Input disconnect", true, true, error_rows[JRK_ERROR_INPUT_DISCONNECT])
+    "input_disconnect", "0x0010", "Input disconnect", true, true, error_rows[JRK_ERROR_INPUT_DISCONNECT], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true, error_rows[JRK_ERROR_FEEDBACK_DISCONNECT])
+    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true, error_rows[JRK_ERROR_FEEDBACK_DISCONNECT], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true, error_rows[JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED])
+    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true, error_rows[JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "serial_signal_error", "0x0080", "Serial signal error", true, false, error_rows[JRK_ERROR_SERIAL_SIGNAL])
+    "serial_signal_error", "0x0080", "Serial signal error", true, false, error_rows[JRK_ERROR_SERIAL_SIGNAL], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "serial_overrun", "0x0100", "Serial overrun", true, false, error_rows[JRK_ERROR_SERIAL_OVERRUN])
+    "serial_overrun", "0x0100", "Serial overrun", true, false, error_rows[JRK_ERROR_SERIAL_OVERRUN], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false, error_rows[JRK_ERROR_SERIAL_BUFFER_FULL])
+    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false, error_rows[JRK_ERROR_SERIAL_BUFFER_FULL], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "serial_crc_error", "0x0400", "Serial CRC error", true, false, error_rows[JRK_ERROR_SERIAL_CRC])
+    "serial_crc_error", "0x0400", "Serial CRC error", true, false, error_rows[JRK_ERROR_SERIAL_CRC], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "serial_protocol_error", "0x0800", "Serial protocol error", true, false, error_rows[JRK_ERROR_SERIAL_PROTOCOL])
+    "serial_protocol_error", "0x0800", "Serial protocol error", true, false, error_rows[JRK_ERROR_SERIAL_PROTOCOL], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addWidget(new errors_control(++row_number,
-    "serial_timeout_error", "0x1000", "Serial timeout error", true, false, error_rows[JRK_ERROR_SERIAL_TIMEOUT])
+    "serial_timeout_error", "0x1000", "Serial timeout error", true, false, error_rows[JRK_ERROR_SERIAL_TIMEOUT], this)
     ,row_number,0,1,8,Qt::AlignCenter);
   layout->addLayout(errors_bottom_buttons,16,0,4,8,Qt::AlignCenter);
 
@@ -2462,6 +2462,29 @@ void main_window::set_motor_coast_when_off(uint8_t value)
   suppress_events = false;
 }
 
+void main_window::set_error_enable(uint16_t enable, uint16_t latch)
+{
+  suppress_events = true;
+
+  error_rows[0].latched_radio->setChecked(true);
+
+  for (int i = 1; i < 13; i++)
+  {
+    if (enable & (1 << i))
+    {
+      error_rows[i].enabled_radio->setChecked(true);
+    }
+    else if (latch & (1 << i))
+    {
+      error_rows[i].latched_radio->setChecked(true);
+    }
+    else
+      error_rows[i].disabled_radio->setChecked(true);
+
+  }
+  suppress_events = false;
+}
+
 void main_window::on_update_timer_timeout()
 {
   controller->update();
@@ -2604,6 +2627,7 @@ errors_control::errors_control
 (int row_number, const QString& object_name, const QString& bit_mask_text,
     const QString& error_label_text, const bool& disabled_visible,
       const bool& enabled_visible, error_row &er, QWidget *parent)
+  : QWidget(parent)
 {
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
@@ -2637,14 +2661,14 @@ errors_control::errors_control
 
   er.latched_radio = new QRadioButton(tr("Enabled and latched"));
   er.latched_radio->setObjectName("latched_radio");
-  er.latched_radio->setChecked(true);
+  // er.latched_radio->setChecked(true);
 
-  er.error_enable_group = new QButtonGroup(this);
-  er.error_enable_group->setObjectName("error_enable_group");
-  er.error_enable_group->setExclusive(true);
-  er.error_enable_group->addButton(er.disabled_radio, 0);
-  er.error_enable_group->addButton(er.enabled_radio, 1);
-  er.error_enable_group->addButton(er.latched_radio, 2);
+  error_enable_group = new QButtonGroup(this);
+  error_enable_group->setObjectName("error_enable_group");
+  error_enable_group->setExclusive(true);
+  error_enable_group->addButton(er.disabled_radio, 0);
+  error_enable_group->addButton(er.enabled_radio, 1);
+  error_enable_group->addButton(er.latched_radio, 2);
 
   er.stopping_value = new QLabel(tr("No"));
   er.stopping_value->setObjectName("stopping_value");
@@ -2654,7 +2678,6 @@ errors_control::errors_control
   er.count_value->setObjectName("count_value");
   er.count_value->setAlignment(Qt::AlignCenter);
 
-  setObjectName(object_name);
   er.bit_mask_label->setText(bit_mask_text);
   er.error_label->setText(error_label_text);
 
@@ -2693,4 +2716,34 @@ errors_control::errors_control
   er.enabled_radio->setVisible(enabled_visible);
 
   errors_central->setMargin(0);
+
+  index = row_number - 1;
+
+  QMetaObject::connectSlotsByName(this);
+
+}
+
+bool errors_control::window_suppress_events() const
+{
+  return ((main_window *)parent())->suppress_events;
+}
+
+void errors_control::set_window_suppress_events(bool suppress_events)
+{
+  ((main_window *)parent())->suppress_events = suppress_events;
+}
+
+main_controller * errors_control::window_controller() const
+{
+  return ((main_window *)parent())->controller;
+}
+
+void errors_control::on_error_enable_group_buttonToggled(int id, bool checked)
+{
+  std::cout << "test" << std::endl; //tmphax
+  std::cout << id << std::endl; //tmphax
+  std::cout << index << std::endl; //tmphax
+  if (window_suppress_events()) { return; }
+
+  if (checked) {window_controller()->handle_error_enable_input(index, id);}
 }

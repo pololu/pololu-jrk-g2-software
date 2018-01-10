@@ -38,7 +38,7 @@ struct error_row
 	QLabel *error_label = NULL;
 	QRadioButton *disabled_radio;
 	QRadioButton *enabled_radio;
-  QButtonGroup *error_enable_group;
+
 	QRadioButton *latched_radio;
 	QLabel *stopping_value = NULL;
 	QLabel *count_value = NULL;
@@ -171,6 +171,8 @@ public:
   void set_motor_max_duty_cycle_out_of_range(uint16_t);
   void set_motor_coast_when_off(uint8_t value);
 
+  void set_error_enable(uint16_t enable, uint16_t latch);
+
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
 
@@ -283,7 +285,7 @@ private slots:
   void on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
 private:
-	std::array<error_row,32> error_rows;
+	std::array<error_row,16> error_rows;
 
 	QTimer *update_timer = NULL;
 
@@ -574,6 +576,7 @@ private:
   bool start_event_reported = false;
 
   friend class pid_constant_control;
+  friend class errors_control;
 };
 
 class pid_constant_control : public QObject
@@ -620,10 +623,20 @@ class errors_control : public QWidget
 public:
   errors_control(int row_number, const QString& object_name, const QString& bit_mask_text,
       const QString& error_label_text, const bool& disabled_visible,
-      const bool& enabled_visible, error_row &er, QWidget *parent = 0);
+      const bool& enabled_visible, error_row &er, QWidget *parent = Q_NULLPTR);
 
+  int index;
+
+private slots:
+  void on_error_enable_group_buttonToggled(int id, bool checked);
+
+private:
+  bool window_suppress_events() const;
+  void set_window_suppress_events(bool suppress_events);
+  main_controller * window_controller() const;
 	QGridLayout *errors_central;
 	QWidget *errors_frame;
+  QButtonGroup *error_enable_group;
 };
 
 class pid_constant_validator : public QDoubleValidator
