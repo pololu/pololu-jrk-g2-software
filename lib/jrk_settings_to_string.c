@@ -323,12 +323,12 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
+    uint16_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
     jrk_sprintf(&str, "motor_max_current_forward: %u\n", motor_max_current_forward);
   }
 
   {
-    uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
+    uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
     jrk_sprintf(&str, "motor_max_current_reverse: %u\n", motor_max_current_reverse);
   }
 

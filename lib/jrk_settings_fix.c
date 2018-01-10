@@ -472,7 +472,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
+    uint16_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
     if (motor_max_current_forward > 31)
     {
       motor_max_current_forward = 31;
@@ -484,7 +484,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
+    uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
     if (motor_max_current_reverse > 31)
     {
       motor_max_current_reverse = 31;

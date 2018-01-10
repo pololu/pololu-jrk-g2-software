@@ -577,7 +577,7 @@ void main_controller::handle_variables_changed()
   window->set_scaled_current_mv(
     variables.get_scaled_current_mv(window->get_current_offset_mv()));
   window->set_raw_current_mv(variables.get_raw_current_mv());
-  window->set_current_chopping_log(variables.get_current_chopping_log());
+  window->set_current_chopping_log(0);  // TODO: remove the current_chopping_log graph
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());
   // TODO: window->increment_errors_occurred(variables.get_errors_occurred());

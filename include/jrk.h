@@ -1057,12 +1057,12 @@ uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings *);
 // - jrk_achievable_current_limit()
 JRK_API
 void jrk_settings_set_motor_max_current_forward(jrk_settings *,
-  uint8_t motor_max_current_forward);
+  uint16_t motor_max_current_forward);
 
 // Gets the motor_max_current_forward setting, which is described in
 // jrk_settings_set_motor_max_current_forward.
 JRK_API
-uint8_t jrk_settings_get_motor_max_current_forward(const jrk_settings *);
+uint16_t jrk_settings_get_motor_max_current_forward(const jrk_settings *);
 
 // Sets the motor_max_current_reverse setting.
 //
@@ -1070,12 +1070,12 @@ uint8_t jrk_settings_get_motor_max_current_forward(const jrk_settings *);
 // See the documentation of motor_max_current_forward.
 JRK_API
 void jrk_settings_set_motor_max_current_reverse(jrk_settings *,
-  uint8_t motor_max_current_reverse);
+  uint16_t motor_max_current_reverse);
 
 // Gets the motor_max_current_reverse setting, which is described in
 // jrk_settings_set_motor_max_current_reverse.
 JRK_API
-uint8_t jrk_settings_get_motor_max_current_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_motor_max_current_reverse(const jrk_settings *);
 
 // Sets the motor_current_calibration_forward setting.
 JRK_API
@@ -1501,14 +1501,14 @@ uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_reverse(const jrk_ove
 // See jrk_settings_set_motor_max_current_forward() for more info.
 JRK_API
 void jrk_overridable_settings_set_motor_max_current_forward(jrk_overridable_settings *,
-  uint8_t motor_max_current_forward);
+  uint16_t motor_max_current_forward);
 
 // Gets the motor_max_current_forward setting
 // in a jrk_overridable_settings object.
 //
 // See jrk_settings_set_motor_max_current_forward() for more info.
 JRK_API
-uint8_t jrk_overridable_settings_get_motor_max_current_forward(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_motor_max_current_forward(const jrk_overridable_settings *);
 
 // Sets the motor_max_current_reverse setting
 // in a jrk_overridable_settings object.
@@ -1516,14 +1516,14 @@ uint8_t jrk_overridable_settings_get_motor_max_current_forward(const jrk_overrid
 // See jrk_settings_set_motor_max_current_reverse() for more info.
 JRK_API
 void jrk_overridable_settings_set_motor_max_current_reverse(jrk_overridable_settings *,
-  uint8_t motor_max_current_reverse);
+  uint16_t motor_max_current_reverse);
 
 // Gets the motor_max_current_reverse setting
 // in a jrk_overridable_settings object.
 //
 // See jrk_settings_set_motor_max_current_reverse() for more info.
 JRK_API
-uint8_t jrk_overridable_settings_get_motor_max_current_reverse(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_motor_max_current_reverse(const jrk_overridable_settings *);
 
 // Sets the motor_current_calibration_forward setting
 // in a jrk_overridable_settings object.
@@ -1694,9 +1694,21 @@ uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_current_high_res(const jrk_variables *);
 
-// Gets the current_chopping_log variable.
+// Gets the max_current variable.
 JRK_API
-uint16_t jrk_variables_get_current_chopping_log(const jrk_variables *);
+uint16_t jrk_variables_get_max_current(const jrk_variables *);
+
+// Gets the last_duty_cycle variable.
+JRK_API
+int16_t jrk_variables_get_last_duty_cycle(const jrk_variables *);
+
+// Gets the current_chopping_consecutive_count variable.
+JRK_API
+uint8_t jrk_variables_get_current_chopping_consecutive_count(const jrk_variables *);
+
+// Gets the current_chopping_occurrence_count variable.
+JRK_API
+uint8_t jrk_variables_get_current_chopping_occurrence_count(const jrk_variables *);
 
 // End of auto-generated variables getter prototypes.
 

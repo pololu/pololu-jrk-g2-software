@@ -72,7 +72,19 @@ Variables = [
     type: :uint16_t,
   },
   {
-    name: 'current_chopping_log',
+    name: 'max_current',
     type: :uint16_t,
+  },
+  {
+    name: 'last_duty_cycle',
+    type: :int16_t,
+  },
+  {
+    name: 'current_chopping_consecutive_count',
+    type: :uint8_t,
+  },
+  {
+    name: 'current_chopping_occurrence_count',
+    type: :uint8_t,
   },
 ]

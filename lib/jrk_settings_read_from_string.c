@@ -706,7 +706,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Invalid motor_max_current_forward value.");
     }
-    if (motor_max_current_forward < 0 || motor_max_current_forward > UINT8_MAX)
+    if (motor_max_current_forward < 0 || motor_max_current_forward > UINT16_MAX)
     {
       return jrk_error_create(
         "The motor_max_current_forward value is out of range.");
@@ -720,7 +720,7 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Invalid motor_max_current_reverse value.");
     }
-    if (motor_max_current_reverse < 0 || motor_max_current_reverse > UINT8_MAX)
+    if (motor_max_current_reverse < 0 || motor_max_current_reverse > UINT16_MAX)
     {
       return jrk_error_create(
         "The motor_max_current_reverse value is out of range.");

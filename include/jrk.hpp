@@ -918,25 +918,25 @@ namespace jrk
     }
 
     /// Wrapper for jrk_settings_set_motor_max_current_forward().
-    void set_motor_max_current_forward(uint8_t value) noexcept
+    void set_motor_max_current_forward(uint16_t value) noexcept
     {
       jrk_settings_set_motor_max_current_forward(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_motor_max_current_forward().
-    uint8_t get_motor_max_current_forward() const noexcept
+    uint16_t get_motor_max_current_forward() const noexcept
     {
       return jrk_settings_get_motor_max_current_forward(pointer);
     }
 
     /// Wrapper for jrk_settings_set_motor_max_current_reverse().
-    void set_motor_max_current_reverse(uint8_t value) noexcept
+    void set_motor_max_current_reverse(uint16_t value) noexcept
     {
       jrk_settings_set_motor_max_current_reverse(pointer, value);
     }
 
     /// Wrapper for jrk_settings_get_motor_max_current_reverse().
-    uint8_t get_motor_max_current_reverse() const noexcept
+    uint16_t get_motor_max_current_reverse() const noexcept
     {
       return jrk_settings_get_motor_max_current_reverse(pointer);
     }
@@ -1284,25 +1284,25 @@ namespace jrk
     }
 
     /// Wrapper for jrk_overridable_settings_set_motor_max_current_forward().
-    void set_motor_max_current_forward(uint8_t value) noexcept
+    void set_motor_max_current_forward(uint16_t value) noexcept
     {
       jrk_overridable_settings_set_motor_max_current_forward(pointer, value);
     }
 
     /// Wrapper for jrk_overridable_settings_get_motor_max_current_forward().
-    uint8_t get_motor_max_current_forward() const noexcept
+    uint16_t get_motor_max_current_forward() const noexcept
     {
       return jrk_overridable_settings_get_motor_max_current_forward(pointer);
     }
 
     /// Wrapper for jrk_overridable_settings_set_motor_max_current_reverse().
-    void set_motor_max_current_reverse(uint8_t value) noexcept
+    void set_motor_max_current_reverse(uint16_t value) noexcept
     {
       jrk_overridable_settings_set_motor_max_current_reverse(pointer, value);
     }
 
     /// Wrapper for jrk_overridable_settings_get_motor_max_current_reverse().
-    uint8_t get_motor_max_current_reverse() const noexcept
+    uint16_t get_motor_max_current_reverse() const noexcept
     {
       return jrk_overridable_settings_get_motor_max_current_reverse(pointer);
     }
@@ -1491,10 +1491,28 @@ namespace jrk
       return jrk_variables_get_current_high_res(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_current_chopping_log().
-    uint16_t get_current_chopping_log() const noexcept
+    /// Wrapper for jrk_variables_get_max_current().
+    uint16_t get_max_current() const noexcept
     {
-      return jrk_variables_get_current_chopping_log(pointer);
+      return jrk_variables_get_max_current(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_last_duty_cycle().
+    int16_t get_last_duty_cycle() const noexcept
+    {
+      return jrk_variables_get_last_duty_cycle(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_current_chopping_consecutive_count().
+    uint8_t get_current_chopping_consecutive_count() const noexcept
+    {
+      return jrk_variables_get_current_chopping_consecutive_count(pointer);
+    }
+
+    /// Wrapper for jrk_variables_get_current_chopping_occurrence_count().
+    uint8_t get_current_chopping_occurrence_count() const noexcept
+    {
+      return jrk_variables_get_current_chopping_occurrence_count(pointer);
     }
 
     // End of auto-generated variables C++ getters.

@@ -141,9 +141,7 @@ void print_status(const jrk::variables & vars,
     << vars.get_current_high_res()  // TODO: properly format this in mA or A
     << std::endl;
 
-  std::cout << left_column << "Current chopping log: "
-    << vars.get_current_chopping_log()
-    << std::endl;
+  // TODO: other current-related variables and lastDutyCycle
 
   std::cout << left_column << "PID period exceeded: "
     << (vars.get_pid_period_exceeded() ? "Yes" : "No")

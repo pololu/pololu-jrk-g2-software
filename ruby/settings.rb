@@ -641,7 +641,7 @@ EOF
   },
   {
     name: 'motor_max_current_forward',
-    type: :uint8_t,
+    type: :uint16_t,
     overridable: true,
     default: 10,
     max: 31,
@@ -662,7 +662,7 @@ EOF
   },
   {
     name: 'motor_max_current_reverse',
-    type: :uint8_t,
+    type: :uint16_t,
     overridable: true,
     default: 10,
     max: 31,
