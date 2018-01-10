@@ -1379,43 +1379,48 @@ QWidget *main_window::setup_motor_tab()
 QWidget *main_window::setup_errors_tab()
 {
   errors_page_widget = new QWidget();
-  QGridLayout *layout = errors_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setVerticalSpacing(0);
+
   QFont font;
   font.setBold(true);
   font.setWeight(75);
-  errors_bit_mask_label = new QLabel(tr("Bit mask\n"));
+
+  errors_bit_mask_label = new QLabel(tr(" Bit mask\n"));
   errors_bit_mask_label->setObjectName("errors_bit_mask_label");
   errors_bit_mask_label->setFont(font);
+
   errors_error_label = new QLabel(tr("Error\n"));
   errors_error_label->setObjectName("errors_error_label");
   errors_error_label->setFont(font);
+
   errors_setting_label = new QLabel(tr("Setting\n"));
   errors_setting_label->setObjectName("errors_setting_label");
   errors_setting_label->setFont(font);
+
   errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?\n"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
   errors_stopping_motor_label->setFont(font);
+
   errors_occurence_count_label = new QLabel(tr("Occurence\ncount\n"));
   errors_occurence_count_label->setObjectName("errors_occurence_count_label");
   errors_occurence_count_label->setAlignment(Qt::AlignCenter);
   errors_occurence_count_label->setFont(font);
 
-  QGridLayout *errors_column_labels = new QGridLayout();
-  QWidget *errors_column_labels_frame = new QWidget();
-
-  int row_number = 0;
-
-  QHBoxLayout *errors_bottom_buttons = new QHBoxLayout();
-  errors_clear_errors = new QPushButton(tr("&Clear Errors"));
+  errors_clear_errors = new QPushButton(tr("&Clear errors"));
   errors_clear_errors->setObjectName("errors_clear_errors");
+
   errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
   errors_reset_counts->setObjectName("errors_reset_counts");
+
+  QHBoxLayout *errors_bottom_buttons = new QHBoxLayout();
   errors_bottom_buttons->addWidget(errors_clear_errors,-1,Qt::AlignRight);
   errors_bottom_buttons->addWidget(errors_reset_counts,-1,Qt::AlignLeft);
 
+  int row_number = 0;
+
+  QGridLayout *layout = errors_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->setVerticalSpacing(0);
   layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
   layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
   layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
@@ -2010,7 +2015,7 @@ void main_window::set_tab_pages_enabled(bool enabled)
   // tab_widget->widget(1)->setEnabled(false);
   // tab_widget->widget(2)->setEnabled(false);
   // tab_widget->widget(3)->setEnabled(false);
-  tab_widget->widget(5)->setEnabled(false);
+  // tab_widget->widget(5)->setEnabled(false);
 }
 
 void main_window::set_restore_defaults_enabled(bool enabled)
@@ -2530,12 +2535,15 @@ void pid_constant_control::setup(QGroupBox * groupbox)
     pid_constant_lineedit->setFixedWidth(tmp_line.sizeHint().width());
   }
 
-  QDoubleValidator *constant_validator = new QDoubleValidator(0, 1023, 7, this);
-  constant_validator->setNotation(QDoubleValidator::StandardNotation);
+  pid_constant_validator *constant_validator =
+    new pid_constant_validator(0, 1023, 7, pid_constant_lineedit);
   pid_constant_lineedit->setValidator(constant_validator);
 
   connect(pid_constant_lineedit, SIGNAL(textEdited(const QString&)), this,
     SLOT(on_pid_constant_lineedit_textEdited(const QString&)));
+
+  connect(pid_constant_lineedit, SIGNAL(editingFinished()),
+    this, SLOT(on_pid_constant_lineedit_editingFinished()));
 
   QGridLayout *group_box_layout = new QGridLayout();
   group_box_layout->addWidget(pid_base_label,3,1,3,2);
@@ -2582,7 +2590,14 @@ void pid_constant_control::on_pid_constant_lineedit_textEdited(const QString& te
 {
   if (window_suppress_events()) { return; }
   double value = pid_constant_lineedit->displayText().toDouble();
+
   window_controller()->handle_pid_constant_control_constant(index, value);
+}
+
+void pid_constant_control::on_pid_constant_lineedit_editingFinished()
+{
+  if (window_suppress_events()) { return; }
+  window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(), pid_exponent_spinbox->value());
 }
 
 errors_control::errors_control
@@ -2606,9 +2621,11 @@ errors_control::errors_control
 
   er.bit_mask_label = new QLabel();
   er.bit_mask_label->setObjectName("bit_mask_label");
+  er.bit_mask_label->setAlignment(Qt::AlignCenter);
 
   er.error_label = new QLabel();
   er.error_label->setObjectName("error_label");
+  er.error_label->setAlignment(Qt::AlignLeft);
 
   er.disabled_radio = new QRadioButton(tr("Disabled"));
   er.disabled_radio->setObjectName("disabled_radio");
@@ -2620,12 +2637,22 @@ errors_control::errors_control
 
   er.latched_radio = new QRadioButton(tr("Enabled and latched"));
   er.latched_radio->setObjectName("latched_radio");
+  er.latched_radio->setChecked(true);
+
+  er.error_enable_group = new QButtonGroup(this);
+  er.error_enable_group->setObjectName("error_enable_group");
+  er.error_enable_group->setExclusive(true);
+  er.error_enable_group->addButton(er.disabled_radio, 0);
+  er.error_enable_group->addButton(er.enabled_radio, 1);
+  er.error_enable_group->addButton(er.latched_radio, 2);
 
   er.stopping_value = new QLabel(tr("No"));
   er.stopping_value->setObjectName("stopping_value");
+  er.stopping_value->setAlignment(Qt::AlignCenter);
 
   er.count_value = new QLabel(tr("0"));
   er.count_value->setObjectName("count_value");
+  er.count_value->setAlignment(Qt::AlignCenter);
 
   setObjectName(object_name);
   er.bit_mask_label->setText(bit_mask_text);
@@ -2635,32 +2662,32 @@ errors_control::errors_control
   // a way that can change from OS to OS.
   {
     QRadioButton tmp_button;
-    tmp_button.setText("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    tmp_button.setText("xxxxxxxxxxxxxxxxxx");
     QRadioButton tmp_button_2;
     tmp_button_2.setText("xxxxxxxxx");
     QLabel tmp_label;
     tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
     QLabel tmp_label2;
-    tmp_label2.setText("xxxxxxxxxx");
+    tmp_label2.setText("xxxxxxxxxxx");
+    QLabel tmp_label3;
+    tmp_label3.setText("xxxxxxxxxxxxxxx");
     er.bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
     er.error_label->setFixedWidth(tmp_label.sizeHint().width());
     er.disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
     er.enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
     er.latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    er.stopping_value->setFixedWidth(tmp_label2.sizeHint().width() * 150/100);
-    er.count_value->setFixedWidth(tmp_label2.sizeHint().width());
+    er.stopping_value->setFixedWidth(tmp_label3.sizeHint().width());
+    er.count_value->setFixedWidth(tmp_label3.sizeHint().width());
   }
 
-
-  errors_central->addWidget(er.errors_frame,0,0,3,9);
-  errors_central->addWidget(er.bit_mask_label,1,1,Qt::AlignLeft);
-  errors_central->addWidget(er.error_label,1,2,Qt::AlignCenter);
-  errors_central->addWidget(er.disabled_radio,1,3,Qt::AlignRight);
-  errors_central->addWidget(er.enabled_radio,1,4,Qt::AlignCenter);
-  errors_central->addWidget(er.latched_radio,1,5,Qt::AlignLeft);
-  errors_central->addWidget(er.stopping_value,1,6,Qt::AlignLeft);
-  errors_central->addWidget(er.count_value,1,7,1,2,Qt::AlignRight);
-  errors_central->setColumnStretch(6,10);
+  errors_central->addWidget(er.errors_frame,0,0,3,8);
+  errors_central->addWidget(er.bit_mask_label,1,1);
+  errors_central->addWidget(er.error_label,1,2);
+  errors_central->addWidget(er.disabled_radio,1,3);
+  errors_central->addWidget(er.enabled_radio,1,4);
+  errors_central->addWidget(er.latched_radio,1,5);
+  errors_central->addWidget(er.stopping_value,1,6);
+  errors_central->addWidget(er.count_value,1,7);
 
   er.disabled_radio->setVisible(disabled_visible);
   er.enabled_radio->setVisible(enabled_visible);
