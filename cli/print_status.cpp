@@ -52,6 +52,34 @@ static void print_errors(uint32_t errors, const char * error_set_name)
   }
 }
 
+static std::string analog_reading_format(uint16_t reading)
+{
+  if (reading == 0xFFFF) { return std::string("N/A"); }
+  return std::to_string(reading);
+}
+
+static void print_pin_info(const jrk::variables & vars,
+  uint8_t pin, const char * pin_name)
+{
+  std::cout << pin_name << " pin:" << std::endl;
+
+  if (pin != JRK_PIN_NUM_RC)
+  {
+    std::cout << left_column << "  State: "
+      << jrk_look_up_pin_state_name_ui(vars.get_pin_state(pin))
+      << std::endl;
+  }
+
+  if (pin != JRK_PIN_NUM_RC && pin != JRK_PIN_NUM_FBT)
+  {
+    std::cout << left_column << "  Analog reading: "
+      << analog_reading_format(vars.get_analog_reading(pin)) << std::endl;
+  }
+
+  std::cout << left_column << "  Digital reading: "
+    << vars.get_digital_reading(pin) << std::endl;
+}
+
 void print_status(const jrk::variables & vars,
   const jrk::overridable_settings & osettings,
   const std::string & name,
@@ -250,6 +278,18 @@ void print_status(const jrk::variables & vars,
       << osettings.get_motor_brake_duration_reverse()
       << " ms" << std::endl;
 
-    // TODO: print analog readings from pins and the pin states
+    std::cout << std::endl;
+  }
+
+  if (full_output)
+  {
+    print_pin_info(vars, JRK_PIN_NUM_SCL, "SCL");
+    print_pin_info(vars, JRK_PIN_NUM_SDA, "SDA");
+    print_pin_info(vars, JRK_PIN_NUM_TX, "TX");
+    print_pin_info(vars, JRK_PIN_NUM_RX, "RX");
+    print_pin_info(vars, JRK_PIN_NUM_RC, "RC");
+    print_pin_info(vars, JRK_PIN_NUM_AUX, "AUX");
+    print_pin_info(vars, JRK_PIN_NUM_FBA, "FBA");
+    print_pin_info(vars, JRK_PIN_NUM_FBT, "FBT");
   }
 }

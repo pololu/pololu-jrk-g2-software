@@ -2,8 +2,7 @@
 
 #define PIN_COUNT 5
 
-struct jrk_variables
-{
+struct jrk_variables {
   uint8_t avoid_struct_size_zero;  // TODO: remove, put real variables here
 
   // Beginning of auto-generated variables struct members.
@@ -32,6 +31,12 @@ struct jrk_variables
   uint8_t current_chopping_occurrence_count;
 
   // End of auto-generated variables struct members.
+
+  struct {
+    uint16_t analog_reading;
+    bool digital_reading;
+    uint8_t pin_state;
+  } pin_info[JRK_CONTROL_PIN_COUNT];
 };
 
 jrk_error * jrk_variables_create(jrk_variables ** variables)
@@ -138,6 +143,55 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->current_chopping_occurrence_count = buf[JRK_VAR_CURRENT_CHOPPING_OCCURRENCE_COUNT];
 
   // End of auto-generated buffer-to-variables code.
+
+  {
+    // Digital readings.
+    uint8_t d = buf[JRK_VAR_DIGITAL_READINGS];
+    vars->pin_info[JRK_PIN_NUM_SCL].digital_reading = d >> JRK_PIN_NUM_SCL & 1;
+    vars->pin_info[JRK_PIN_NUM_SDA].digital_reading = d >> JRK_PIN_NUM_SDA & 1;
+    vars->pin_info[JRK_PIN_NUM_TX].digital_reading = d >> JRK_PIN_NUM_TX & 1;
+    vars->pin_info[JRK_PIN_NUM_RX].digital_reading = d >> JRK_PIN_NUM_RX & 1;
+    vars->pin_info[JRK_PIN_NUM_RC].digital_reading = d >> JRK_PIN_NUM_RC & 1;
+    vars->pin_info[JRK_PIN_NUM_AUX].digital_reading = d >> JRK_PIN_NUM_AUX & 1;
+    vars->pin_info[JRK_PIN_NUM_FBA].digital_reading = d >> JRK_PIN_NUM_FBA & 1;
+    vars->pin_info[JRK_PIN_NUM_FBT].digital_reading = d >> JRK_PIN_NUM_FBT & 1;
+  }
+
+  {
+    vars->pin_info[JRK_PIN_NUM_SCL].analog_reading =
+      read_uint16_t(buf + JRK_VAR_ANALOG_READING_SCL);
+
+    vars->pin_info[JRK_PIN_NUM_SDA].analog_reading =
+      read_uint16_t(buf + JRK_VAR_ANALOG_READING_SDA);
+
+    vars->pin_info[JRK_PIN_NUM_TX].analog_reading =
+      read_uint16_t(buf + JRK_VAR_ANALOG_READING_TX);
+
+    vars->pin_info[JRK_PIN_NUM_RX].analog_reading =
+      read_uint16_t(buf + JRK_VAR_ANALOG_READING_RX);
+
+    vars->pin_info[JRK_PIN_NUM_RC].analog_reading = 0xFFFF;
+
+    vars->pin_info[JRK_PIN_NUM_AUX].analog_reading =
+      read_uint16_t(buf + JRK_VAR_ANALOG_READING_AUX);
+
+    vars->pin_info[JRK_PIN_NUM_FBA].analog_reading =
+      read_uint16_t(buf + JRK_VAR_ANALOG_READING_FBA);
+
+    vars->pin_info[JRK_PIN_NUM_FBT].analog_reading = 0xFFFF;
+  }
+
+  {
+    uint16_t s = read_uint16_t(buf + JRK_VAR_PIN_STATES);
+    vars->pin_info[JRK_PIN_NUM_SCL].pin_state = s >> (JRK_PIN_NUM_SCL * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_SDA].pin_state = s >> (JRK_PIN_NUM_SDA * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_TX].pin_state = s >> (JRK_PIN_NUM_TX * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_RX].pin_state = s >> (JRK_PIN_NUM_RX * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_RC].pin_state = s >> (JRK_PIN_NUM_RC * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_AUX].pin_state = s >> (JRK_PIN_NUM_AUX * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_FBA].pin_state = s >> (JRK_PIN_NUM_FBA * 2) & 3;
+    vars->pin_info[JRK_PIN_NUM_FBT].pin_state = s >> (JRK_PIN_NUM_FBT * 2) & 3;
+  }
 }
 
 jrk_error * jrk_get_variables(jrk_handle * handle, jrk_variables ** variables,
@@ -368,4 +422,25 @@ int32_t jrk_variables_get_scaled_current_mv(const jrk_variables * vars, int32_t 
   // Divide by the duty cycle as a number between 0 and 1.  The multiplication
   // cannot overflow because 0xFFFF * 600 is expressible as an int32_t.
   return (int32_t)raw_current_mv * 600 / duty_cycle;
+}
+
+uint16_t jrk_variables_get_analog_reading(const jrk_variables * variables,
+  uint8_t pin)
+{
+  if (variables == NULL || pin >= JRK_CONTROL_PIN_COUNT) { return 0xFFFF; }
+  return variables->pin_info[pin].analog_reading;
+}
+
+bool jrk_variables_get_digital_reading(const jrk_variables * variables,
+  uint8_t pin)
+{
+  if (variables == NULL || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
+  return variables->pin_info[pin].digital_reading;
+}
+
+uint8_t jrk_variables_get_pin_state(const jrk_variables * variables,
+  uint8_t pin)
+{
+  if (variables == NULL || pin >= PIN_COUNT) { return 0; }
+  return variables->pin_info[pin].pin_state;
 }

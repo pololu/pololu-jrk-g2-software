@@ -83,6 +83,12 @@ const char * jrk_look_up_error_name_ui(uint32_t error);
 JRK_API
 const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset);
 
+/// Looks up the string corresponding to the specified pin state, e.g. "Output
+/// low".  The pin_state argument should be one of the JRK_PIN_STATE_* macros,
+/// but if it is not, this functions returns "(Unknown)".  The returned string
+/// will be valid indefinitely and should not be freed.
+JRK_API
+const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state);
 
 // jrk_error ////////////////////////////////////////////////////////////////////
 
@@ -1727,6 +1733,42 @@ uint16_t jrk_variables_get_raw_current_mv(const jrk_variables *);
 // is no current, in units of millivolts.
 JRK_API
 int32_t jrk_variables_get_scaled_current_mv(const jrk_variables *, int32_t offset_mv);
+
+// Gets the analog reading from the specified pin.
+//
+// The pin_number argument should be one of the JRK_PIN_NUM_* macros.
+//
+// The return value will be a left-justified analog reading; a value of 0
+// represents 0 V and a value near 0xFFFE represents the voltage on the
+// controller's 5V pin.  A value of 0xFFFF means the readings is not available.
+// The RC and FBT pins do not support analog readings, so their readings are always
+// unavailable.
+//
+// See also jrk_variables_get_digital_reading().
+JRK_API
+uint16_t jrk_variables_get_analog_reading(const jrk_variables *, uint8_t pin);
+
+// Gets the digital reading for the specified pin.
+//
+// The pin argument should be one of the JRK_PIN_NUM_* macros.
+//
+// A return value of 0 means low while 1 means high.  In most cases, pins
+// configured as analog inputs cannot be read as digital inputs, so their values
+// will be 0.  See jrk_variables_get_analog_reading() for those pins.
+JRK_API
+bool jrk_variables_get_digital_reading(const jrk_variables *, uint8_t pin);
+
+/// Gets the pin state for the specified pin, i.e. what kind of input or output
+/// it is.
+///
+/// Note that the state might be misleading if the pin is being used as a serial
+/// or I2C pin.
+///
+/// This pin argument should be one of the JRK_PIN_NUM_* macros.
+///
+/// The return value is one of the JRK_PIN_STATE_* macros.
+JRK_API
+uint8_t jrk_variables_get_pin_state(const jrk_variables *, uint8_t pin);
 
 
 // jrk_device ///////////////////////////////////////////////////////////////////
