@@ -119,20 +119,6 @@ void print_status(const jrk::variables & vars,
 
   std::cout << std::endl;
 
-  std::cout << left_column << "RC pulse width: "
-    << vars.get_rc_pulse_width()
-    << std::endl;
-
-  std::cout << left_column << "Tachometer reading: "
-    << vars.get_tachometer_reading()
-    << std::endl;
-
-  std::cout << left_column << "VIN voltage: "
-            << convert_mv_to_v_string(vars.get_vin_voltage(), full_output)
-    << std::endl;
-
-  std::cout << std::endl;
-
   std::cout << left_column << "Input: "
     << vars.get_input()
     << std::endl;
@@ -169,7 +155,9 @@ void print_status(const jrk::variables & vars,
     << vars.get_current_high_res()  // TODO: properly format this in mA or A
     << std::endl;
 
-  // TODO: other current-related variables and lastDutyCycle
+  std::cout << left_column << "VIN voltage: "
+    << convert_mv_to_v_string(vars.get_vin_voltage(), full_output)
+    << std::endl;
 
   std::cout << left_column << "PID period exceeded: "
     << (vars.get_pid_period_exceeded() ? "Yes" : "No")
@@ -185,11 +173,12 @@ void print_status(const jrk::variables & vars,
     "Errors currently stopping the motor");
   print_errors(vars.get_error_flags_occurred(),
     "Errors that occurred since last check");
-
   std::cout << std::endl;
 
   if (full_output)
   {
+    // Overwritable variables
+
     std::cout << left_column
       << "Reset integral when proportional term exceeds max duty cycle: "
       << (osettings.get_pid_reset_integral() ? "Yes" : "No")
@@ -277,6 +266,35 @@ void print_status(const jrk::variables & vars,
     std::cout << left_column << "Brake duration reverse: "
       << osettings.get_motor_brake_duration_reverse()
       << " ms" << std::endl;
+
+    std::cout << std::endl;
+  }
+
+  if (full_output)
+  {
+    std::cout << left_column << "RC pulse width: "
+      << vars.get_rc_pulse_width()
+      << std::endl;
+
+    std::cout << left_column << "Tachometer reading: "
+      << vars.get_tachometer_reading()
+      << std::endl;
+
+    std::cout << left_column << "Last duty cycle: "
+      << vars.get_last_duty_cycle()
+      << std::endl;
+
+    std::cout << left_column << "Max current: "
+      << vars.get_max_current()
+      << std::endl;
+
+    std::cout << left_column << "Current chopping consecutive count: "
+      << (uint32_t)vars.get_current_chopping_consecutive_count()
+      << std::endl;
+
+    std::cout << left_column << "Current chopping occurrence count: "
+      << (uint32_t)vars.get_current_chopping_occurrence_count()
+      << std::endl;
 
     std::cout << std::endl;
   }
