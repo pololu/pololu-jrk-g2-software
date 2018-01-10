@@ -1534,6 +1534,24 @@ namespace jrk
     {
       return jrk_variables_get_scaled_current_mv(pointer, offset_mv);
     }
+
+    /// Wrapper for jrk_variables_get_analog_reading().
+    uint16_t get_analog_reading(uint8_t pin) const noexcept
+    {
+      return jrk_variables_get_analog_reading(pointer, pin);
+    }
+
+    /// Wrapper for jrk_variables_get_digital_reading().
+    bool get_digital_reading(uint8_t pin) const noexcept
+    {
+      return jrk_variables_get_digital_reading(pointer, pin);
+    }
+
+    /// Wrapper for jrk_variables_get_pin_state().
+    uint8_t get_pin_state(uint8_t pin) const noexcept
+    {
+      return jrk_variables_get_pin_state(pointer, pin);
+    }
   };
 
   /// Represents a jrk that is or was connected to the computer.  Can also be in
