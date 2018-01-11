@@ -188,17 +188,17 @@ void graph_widget::setup_ui()
   current_chopping_log.double_ended_range = true;
   current_chopping_log.range_value = 65535;
 
-  all_plots.append(input);
-  all_plots.append(target);
-  all_plots.append(feedback);
-  all_plots.append(scaled_feedback);
-  all_plots.append(error);
-  all_plots.append(integral);
-  all_plots.append(duty_cycle_target);
-  all_plots.append(duty_cycle);
-  all_plots.append(raw_current);
-  all_plots.append(scaled_current);
-  all_plots.append(current_chopping_log);
+  all_plots.append(&input);
+  all_plots.append(&target);
+  all_plots.append(&feedback);
+  all_plots.append(&scaled_feedback);
+  all_plots.append(&error);
+  all_plots.append(&integral);
+  all_plots.append(&duty_cycle_target);
+  all_plots.append(&duty_cycle);
+  all_plots.append(&raw_current);
+  all_plots.append(&scaled_current);
+  all_plots.append(&current_chopping_log);
 
   custom_plot->xAxis->QCPAxis::setRangeReversed(true);
   custom_plot->yAxis->setRange(-100,100);
@@ -219,26 +219,24 @@ void graph_widget::setup_plots()
 // sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot.
 // connects the valueChanged signal of the plot_range to change the ranges of the plots.
 {
-
-
-  for(int i=0; i<all_plots.size(); i++)
+  for (auto plot : all_plots)
   {
-    all_plots[i].plot_range->setDecimals(0);
-    all_plots[i].plot_range->setSingleStep(1.0);
+    plot->plot_range->setDecimals(0);
+    plot->plot_range->setSingleStep(1.0);
 
-    all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+    plot->plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
 
-    all_plots[i].plot_axis->setVisible(false);
+    plot->plot_axis->setVisible(false);
 
-    all_plots[i].range_label->setStyleSheet(QStringLiteral("font: 14px"));
+    plot->range_label->setStyleSheet(QStringLiteral("font: 14px"));
 
-    if (all_plots[i].double_ended_range == false)
-      all_plots[i].plot_axis->setRange(0, all_plots[i].range_value);
+    if (plot->double_ended_range == false)
+      plot->plot_axis->setRange(0, plot->range_value);
     else
-      all_plots[i].plot_axis->setRange(-all_plots[i].range_value, all_plots[i].range_value);
+      plot->plot_axis->setRange(-plot->range_value, plot->range_value);
 
-    all_plots[i].plot_range->setRange(0, all_plots[i].range_value);
-    all_plots[i].plot_range->setValue(all_plots[i].range_value);
+    plot->plot_range->setRange(0, plot->range_value);
+    plot->plot_range->setValue(plot->range_value);
     // Set the size of the labels and buttons for the errors tab in
     // a way that can change from OS to OS.
     {
@@ -246,34 +244,34 @@ void graph_widget::setup_plots()
       tmp_label2.setText("xxxxxxxxxxxxx");
       QLabel tmp_label3;
       tmp_label3.setText("xxxxxxxxxxxxxxxxxxxxxxx");
-      all_plots[i].plot_range->setFixedWidth(tmp_label2.sizeHint().width());
-      all_plots[i].plot_display->setFixedWidth(tmp_label3.sizeHint().width());
+      plot->plot_range->setFixedWidth(tmp_label2.sizeHint().width());
+      plot->plot_display->setFixedWidth(tmp_label3.sizeHint().width());
     }
 
-    all_plots[i].plot_display->setCheckable(true);
-    all_plots[i].plot_display->setChecked(true);
+    plot->plot_display->setCheckable(true);
+    plot->plot_display->setChecked(true);
 
-    all_plots[i].graph_data_selection_bar->setMargin(0);;
-    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_display, -1, Qt::AlignLeft);
-    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].range_label, 2, Qt::AlignRight);
-    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_range, -1, Qt::AlignRight);
+    plot->graph_data_selection_bar->setMargin(0);;
+    plot->graph_data_selection_bar->addWidget(plot->plot_display, -1, Qt::AlignLeft);
+    plot->graph_data_selection_bar->addWidget(plot->range_label, 2, Qt::AlignRight);
+    plot->graph_data_selection_bar->addWidget(plot->plot_range, -1, Qt::AlignRight);
 
-    all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis);
+    plot->plot_graph = new QCPGraph(custom_plot->xAxis2,plot->plot_axis);
 
-    all_plots[i].plot_graph->setPen(QPen(all_plots[i].color));
+    plot->plot_graph->setPen(QPen(plot->color));
 
-    connect(all_plots[i].plot_range, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
+    connect(plot->plot_range, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
 
-    connect(all_plots[i].plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+    connect(plot->plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
   }
 }
 
 void graph_widget::change_ranges()
 {
-  for(auto &x: all_plots)
+  for (auto plot : all_plots)
   {
-    x.plot_axis->setRangeUpper((x.plot_range->value()) * ((max_y->value())/100));
-    x.plot_axis->setRangeLower((x.plot_range->value()) * ((min_y->value())/100));
+    plot->plot_axis->setRangeUpper((plot->plot_range->value()) * ((max_y->value())/100));
+    plot->plot_axis->setRangeLower((plot->plot_range->value()) * ((min_y->value())/100));
   }
   custom_plot->yAxis->setRange(min_y->value(), max_y->value());
   custom_plot->replot();
@@ -289,9 +287,9 @@ void graph_widget::on_pauseRunButton_clicked()
 void graph_widget::set_line_visible()
 // sets the visibility of the plot both when the plot is running and when it is paused.
 {
-  for(auto &x: all_plots)
+  for (auto plot : all_plots)
   {
-    x.plot_display->isChecked() ? x.plot_graph->setVisible(true) : x.plot_graph->setVisible(false);
+    plot->plot_display->isChecked() ? plot->plot_graph->setVisible(true) : plot->plot_graph->setVisible(false);
     custom_plot->replot();
   }
 }
@@ -313,26 +311,10 @@ void graph_widget::realtime_data_slot()
 {
   key += (refreshTimer/1000);
 
-  // This list is used to plot values on graph
-  QList<int32_t> value =
+  for (auto plot : all_plots)
   {
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    this->duty_cycle.plot_value,
-    this->raw_current.plot_value, //TODO: correct values for raw current
-    this->scaled_current.plot_value, //TODO: correct values for scaled current
-    this->current_chopping_log.plot_value,
-  };
-
-  for(int i=0; i<all_plots.size(); i++)
-  {
-    all_plots[i].plot_graph->addData(key, value[i]);
-    all_plots[i].plot_graph->removeDataBefore(key-(domain->value()));
+    plot->plot_graph->addData(key, plot->plot_value);
+    plot->plot_graph->removeDataBefore(key - domain->value());
   }
 
   remove_data_to_scroll();

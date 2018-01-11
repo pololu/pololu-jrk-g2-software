@@ -30,6 +30,7 @@ public:
     double range_value = 0;
   };
 
+  QList<plot *> all_plots;
   plot input;
   plot target;
   plot feedback;
@@ -53,10 +54,6 @@ public:
   QLabel *label2;
   QLabel *label3;
   double refreshTimer;
-
-
-
-  QList<plot> all_plots;
 
 signals:
 
