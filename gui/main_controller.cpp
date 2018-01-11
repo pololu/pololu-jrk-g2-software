@@ -570,11 +570,22 @@ void main_controller::handle_device_changed()
 void main_controller::handle_variables_changed()
 {
   window->set_up_time(variables.get_up_time());
+
+  window->set_input(variables.get_input());
+  window->set_target(variables.get_target());
+  window->set_feedback(variables.get_feedback());
+  window->set_scaled_feedback(variables.get_scaled_feedback());
+  window->set_error(variables.get_error());
+  window->set_integral(variables.get_integral());
+  window->set_duty_cycle_target(variables.get_duty_cycle_target());
   window->set_duty_cycle(variables.get_duty_cycle());
+
+  // TODO: figure out what current stuff to show/graph
   window->set_scaled_current_mv(
     variables.get_scaled_current_mv(window->get_current_offset_mv()));
   window->set_raw_current_mv(variables.get_raw_current_mv());
-  window->set_current_chopping_log(0);  // TODO: remove the current_chopping_log graph
+  window->set_current_chopping_log(0);
+
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());
   window->increment_errors_occurred(variables.get_error());

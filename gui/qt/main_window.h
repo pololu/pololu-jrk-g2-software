@@ -76,6 +76,13 @@ public:
   void set_ttl_port(const std::string & ttl_port);
   void set_device_reset(const std::string & device_reset);
   void set_up_time(uint32_t);
+  void set_input(uint16_t);
+  void set_target(uint16_t);
+  void set_feedback(uint16_t);
+  void set_scaled_feedback(uint16_t);
+  void set_error(int16_t);
+  void set_integral(int16_t);
+  void set_duty_cycle_target(int16_t);
   void set_duty_cycle(int16_t);
   void set_raw_current_mv(uint16_t);
   void set_scaled_current_mv(int32_t);

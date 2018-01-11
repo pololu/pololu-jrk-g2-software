@@ -160,6 +160,48 @@ void main_window::set_up_time(uint32_t up_time)
     convert_up_time_to_hms_string(up_time)));
 }
 
+void main_window::set_input(uint16_t input)
+{
+  preview_window->input.plot_value = input;
+  // TODO: input_value->setText(QString::number(input));
+}
+
+void main_window::set_target(uint16_t target)
+{
+  preview_window->target.plot_value = target;
+  // TODO: target_value->setText(QString::number(target));
+}
+
+void main_window::set_feedback(uint16_t feedback)
+{
+  preview_window->feedback.plot_value = feedback;
+  // TODO: feedback_value->setText(QString::number(feedback));
+}
+
+void main_window::set_scaled_feedback(uint16_t scaled_feedback)
+{
+  preview_window->scaled_feedback.plot_value = scaled_feedback;
+  // TODO: scaled_feedback_value->setText(QString::number(scaled_feedback));
+}
+
+void main_window::set_error(int16_t error)
+{
+  preview_window->error.plot_value = error;
+  // TODO: error_value->setText(QString::number(error));
+}
+
+void main_window::set_integral(int16_t integral)
+{
+  preview_window->integral.plot_value = integral;
+  // TODO: integral_value->setText(QString::number(integral));
+}
+
+void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
+{
+  preview_window->duty_cycle_target.plot_value = duty_cycle_target;
+  // TODO: duty_cycle_target_value->setText(QString::number(duty_cycle_target));
+}
+
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   preview_window->duty_cycle.plot_value = duty_cycle;
