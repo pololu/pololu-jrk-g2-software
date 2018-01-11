@@ -577,7 +577,7 @@ void main_controller::handle_variables_changed()
   window->set_current_chopping_log(0);  // TODO: remove the current_chopping_log graph
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());
-  window->increment_errors_occurred(variables.get_error());
+  window->increment_errors_occurred(variables.get_error_flags_occurred());
 }
 
 void main_controller::handle_settings_changed()
@@ -1289,7 +1289,7 @@ void main_controller::handle_error_enable_input(int index, int id)
     enable_value |= 1 << index;
     latch_value &= ~(1 << index);
   }
-  else
+  else if (id == 2)
   {
     enable_value |= 1 << index;
     latch_value |= 1 << index;
@@ -1299,6 +1299,18 @@ void main_controller::handle_error_enable_input(int index, int id)
 
   settings_modified = true;
   handle_settings_changed();
+}
+
+void main_controller::handle_clear_errors_input()
+{
+  if (!connected()) { return; }
+  window->set_error_flags_halting(device_handle.clear_errors());
+}
+
+void main_controller::handle_reset_counts_input()
+{
+  if (!connected()) { return; }
+  window->reset_error_counts();
 }
 
 void main_controller::handle_never_sleep_input(bool never_sleep)

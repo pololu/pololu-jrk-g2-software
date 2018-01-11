@@ -27,22 +27,22 @@ class QShowEvent;
 class QSpinBox;
 
 class pid_constant_control;
-class errors_control;
 class pid_constant_validator;
 class main_controller;
 
 struct error_row
 {
-	unsigned int count;
+  unsigned int count;
 	QLabel *bit_mask_label = NULL;
 	QLabel *error_label = NULL;
 	QRadioButton *disabled_radio;
 	QRadioButton *enabled_radio;
-
 	QRadioButton *latched_radio;
 	QLabel *stopping_value = NULL;
 	QLabel *count_value = NULL;
 	QWidget *errors_frame;
+  QButtonGroup *error_enable_group;
+  int index = 0;
 };
 
 class main_window : public QMainWindow
@@ -284,8 +284,12 @@ private slots:
   void on_motor_out_of_range_spinbox_valueChanged(int value);
   void on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
+  void on_error_enable_group_buttonToggled(int id, int index);
+  void on_errors_clear_errors_clicked();
+  void on_errors_reset_counts_clicked();
+
 private:
-	std::array<error_row,16> error_rows;
+	std::array<error_row, 16> error_rows;
 
 	QTimer *update_timer = NULL;
 
@@ -519,19 +523,6 @@ private:
 	QLabel *errors_setting_label;
 	QLabel *errors_stopping_motor_label;
 	QLabel *errors_occurence_count_label;
-	errors_control *awaiting_command;
-	errors_control *no_power;
-	errors_control *motor_driven_error;
-	errors_control *input_invalid;
-	errors_control *input_disconnect;
-	errors_control *feedback_disconnect;
-	errors_control *max_current_exceeded;
-	errors_control *serial_signal_error;
-	errors_control *serial_overrun;
-	errors_control *serial_rx_buffer_full;
-	errors_control *serial_crc_error;
-	errors_control *serial_protocol_error;
-	errors_control *serial_timeout_error;
 	QPushButton *errors_clear_errors;
 	QPushButton *errors_reset_counts;
 
@@ -559,7 +550,8 @@ private:
 
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
-
+  QWidget * setup_error_row(int row_number, bool disabled_visible, bool enabled_visible);
+  QWidget * new_error_row;
 
 	void setup_ui();
 
@@ -570,8 +562,6 @@ private:
   void set_spin_box(QSpinBox * box, int value);
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
-
-  void center_at_startup_if_needed();
 
   bool start_event_reported = false;
 
@@ -615,28 +605,6 @@ private slots:
 
 private:
   friend class main_window;
-};
-
-class errors_control : public QWidget
-{
-	Q_OBJECT
-public:
-  errors_control(int row_number, const QString& object_name, const QString& bit_mask_text,
-      const QString& error_label_text, const bool& disabled_visible,
-      const bool& enabled_visible, error_row &er, QWidget *parent = Q_NULLPTR);
-
-  int index;
-
-private slots:
-  void on_error_enable_group_buttonToggled(int id, bool checked);
-
-private:
-  bool window_suppress_events() const;
-  void set_window_suppress_events(bool suppress_events);
-  main_controller * window_controller() const;
-	QGridLayout *errors_central;
-	QWidget *errors_frame;
-  QButtonGroup *error_enable_group;
 };
 
 class pid_constant_validator : public QDoubleValidator

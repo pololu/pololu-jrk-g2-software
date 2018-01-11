@@ -1376,6 +1376,125 @@ QWidget *main_window::setup_motor_tab()
   return motor_page_widget;
 }
 
+QWidget * main_window::setup_error_row(int row_number, bool disabled_visible, bool enabled_visible)
+{
+  new_error_row = new QWidget();
+
+  uint16_t error_name = 0;
+
+  error_rows[row_number].index = row_number;
+
+  error_name |= (1 << row_number);
+
+  error_rows[row_number].errors_frame = new QWidget();
+
+  if(row_number % 2 != 0)
+  {
+    error_rows[row_number].errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+  }
+
+  error_rows[row_number].count = 0;
+
+  QGridLayout * errors_central = new QGridLayout(new_error_row);
+
+  error_rows[row_number].bit_mask_label = new QLabel();
+  error_rows[row_number].bit_mask_label->setObjectName("bit_mask_label");
+  error_rows[row_number].bit_mask_label->setAlignment(Qt::AlignCenter);
+  error_rows[row_number].bit_mask_label->setText(QString::fromStdString(convert_error_flags_to_hex_string(error_name)));
+
+  error_rows[row_number].error_label = new QLabel();
+  error_rows[row_number].error_label->setObjectName("error_label");
+  error_rows[row_number].error_label->setAlignment(Qt::AlignLeft);
+  error_rows[row_number].error_label->setText(QString::fromStdString(jrk_look_up_error_name_ui(error_name)));
+
+  error_rows[row_number].disabled_radio = new QRadioButton(("Disabled"));
+  error_rows[row_number].disabled_radio->setObjectName("disabled_radio");
+  QSizePolicy p = error_rows[row_number].disabled_radio->sizePolicy();
+  p.setRetainSizeWhenHidden(true);
+  error_rows[row_number].disabled_radio->setSizePolicy(p);
+
+  error_rows[row_number].enabled_radio = new QRadioButton(("Enabled"));
+  error_rows[row_number].enabled_radio->setObjectName("enabled_radio");
+  QSizePolicy q = error_rows[row_number].enabled_radio->sizePolicy();
+  q.setRetainSizeWhenHidden(true);
+  error_rows[row_number].enabled_radio->setSizePolicy(p);
+
+  error_rows[row_number].latched_radio = new QRadioButton(("Enabled and latched"));
+  error_rows[row_number].latched_radio->setObjectName("latched_radio");
+
+  error_rows[row_number].error_enable_group = new QButtonGroup(this);
+  error_rows[row_number].error_enable_group->setObjectName(QStringLiteral("error_enable_group"));
+  error_rows[row_number].error_enable_group->setExclusive(true);
+  error_rows[row_number].error_enable_group->addButton(error_rows[row_number].disabled_radio, 0);
+  error_rows[row_number].error_enable_group->addButton(error_rows[row_number].enabled_radio, 1);
+  error_rows[row_number].error_enable_group->addButton(error_rows[row_number].latched_radio, 2);
+
+  connect(error_rows[row_number].error_enable_group,
+    static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
+    [=] (int id)
+    {
+      on_error_enable_group_buttonToggled(id, error_rows[row_number].index);
+    });
+
+
+  error_rows[row_number].stopping_value = new QLabel(("No"));
+  error_rows[row_number].stopping_value->setObjectName("stopping_value");
+  error_rows[row_number].stopping_value->setAlignment(Qt::AlignCenter);
+
+  error_rows[row_number].count_value = new QLabel(("-"));
+  error_rows[row_number].count_value->setObjectName("count_value");
+  error_rows[row_number].count_value->setAlignment(Qt::AlignCenter);
+
+  // Set the size of the labels and buttons for the errors tab in
+  // a way that can change from OS to OS.
+  {
+    QRadioButton tmp_button;
+    tmp_button.setText("xxxxxxxxxxxxxxxxxx");
+    QRadioButton tmp_button_2;
+    tmp_button_2.setText("xxxxxxxxx");
+    QLabel tmp_label;
+    tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
+    QLabel tmp_label2;
+    tmp_label2.setText("xxxxxxxxxxx");
+    QLabel tmp_label3;
+    tmp_label3.setText("xxxxxxxxxxxxxxx");
+    error_rows[row_number].bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
+    error_rows[row_number].error_label->setFixedWidth(tmp_label.sizeHint().width());
+    error_rows[row_number].disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
+    error_rows[row_number].enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
+    error_rows[row_number].latched_radio->setFixedWidth(tmp_button.sizeHint().width());
+    error_rows[row_number].stopping_value->setFixedWidth(tmp_label3.sizeHint().width());
+    error_rows[row_number].count_value->setFixedWidth(tmp_label3.sizeHint().width());
+  }
+
+  errors_central->addWidget(error_rows[row_number].errors_frame,0,0,3,8);
+  errors_central->addWidget(error_rows[row_number].bit_mask_label,1,1);
+  errors_central->addWidget(error_rows[row_number].error_label,1,2);
+  errors_central->addWidget(error_rows[row_number].disabled_radio,1,3);
+  errors_central->addWidget(error_rows[row_number].enabled_radio,1,4);
+  errors_central->addWidget(error_rows[row_number].latched_radio,1,5);
+  errors_central->addWidget(error_rows[row_number].stopping_value,1,6);
+  errors_central->addWidget(error_rows[row_number].count_value,1,7);
+
+  error_rows[row_number].disabled_radio->setVisible(disabled_visible);
+  error_rows[row_number].enabled_radio->setVisible(enabled_visible);
+
+  if (!disabled_visible && !enabled_visible)
+  {
+    error_rows[row_number].latched_radio->setChecked(true);
+  }
+  else if (!disabled_visible && enabled_visible)
+  {
+    error_rows[row_number].enabled_radio->setChecked(true);
+  }
+  else
+    error_rows[row_number].disabled_radio->setChecked(true);
+
+  errors_central->setMargin(0);
+
+  return new_error_row;
+}
+
 QWidget *main_window::setup_errors_tab()
 {
   errors_page_widget = new QWidget();
@@ -1412,12 +1531,6 @@ QWidget *main_window::setup_errors_tab()
   errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
   errors_reset_counts->setObjectName("errors_reset_counts");
 
-  QHBoxLayout *errors_bottom_buttons = new QHBoxLayout();
-  errors_bottom_buttons->addWidget(errors_clear_errors,-1,Qt::AlignRight);
-  errors_bottom_buttons->addWidget(errors_reset_counts,-1,Qt::AlignLeft);
-
-  int row_number = 0;
-
   QGridLayout *layout = errors_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->setVerticalSpacing(0);
@@ -1426,46 +1539,24 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
   layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
-  layout->addWidget(new errors_control(++row_number,
-    "awaiting_command", "0x0001", "Awaiting command", false, false, error_rows[JRK_ERROR_AWAITING_COMMAND], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "no_power", "0x0002", "No power", false, true, error_rows[JRK_ERROR_NO_POWER], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "motor_driver_error", "0x0004", "Motor driver error", false, true, error_rows[JRK_ERROR_MOTOR_DRIVER], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "input_invalid", "0x0008", "Input invalid", false, true, error_rows[JRK_ERROR_INPUT_INVALID], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "input_disconnect", "0x0010", "Input disconnect", true, true, error_rows[JRK_ERROR_INPUT_DISCONNECT], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "feedback_disconnect", "0x0020", "Feedback disconnect", true, true, error_rows[JRK_ERROR_FEEDBACK_DISCONNECT], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "max_current_exceeded", "0x0040", "Max. current exceeded", true, true, error_rows[JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "serial_signal_error", "0x0080", "Serial signal error", true, false, error_rows[JRK_ERROR_SERIAL_SIGNAL], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "serial_overrun", "0x0100", "Serial overrun", true, false, error_rows[JRK_ERROR_SERIAL_OVERRUN], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "serial_rx_buffer_full", "0x0200", "Serial RX buffer full", true, false, error_rows[JRK_ERROR_SERIAL_BUFFER_FULL], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "serial_crc_error", "0x0400", "Serial CRC error", true, false, error_rows[JRK_ERROR_SERIAL_CRC], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "serial_protocol_error", "0x0800", "Serial protocol error", true, false, error_rows[JRK_ERROR_SERIAL_PROTOCOL], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addWidget(new errors_control(++row_number,
-    "serial_timeout_error", "0x1000", "Serial timeout error", true, false, error_rows[JRK_ERROR_SERIAL_TIMEOUT], this)
-    ,row_number,0,1,8,Qt::AlignCenter);
-  layout->addLayout(errors_bottom_buttons,16,0,4,8,Qt::AlignCenter);
+
+  int row_number = 0;
+
+  layout->addWidget(setup_error_row(row_number++, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, false, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, false, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, false, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
+  layout->addWidget(errors_clear_errors, 16, 6, 1, 1);
+  layout->addWidget(errors_reset_counts, 16, 7, 1, 1);
 
   layout->setMargin(0);
 
@@ -1477,38 +1568,8 @@ QWidget *main_window::setup_errors_tab()
   return errors_page_widget;
 }
 
-void main_window::center_at_startup_if_needed()
-{
-  // Center the window.  This fixes a strange bug on the Raspbian Jessie where
-  // the window would appear in the upper left with its title bar off the
-  // screen.  On other platforms, the default window position did not make much
-  // sense, so it is nice to center it.
-  //
-  // In case this causes problems, you can set the TICGUI_CENTER environment
-  // variable to "N".
-  //
-  // NOTE: This position issue on Raspbian is a bug in Qt that should be fixed.
-  // Another workaround for it was to uncomment the lines in retranslate() that
-  // set up errors_stopping_header_label, error_rows[*].name_label, and
-  // manual_target_velocity_mode_radio, but then the Window would strangely
-  // start in the lower right.
-  auto env = QProcessEnvironment::systemEnvironment();
-  if (env.value("TICGUI_CENTER") != "N")
-  {
-    setGeometry(
-      QStyle::alignedRect(
-        Qt::LeftToRight,
-        Qt::AlignCenter,
-        size(),
-        qApp->desktop()->availableGeometry()
-        )
-      );
-  }
-}
-
 void main_window::showEvent(QShowEvent * event)
 {
-  center_at_startup_if_needed();
 
   if (!start_event_reported)
   {
@@ -1952,6 +2013,24 @@ void main_window::on_motor_coast_when_off_button_group_buttonToggled(int id, boo
 {
   if (suppress_events) { return; }
   if (checked) { controller->handle_motor_coast_when_off_input(id); }
+}
+
+void main_window::on_error_enable_group_buttonToggled(int id, int index)
+{
+  if (suppress_events) { return; }
+  controller->handle_error_enable_input(index, id);
+}
+
+void main_window::on_errors_clear_errors_clicked()
+{
+  if (suppress_events) { return; }
+  controller->handle_clear_errors_input();
+}
+
+void main_window::on_errors_reset_counts_clicked()
+{
+  if (suppress_events) { return; }
+  reset_error_counts();
 }
 
 void main_window::set_u8_combobox(QComboBox * combo, uint8_t value)
@@ -2470,13 +2549,13 @@ void main_window::set_error_enable(uint16_t enable, uint16_t latch)
 
   for (int i = 1; i < 13; i++)
   {
-    if (enable & (1 << i))
-    {
-      error_rows[i].enabled_radio->setChecked(true);
-    }
-    else if (latch & (1 << i))
+    if ((enable & (1 << i)) && (latch & (1 << i)))
     {
       error_rows[i].latched_radio->setChecked(true);
+    }
+    else if ((enable & (1 << i)) && (latch & ~(1 << i)))
+    {
+      error_rows[i].enabled_radio->setChecked(true);
     }
     else
       error_rows[i].disabled_radio->setChecked(true);
@@ -2623,127 +2702,3 @@ void pid_constant_control::on_pid_constant_lineedit_editingFinished()
   window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(), pid_exponent_spinbox->value());
 }
 
-errors_control::errors_control
-(int row_number, const QString& object_name, const QString& bit_mask_text,
-    const QString& error_label_text, const bool& disabled_visible,
-      const bool& enabled_visible, error_row &er, QWidget *parent)
-  : QWidget(parent)
-{
-  QSizePolicy p = this->sizePolicy();
-  p.setRetainSizeWhenHidden(true);
-
-  er.errors_frame = new QWidget();
-
-  if(row_number % 2 != 0)
-  {
-    er.errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
-  }
-
-  er.count = 0;
-
-  errors_central = new QGridLayout(this);
-
-  er.bit_mask_label = new QLabel();
-  er.bit_mask_label->setObjectName("bit_mask_label");
-  er.bit_mask_label->setAlignment(Qt::AlignCenter);
-
-  er.error_label = new QLabel();
-  er.error_label->setObjectName("error_label");
-  er.error_label->setAlignment(Qt::AlignLeft);
-
-  er.disabled_radio = new QRadioButton(tr("Disabled"));
-  er.disabled_radio->setObjectName("disabled_radio");
-  er.disabled_radio->setSizePolicy(p);
-
-  er.enabled_radio = new QRadioButton(tr("Enabled"));
-  er.enabled_radio->setObjectName("enabled_radio");
-  er.enabled_radio->setSizePolicy(p);
-
-  er.latched_radio = new QRadioButton(tr("Enabled and latched"));
-  er.latched_radio->setObjectName("latched_radio");
-  // er.latched_radio->setChecked(true);
-
-  error_enable_group = new QButtonGroup(this);
-  error_enable_group->setObjectName("error_enable_group");
-  error_enable_group->setExclusive(true);
-  error_enable_group->addButton(er.disabled_radio, 0);
-  error_enable_group->addButton(er.enabled_radio, 1);
-  error_enable_group->addButton(er.latched_radio, 2);
-
-  er.stopping_value = new QLabel(tr("No"));
-  er.stopping_value->setObjectName("stopping_value");
-  er.stopping_value->setAlignment(Qt::AlignCenter);
-
-  er.count_value = new QLabel(tr("0"));
-  er.count_value->setObjectName("count_value");
-  er.count_value->setAlignment(Qt::AlignCenter);
-
-  er.bit_mask_label->setText(bit_mask_text);
-  er.error_label->setText(error_label_text);
-
-  // Set the size of the labels and buttons for the errors tab in
-  // a way that can change from OS to OS.
-  {
-    QRadioButton tmp_button;
-    tmp_button.setText("xxxxxxxxxxxxxxxxxx");
-    QRadioButton tmp_button_2;
-    tmp_button_2.setText("xxxxxxxxx");
-    QLabel tmp_label;
-    tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
-    QLabel tmp_label2;
-    tmp_label2.setText("xxxxxxxxxxx");
-    QLabel tmp_label3;
-    tmp_label3.setText("xxxxxxxxxxxxxxx");
-    er.bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
-    er.error_label->setFixedWidth(tmp_label.sizeHint().width());
-    er.disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    er.enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    er.latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    er.stopping_value->setFixedWidth(tmp_label3.sizeHint().width());
-    er.count_value->setFixedWidth(tmp_label3.sizeHint().width());
-  }
-
-  errors_central->addWidget(er.errors_frame,0,0,3,8);
-  errors_central->addWidget(er.bit_mask_label,1,1);
-  errors_central->addWidget(er.error_label,1,2);
-  errors_central->addWidget(er.disabled_radio,1,3);
-  errors_central->addWidget(er.enabled_radio,1,4);
-  errors_central->addWidget(er.latched_radio,1,5);
-  errors_central->addWidget(er.stopping_value,1,6);
-  errors_central->addWidget(er.count_value,1,7);
-
-  er.disabled_radio->setVisible(disabled_visible);
-  er.enabled_radio->setVisible(enabled_visible);
-
-  errors_central->setMargin(0);
-
-  index = row_number - 1;
-
-  QMetaObject::connectSlotsByName(this);
-
-}
-
-bool errors_control::window_suppress_events() const
-{
-  return ((main_window *)parent())->suppress_events;
-}
-
-void errors_control::set_window_suppress_events(bool suppress_events)
-{
-  ((main_window *)parent())->suppress_events = suppress_events;
-}
-
-main_controller * errors_control::window_controller() const
-{
-  return ((main_window *)parent())->controller;
-}
-
-void errors_control::on_error_enable_group_buttonToggled(int id, bool checked)
-{
-  std::cout << "test" << std::endl; //tmphax
-  std::cout << id << std::endl; //tmphax
-  std::cout << index << std::endl; //tmphax
-  if (window_suppress_events()) { return; }
-
-  if (checked) {window_controller()->handle_error_enable_input(index, id);}
-}
