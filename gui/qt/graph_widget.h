@@ -26,7 +26,6 @@ public:
     QLabel *range_label;
     QHBoxLayout *graph_data_selection_bar;
     int32_t plot_value = 0;
-    bool double_ended_range = false;
     double range_value = 0;
   };
 

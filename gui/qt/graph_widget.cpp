@@ -83,7 +83,6 @@ void graph_widget::setup_ui()
   input.color = "#00ffff";
   input.range_label = new QLabel("0-");
   input.graph_data_selection_bar = new QHBoxLayout();
-  input.double_ended_range = false;
   input.range_value = 4095;
 
   target.plot_range = new QDoubleSpinBox();
@@ -93,7 +92,6 @@ void graph_widget::setup_ui()
   target.color = "#0000ff";
   target.range_label = new QLabel("0-");
   target.graph_data_selection_bar = new QHBoxLayout();
-  target.double_ended_range = false;
   target.range_value = 4095;
 
   feedback.plot_range = new QDoubleSpinBox();
@@ -103,7 +101,6 @@ void graph_widget::setup_ui()
   feedback.color = "#ffc0cb";
   feedback.range_label = new QLabel("0-");
   feedback.graph_data_selection_bar = new QHBoxLayout();
-  feedback.double_ended_range = false;
   feedback.range_value = 4095;
 
   scaled_feedback.plot_range = new QDoubleSpinBox();
@@ -113,7 +110,6 @@ void graph_widget::setup_ui()
   scaled_feedback.color = "#ff0000";
   scaled_feedback.range_label = new QLabel("0-");
   scaled_feedback.graph_data_selection_bar = new QHBoxLayout();
-  scaled_feedback.double_ended_range = false;
   scaled_feedback.range_value = 4095;
 
   error.plot_range = new QDoubleSpinBox();
@@ -123,7 +119,6 @@ void graph_widget::setup_ui()
   error.color = "#9400d3";
   error.range_label = new QLabel("\u00B1");
   error.graph_data_selection_bar = new QHBoxLayout();
-  error.double_ended_range = true;
   error.range_value = 4095;
 
   integral.plot_range = new QDoubleSpinBox();
@@ -133,7 +128,6 @@ void graph_widget::setup_ui()
   integral.color = "#ff8c00";
   integral.range_label = new QLabel("\u00B1");
   integral.graph_data_selection_bar = new QHBoxLayout();
-  integral.double_ended_range = true;
   integral.range_value = 1000;
 
   duty_cycle_target.plot_range = new QDoubleSpinBox();
@@ -143,7 +137,6 @@ void graph_widget::setup_ui()
   duty_cycle_target.color = "#32cd32";
   duty_cycle_target.range_label = new QLabel("\u00B1");
   duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
-  duty_cycle_target.double_ended_range = true;
   duty_cycle_target.range_value = 600;
 
   duty_cycle.plot_range = new QDoubleSpinBox();
@@ -153,7 +146,6 @@ void graph_widget::setup_ui()
   duty_cycle.color = "#006400";
   duty_cycle.range_label = new QLabel("\u00B1");
   duty_cycle.graph_data_selection_bar = new QHBoxLayout();
-  duty_cycle.double_ended_range = true;
   duty_cycle.range_value = 600;
 
   raw_current.plot_range = new QDoubleSpinBox();
@@ -163,7 +155,6 @@ void graph_widget::setup_ui()
   raw_current.color = "#b8860b";
   raw_current.range_label = new QLabel("0\u2013");
   raw_current.graph_data_selection_bar = new QHBoxLayout();
-  raw_current.double_ended_range = true;
   raw_current.range_value = 4095;
 
   scaled_current.plot_range = new QDoubleSpinBox();
@@ -173,7 +164,6 @@ void graph_widget::setup_ui()
   scaled_current.color = "#0000ff";
   scaled_current.range_label = new QLabel("\u00B1");
   scaled_current.graph_data_selection_bar = new QHBoxLayout();
-  scaled_current.double_ended_range = true;
   scaled_current.range_value = 2457000;
 
   current_chopping_log.plot_range = new QDoubleSpinBox();
@@ -185,7 +175,6 @@ void graph_widget::setup_ui()
   current_chopping_log.range_label = new QLabel("0\u2013");
    // TODO: use en dashes on the other plots too
   current_chopping_log.graph_data_selection_bar = new QHBoxLayout();
-  current_chopping_log.double_ended_range = true;
   current_chopping_log.range_value = 65535;
 
   all_plots.append(&input);
@@ -230,10 +219,7 @@ void graph_widget::setup_plots()
 
     plot->range_label->setStyleSheet(QStringLiteral("font: 14px"));
 
-    if (plot->double_ended_range == false)
-      plot->plot_axis->setRange(0, plot->range_value);
-    else
-      plot->plot_axis->setRange(-plot->range_value, plot->range_value);
+    plot->plot_axis->setRange(-plot->range_value, plot->range_value);
 
     plot->plot_range->setRange(0, plot->range_value);
     plot->plot_range->setValue(plot->range_value);
