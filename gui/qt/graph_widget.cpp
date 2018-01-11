@@ -188,18 +188,17 @@ void graph_widget::setup_ui()
   current_chopping_log.double_ended_range = true;
   current_chopping_log.range_value = 65535;
 
-  // TODO: let's not have the plots be listed in reverse order here
-  all_plots.push_front(current_chopping_log);
-  all_plots.push_front(scaled_current);
-  all_plots.push_front(raw_current);
-  all_plots.push_front(duty_cycle);
-  all_plots.push_front(duty_cycle_target);
-  all_plots.push_front(integral);
-  all_plots.push_front(error);
-  all_plots.push_front(scaled_feedback);
-  all_plots.push_front(feedback);
-  all_plots.push_front(target);
-  all_plots.push_front(input);
+  all_plots.append(input);
+  all_plots.append(target);
+  all_plots.append(feedback);
+  all_plots.append(scaled_feedback);
+  all_plots.append(error);
+  all_plots.append(integral);
+  all_plots.append(duty_cycle_target);
+  all_plots.append(duty_cycle);
+  all_plots.append(raw_current);
+  all_plots.append(scaled_current);
+  all_plots.append(current_chopping_log);
 
   custom_plot->xAxis->QCPAxis::setRangeReversed(true);
   custom_plot->yAxis->setRange(-100,100);
