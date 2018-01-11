@@ -160,6 +160,48 @@ void main_window::set_up_time(uint32_t up_time)
     convert_up_time_to_hms_string(up_time)));
 }
 
+void main_window::set_input(uint16_t input)
+{
+  preview_window->input.plot_value = input;
+  // TODO: input_value->setText(QString::number(input));
+}
+
+void main_window::set_target(uint16_t target)
+{
+  preview_window->target.plot_value = target;
+  // TODO: target_value->setText(QString::number(target));
+}
+
+void main_window::set_feedback(uint16_t feedback)
+{
+  preview_window->feedback.plot_value = feedback;
+  // TODO: feedback_value->setText(QString::number(feedback));
+}
+
+void main_window::set_scaled_feedback(uint16_t scaled_feedback)
+{
+  preview_window->scaled_feedback.plot_value = scaled_feedback;
+  // TODO: scaled_feedback_value->setText(QString::number(scaled_feedback));
+}
+
+void main_window::set_error(int16_t error)
+{
+  preview_window->error.plot_value = error;
+  // TODO: error_value->setText(QString::number(error));
+}
+
+void main_window::set_integral(int16_t integral)
+{
+  preview_window->integral.plot_value = integral;
+  // TODO: integral_value->setText(QString::number(integral));
+}
+
+void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
+{
+  preview_window->duty_cycle_target.plot_value = duty_cycle_target;
+  // TODO: duty_cycle_target_value->setText(QString::number(duty_cycle_target));
+}
+
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   preview_window->duty_cycle.plot_value = duty_cycle;
@@ -731,6 +773,23 @@ QWidget * main_window::setup_input_tab()
   return input_page_widget;
 }
 
+static QComboBox * setup_analog_samples_exponent_combobox()
+{
+  QComboBox * box = new QComboBox();
+  box->addItem("1", 0);
+  box->addItem("2", 1);
+  box->addItem("4", 2);
+  box->addItem("8", 3);
+  box->addItem("16", 4);
+  box->addItem("32", 5);
+  box->addItem("64", 6);
+  box->addItem("128", 7);
+  box->addItem("256", 8);
+  box->addItem("512", 9);
+  box->addItem("1024", 10);
+  return box;
+}
+
 QWidget * main_window::setup_input_analog_groupbox()
 {
   input_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
@@ -739,17 +798,8 @@ QWidget * main_window::setup_input_analog_groupbox()
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
   input_analog_samples_label->setObjectName("input_analog_samples_label");
 
-  input_analog_samples_combobox = new QComboBox();
+  input_analog_samples_combobox = setup_analog_samples_exponent_combobox();
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
-  input_analog_samples_combobox->addItem("4", 0);
-  input_analog_samples_combobox->addItem("8", 1);
-  input_analog_samples_combobox->addItem("16", 2);
-  input_analog_samples_combobox->addItem("32", 3);
-  input_analog_samples_combobox->addItem("64", 4);
-  input_analog_samples_combobox->addItem("128", 5);
-  input_analog_samples_combobox->addItem("256", 6);
-  input_analog_samples_combobox->addItem("512", 7);
-  input_analog_samples_combobox->addItem("1024", 8);
 
   input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
@@ -1092,17 +1142,8 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_analog_samples_label = new QLabel(tr("Analog samples:"));
   feedback_analog_samples_label->setObjectName("feedback_analog_samples_label");
 
-  feedback_analog_samples_combobox = new QComboBox();
+  feedback_analog_samples_combobox = setup_analog_samples_exponent_combobox();
   feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
-  feedback_analog_samples_combobox->addItem("4", 0);
-  feedback_analog_samples_combobox->addItem("8", 1);
-  feedback_analog_samples_combobox->addItem("16", 2);
-  feedback_analog_samples_combobox->addItem("32", 3);
-  feedback_analog_samples_combobox->addItem("64", 4);
-  feedback_analog_samples_combobox->addItem("128", 5);
-  feedback_analog_samples_combobox->addItem("256", 6);
-  feedback_analog_samples_combobox->addItem("512", 7);
-  feedback_analog_samples_combobox->addItem("1024", 8);
 
   feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");

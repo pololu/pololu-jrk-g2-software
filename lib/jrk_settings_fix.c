@@ -138,9 +138,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t input_analog_samples_exponent = jrk_settings_get_input_analog_samples_exponent(settings);
-    if (input_analog_samples_exponent > 8)
+    if (input_analog_samples_exponent > 10)
     {
-      input_analog_samples_exponent = 8;
+      input_analog_samples_exponent = 10;
       jrk_sprintf(warnings,
         "Warning: The input analog samples exponent was too high "
         "so it will be changed to %u.\n", input_analog_samples_exponent);
@@ -215,9 +215,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t feedback_analog_samples_exponent = jrk_settings_get_feedback_analog_samples_exponent(settings);
-    if (feedback_analog_samples_exponent > 8)
+    if (feedback_analog_samples_exponent > 10)
     {
-      feedback_analog_samples_exponent = 8;
+      feedback_analog_samples_exponent = 10;
       jrk_sprintf(warnings,
         "Warning: The feedback analog samples exponent was too high "
         "so it will be changed to %u.\n", feedback_analog_samples_exponent);

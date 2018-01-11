@@ -80,90 +80,90 @@ void graph_widget::setup_ui()
   input.plot_display = new QCheckBox("Input");
   input.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #00ffff; text-align:center; font:14px; background-color:white"));
+  input.color = "#00ffff";
   input.range_label = new QLabel("0-");
   input.graph_data_selection_bar = new QHBoxLayout();
-  input.double_ended_range = false;
   input.range_value = 4095;
 
   target.plot_range = new QDoubleSpinBox();
   target.plot_display = new QCheckBox("Target");
   target.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; font:14px; background-color:white"));
+  target.color = "#0000ff";
   target.range_label = new QLabel("0-");
   target.graph_data_selection_bar = new QHBoxLayout();
-  target.double_ended_range = false;
   target.range_value = 4095;
 
   feedback.plot_range = new QDoubleSpinBox();
   feedback.plot_display = new QCheckBox("Feedback");
   feedback.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ffc0cb; text-align:center; font:14px; background-color:white"));
+  feedback.color = "#ffc0cb";
   feedback.range_label = new QLabel("0-");
   feedback.graph_data_selection_bar = new QHBoxLayout();
-  feedback.double_ended_range = false;
   feedback.range_value = 4095;
 
   scaled_feedback.plot_range = new QDoubleSpinBox();
   scaled_feedback.plot_display = new QCheckBox("Scaled Feedback");
   scaled_feedback.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff0000; text-align:center; font:14px; background-color:white"));
+  scaled_feedback.color = "#ff0000";
   scaled_feedback.range_label = new QLabel("0-");
   scaled_feedback.graph_data_selection_bar = new QHBoxLayout();
-  scaled_feedback.double_ended_range = false;
   scaled_feedback.range_value = 4095;
 
   error.plot_range = new QDoubleSpinBox();
   error.plot_display = new QCheckBox("Error");
   error.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; font:14px; background-color:white"));
+  error.color = "#9400d3";
   error.range_label = new QLabel("\u00B1");
   error.graph_data_selection_bar = new QHBoxLayout();
-  error.double_ended_range = true;
   error.range_value = 4095;
 
   integral.plot_range = new QDoubleSpinBox();
   integral.plot_display = new QCheckBox("Integral");
   integral.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; font:14px; background-color:white"));
+  integral.color = "#ff8c00";
   integral.range_label = new QLabel("\u00B1");
   integral.graph_data_selection_bar = new QHBoxLayout();
-  integral.double_ended_range = true;
   integral.range_value = 1000;
 
   duty_cycle_target.plot_range = new QDoubleSpinBox();
   duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
   duty_cycle_target.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; font:14px; background-color:white"));
+  duty_cycle_target.color = "#32cd32";
   duty_cycle_target.range_label = new QLabel("\u00B1");
   duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
-  duty_cycle_target.double_ended_range = true;
   duty_cycle_target.range_value = 600;
 
   duty_cycle.plot_range = new QDoubleSpinBox();
   duty_cycle.plot_display = new QCheckBox("Duty cycle");
   duty_cycle.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; font:14px; background-color:white"));
+  duty_cycle.color = "#006400";
   duty_cycle.range_label = new QLabel("\u00B1");
   duty_cycle.graph_data_selection_bar = new QHBoxLayout();
-  duty_cycle.double_ended_range = true;
   duty_cycle.range_value = 600;
 
   raw_current.plot_range = new QDoubleSpinBox();
   raw_current.plot_display = new QCheckBox("Raw current (mV)");
   raw_current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
+  raw_current.color = "#b8860b";
   raw_current.range_label = new QLabel("0\u2013");
   raw_current.graph_data_selection_bar = new QHBoxLayout();
-  raw_current.double_ended_range = true;
   raw_current.range_value = 4095;
 
   scaled_current.plot_range = new QDoubleSpinBox();
   scaled_current.plot_display = new QCheckBox("Scaled current (mV)");
   scaled_current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; font:14px; background-color:white"));
+  scaled_current.color = "#0000ff";
   scaled_current.range_label = new QLabel("\u00B1");
   scaled_current.graph_data_selection_bar = new QHBoxLayout();
-  scaled_current.double_ended_range = true;
   scaled_current.range_value = 2457000;
 
   current_chopping_log.plot_range = new QDoubleSpinBox();
@@ -171,24 +171,23 @@ void graph_widget::setup_ui()
   // TODO: why is the name cut off?  "log" is not shown
   current_chopping_log.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff00ff; text-align:center; font:14px; background-color:white"));
+  current_chopping_log.color = "#ff00ff";
   current_chopping_log.range_label = new QLabel("0\u2013");
    // TODO: use en dashes on the other plots too
   current_chopping_log.graph_data_selection_bar = new QHBoxLayout();
-  current_chopping_log.double_ended_range = true;
   current_chopping_log.range_value = 65535;
 
-  // TODO: let's not have the plots be listed in reverse order here
-  all_plots.push_front(current_chopping_log);
-  all_plots.push_front(scaled_current);
-  all_plots.push_front(raw_current);
-  all_plots.push_front(duty_cycle);
-  all_plots.push_front(duty_cycle_target);
-  all_plots.push_front(integral);
-  all_plots.push_front(error);
-  all_plots.push_front(scaled_feedback);
-  all_plots.push_front(feedback);
-  all_plots.push_front(target);
-  all_plots.push_front(input);
+  all_plots.append(&input);
+  all_plots.append(&target);
+  all_plots.append(&feedback);
+  all_plots.append(&scaled_feedback);
+  all_plots.append(&error);
+  all_plots.append(&integral);
+  all_plots.append(&duty_cycle_target);
+  all_plots.append(&duty_cycle);
+  all_plots.append(&raw_current);
+  all_plots.append(&scaled_current);
+  all_plots.append(&current_chopping_log);
 
   custom_plot->xAxis->QCPAxis::setRangeReversed(true);
   custom_plot->yAxis->setRange(-100,100);
@@ -209,26 +208,21 @@ void graph_widget::setup_plots()
 // sets the range QDoubleSpinBox, display QCheckBox, and the axis of the plot.
 // connects the valueChanged signal of the plot_range to change the ranges of the plots.
 {
-
-
-  for(int i=0; i<all_plots.size(); i++)
+  for (auto plot : all_plots)
   {
-    all_plots[i].plot_range->setDecimals(0);
-    all_plots[i].plot_range->setSingleStep(1.0);
+    plot->plot_range->setDecimals(0);
+    plot->plot_range->setSingleStep(1.0);
 
-    all_plots[i].plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+    plot->plot_axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
 
-    all_plots[i].plot_axis->setVisible(false);
+    plot->plot_axis->setVisible(false);
 
-    all_plots[i].range_label->setStyleSheet(QStringLiteral("font: 14px"));
+    plot->range_label->setStyleSheet(QStringLiteral("font: 14px"));
 
-    if (all_plots[i].double_ended_range == false)
-      all_plots[i].plot_axis->setRange(0, all_plots[i].range_value);
-    else
-      all_plots[i].plot_axis->setRange(-all_plots[i].range_value, all_plots[i].range_value);
+    plot->plot_axis->setRange(-plot->range_value, plot->range_value);
 
-    all_plots[i].plot_range->setRange(0, all_plots[i].range_value);
-    all_plots[i].plot_range->setValue(all_plots[i].range_value);
+    plot->plot_range->setRange(0, plot->range_value);
+    plot->plot_range->setValue(plot->range_value);
     // Set the size of the labels and buttons for the errors tab in
     // a way that can change from OS to OS.
     {
@@ -236,34 +230,34 @@ void graph_widget::setup_plots()
       tmp_label2.setText("xxxxxxxxxxxxx");
       QLabel tmp_label3;
       tmp_label3.setText("xxxxxxxxxxxxxxxxxxxxxxx");
-      all_plots[i].plot_range->setFixedWidth(tmp_label2.sizeHint().width());
-      all_plots[i].plot_display->setFixedWidth(tmp_label3.sizeHint().width());
+      plot->plot_range->setFixedWidth(tmp_label2.sizeHint().width());
+      plot->plot_display->setFixedWidth(tmp_label3.sizeHint().width());
     }
 
-    all_plots[i].plot_display->setCheckable(true);
-    all_plots[i].plot_display->setChecked(true);
+    plot->plot_display->setCheckable(true);
+    plot->plot_display->setChecked(true);
 
-    all_plots[i].graph_data_selection_bar->setMargin(0);;
-    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_display, -1, Qt::AlignLeft);
-    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].range_label, 2, Qt::AlignRight);
-    all_plots[i].graph_data_selection_bar->addWidget(all_plots[i].plot_range, -1, Qt::AlignRight);
+    plot->graph_data_selection_bar->setMargin(0);;
+    plot->graph_data_selection_bar->addWidget(plot->plot_display, -1, Qt::AlignLeft);
+    plot->graph_data_selection_bar->addWidget(plot->range_label, 2, Qt::AlignRight);
+    plot->graph_data_selection_bar->addWidget(plot->plot_range, -1, Qt::AlignRight);
 
-    all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis);
+    plot->plot_graph = new QCPGraph(custom_plot->xAxis2,plot->plot_axis);
 
-    all_plots[i].plot_graph->setPen(QPen(plot_colors[i]));
+    plot->plot_graph->setPen(QPen(plot->color));
 
-    connect(all_plots[i].plot_range, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
+    connect(plot->plot_range, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
 
-    connect(all_plots[i].plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+    connect(plot->plot_display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
   }
 }
 
 void graph_widget::change_ranges()
 {
-  for(auto &x: all_plots)
+  for (auto plot : all_plots)
   {
-    x.plot_axis->setRangeUpper((x.plot_range->value()) * ((max_y->value())/100));
-    x.plot_axis->setRangeLower((x.plot_range->value()) * ((min_y->value())/100));
+    plot->plot_axis->setRangeUpper((plot->plot_range->value()) * ((max_y->value())/100));
+    plot->plot_axis->setRangeLower((plot->plot_range->value()) * ((min_y->value())/100));
   }
   custom_plot->yAxis->setRange(min_y->value(), max_y->value());
   custom_plot->replot();
@@ -279,9 +273,9 @@ void graph_widget::on_pauseRunButton_clicked()
 void graph_widget::set_line_visible()
 // sets the visibility of the plot both when the plot is running and when it is paused.
 {
-  for(auto &x: all_plots)
+  for (auto plot : all_plots)
   {
-    x.plot_display->isChecked() ? x.plot_graph->setVisible(true) : x.plot_graph->setVisible(false);
+    plot->plot_display->isChecked() ? plot->plot_graph->setVisible(true) : plot->plot_graph->setVisible(false);
     custom_plot->replot();
   }
 }
@@ -303,26 +297,10 @@ void graph_widget::realtime_data_slot()
 {
   key += (refreshTimer/1000);
 
-  // This list is used to plot values on graph
-  QList<int32_t> value =
+  for (auto plot : all_plots)
   {
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    this->duty_cycle.plot_value,
-    this->raw_current.plot_value, //TODO: correct values for raw current
-    this->scaled_current.plot_value, //TODO: correct values for scaled current
-    this->current_chopping_log.plot_value,
-  };
-
-  for(int i=0; i<all_plots.size(); i++)
-  {
-    all_plots[i].plot_graph->addData(key, value[i]);
-    all_plots[i].plot_graph->removeDataBefore(key-(domain->value()));
+    plot->plot_graph->addData(key, plot->plot_value);
+    plot->plot_graph->removeDataBefore(key - domain->value());
   }
 
   remove_data_to_scroll();

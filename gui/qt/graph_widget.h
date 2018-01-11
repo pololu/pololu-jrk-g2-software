@@ -16,19 +16,20 @@ class graph_widget : public QWidget
 public:
 	graph_widget(QWidget * parent = 0);
 
-	struct plot
-    {
-    	QDoubleSpinBox *plot_range;
-    	QCheckBox *plot_display;
-    	QCPAxis *plot_axis;
-    	QCPGraph *plot_graph;
-      QLabel *range_label;
-      QHBoxLayout *graph_data_selection_bar;
-      int32_t plot_value = 0;
-      bool double_ended_range = false;
-      double range_value = 0;
-    };
+  struct plot
+  {
+    QDoubleSpinBox *plot_range;
+    QCheckBox *plot_display;
+    QString color;
+    QCPAxis *plot_axis;
+    QCPGraph *plot_graph;
+    QLabel *range_label;
+    QHBoxLayout *graph_data_selection_bar;
+    int32_t plot_value = 0;
+    double range_value = 0;
+  };
 
+  QList<plot *> all_plots;
   plot input;
   plot target;
   plot feedback;
@@ -52,24 +53,6 @@ public:
   QLabel *label2;
   QLabel *label3;
   double refreshTimer;
-
-
-
-  QList<plot> all_plots;
-  QList<QString> plot_colors = {
-    "#00ffff",
-    "#0000ff",
-    "#ffc0cb",
-    "#ff0000",
-    "#9400d3",
-    "#ff8c00",
-    "#32cd32",
-    "#006400",
-    "#b8860b",
-    "#0000ff",
-    "#ff00ff",
-  };
-  // TODO: why do we have plot colors here and also in graph_widget.cpp?
 
 signals:
 

@@ -80,9 +80,9 @@ void graph_window::receive_widget(graph_widget *widget)
 	grabbed_widget->custom_plot->setToolTip("");
 	plot_layout->addWidget(grabbed_widget->custom_plot,Qt::AlignTop);
 
-	for(auto &x: grabbed_widget->all_plots)
+	for(auto plot : grabbed_widget->all_plots)
 	{
-		plot_visible_layout->addLayout(x.graph_data_selection_bar);
+		plot_visible_layout->addLayout(plot->graph_data_selection_bar);
 	}
 
 	main_layout->addLayout(plot_layout,0,0,Qt::AlignTop);
