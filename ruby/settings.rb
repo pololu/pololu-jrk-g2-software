@@ -160,11 +160,11 @@ EOF
   {
     name: 'input_analog_samples_exponent',
     type: :uint8_t,
-    range: 0..8,
+    range: 0..10,
     comment:
       "This setting specifies how many analog samples to take if the input mode\n" \
-      "is analog.  The number of samples will be 4*(2^x), where x is this setting.",
-    default: 5,
+      "is analog.  The number of samples will be 2^x, where x is this setting.",
+    default: 7,
   },
   {
     name: 'feedback_mode',
@@ -285,11 +285,11 @@ EOF
   {
     name: 'feedback_analog_samples_exponent',
     type: :uint8_t,
-    range: 0..8,
+    range: 0..10,
     comment:
       "This setting specifies how many analog samples to take if the feedback mode\n" \
-      "is analog.  The number of samples will be 4*(2^x), where x is this setting.",
-    default: 5,
+      "is analog.  The number of samples will be 2^x, where x is this setting.",
+    default: 7,
   },
   {
     name: 'feedback_wraparound',

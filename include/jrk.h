@@ -441,7 +441,7 @@ bool jrk_settings_get_input_detect_disconnect(const jrk_settings *);
 // Sets the input_analog_samples_exponent setting.
 //
 // This setting specifies how many analog samples to take if the input mode
-// is analog.  The number of samples will be 4*(2^x), where x is this setting.
+// is analog.  The number of samples will be 2^x, where x is this setting.
 JRK_API
 void jrk_settings_set_input_analog_samples_exponent(jrk_settings *,
   uint8_t input_analog_samples_exponent);
@@ -604,7 +604,7 @@ uint8_t jrk_settings_get_feedback_dead_zone(const jrk_settings *);
 // Sets the feedback_analog_samples_exponent setting.
 //
 // This setting specifies how many analog samples to take if the feedback mode
-// is analog.  The number of samples will be 4*(2^x), where x is this setting.
+// is analog.  The number of samples will be 2^x, where x is this setting.
 JRK_API
 void jrk_settings_set_feedback_analog_samples_exponent(jrk_settings *,
   uint8_t feedback_analog_samples_exponent);

@@ -102,11 +102,11 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_input_neutral_maximum(settings, 2048);
   jrk_settings_set_output_neutral(settings, 2048);
   jrk_settings_set_output_maximum(settings, 4095);
-  jrk_settings_set_input_analog_samples_exponent(settings, 5);
+  jrk_settings_set_input_analog_samples_exponent(settings, 7);
   jrk_settings_set_feedback_mode(settings, JRK_FEEDBACK_MODE_ANALOG);
   jrk_settings_set_feedback_absolute_maximum(settings, 4095);
   jrk_settings_set_feedback_maximum(settings, 4095);
-  jrk_settings_set_feedback_analog_samples_exponent(settings, 5);
+  jrk_settings_set_feedback_analog_samples_exponent(settings, 7);
   jrk_settings_set_serial_device_number(settings, 11);
   jrk_settings_set_pid_period(settings, 10);
   jrk_settings_set_pid_integral_limit(settings, 1000);
