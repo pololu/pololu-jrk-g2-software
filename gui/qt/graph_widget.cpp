@@ -80,6 +80,7 @@ void graph_widget::setup_ui()
   input.plot_display = new QCheckBox("Input");
   input.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #00ffff; text-align:center; font:14px; background-color:white"));
+  input.color = "#00ffff";
   input.range_label = new QLabel("0-");
   input.graph_data_selection_bar = new QHBoxLayout();
   input.double_ended_range = false;
@@ -89,6 +90,7 @@ void graph_widget::setup_ui()
   target.plot_display = new QCheckBox("Target");
   target.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; font:14px; background-color:white"));
+  target.color = "#0000ff";
   target.range_label = new QLabel("0-");
   target.graph_data_selection_bar = new QHBoxLayout();
   target.double_ended_range = false;
@@ -98,6 +100,7 @@ void graph_widget::setup_ui()
   feedback.plot_display = new QCheckBox("Feedback");
   feedback.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ffc0cb; text-align:center; font:14px; background-color:white"));
+  feedback.color = "#ffc0cb";
   feedback.range_label = new QLabel("0-");
   feedback.graph_data_selection_bar = new QHBoxLayout();
   feedback.double_ended_range = false;
@@ -107,6 +110,7 @@ void graph_widget::setup_ui()
   scaled_feedback.plot_display = new QCheckBox("Scaled Feedback");
   scaled_feedback.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff0000; text-align:center; font:14px; background-color:white"));
+  scaled_feedback.color = "#ff0000";
   scaled_feedback.range_label = new QLabel("0-");
   scaled_feedback.graph_data_selection_bar = new QHBoxLayout();
   scaled_feedback.double_ended_range = false;
@@ -116,6 +120,7 @@ void graph_widget::setup_ui()
   error.plot_display = new QCheckBox("Error");
   error.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; font:14px; background-color:white"));
+  error.color = "#9400d3";
   error.range_label = new QLabel("\u00B1");
   error.graph_data_selection_bar = new QHBoxLayout();
   error.double_ended_range = true;
@@ -125,6 +130,7 @@ void graph_widget::setup_ui()
   integral.plot_display = new QCheckBox("Integral");
   integral.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; font:14px; background-color:white"));
+  integral.color = "#ff8c00";
   integral.range_label = new QLabel("\u00B1");
   integral.graph_data_selection_bar = new QHBoxLayout();
   integral.double_ended_range = true;
@@ -134,6 +140,7 @@ void graph_widget::setup_ui()
   duty_cycle_target.plot_display = new QCheckBox("Duty cycle target");
   duty_cycle_target.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; font:14px; background-color:white"));
+  duty_cycle_target.color = "#32cd32";
   duty_cycle_target.range_label = new QLabel("\u00B1");
   duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
   duty_cycle_target.double_ended_range = true;
@@ -143,6 +150,7 @@ void graph_widget::setup_ui()
   duty_cycle.plot_display = new QCheckBox("Duty cycle");
   duty_cycle.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; font:14px; background-color:white"));
+  duty_cycle.color = "#006400";
   duty_cycle.range_label = new QLabel("\u00B1");
   duty_cycle.graph_data_selection_bar = new QHBoxLayout();
   duty_cycle.double_ended_range = true;
@@ -152,6 +160,7 @@ void graph_widget::setup_ui()
   raw_current.plot_display = new QCheckBox("Raw current (mV)");
   raw_current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; font:14px; background-color:white"));
+  raw_current.color = "#b8860b";
   raw_current.range_label = new QLabel("0\u2013");
   raw_current.graph_data_selection_bar = new QHBoxLayout();
   raw_current.double_ended_range = true;
@@ -161,6 +170,7 @@ void graph_widget::setup_ui()
   scaled_current.plot_display = new QCheckBox("Scaled current (mV)");
   scaled_current.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; font:14px; background-color:white"));
+  scaled_current.color = "#0000ff";
   scaled_current.range_label = new QLabel("\u00B1");
   scaled_current.graph_data_selection_bar = new QHBoxLayout();
   scaled_current.double_ended_range = true;
@@ -171,6 +181,7 @@ void graph_widget::setup_ui()
   // TODO: why is the name cut off?  "log" is not shown
   current_chopping_log.plot_display->
     setStyleSheet(QStringLiteral("border:5px solid #ff00ff; text-align:center; font:14px; background-color:white"));
+  current_chopping_log.color = "#ff00ff";
   current_chopping_log.range_label = new QLabel("0\u2013");
    // TODO: use en dashes on the other plots too
   current_chopping_log.graph_data_selection_bar = new QHBoxLayout();
@@ -250,7 +261,7 @@ void graph_widget::setup_plots()
 
     all_plots[i].plot_graph = new QCPGraph(custom_plot->xAxis2,all_plots[i].plot_axis);
 
-    all_plots[i].plot_graph->setPen(QPen(plot_colors[i]));
+    all_plots[i].plot_graph->setPen(QPen(all_plots[i].color));
 
     connect(all_plots[i].plot_range, SIGNAL(valueChanged(double)), this, SLOT(change_ranges()));
 
