@@ -139,8 +139,8 @@ void print_status(const jrk::variables & vars,
     << vars.get_error()
     << std::endl;
 
-  std::cout << left_column << "Error sum: "
-    << vars.get_error_sum()
+  std::cout << left_column << "Integral: "
+    << vars.get_integral()
     << std::endl;
 
   std::cout << left_column << "Duty cycle target: "

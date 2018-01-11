@@ -1644,9 +1644,9 @@ uint16_t jrk_variables_get_feedback(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_scaled_feedback(const jrk_variables *);
 
-// Gets the error_sum variable.
+// Gets the integral variable.
 JRK_API
-int16_t jrk_variables_get_error_sum(const jrk_variables *);
+int16_t jrk_variables_get_integral(const jrk_variables *);
 
 // Gets the duty_cycle_target variable.
 JRK_API

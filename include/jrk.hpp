@@ -1407,10 +1407,10 @@ namespace jrk
       return jrk_variables_get_scaled_feedback(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_error_sum().
-    int16_t get_error_sum() const noexcept
+    /// Wrapper for jrk_variables_get_integral().
+    int16_t get_integral() const noexcept
     {
-      return jrk_variables_get_error_sum(pointer);
+      return jrk_variables_get_integral(pointer);
     }
 
     /// Wrapper for jrk_variables_get_duty_cycle_target().

@@ -16,7 +16,7 @@ Variables = [
     type: :uint16_t,
   },
   {
-    name: 'error_sum',
+    name: 'integral',
     type: :int16_t,
   },
   {
