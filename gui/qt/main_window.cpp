@@ -1698,6 +1698,47 @@ void main_window::on_manual_target_scroll_bar_valueChanged(int value)
   on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
 }
 
+void main_window::on_open_settings_action_triggered()
+{
+  QString filename = QFileDialog::getOpenFileName(this,
+    tr("Open Settings File"), directory_hint + "/jrk_settings.txt",
+    tr("Text files (*.txt)"));
+
+  if (!filename.isNull())
+  {
+    directory_hint = QFileInfo(filename).canonicalPath();
+    controller->open_settings_from_file(filename.toStdString());
+  }
+}
+
+void main_window::on_save_settings_action_triggered()
+{
+  QString filename = QFileDialog::getSaveFileName(this,
+    tr("Save Settings File"), directory_hint + "/jrk_settings.txt",
+    tr("Text files (*.txt)"));
+
+  if (!filename.isNull())
+  {
+    directory_hint = QFileInfo(filename).canonicalPath();
+    controller->save_settings_to_file(filename.toStdString());
+  }
+}
+
+void main_window::on_disconnect_action_triggered()
+{
+  controller->disconnect_device();
+}
+
+void main_window::on_reload_settings_action_triggered()
+{
+  controller->reload_settings();
+}
+
+void main_window::on_restore_defaults_action_triggered()
+{
+  controller->restore_default_settings();
+}
+
 void main_window::on_input_mode_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }

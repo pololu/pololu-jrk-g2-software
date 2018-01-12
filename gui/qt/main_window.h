@@ -234,6 +234,11 @@ private slots:
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();
   void on_manual_target_scroll_bar_valueChanged(int value);
+  void on_open_settings_action_triggered();
+  void on_save_settings_action_triggered();
+  void on_disconnect_action_triggered();
+  void on_reload_settings_action_triggered();
+  void on_restore_defaults_action_triggered();
 
   void on_input_mode_combobox_currentIndexChanged(int index);
   void on_input_analog_samples_combobox_currentIndexChanged(int index);
@@ -574,6 +579,8 @@ private:
   void set_check_box(QCheckBox * check, bool value);
 
   bool start_event_reported = false;
+
+  QString directory_hint;
 
   friend class pid_constant_control;
   friend class errors_control;
