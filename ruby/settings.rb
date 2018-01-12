@@ -713,21 +713,20 @@ EOF
     name: 'motor_max_current_forward',
     type: :uint16_t,
     overridable: true,
-    default: 10,
+    default: 26,  # about 10 A on umc04a
     max: 31,
-    custom_eeprom: true,  # tmphax just so we could divide by 4
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
-THE COMMENTS BELOW ARE OUTDATED (TODO).
+This setting is not actually a current, it is a code telling the jrk how to
+set up its current limiting hardware.
 
-This is the native current limit value stored on the device.
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
 
-- jrk_current_limit_native_to_ma()
-- jrk_current_limit_ma_to_native()
-- jrk_achievable_current_limit()
+- jrk_max_current_code_to_ma()
+- jrk_max_current_ma_to_code()
+- jrk_max_current_code_step()
 EOF
   },
   {
@@ -736,7 +735,6 @@ EOF
     overridable: true,
     default: 10,
     max: 31,
-    custom_eeprom: true,  # tmphax just so we could divide by 4
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
       "See the documentation of motor_max_current_forward."

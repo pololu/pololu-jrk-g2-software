@@ -27,9 +27,6 @@
 // A descriptor type from USB 2.0 Table 9-5
 #define USB_DESCRIPTOR_TYPE_STRING 3
 
-// TODO: remove this and remove custom_eeprom on the max current settings
-#define TMPHAX_CURRENT_UNITS 4
-
 // Internal string manipulation library.
 
 typedef struct jrk_string
