@@ -42,6 +42,8 @@ struct error_row
 	QLabel *count_value = NULL;
 	QWidget *errors_frame;
   QButtonGroup *error_enable_group;
+  bool always_enabled = false;
+  bool always_latched = false;
   int index = 0;
 };
 
@@ -232,6 +234,11 @@ private slots:
   void on_run_motor_action_triggered();
   void on_set_target_button_clicked();
   void on_manual_target_scroll_bar_valueChanged(int value);
+  void on_open_settings_action_triggered();
+  void on_save_settings_action_triggered();
+  void on_disconnect_action_triggered();
+  void on_reload_settings_action_triggered();
+  void on_restore_defaults_action_triggered();
 
   void on_input_mode_combobox_currentIndexChanged(int index);
   void on_input_analog_samples_combobox_currentIndexChanged(int index);
@@ -557,7 +564,8 @@ private:
 
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
-  QWidget * setup_error_row(int row_number, bool disabled_visible, bool enabled_visible);
+  QWidget * setup_error_row(int row_number, bool disabled_visible,
+   bool enabled_visible, bool always_enabled, bool always_latched);
   QWidget * new_error_row;
 
 	void setup_ui();
@@ -571,6 +579,8 @@ private:
   void set_check_box(QCheckBox * check, bool value);
 
   bool start_event_reported = false;
+
+  QString directory_hint;
 
   friend class pid_constant_control;
   friend class errors_control;
