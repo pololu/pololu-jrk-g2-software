@@ -562,7 +562,7 @@ void main_controller::handle_device_changed()
   window->set_open_save_settings_enabled(connected());
   window->set_reload_settings_enabled(connected());
   window->set_restore_defaults_enabled(connected());
-  window->set_stop_motor_enabled(connected());
+  window->set_stop_motor_enabled(!connected());
   window->set_run_motor_enabled(connected());
   window->set_tab_pages_enabled(connected());
 }
@@ -1388,6 +1388,9 @@ void main_controller::stop_motor()
   {
     show_exception(e);
   }
+
+  window->set_stop_motor_enabled(false);
+  window->set_run_motor_enabled(true);
 }
 
 void main_controller::run_motor()
@@ -1402,6 +1405,9 @@ void main_controller::run_motor()
   {
     show_exception(e);
   }
+
+  window->set_stop_motor_enabled(true);
+  window->set_run_motor_enabled(false);
 }
 
 void main_controller::set_target(uint16_t target)

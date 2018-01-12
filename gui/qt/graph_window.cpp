@@ -53,7 +53,7 @@ void graph_window::receive_widget(graph_widget *widget)
 		qWarning() << "You might have lost a widget just now.";
 
 	grabbed_widget = widget;
-	bottom_control_layout->addWidget(grabbed_widget->pauseRunButton);
+	bottom_control_layout->addWidget(grabbed_widget->pause_run_button);
 	bottom_control_layout->addWidget(grabbed_widget->label1);
 	bottom_control_layout->addWidget(grabbed_widget->min_y);
 	bottom_control_layout->addWidget(grabbed_widget->label3);

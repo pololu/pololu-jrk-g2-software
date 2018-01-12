@@ -9,6 +9,7 @@
 #include <QGroupBox>
 #include <QButtonGroup>
 #include <QValidator>
+#include <QGraphicsDropShadowEffect>
 
 #include <array>
 
@@ -91,10 +92,7 @@ public:
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
 
-  void set_error_flags_halting(uint16_t error_flags_halting);
-  void increment_errors_occurred(uint16_t errors_occurred);
 
-  void reset_error_counts();
 
   bool suppress_events = false;
   main_controller * window_controller() const;
@@ -114,11 +112,6 @@ public:
   void set_vin_calibration(int16_t vin_calibration);
 
   void set_never_sleep(bool never_sleep);
-
-
-
-
-
 
   void set_input_mode(uint8_t input_mode);
   void set_input_invert(bool input_invert);
@@ -181,11 +174,12 @@ public:
   void set_motor_coast_when_off(uint8_t value);
 
   void set_error_enable(uint16_t enable, uint16_t latch);
+  void set_error_flags_halting(uint16_t error_flags_halting);
+  void increment_errors_occurred(uint16_t errors_occurred);
+  void reset_error_counts();
 
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
-
-	void set_motor_status_message(std::string const & message, bool stopped = true);
 
 	void set_current_velocity(int32_t current_velocity);
 
@@ -303,8 +297,6 @@ private slots:
   void on_errors_reset_counts_clicked();
 
 private:
-	std::array<error_row, 16> error_rows;
-
 	QTimer *update_timer = NULL;
 
 	QWidget *central_widget;
@@ -556,17 +548,19 @@ private:
   QWidget * setup_input_analog_groupbox();
   QWidget * setup_input_serial_groupbox();
   QWidget * setup_input_scaling_groupbox();
-	QWidget * setup_feedback_tab();
+
+  QWidget * setup_feedback_tab();
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
-	QWidget * setup_pid_tab();
 
+  QWidget * setup_pid_tab();
 
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
   QWidget * setup_error_row(int row_number, bool disabled_visible,
    bool enabled_visible, bool always_enabled, bool always_latched);
   QWidget * new_error_row;
+  std::array<error_row, 16> error_rows;
 
 	void setup_ui();
 
@@ -583,7 +577,6 @@ private:
   QString directory_hint;
 
   friend class pid_constant_control;
-  friend class errors_control;
 };
 
 class pid_constant_control : public QObject
