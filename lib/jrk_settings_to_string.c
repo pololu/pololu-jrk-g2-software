@@ -282,6 +282,26 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
+    uint8_t current_samples_exponent = jrk_settings_get_current_samples_exponent(settings);
+    jrk_sprintf(&str, "current_samples_exponent: %u\n", current_samples_exponent);
+  }
+
+  {
+    uint8_t max_current_exceeded_threshold = jrk_settings_get_max_current_exceeded_threshold(settings);
+    jrk_sprintf(&str, "max_current_exceeded_threshold: %u\n", max_current_exceeded_threshold);
+  }
+
+  {
+    int16_t current_offset_calibration = jrk_settings_get_current_offset_calibration(settings);
+    jrk_sprintf(&str, "current_offset_calibration: %d\n", current_offset_calibration);
+  }
+
+  {
+    int16_t current_scale_calibration = jrk_settings_get_current_scale_calibration(settings);
+    jrk_sprintf(&str, "current_scale_calibration: %d\n", current_scale_calibration);
+  }
+
+  {
     bool motor_invert = jrk_settings_get_motor_invert(settings);
     jrk_sprintf(&str, "motor_invert: %s\n",
       motor_invert ? "true" : "false");
@@ -330,16 +350,6 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   {
     uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
     jrk_sprintf(&str, "motor_max_current_reverse: %u\n", motor_max_current_reverse);
-  }
-
-  {
-    int8_t motor_current_calibration_forward = jrk_settings_get_motor_current_calibration_forward(settings);
-    jrk_sprintf(&str, "motor_current_calibration_forward: %d\n", motor_current_calibration_forward);
-  }
-
-  {
-    int8_t motor_current_calibration_reverse = jrk_settings_get_motor_current_calibration_reverse(settings);
-    jrk_sprintf(&str, "motor_current_calibration_reverse: %d\n", motor_current_calibration_reverse);
   }
 
   {

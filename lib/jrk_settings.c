@@ -48,6 +48,10 @@ struct jrk_settings
   uint16_t pid_integral_limit;
   bool pid_reset_integral;
   uint8_t motor_pwm_frequency;
+  uint8_t current_samples_exponent;
+  uint8_t max_current_exceeded_threshold;
+  int16_t current_offset_calibration;
+  int16_t current_scale_calibration;
   bool motor_invert;
   uint16_t motor_max_duty_cycle_while_feedback_out_of_range;
   uint16_t motor_max_acceleration_forward;
@@ -58,8 +62,6 @@ struct jrk_settings
   uint16_t motor_max_duty_cycle_reverse;
   uint16_t motor_max_current_forward;
   uint16_t motor_max_current_reverse;
-  int8_t motor_current_calibration_forward;
-  int8_t motor_current_calibration_reverse;
   uint32_t motor_brake_duration_forward;
   uint32_t motor_brake_duration_reverse;
   bool motor_coast_when_off;
@@ -110,6 +112,8 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_serial_device_number(settings, 11);
   jrk_settings_set_pid_period(settings, 10);
   jrk_settings_set_pid_integral_limit(settings, 1000);
+  jrk_settings_set_current_samples_exponent(settings, 2);
+  jrk_settings_set_max_current_exceeded_threshold(settings, 1);
   jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, 600);
   jrk_settings_set_motor_max_acceleration_forward(settings, 600);
   jrk_settings_set_motor_max_acceleration_reverse(settings, 600);
@@ -714,6 +718,54 @@ uint8_t jrk_settings_get_motor_pwm_frequency(const jrk_settings * settings)
   return settings->motor_pwm_frequency;
 }
 
+void jrk_settings_set_current_samples_exponent(jrk_settings * settings, uint8_t current_samples_exponent)
+{
+  if (settings == NULL) { return; }
+  settings->current_samples_exponent = current_samples_exponent;
+}
+
+uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->current_samples_exponent;
+}
+
+void jrk_settings_set_max_current_exceeded_threshold(jrk_settings * settings, uint8_t max_current_exceeded_threshold)
+{
+  if (settings == NULL) { return; }
+  settings->max_current_exceeded_threshold = max_current_exceeded_threshold;
+}
+
+uint8_t jrk_settings_get_max_current_exceeded_threshold(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->max_current_exceeded_threshold;
+}
+
+void jrk_settings_set_current_offset_calibration(jrk_settings * settings, int16_t current_offset_calibration)
+{
+  if (settings == NULL) { return; }
+  settings->current_offset_calibration = current_offset_calibration;
+}
+
+int16_t jrk_settings_get_current_offset_calibration(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->current_offset_calibration;
+}
+
+void jrk_settings_set_current_scale_calibration(jrk_settings * settings, int16_t current_scale_calibration)
+{
+  if (settings == NULL) { return; }
+  settings->current_scale_calibration = current_scale_calibration;
+}
+
+int16_t jrk_settings_get_current_scale_calibration(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->current_scale_calibration;
+}
+
 void jrk_settings_set_motor_invert(jrk_settings * settings, bool motor_invert)
 {
   if (settings == NULL) { return; }
@@ -832,30 +884,6 @@ uint16_t jrk_settings_get_motor_max_current_reverse(const jrk_settings * setting
 {
   if (settings == NULL) { return 0; }
   return settings->motor_max_current_reverse;
-}
-
-void jrk_settings_set_motor_current_calibration_forward(jrk_settings * settings, int8_t motor_current_calibration_forward)
-{
-  if (settings == NULL) { return; }
-  settings->motor_current_calibration_forward = motor_current_calibration_forward;
-}
-
-int8_t jrk_settings_get_motor_current_calibration_forward(const jrk_settings * settings)
-{
-  if (settings == NULL) { return 0; }
-  return settings->motor_current_calibration_forward;
-}
-
-void jrk_settings_set_motor_current_calibration_reverse(jrk_settings * settings, int8_t motor_current_calibration_reverse)
-{
-  if (settings == NULL) { return; }
-  settings->motor_current_calibration_reverse = motor_current_calibration_reverse;
-}
-
-int8_t jrk_settings_get_motor_current_calibration_reverse(const jrk_settings * settings)
-{
-  if (settings == NULL) { return 0; }
-  return settings->motor_current_calibration_reverse;
 }
 
 void jrk_settings_set_motor_brake_duration_forward(jrk_settings * settings, uint32_t motor_brake_duration_forward)

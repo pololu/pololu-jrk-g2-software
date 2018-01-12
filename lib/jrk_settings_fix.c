@@ -353,6 +353,47 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
+    uint8_t current_samples_exponent = jrk_settings_get_current_samples_exponent(settings);
+    jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
+  }
+
+  {
+    uint8_t max_current_exceeded_threshold = jrk_settings_get_max_current_exceeded_threshold(settings);
+    if (max_current_exceeded_threshold < 1)
+    {
+      max_current_exceeded_threshold = 1;
+      jrk_sprintf(warnings,
+        "Warning: The max current exceeded threshold was too low "
+        "so it will be changed to %u.\n", max_current_exceeded_threshold);
+    }
+    jrk_settings_set_max_current_exceeded_threshold(settings, max_current_exceeded_threshold);
+  }
+
+  {
+    int16_t current_offset_calibration = jrk_settings_get_current_offset_calibration(settings);
+    if (current_offset_calibration < JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION)
+    {
+      current_offset_calibration = JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION;
+      jrk_sprintf(warnings,
+        "Warning: The current offset calibration was too low "
+        "so it will be changed to %d.\n", current_offset_calibration);
+    }
+    if (current_offset_calibration > JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION)
+    {
+      current_offset_calibration = JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION;
+      jrk_sprintf(warnings,
+        "Warning: The current offset calibration was too high "
+        "so it will be changed to %d.\n", current_offset_calibration);
+    }
+    jrk_settings_set_current_offset_calibration(settings, current_offset_calibration);
+  }
+
+  {
+    int16_t current_scale_calibration = jrk_settings_get_current_scale_calibration(settings);
+    jrk_settings_set_current_scale_calibration(settings, current_scale_calibration);
+  }
+
+  {
     uint16_t motor_max_duty_cycle_while_feedback_out_of_range = jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(settings);
     if (motor_max_duty_cycle_while_feedback_out_of_range < 1)
     {
@@ -493,16 +534,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
         "so it will be changed to %u.\n", motor_max_current_reverse);
     }
     jrk_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
-  }
-
-  {
-    int8_t motor_current_calibration_forward = jrk_settings_get_motor_current_calibration_forward(settings);
-    jrk_settings_set_motor_current_calibration_forward(settings, motor_current_calibration_forward);
-  }
-
-  {
-    int8_t motor_current_calibration_reverse = jrk_settings_get_motor_current_calibration_reverse(settings);
-    jrk_settings_set_motor_current_calibration_reverse(settings, motor_current_calibration_reverse);
   }
 
   {

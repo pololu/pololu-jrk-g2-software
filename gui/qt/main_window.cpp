@@ -1330,10 +1330,12 @@ QWidget *main_window::setup_motor_tab()
   motor_calibration_forward_spinbox = new QSpinBox();
   motor_calibration_forward_spinbox->setObjectName("motor_calibration_forward_spinbox");
   motor_calibration_forward_spinbox->setRange(1, 255);
+  motor_calibration_forward_spinbox->setEnabled(false);  // setting will be removed
 
   motor_calibration_reverse_spinbox = new QSpinBox();
   motor_calibration_reverse_spinbox->setObjectName("motor_calibration_reverse_spinbox");
   motor_calibration_reverse_spinbox->setRange(1, 255);
+  motor_calibration_reverse_spinbox->setEnabled(false);  // setting will be removed
 
   motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
@@ -2490,8 +2492,7 @@ void main_window::set_motor_asymmetric(bool checked)
   motor_max_deceleration_reverse_spinbox->setEnabled(checked);
   motor_brake_duration_reverse_spinbox->setEnabled(checked);
   motor_max_current_reverse_spinbox->setEnabled(checked);
-  motor_calibration_reverse_spinbox->setEnabled(checked);
-
+  //TODO: remove this comment: motor_calibration_reverse_spinbox->setEnabled(checked);
 }
 
 void main_window::set_motor_max_duty_cycle_forward(uint16_t duty_cycle)

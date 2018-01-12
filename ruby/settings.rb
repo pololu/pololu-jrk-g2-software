@@ -537,6 +537,76 @@ EOF
       "JRK_MOTOR_PWM_FREQUENCY_20 or JRK_MOTOR_PWM_FREQUENCY_5.\n"
   },
   {
+    name: 'current_samples_exponent',
+    type: :uint8_t,
+    default: 2,
+    comment:
+      "This setting specifies how many analog samples to take when measuring\n" \
+      "the current.  The number of samples will be 2^x, where x is this setting.",
+  },
+  {
+    name: 'max_current_exceeded_threshold',
+    type: :uint8_t,
+    default: 1,
+    min: 1,
+    comment: <<EOF
+This is the number of consecutive PID periods where the the hardware current
+chopping must occur before the jrk triggers a "Max. current exceeded\" error.
+The default of 1 means that any current chopping is an error.  You can set it
+to a higher value if you expect some current chopping to happen (e.g. when
+starting up) but you still want to it to be an error when your motor leads
+are shorted out.
+EOF
+  },
+  {
+    name: 'current_offset_calibration',
+    type: :int16_t,
+    default: 0,
+    min: 'JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION',
+    max: 'JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION',
+    comment: <<EOF
+The current sense circuitry on a umc04a jrk produces a constant voltage of
+about 50 mV when the motor driver is powered, even if there is no current
+flowing through the motor.  That offset voltage varies from model to model.
+For more accurate current measurements and current limit settings, you can
+use the current_offset_calibration setting to record the value of that
+offset.
+
+For the umc04a jrk, use this formula:
+
+  current_offset_calibration = (voltage offset in millivolts - 50) * 64
+
+The current_offset_calibration should be between -3200 (for an offset of 0
+mV) and 3200 (for an offset of 100 mV).
+
+This calibration constant is stored in the device's EEPROM but the device
+does not use it.
+EOF
+  },
+  {
+    name: 'current_scale_calibration',
+    type: :int16_t,
+    default: 0,
+    comment: <<EOF
+You can use this current calibration setting to correct current measurements
+and current limit settings that are off by a constant percentage.
+
+The algorithm for calculating currents in amps in this software involves
+applying this formula to the current:
+
+  current = current * (65536 + current_scale_calibration) / 65536
+
+With the default current_scale_calibration value of 0, this scaling step has
+no effect.  With a current_scale_calibration value of 655, the scaling step
+would increase the current by about 1%.
+
+You should probably set current_offset_calibration before setting this.
+
+This calibration constant is stored in the device's EEPROM but the device
+does not use it.
+EOF
+  },
+  {
     name: 'motor_invert',
     type: :bool,
     address: 'JRK_SETTING_OPTIONS_BYTE2',
@@ -672,16 +742,6 @@ EOF
       "See the documentation of motor_max_current_forward."
   },
   {
-    name: 'motor_current_calibration_forward',  # TODO: document this
-    type: :int8_t,
-    overridable: true,
-  },
-  {
-    name: 'motor_current_calibration_reverse',  # TODO: document this, remove separate calibrations for forward and reverse
-    type: :int8_t,
-    overridable: true,
-  },
-  {
     name: 'motor_brake_duration_forward',
     type: :uint32_t,
     overridable: true,
@@ -745,9 +805,14 @@ EOF
     english_name: 'VIN calibration',
     type: :int16_t,
     range: -500..500,
-    comment:
-      "A higher number gives you higher VIN readings, while a lower number gives\n" \
-      "you lower VIN readings.",
+    comment: <<EOF
+The firmware uses this calibration factor when calculating the VIN voltage.
+One of the steps in the process is to multiply the VIN voltage reading by
+(825 + vin_calibration).
+
+So for every 8 counts that you add or subtract from the vin_calibration
+setting, you increase or decrease the VIN voltage reading by about 1%.
+EOF
   },
 ]
 # TODO: comments for all these settings (for jrk.h)

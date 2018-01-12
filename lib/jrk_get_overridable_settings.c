@@ -104,18 +104,6 @@ static void write_buffer_to_overridable_settings(const uint8_t * buf,
   }
 
   {
-    int8_t motor_current_calibration_forward =
-      buf[JRK_SETTING_MOTOR_CURRENT_CALIBRATION_FORWARD - JRK_OVERRIDABLE_SETTINGS_START];
-    jrk_overridable_settings_set_motor_current_calibration_forward(settings, motor_current_calibration_forward);
-  }
-
-  {
-    int8_t motor_current_calibration_reverse =
-      buf[JRK_SETTING_MOTOR_CURRENT_CALIBRATION_REVERSE - JRK_OVERRIDABLE_SETTINGS_START];
-    jrk_overridable_settings_set_motor_current_calibration_reverse(settings, motor_current_calibration_reverse);
-  }
-
-  {
     bool motor_coast_when_off =
       buf[JRK_SETTING_OPTIONS_BYTE3 - JRK_OVERRIDABLE_SETTINGS_START] >> JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF & 1;
     jrk_overridable_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
