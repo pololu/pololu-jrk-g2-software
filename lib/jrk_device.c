@@ -56,14 +56,24 @@ jrk_error * jrk_list_connected_devices(
     uint16_t vendor_id;
     error = jrk_usb_error(libusbp_device_get_vendor_id(usb_device, &vendor_id));
     if (error) { break; }
-    if (vendor_id != JRK_VENDOR_ID) { continue; }
+    if (vendor_id != JRK_USB_VENDOR_ID) { continue; }
 
     // Check the USB product ID.
     uint16_t product_id;
     error = jrk_usb_error(libusbp_device_get_product_id(usb_device, &product_id));
     if (error) { break; }
-    if (product_id != JRK_PRODUCT_ID_2017)
+
+    uint32_t product_code;
+    switch (product_id)
     {
+    case JRK_USB_PRODUCT_ID_UMC04A_30V:
+      product_code = JRK_PRODUCT_UMC04A_30V;
+      break;
+    case JRK_USB_PRODUCT_ID_UMC04A_40V:
+      product_code = JRK_PRODUCT_UMC04A_40V;
+      break;
+    default:
+      // Unrecognized product.
       continue;
     }
 
@@ -120,18 +130,7 @@ jrk_error * jrk_list_connected_devices(
     if (error) { break; }
 
     // Get the product code.
-    switch (product_id)
-    {
-    case JRK_PRODUCT_ID_2017:
-      new_device->product = JRK_PRODUCT_2017;
-      break;
-    }
-    if (new_device->product == 0)
-    {
-      // Should not ever happen.
-      error = jrk_error_create("Unknown product.");
-      break;
-    }
+    new_device->product = product_code;
   }
 
   if (error == NULL)

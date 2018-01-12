@@ -86,14 +86,13 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
 
   // The product should be set beforehand, and if it is not then we should do
   // nothing.
-  if (product != JRK_PRODUCT_2017)
+  if (product == 0)
   {
     return;
   }
 
-  // Reset all fields to zero.
+  // Reset all fields to zero and then restore the product.
   memset(settings, 0, sizeof(jrk_settings));
-
   jrk_settings_set_product(settings, product);
 
   // Beginning of auto-generated settings defaults.
