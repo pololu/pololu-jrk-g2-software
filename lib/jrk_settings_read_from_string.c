@@ -591,6 +591,62 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_motor_pwm_frequency(settings, motor_pwm_frequency);
   }
+  else if (!strcmp(key, "current_samples_exponent"))
+  {
+    int64_t current_samples_exponent;
+    if (jrk_string_to_i64(value, &current_samples_exponent))
+    {
+      return jrk_error_create("Invalid current_samples_exponent value.");
+    }
+    if (current_samples_exponent < 0 || current_samples_exponent > UINT8_MAX)
+    {
+      return jrk_error_create(
+        "The current_samples_exponent value is out of range.");
+    }
+    jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
+  }
+  else if (!strcmp(key, "max_current_exceeded_threshold"))
+  {
+    int64_t max_current_exceeded_threshold;
+    if (jrk_string_to_i64(value, &max_current_exceeded_threshold))
+    {
+      return jrk_error_create("Invalid max_current_exceeded_threshold value.");
+    }
+    if (max_current_exceeded_threshold < 0 || max_current_exceeded_threshold > UINT8_MAX)
+    {
+      return jrk_error_create(
+        "The max_current_exceeded_threshold value is out of range.");
+    }
+    jrk_settings_set_max_current_exceeded_threshold(settings, max_current_exceeded_threshold);
+  }
+  else if (!strcmp(key, "current_offset_calibration"))
+  {
+    int64_t current_offset_calibration;
+    if (jrk_string_to_i64(value, &current_offset_calibration))
+    {
+      return jrk_error_create("Invalid current_offset_calibration value.");
+    }
+    if (current_offset_calibration < INT16_MIN || current_offset_calibration > INT16_MAX)
+    {
+      return jrk_error_create(
+        "The current_offset_calibration value is out of range.");
+    }
+    jrk_settings_set_current_offset_calibration(settings, current_offset_calibration);
+  }
+  else if (!strcmp(key, "current_scale_calibration"))
+  {
+    int64_t current_scale_calibration;
+    if (jrk_string_to_i64(value, &current_scale_calibration))
+    {
+      return jrk_error_create("Invalid current_scale_calibration value.");
+    }
+    if (current_scale_calibration < INT16_MIN || current_scale_calibration > INT16_MAX)
+    {
+      return jrk_error_create(
+        "The current_scale_calibration value is out of range.");
+    }
+    jrk_settings_set_current_scale_calibration(settings, current_scale_calibration);
+  }
   else if (!strcmp(key, "motor_invert"))
   {
     uint32_t motor_invert;
@@ -726,34 +782,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
         "The motor_max_current_reverse value is out of range.");
     }
     jrk_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
-  }
-  else if (!strcmp(key, "motor_current_calibration_forward"))
-  {
-    int64_t motor_current_calibration_forward;
-    if (jrk_string_to_i64(value, &motor_current_calibration_forward))
-    {
-      return jrk_error_create("Invalid motor_current_calibration_forward value.");
-    }
-    if (motor_current_calibration_forward < INT8_MIN || motor_current_calibration_forward > INT8_MAX)
-    {
-      return jrk_error_create(
-        "The motor_current_calibration_forward value is out of range.");
-    }
-    jrk_settings_set_motor_current_calibration_forward(settings, motor_current_calibration_forward);
-  }
-  else if (!strcmp(key, "motor_current_calibration_reverse"))
-  {
-    int64_t motor_current_calibration_reverse;
-    if (jrk_string_to_i64(value, &motor_current_calibration_reverse))
-    {
-      return jrk_error_create("Invalid motor_current_calibration_reverse value.");
-    }
-    if (motor_current_calibration_reverse < INT8_MIN || motor_current_calibration_reverse > INT8_MAX)
-    {
-      return jrk_error_create(
-        "The motor_current_calibration_reverse value is out of range.");
-    }
-    jrk_settings_set_motor_current_calibration_reverse(settings, motor_current_calibration_reverse);
   }
   else if (!strcmp(key, "motor_brake_duration_forward"))
   {

@@ -208,6 +208,26 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
+    uint8_t current_samples_exponent = jrk_settings_get_current_samples_exponent(settings);
+    buf[JRK_SETTING_CURRENT_SAMPLES_EXPONENT] = current_samples_exponent;
+  }
+
+  {
+    uint8_t max_current_exceeded_threshold = jrk_settings_get_max_current_exceeded_threshold(settings);
+    buf[JRK_SETTING_MAX_CURRENT_EXCEEDED_THRESHOLD] = max_current_exceeded_threshold;
+  }
+
+  {
+    int16_t current_offset_calibration = jrk_settings_get_current_offset_calibration(settings);
+    write_int16_t(buf + JRK_SETTING_CURRENT_OFFSET_CALIBRATION, current_offset_calibration);
+  }
+
+  {
+    int16_t current_scale_calibration = jrk_settings_get_current_scale_calibration(settings);
+    write_int16_t(buf + JRK_SETTING_CURRENT_SCALE_CALIBRATION, current_scale_calibration);
+  }
+
+  {
     bool motor_invert = jrk_settings_get_motor_invert(settings);
     buf[JRK_SETTING_OPTIONS_BYTE2] |= motor_invert << JRK_OPTIONS_BYTE2_MOTOR_INVERT;
   }
@@ -245,16 +265,6 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   {
     uint16_t motor_max_duty_cycle_reverse = jrk_settings_get_motor_max_duty_cycle_reverse(settings);
     write_uint16_t(buf + JRK_SETTING_MOTOR_MAX_DUTY_CYCLE_REVERSE, motor_max_duty_cycle_reverse);
-  }
-
-  {
-    int8_t motor_current_calibration_forward = jrk_settings_get_motor_current_calibration_forward(settings);
-    buf[JRK_SETTING_MOTOR_CURRENT_CALIBRATION_FORWARD] = motor_current_calibration_forward;
-  }
-
-  {
-    int8_t motor_current_calibration_reverse = jrk_settings_get_motor_current_calibration_reverse(settings);
-    buf[JRK_SETTING_MOTOR_CURRENT_CALIBRATION_REVERSE] = motor_current_calibration_reverse;
   }
 
   {

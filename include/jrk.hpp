@@ -821,6 +821,54 @@ namespace jrk
       return jrk_settings_get_motor_pwm_frequency(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_current_samples_exponent().
+    void set_current_samples_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_current_samples_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_current_samples_exponent().
+    uint8_t get_current_samples_exponent() const noexcept
+    {
+      return jrk_settings_get_current_samples_exponent(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_max_current_exceeded_threshold().
+    void set_max_current_exceeded_threshold(uint8_t value) noexcept
+    {
+      jrk_settings_set_max_current_exceeded_threshold(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_max_current_exceeded_threshold().
+    uint8_t get_max_current_exceeded_threshold() const noexcept
+    {
+      return jrk_settings_get_max_current_exceeded_threshold(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_current_offset_calibration().
+    void set_current_offset_calibration(int16_t value) noexcept
+    {
+      jrk_settings_set_current_offset_calibration(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_current_offset_calibration().
+    int16_t get_current_offset_calibration() const noexcept
+    {
+      return jrk_settings_get_current_offset_calibration(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_current_scale_calibration().
+    void set_current_scale_calibration(int16_t value) noexcept
+    {
+      jrk_settings_set_current_scale_calibration(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_current_scale_calibration().
+    int16_t get_current_scale_calibration() const noexcept
+    {
+      return jrk_settings_get_current_scale_calibration(pointer);
+    }
+
     /// Wrapper for jrk_settings_set_motor_invert().
     void set_motor_invert(bool value) noexcept
     {
@@ -939,30 +987,6 @@ namespace jrk
     uint16_t get_motor_max_current_reverse() const noexcept
     {
       return jrk_settings_get_motor_max_current_reverse(pointer);
-    }
-
-    /// Wrapper for jrk_settings_set_motor_current_calibration_forward().
-    void set_motor_current_calibration_forward(int8_t value) noexcept
-    {
-      jrk_settings_set_motor_current_calibration_forward(pointer, value);
-    }
-
-    /// Wrapper for jrk_settings_get_motor_current_calibration_forward().
-    int8_t get_motor_current_calibration_forward() const noexcept
-    {
-      return jrk_settings_get_motor_current_calibration_forward(pointer);
-    }
-
-    /// Wrapper for jrk_settings_set_motor_current_calibration_reverse().
-    void set_motor_current_calibration_reverse(int8_t value) noexcept
-    {
-      jrk_settings_set_motor_current_calibration_reverse(pointer, value);
-    }
-
-    /// Wrapper for jrk_settings_get_motor_current_calibration_reverse().
-    int8_t get_motor_current_calibration_reverse() const noexcept
-    {
-      return jrk_settings_get_motor_current_calibration_reverse(pointer);
     }
 
     /// Wrapper for jrk_settings_set_motor_brake_duration_forward().
@@ -1305,30 +1329,6 @@ namespace jrk
     uint16_t get_motor_max_current_reverse() const noexcept
     {
       return jrk_overridable_settings_get_motor_max_current_reverse(pointer);
-    }
-
-    /// Wrapper for jrk_overridable_settings_set_motor_current_calibration_forward().
-    void set_motor_current_calibration_forward(int8_t value) noexcept
-    {
-      jrk_overridable_settings_set_motor_current_calibration_forward(pointer, value);
-    }
-
-    /// Wrapper for jrk_overridable_settings_get_motor_current_calibration_forward().
-    int8_t get_motor_current_calibration_forward() const noexcept
-    {
-      return jrk_overridable_settings_get_motor_current_calibration_forward(pointer);
-    }
-
-    /// Wrapper for jrk_overridable_settings_set_motor_current_calibration_reverse().
-    void set_motor_current_calibration_reverse(int8_t value) noexcept
-    {
-      jrk_overridable_settings_set_motor_current_calibration_reverse(pointer, value);
-    }
-
-    /// Wrapper for jrk_overridable_settings_get_motor_current_calibration_reverse().
-    int8_t get_motor_current_calibration_reverse() const noexcept
-    {
-      return jrk_overridable_settings_get_motor_current_calibration_reverse(pointer);
     }
 
     /// Wrapper for jrk_overridable_settings_set_motor_brake_duration_forward().
