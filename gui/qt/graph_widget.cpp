@@ -238,9 +238,9 @@ void graph_widget::setup_plots()
     plot->plot_display->setChecked(true);
 
     plot->graph_data_selection_bar->setMargin(0);;
-    plot->graph_data_selection_bar->addWidget(plot->plot_display, -1, Qt::AlignLeft);
-    plot->graph_data_selection_bar->addWidget(plot->range_label, 2, Qt::AlignRight);
-    plot->graph_data_selection_bar->addWidget(plot->plot_range, -1, Qt::AlignRight);
+    plot->graph_data_selection_bar->addWidget(plot->plot_display);
+    plot->graph_data_selection_bar->addWidget(plot->range_label);
+    plot->graph_data_selection_bar->addWidget(plot->plot_range);
 
     plot->plot_graph = new QCPGraph(custom_plot->xAxis2,plot->plot_axis);
 

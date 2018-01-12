@@ -483,7 +483,7 @@ void main_window::setup_ui()
   QWidget *preview_plot = preview_window->custom_plot;
   preview_plot->setCursor(Qt::PointingHandCursor);
   preview_plot->setToolTip("Click on preview to view full plot");
-  preview_plot->setFixedSize(150,150);
+  preview_plot->setMinimumSize(150,150);
 
   stop_motor = new QCheckBox(tr("Stop motor"));
   stop_motor->setEnabled(true);  // TODO: doesn't work yet
@@ -572,7 +572,7 @@ void main_window::on_launchGraph_clicked(QMouseEvent *event)
 
 void main_window::receive_widget(graph_widget *widget)
 {
-  widget->custom_plot->setFixedSize(150,150);
+  widget->custom_plot->setMinimumSize(150,150);
   widget->custom_plot->xAxis->setTicks(false);
   widget->custom_plot->yAxis->setTicks(false);
   widget->custom_plot->setCursor(Qt::PointingHandCursor);

@@ -18,15 +18,10 @@ public:
 
 private:
   graph_widget *grabbed_widget;
-  QWidget *central_widget;
-  QVBoxLayout *vertical_layout;
-  QHBoxLayout *horizontal_layout;
   QGridLayout *central_layout;
-  QGridLayout *main_layout;
   QHBoxLayout *plot_layout;
   QHBoxLayout *bottom_control_layout;
   QVBoxLayout *plot_visible_layout;
-  QVBoxLayout *range_label_layout;
 
   void setup_ui();
   void closeEvent(QCloseEvent *);
