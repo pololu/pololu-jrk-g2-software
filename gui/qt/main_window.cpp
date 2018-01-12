@@ -1417,11 +1417,88 @@ QWidget *main_window::setup_motor_tab()
   return motor_page_widget;
 }
 
-QWidget * main_window::setup_error_row(int row_number, bool disabled_visible, bool enabled_visible)
+QWidget *main_window::setup_errors_tab()
+{
+  errors_page_widget = new QWidget();
+
+  QFont font;
+  font.setBold(true);
+  font.setWeight(75);
+
+  errors_bit_mask_label = new QLabel(tr(" Bit mask\n"));
+  errors_bit_mask_label->setObjectName("errors_bit_mask_label");
+  errors_bit_mask_label->setFont(font);
+
+  errors_error_label = new QLabel(tr("Error\n"));
+  errors_error_label->setObjectName("errors_error_label");
+  errors_error_label->setFont(font);
+
+  errors_setting_label = new QLabel(tr("Setting\n"));
+  errors_setting_label->setObjectName("errors_setting_label");
+  errors_setting_label->setFont(font);
+
+  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?\n"));
+  errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
+  errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
+  errors_stopping_motor_label->setFont(font);
+
+  errors_occurence_count_label = new QLabel(tr("Occurence\ncount\n"));
+  errors_occurence_count_label->setObjectName("errors_occurence_count_label");
+  errors_occurence_count_label->setAlignment(Qt::AlignCenter);
+  errors_occurence_count_label->setFont(font);
+
+  errors_clear_errors = new QPushButton(tr("&Clear errors"));
+  errors_clear_errors->setObjectName("errors_clear_errors");
+
+  errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
+  errors_reset_counts->setObjectName("errors_reset_counts");
+
+  QGridLayout *layout = errors_page_layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->setVerticalSpacing(0);
+  layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
+  layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
+  layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
+  layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
+  layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
+
+  int row_number = 0;
+
+  layout->addWidget(setup_error_row(row_number++, false, false, false, true), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, false, true, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, false, true, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, false, true, true, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, true, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, true, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, true, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
+  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
+  layout->addWidget(errors_clear_errors, 16, 6, 1, 1);
+  layout->addWidget(errors_reset_counts, 16, 7, 1, 1);
+
+  layout->setMargin(0);
+
+  QHBoxLayout *page_layout = new QHBoxLayout();
+  page_layout->setSizeConstraint(QLayout::SetFixedSize);
+  page_layout->addLayout(layout,Qt::AlignCenter);
+  errors_page_widget->setLayout(page_layout);
+
+  return errors_page_widget;
+}
+
+QWidget * main_window::setup_error_row(int row_number, bool disabled_visible,
+   bool enabled_visible, bool always_enabled, bool always_latched)
 {
   new_error_row = new QWidget();
 
   uint16_t error_name = 0;
+
+  error_rows[row_number].always_enabled = always_enabled;
+  error_rows[row_number].always_latched = always_latched;
 
   error_rows[row_number].index = row_number;
 
@@ -1477,7 +1554,6 @@ QWidget * main_window::setup_error_row(int row_number, bool disabled_visible, bo
       on_error_enable_group_buttonToggled(id, error_rows[row_number].index);
     });
 
-
   error_rows[row_number].stopping_value = new QLabel(("No"));
   error_rows[row_number].stopping_value->setObjectName("stopping_value");
   error_rows[row_number].stopping_value->setAlignment(Qt::AlignCenter);
@@ -1520,93 +1596,9 @@ QWidget * main_window::setup_error_row(int row_number, bool disabled_visible, bo
   error_rows[row_number].disabled_radio->setVisible(disabled_visible);
   error_rows[row_number].enabled_radio->setVisible(enabled_visible);
 
-  if (!disabled_visible && !enabled_visible)
-  {
-    error_rows[row_number].latched_radio->setChecked(true);
-  }
-  else if (!disabled_visible && enabled_visible)
-  {
-    error_rows[row_number].enabled_radio->setChecked(true);
-  }
-  else
-    error_rows[row_number].disabled_radio->setChecked(true);
-
   errors_central->setMargin(0);
 
   return new_error_row;
-}
-
-QWidget *main_window::setup_errors_tab()
-{
-  errors_page_widget = new QWidget();
-
-  QFont font;
-  font.setBold(true);
-  font.setWeight(75);
-
-  errors_bit_mask_label = new QLabel(tr(" Bit mask\n"));
-  errors_bit_mask_label->setObjectName("errors_bit_mask_label");
-  errors_bit_mask_label->setFont(font);
-
-  errors_error_label = new QLabel(tr("Error\n"));
-  errors_error_label->setObjectName("errors_error_label");
-  errors_error_label->setFont(font);
-
-  errors_setting_label = new QLabel(tr("Setting\n"));
-  errors_setting_label->setObjectName("errors_setting_label");
-  errors_setting_label->setFont(font);
-
-  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?\n"));
-  errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
-  errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
-  errors_stopping_motor_label->setFont(font);
-
-  errors_occurence_count_label = new QLabel(tr("Occurence\ncount\n"));
-  errors_occurence_count_label->setObjectName("errors_occurence_count_label");
-  errors_occurence_count_label->setAlignment(Qt::AlignCenter);
-  errors_occurence_count_label->setFont(font);
-
-  errors_clear_errors = new QPushButton(tr("&Clear errors"));
-  errors_clear_errors->setObjectName("errors_clear_errors");
-
-  errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
-  errors_reset_counts->setObjectName("errors_reset_counts");
-
-  QGridLayout *layout = errors_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setVerticalSpacing(0);
-  layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
-  layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
-  layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
-  layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
-  layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
-
-  int row_number = 0;
-
-  layout->addWidget(setup_error_row(row_number++, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, false, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, false, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, false, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false), row_number, 0, 1, 8);
-  layout->addWidget(errors_clear_errors, 16, 6, 1, 1);
-  layout->addWidget(errors_reset_counts, 16, 7, 1, 1);
-
-  layout->setMargin(0);
-
-  QHBoxLayout *page_layout = new QHBoxLayout();
-  page_layout->setSizeConstraint(QLayout::SetFixedSize);
-  page_layout->addLayout(layout,Qt::AlignCenter);
-  errors_page_widget->setLayout(page_layout);
-
-  return errors_page_widget;
 }
 
 void main_window::showEvent(QShowEvent * event)
@@ -2586,22 +2578,30 @@ void main_window::set_error_enable(uint16_t enable, uint16_t latch)
 {
   suppress_events = true;
 
-  error_rows[0].latched_radio->setChecked(true);
 
-  for (int i = 1; i < 13; i++)
+  for (int i = 0; i < 13; i++)
   {
-    if ((enable & (1 << i)) && (latch & (1 << i)))
+    if (error_rows[i].always_enabled)
+    {
+      enable |= (1 << i);
+    }
+    if (error_rows[i].always_latched)
+    {
+      latch |= (1 << i);
+    }
+
+    if ((latch & (1 << i)) == (1 << i))
     {
       error_rows[i].latched_radio->setChecked(true);
     }
-    else if ((enable & (1 << i)) && (latch & ~(1 << i)))
+    else if ((enable & (1 << i)) == (1 << i))
     {
       error_rows[i].enabled_radio->setChecked(true);
     }
     else
       error_rows[i].disabled_radio->setChecked(true);
-
   }
+
   suppress_events = false;
 }
 

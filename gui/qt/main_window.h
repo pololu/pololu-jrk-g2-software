@@ -42,6 +42,8 @@ struct error_row
 	QLabel *count_value = NULL;
 	QWidget *errors_frame;
   QButtonGroup *error_enable_group;
+  bool always_enabled = false;
+  bool always_latched = false;
   int index = 0;
 };
 
@@ -557,7 +559,8 @@ private:
 
 	QWidget * setup_motor_tab();
 	QWidget * setup_errors_tab();
-  QWidget * setup_error_row(int row_number, bool disabled_visible, bool enabled_visible);
+  QWidget * setup_error_row(int row_number, bool disabled_visible,
+   bool enabled_visible, bool always_enabled, bool always_latched);
   QWidget * new_error_row;
 
 	void setup_ui();

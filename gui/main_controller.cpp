@@ -670,6 +670,8 @@ void main_controller::handle_settings_loaded()
   recompute_constant(1, settings.get_integral_multiplier(), settings.get_integral_exponent());
   recompute_constant(2, settings.get_derivative_multiplier(), settings.get_derivative_exponent());
 
+  window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+
   cached_settings = settings;
 
   settings_modified = false;
