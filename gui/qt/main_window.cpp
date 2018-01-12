@@ -541,9 +541,9 @@ void main_window::setup_ui()
     apply_settings_action, SLOT(trigger()));
 
   connect(
-    preview_window->pauseRunButton, &QPushButton::clicked,
+    preview_window->pause_run_button, &QPushButton::clicked,
     [=](const bool& d) {
-      preview_window->pauseRunButton->isChecked() ?
+      preview_window->pause_run_button->isChecked() ?
       disconnect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot())) :
       connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
       preview_window->custom_plot->replot();
@@ -1245,7 +1245,7 @@ QWidget *main_window::setup_motor_tab()
 
   motor_detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
   motor_detect_motor_button->setObjectName("motor_detect_motor_button");
-  motor_detect_motor_button->setEnabled(false); //tmphax: not ready to use
+  motor_detect_motor_button->setEnabled(true); //tmphax: not ready to use
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
@@ -1605,7 +1605,6 @@ QWidget * main_window::setup_error_row(int row_number, bool disabled_visible,
 
 void main_window::showEvent(QShowEvent * event)
 {
-
   if (!start_event_reported)
   {
     start_event_reported = true;
@@ -1619,6 +1618,10 @@ void main_window::closeEvent(QCloseEvent * event)
   {
     // User canceled exit when prompted about settings that have not been applied.
     event->ignore();
+  }
+  if (altw->isVisible())
+  {
+    altw->close();
   }
 }
 
@@ -2165,12 +2168,6 @@ void main_window::set_tab_pages_enabled(bool enabled)
   {
     tab_widget->widget(i)->setEnabled(enabled);
   }
-
-  // tmphax, disable tabs not implemented yet
-  // tab_widget->widget(1)->setEnabled(false);
-  // tab_widget->widget(2)->setEnabled(false);
-  // tab_widget->widget(3)->setEnabled(false);
-  // tab_widget->widget(5)->setEnabled(false);
 }
 
 void main_window::set_restore_defaults_enabled(bool enabled)
@@ -2198,30 +2195,28 @@ void main_window::set_stop_motor_enabled(bool enabled)
 {
   stop_motor_action->setEnabled(enabled);
   stop_motor_button->setEnabled(enabled);
+
+  if (enabled)
+  {
+    stop_motor_button->setVisible(true);
+    stop_motor_button->setStyleSheet("background-color: red");
+  }
+  else
+    stop_motor_button->setVisible(false);
 }
 
 void main_window::set_run_motor_enabled(bool enabled)
 {
   run_motor_action->setEnabled(enabled);
   run_motor_button->setEnabled(enabled);
-}
 
-void main_window::set_motor_status_message(std::string const & message, bool stopped)
-{
-  // // setStyleSheet() is expensive, so only call it if something actually
-  // // changed. Check if there's currently a stylesheet applied and decide
-  // // whether we need to do anything based on that.
-  // bool styled = !motor_status_value->styleSheet().isEmpty();
-
-  // if (!styled && stopped)
-  // {
-  //   motor_status_value->setStyleSheet("color: red;");
-  // }
-  // else if (styled && !stopped)
-  // {
-  //   motor_status_value->setStyleSheet("");
-  // }
-  // motor_status_value->setText(QString::fromStdString(message));
+  if (enabled)
+  {
+    run_motor_button->setVisible(true);
+    run_motor_button->setStyleSheet("background-color: green");
+  }
+  else
+    run_motor_button->setVisible(false);
 }
 
 void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)

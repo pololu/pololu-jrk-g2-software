@@ -18,11 +18,11 @@ public:
 
   struct plot
   {
-    QDoubleSpinBox *plot_range;
-    QCheckBox *plot_display;
+    QDoubleSpinBox *range;
+    QCheckBox *display;
     QString color;
-    QCPAxis *plot_axis;
-    QCPGraph *plot_graph;
+    QCPAxis *axis;
+    QCPGraph *graph;
     QLabel *range_label;
     QHBoxLayout *graph_data_selection_bar;
     int32_t plot_value = 0;
@@ -45,7 +45,7 @@ public:
   double key = 0;
   QWidget *central_widget;
   QCustomPlot *custom_plot;
-  QPushButton *pauseRunButton;
+  QPushButton *pause_run_button;
   QDoubleSpinBox *min_y;
   QDoubleSpinBox *max_y;
   QSpinBox *domain;
@@ -54,14 +54,13 @@ public:
   QLabel *label3;
   double refreshTimer;
 
-signals:
-
+private:
+  void setup_ui();
 
 public slots:
-	void on_pauseRunButton_clicked();
+	void on_pause_run_button_clicked();
 	void remove_data_to_scroll();
 	void realtime_data_slot();
-	void setup_ui();
 	void set_line_visible();
 	void setup_plots();
 	void change_ranges();
