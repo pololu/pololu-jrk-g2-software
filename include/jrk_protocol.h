@@ -9,9 +9,10 @@
 #ifndef _JRK_PROTOCOL_H
 #define _JRK_PROTOCOL_H
 
-#define JRK_VENDOR_ID 0x1FFB
-// TODO: use a more real product name here when we decide it
-#define JRK_PRODUCT_ID_2017 0x00B7
+#define JRK_USB_VENDOR_ID 0x1FFB
+// TODO: use more real product names here when we decide it
+#define JRK_USB_PRODUCT_ID_UMC04A_30V 0x00B7
+#define JRK_USB_PRODUCT_ID_UMC04A_40V 0x00B9
 
 #define JRK_CMD_REINITIALIZE 0x10
 #define JRK_CMD_SET_SETTING 0x13

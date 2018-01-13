@@ -11,13 +11,15 @@ const jrk_name jrk_bool_names[] =
 
 const jrk_name jrk_product_names_short[] =
 {
-  { "2017", JRK_PRODUCT_2017 }, // TODO: real name
+  { "18v2x", JRK_PRODUCT_UMC04A_30V }, // TODO: real name
+  { "24v1x", JRK_PRODUCT_UMC04A_40V }, // TODO: real name
   { NULL, 0 },
 };
 
 const jrk_name jrk_product_names_ui[] =
 {
-  { "Jrk 2017 USB Motor Controller with Feedback", JRK_PRODUCT_2017 },  // TODO: real name
+  { "Jrk G2 24v1x", JRK_PRODUCT_UMC04A_30V },  // TODO: real name
+  { "Jrk G2 18v2x", JRK_PRODUCT_UMC04A_40V },  // TODO: real name
   { NULL, 0 },
 };
 

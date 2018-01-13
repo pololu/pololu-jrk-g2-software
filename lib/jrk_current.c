@@ -87,7 +87,7 @@ static struct jrk_current_setting * jrk_current_table(uint32_t product)
 {
   switch (product)
   {
-  case JRK_PRODUCT_2017:
+  case JRK_PRODUCT_UMC04A_30V:
     return jrk_currents_2017;
   default:
     return jrk_currents_null;

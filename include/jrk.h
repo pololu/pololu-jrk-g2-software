@@ -17,7 +17,8 @@ extern "C" {
 
 #include "jrk_protocol.h"
 
-#define JRK_PRODUCT_2017 1
+#define JRK_PRODUCT_UMC04A_30V 1
+#define JRK_PRODUCT_UMC04A_40V 2
 
 // The maximum firmware major version supported by this library.
 #define JRK_FIRMWARE_VERSION_MAJOR_MAX 1
