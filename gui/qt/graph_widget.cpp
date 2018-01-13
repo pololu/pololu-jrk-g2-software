@@ -72,7 +72,7 @@ void graph_widget::setup_ui()
   input.range = new QDoubleSpinBox();
   input.display = new QCheckBox("Input");
   input.display->
-    setStyleSheet(QStringLiteral("border:5px solid #00ffff; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #00ffff; text-align:center; background-color:white"));
   input.color = "#00ffff";
   input.range_label = new QLabel("0-");
   input.graph_data_selection_bar = new QHBoxLayout();
@@ -81,7 +81,7 @@ void graph_widget::setup_ui()
   target.range = new QDoubleSpinBox();
   target.display = new QCheckBox("Target");
   target.display->
-    setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; background-color:white"));
   target.color = "#0000ff";
   target.range_label = new QLabel("0-");
   target.graph_data_selection_bar = new QHBoxLayout();
@@ -90,7 +90,7 @@ void graph_widget::setup_ui()
   feedback.range = new QDoubleSpinBox();
   feedback.display = new QCheckBox("Feedback");
   feedback.display->
-    setStyleSheet(QStringLiteral("border:5px solid #ffc0cb; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #ffc0cb; text-align:center; background-color:white"));
   feedback.color = "#ffc0cb";
   feedback.range_label = new QLabel("0-");
   feedback.graph_data_selection_bar = new QHBoxLayout();
@@ -99,7 +99,7 @@ void graph_widget::setup_ui()
   scaled_feedback.range = new QDoubleSpinBox();
   scaled_feedback.display = new QCheckBox("Scaled Feedback");
   scaled_feedback.display->
-    setStyleSheet(QStringLiteral("border:5px solid #ff0000; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #ff0000; text-align:center; background-color:white"));
   scaled_feedback.color = "#ff0000";
   scaled_feedback.range_label = new QLabel("0-");
   scaled_feedback.graph_data_selection_bar = new QHBoxLayout();
@@ -108,7 +108,7 @@ void graph_widget::setup_ui()
   error.range = new QDoubleSpinBox();
   error.display = new QCheckBox("Error");
   error.display->
-    setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #9400d3; text-align:center; background-color:white"));
   error.color = "#9400d3";
   error.range_label = new QLabel("\u00B1");
   error.graph_data_selection_bar = new QHBoxLayout();
@@ -117,7 +117,7 @@ void graph_widget::setup_ui()
   integral.range = new QDoubleSpinBox();
   integral.display = new QCheckBox("Integral");
   integral.display->
-    setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #ff8c00; text-align:center; background-color:white"));
   integral.color = "#ff8c00";
   integral.range_label = new QLabel("\u00B1");
   integral.graph_data_selection_bar = new QHBoxLayout();
@@ -126,7 +126,7 @@ void graph_widget::setup_ui()
   duty_cycle_target.range = new QDoubleSpinBox();
   duty_cycle_target.display = new QCheckBox("Duty cycle target");
   duty_cycle_target.display->
-    setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #32cd32; text-align:center; background-color:white"));
   duty_cycle_target.color = "#32cd32";
   duty_cycle_target.range_label = new QLabel("\u00B1");
   duty_cycle_target.graph_data_selection_bar = new QHBoxLayout();
@@ -135,7 +135,7 @@ void graph_widget::setup_ui()
   duty_cycle.range = new QDoubleSpinBox();
   duty_cycle.display = new QCheckBox("Duty cycle");
   duty_cycle.display->
-    setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #006400; text-align:center; background-color:white"));
   duty_cycle.color = "#006400";
   duty_cycle.range_label = new QLabel("\u00B1");
   duty_cycle.graph_data_selection_bar = new QHBoxLayout();
@@ -144,7 +144,7 @@ void graph_widget::setup_ui()
   raw_current.range = new QDoubleSpinBox();
   raw_current.display = new QCheckBox("Raw current (mV)");
   raw_current.display->
-    setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #b8860b; text-align:center; background-color:white"));
   raw_current.color = "#b8860b";
   raw_current.range_label = new QLabel("0\u2013");
   raw_current.graph_data_selection_bar = new QHBoxLayout();
@@ -153,7 +153,7 @@ void graph_widget::setup_ui()
   scaled_current.range = new QDoubleSpinBox();
   scaled_current.display = new QCheckBox("Scaled current (mV)");
   scaled_current.display->
-    setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #0000ff; text-align:center; background-color:white"));
   scaled_current.color = "#0000ff";
   scaled_current.range_label = new QLabel("\u00B1");
   scaled_current.graph_data_selection_bar = new QHBoxLayout();
@@ -163,7 +163,7 @@ void graph_widget::setup_ui()
   current_chopping_log.display = new QCheckBox("Current chopping log");
   // TODO: why is the name cut off?  "log" is not shown
   current_chopping_log.display->
-    setStyleSheet(QStringLiteral("border:5px solid #ff00ff; text-align:center; pause_run_buttonbackground-color:white"));
+    setStyleSheet(QStringLiteral("border:5px solid #ff00ff; text-align:center; background-color:white"));
   current_chopping_log.color = "#ff00ff";
   current_chopping_log.range_label = new QLabel("0\u2013");
    // TODO: use en dashes on the other plots too
