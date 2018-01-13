@@ -562,8 +562,8 @@ EOF
     name: 'current_offset_calibration',
     type: :int16_t,
     default: 0,
-    min: 'JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION',
-    max: 'JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION',
+    min: -5000,
+    max: 5000,
     comment: <<EOF
 The current sense circuitry on a umc04a jrk produces a constant voltage of
 about 50 mV when the motor driver is powered, even if there is no current
@@ -587,6 +587,8 @@ EOF
     name: 'current_scale_calibration',
     type: :int16_t,
     default: 0,
+    min: -3200,
+    max: 3200,
     comment: <<EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant percentage.
@@ -594,11 +596,11 @@ and current limit settings that are off by a constant percentage.
 The algorithm for calculating currents in amps in this software involves
 applying this formula to the current:
 
-  current = current * (65536 + current_scale_calibration) / 65536
+  current = current * (5000 + current_scale_calibration)
 
-With the default current_scale_calibration value of 0, this scaling step has
-no effect.  With a current_scale_calibration value of 655, the scaling step
-would increase the current by about 1%.
+The default current_scale_calibration value is 0.
+A current_scale_calibration value of 50 would increase the current
+readings by 1%.
 
 You should probably set current_offset_calibration before setting this.
 
@@ -713,21 +715,20 @@ EOF
     name: 'motor_max_current_forward',
     type: :uint16_t,
     overridable: true,
-    default: 10,
+    default: 26,  # about 10 A on umc04a
     max: 31,
-    custom_eeprom: true,  # tmphax just so we could divide by 4
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
-THE COMMENTS BELOW ARE OUTDATED (TODO).
+This setting is not actually a current, it is a code telling the jrk how to
+set up its current limiting hardware.
 
-This is the native current limit value stored on the device.
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
 
-- jrk_current_limit_native_to_ma()
-- jrk_current_limit_ma_to_native()
-- jrk_achievable_current_limit()
+- jrk_max_current_code_to_ma()
+- jrk_max_current_ma_to_code()
+- jrk_max_current_code_step()
 EOF
   },
   {
@@ -736,7 +737,6 @@ EOF
     overridable: true,
     default: 10,
     max: 31,
-    custom_eeprom: true,  # tmphax just so we could divide by 4
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
       "See the documentation of motor_max_current_forward."

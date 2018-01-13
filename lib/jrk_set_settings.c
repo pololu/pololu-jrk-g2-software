@@ -268,6 +268,16 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
+    uint16_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
+    write_uint16_t(buf + JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD, motor_max_current_forward);
+  }
+
+  {
+    uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
+    write_uint16_t(buf + JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE, motor_max_current_reverse);
+  }
+
+  {
     bool motor_coast_when_off = jrk_settings_get_motor_coast_when_off(settings);
     buf[JRK_SETTING_OPTIONS_BYTE3] |= motor_coast_when_off << JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF;
   }
@@ -311,18 +321,6 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     write_uint16_t(buf + JRK_SETTING_SERIAL_TIMEOUT,
       jrk_settings_get_serial_timeout(settings)
       / JRK_SERIAL_TIMEOUT_UNITS);
-  }
-
-  {
-    uint8_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
-    buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD] =
-      motor_max_current_forward * TMPHAX_CURRENT_UNITS;
-  }
-
-  {
-    uint8_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
-    buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE] =
-      motor_max_current_reverse * TMPHAX_CURRENT_UNITS;
   }
 
   {

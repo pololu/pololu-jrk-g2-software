@@ -404,6 +404,7 @@ static void get_status(device_selector & selector, bool full_output)
   jrk::handle handle(device);
 
   jrk::overridable_settings overridable_settings;
+  jrk::settings settings = handle.get_settings();
 
   if (full_output)
   {
@@ -438,7 +439,7 @@ static void get_status(device_selector & selector, bool full_output)
     ttl_port = "?";
   }
 
-  print_status(vars, overridable_settings, name, serial_number,
+  print_status(vars, overridable_settings, settings, name, serial_number,
     firmware_version, cmd_port, ttl_port, full_output);
 }
 

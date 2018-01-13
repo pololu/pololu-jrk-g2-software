@@ -30,6 +30,11 @@ Variables = [
   {
     name: 'current',
     type: :uint8_t,
+    comment: <<EOF
+This is the most-significant 8 bits of the current_high_res variable.
+
+See the jrk_variables_get_current_high_res().
+EOF
   },
   {
     name: 'pid_period_exceeded',
@@ -70,6 +75,12 @@ Variables = [
   {
     name: 'current_high_res',
     type: :uint16_t,
+    comment: <<EOF
+This is a 16-bit current reading.
+
+The conversion of this number to milliamps depends on several factors: see
+jrk_calculate_measured_current_ma().
+EOF
   },
   {
     name: 'max_current',

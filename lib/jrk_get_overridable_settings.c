@@ -104,6 +104,18 @@ static void write_buffer_to_overridable_settings(const uint8_t * buf,
   }
 
   {
+    uint16_t motor_max_current_forward = read_uint16_t(
+      buf + (JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD - JRK_OVERRIDABLE_SETTINGS_START));
+    jrk_overridable_settings_set_motor_max_current_forward(settings, motor_max_current_forward);
+  }
+
+  {
+    uint16_t motor_max_current_reverse = read_uint16_t(
+      buf + (JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE - JRK_OVERRIDABLE_SETTINGS_START));
+    jrk_overridable_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
+  }
+
+  {
     bool motor_coast_when_off =
       buf[JRK_SETTING_OPTIONS_BYTE3 - JRK_OVERRIDABLE_SETTINGS_START] >> JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF & 1;
     jrk_overridable_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
@@ -121,20 +133,6 @@ static void write_buffer_to_overridable_settings(const uint8_t * buf,
     uint32_t duration = buf[JRK_SETTING_MOTOR_BRAKE_DURATION_REVERSE -
       JRK_OVERRIDABLE_SETTINGS_START] * JRK_BRAKE_DURATION_UNITS;
     jrk_overridable_settings_set_motor_brake_duration_reverse(settings, duration);
-  }
-
-  {
-    uint8_t motor_max_current_forward = buf[JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD -
-      JRK_OVERRIDABLE_SETTINGS_START] / TMPHAX_CURRENT_UNITS;
-    jrk_overridable_settings_set_motor_max_current_forward(settings,
-      motor_max_current_forward);
-  }
-
-  {
-    uint8_t motor_max_current_reverse = buf[JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE -
-      JRK_OVERRIDABLE_SETTINGS_START] / TMPHAX_CURRENT_UNITS;
-    jrk_overridable_settings_set_motor_max_current_reverse(settings,
-      motor_max_current_reverse);
   }
 }
 

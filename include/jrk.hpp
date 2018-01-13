@@ -1762,6 +1762,13 @@ namespace jrk
     }
     /// \endcond
   };
-#ifdef __cplusplus
+
+  inline int32_t calculate_measured_current_ma(
+    const settings & settings, const variables & variables,
+    bool * trustable = NULL)
+  {
+    return jrk_calculate_measured_current_ma(
+      settings.get_pointer(), variables.get_pointer(), trustable);
+  }
 }
-#endif
+
