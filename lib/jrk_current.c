@@ -2,11 +2,11 @@
 
 struct jrk_current_setting
 {
-  // Current value as stored in the jrk's EEPROM.
-  uint8_t raw;
+  // Max current code value as stored in EEPROM.
+  uint16_t code;
 
-  // Current value in milliamps.
-  uint32_t ma;
+  // Voltage on the current limit pin in units of 1/64 millivolts.
+  uint32_t vilim;
 };
 
 struct jrk_current_setting jrk_currents_null[] =
@@ -14,103 +14,100 @@ struct jrk_current_setting jrk_currents_null[] =
   { 0, 0 },
 };
 
-// Generated with the ruby/generate_current_tables.rb script.
-struct jrk_current_setting jrk_currents_2017[] =
+// Calculates the measured current in milliamps for a umc04a board.
+//
+// current_reading: Raw current reading from the device,
+//   from jrk_variables_get_curent_high_res().
+// max_current_code: The hardware current limiting configuration, from
+//   from jrk_variables_get_max_current().
+// rsense: Sense resistor resistance, in hundredths of a milliohm.
+// current_offset_calibration: from jrk_settings_get_current_offset_calibration()
+// current_scale_calibration: from jrk_settings_get_current_scale_calibration()
+static int32_t jrk_calculate_measured_current_ma_umc04a(
+  uint16_t current_reading,
+  uint16_t max_current_code,
+  uint32_t rsense,
+  int16_t current_offset_calibration,
+  int16_t current_scale_calibration
+  )
 {
-  { 124, 32234 },
-  { 120, 31167 },
-  { 116, 30100 },
-  { 112, 29034 },
-  { 108, 27967 },
-  { 104, 26900 },
-  { 100, 25834 },
-  {  96, 24767 },
-  {  92, 23700 },
-  {  88, 22634 },
-  {  84, 21567 },
-  {  80, 20500 },
-  {  76, 19434 },
-  {  72, 18367 },
-  {  68, 17300 },
-  {  64, 16234 },
-  {  62, 15700 },
-  {  60, 15167 },
-  {  58, 14634 },
-  {  56, 14100 },
-  {  54, 13567 },
-  {  52, 13034 },
-  {  50, 12500 },
-  {  48, 11967 },
-  {  46, 11434 },
-  {  44, 10900 },
-  {  42, 10367 },
-  {  40,  9834 },
-  {  38,  9300 },
-  {  36,  8767 },
-  {  34,  8234 },
-  {  32,  7700 },
-  {  31,  7434 },
-  {  30,  7167 },
-  {  29,  6900 },
-  {  28,  6634 },
-  {  27,  6367 },
-  {  26,  6100 },
-  {  25,  5834 },
-  {  24,  5567 },
-  {  23,  5300 },
-  {  22,  5034 },
-  {  21,  4767 },
-  {  20,  4500 },
-  {  19,  4234 },
-  {  18,  3967 },
-  {  17,  3700 },
-  {  16,  3434 },
-  {  15,  3167 },
-  {  14,  2900 },
-  {  13,  2634 },
-  {  12,  2367 },
-  {  11,  2100 },
-  {  10,  1834 },
-  {   9,  1567 },
-  {   8,  1300 },
-  {   7,  1034 },
-  {   6,   767 },
-  {   5,   500 },
-  {   4,   234 },
-  {   3,     3 },
-  {   2,     2 },
-  {   1,     1 },
-  {   0,     0 },
-};
-
-static struct jrk_current_setting * jrk_current_table(uint32_t product)
-{
-  switch (product)
+  // Fix the calibration constants so our calculations don't overflow.
+  if (current_offset_calibration < -3200)
   {
-  case JRK_PRODUCT_UMC04A_30V:
-    return jrk_currents_2017;
-  default:
-    return jrk_currents_null;
+    current_offset_calibration = -3200;
   }
+  else if (current_offset_calibration > 3200)
+  {
+    current_offset_calibration = 3200;
+  }
+
+  if (current_scale_calibration < -5000)
+  {
+    current_scale_calibration = -5000;
+  }
+  else if (current_scale_calibration > 5000)
+  {
+    current_scale_calibration = 5000;
+  }
+
+  // Convert the reading on the current sense line to units of mV/64.
+  uint8_t dac_reference_num = (max_current_code >> 5 & 3);
+  uint32_t current = current_reading << dac_reference_num;
+
+  // Subtract the 50mV offset voltage, without making the reading negative.
+  uint16_t offset = 3200 + current_offset_calibration;
+  if (offset > current)
+  {
+    current = 0;
+  }
+  else
+  {
+    current -= offset;
+  }
+
+  // Account for the sense resistor and scaling calibration.  The maximum value
+  // for the multiplication product is (0xFFFF*4) * (5000 + 5000) = 0x9C3F63C0.
+  current = current * (5000 + current_scale_calibration) / rsense;
+
+  // Return the current in units of mA.
+  return current >> 6;
 }
 
-uint32_t jrk_current_limit_raw_to_ma(uint32_t product, uint32_t raw)
+int32_t jrk_calculate_measured_current_ma(
+  const jrk_settings * settings, const jrk_variables * vars,
+  bool * trustable)
 {
-  struct jrk_current_setting * p = jrk_current_table(product);
-  while (p->raw > raw) { p++; }
-  return p->ma;
-}
+  if (trustable != NULL) { *trustable = 0; }
 
-uint32_t jrk_current_limit_ma_to_raw(uint32_t product, uint32_t ma)
-{
-  struct jrk_current_setting * p = jrk_current_table(product);
-  while (p->ma > ma) { p++; }
-  return p->raw;
-}
+  if (settings == NULL || vars == NULL) { return 0; }
 
-uint32_t jrk_achievable_current_limit(uint32_t product, uint32_t ma)
-{
-  struct jrk_current_setting * p = jrk_current_table(product);
-  while (p->ma > ma) { p++; }
-  return p->ma;
+  uint32_t product = jrk_settings_get_product(settings);
+
+  if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V)
+  {
+    uint32_t rsense;
+    if (product == JRK_PRODUCT_UMC04A_40V)
+    {
+      rsense = 200;
+    }
+    else
+    {
+      rsense = 100;
+    }
+
+    if (jrk_variables_get_current_chopping_consecutive_count(vars) == 0)
+    {
+      if (trustable != NULL) { *trustable = 1; }
+    }
+
+    return jrk_calculate_measured_current_ma_umc04a(
+      jrk_variables_get_current_high_res(vars),
+      jrk_variables_get_max_current(vars),
+      rsense,
+      jrk_settings_get_current_offset_calibration(settings),
+      jrk_settings_get_current_scale_calibration(settings)
+    );
+  }
+
+  return 0;
 }

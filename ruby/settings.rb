@@ -562,8 +562,8 @@ EOF
     name: 'current_offset_calibration',
     type: :int16_t,
     default: 0,
-    min: 'JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION',
-    max: 'JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION',
+    min: -5000,
+    max: 5000,
     comment: <<EOF
 The current sense circuitry on a umc04a jrk produces a constant voltage of
 about 50 mV when the motor driver is powered, even if there is no current
@@ -587,6 +587,8 @@ EOF
     name: 'current_scale_calibration',
     type: :int16_t,
     default: 0,
+    min: -3200,
+    max: 3200,
     comment: <<EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant percentage.
@@ -594,11 +596,11 @@ and current limit settings that are off by a constant percentage.
 The algorithm for calculating currents in amps in this software involves
 applying this formula to the current:
 
-  current = current * (65536 + current_scale_calibration) / 65536
+  current = current * (5000 + current_scale_calibration)
 
-With the default current_scale_calibration value of 0, this scaling step has
-no effect.  With a current_scale_calibration value of 655, the scaling step
-would increase the current by about 1%.
+The default current_scale_calibration value is 0.
+A current_scale_calibration value of 50 would increase the current
+readings by 1%.
 
 You should probably set current_offset_calibration before setting this.
 

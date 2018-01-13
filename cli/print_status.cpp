@@ -82,6 +82,7 @@ static void print_pin_info(const jrk::variables & vars,
 
 void print_status(const jrk::variables & vars,
   const jrk::overridable_settings & osettings,
+  const jrk::settings & settings,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
@@ -151,8 +152,16 @@ void print_status(const jrk::variables & vars,
     << vars.get_duty_cycle()
     << std::endl;
 
-  std::cout << left_column << "Current: "
-    << vars.get_current_high_res()  // TODO: properly format this in mA or A
+  bool current_ma_trustable;
+  int32_t current_ma = jrk::calculate_measured_current_ma(
+    settings, vars, &current_ma_trustable);
+
+  std::cout << left_column << "Current (mA): "
+    << current_ma
+    << std::endl;
+
+  std::cout << left_column << "Current trustable: "
+    << (current_ma_trustable ? "Yes" : "No")
     << std::endl;
 
   std::cout << left_column << "VIN voltage: "

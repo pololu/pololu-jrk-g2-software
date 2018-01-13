@@ -993,11 +993,11 @@ int16_t jrk_settings_get_current_offset_calibration(const jrk_settings *);
 // The algorithm for calculating currents in amps in this software involves
 // applying this formula to the current:
 //
-//   current = current * (65536 + current_scale_calibration) / 65536
+//   current = current * (5000 + current_scale_calibration)
 //
-// With the default current_scale_calibration value of 0, this scaling step has
-// no effect.  With a current_scale_calibration value of 655, the scaling step
-// would increase the current by about 1%.
+// The default current_scale_calibration value is 0.
+// A current_scale_calibration value of 50 would increase the current
+// readings by 1%.
 //
 // You should probably set current_offset_calibration before setting this.
 //

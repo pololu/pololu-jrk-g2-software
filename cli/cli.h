@@ -21,8 +21,9 @@
 #include <thread>
 
 void print_status(
-  const jrk::variables & vars,
-  const jrk::overridable_settings & overridable_settings,
+  const jrk::variables &,
+  const jrk::overridable_settings &,
+  const jrk::settings &,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
