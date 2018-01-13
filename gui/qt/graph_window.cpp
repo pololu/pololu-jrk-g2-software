@@ -72,12 +72,9 @@ void graph_window::receive_widget(graph_widget *widget)
 		plot_visible_layout->addLayout(plot->graph_data_selection_bar, Qt::AlignRight);
 	}
 
-	plot_visible_layout->setMargin(0);
-	plot_visible_layout->setContentsMargins(0,0,0,0);
-
 	central_layout->addLayout(plot_layout,0,0, 14,3);
-	central_layout->addLayout(bottom_control_layout, 15, 0, Qt::AlignLeft|Qt::AlignBottom);
-	central_layout->addLayout(plot_visible_layout,0,4,11,1, Qt::AlignTop|Qt::AlignRight);
+	central_layout->addLayout(bottom_control_layout, 15, 0, Qt::AlignLeft|Qt::AlignTop);
+	central_layout->addLayout(plot_visible_layout,0,4,11,1, Qt::AlignTop|Qt::AlignLeft);
 }
 
 void graph_window::retranslate_ui()

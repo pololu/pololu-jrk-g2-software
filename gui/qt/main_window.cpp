@@ -506,6 +506,7 @@ void main_window::setup_ui()
   run_motor_button->setObjectName("run_motor_button");
   run_motor_button->setText(tr("&Run Motor"));
   run_motor_button->setFixedSize(run_motor_button->sizeHint());
+  run_motor_button->setStyleSheet("background-color: green");
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
@@ -1619,10 +1620,6 @@ void main_window::closeEvent(QCloseEvent * event)
     // User canceled exit when prompted about settings that have not been applied.
     event->ignore();
   }
-  if (altw->isVisible())
-  {
-    altw->close();
-  }
 }
 
 void main_window::on_device_name_value_linkActivated()
@@ -2195,28 +2192,12 @@ void main_window::set_stop_motor_enabled(bool enabled)
 {
   stop_motor_action->setEnabled(enabled);
   stop_motor_button->setEnabled(enabled);
-
-  if (enabled)
-  {
-    stop_motor_button->setVisible(true);
-    stop_motor_button->setStyleSheet("background-color: red");
-  }
-  else
-    stop_motor_button->setVisible(false);
 }
 
 void main_window::set_run_motor_enabled(bool enabled)
 {
   run_motor_action->setEnabled(enabled);
   run_motor_button->setEnabled(enabled);
-
-  if (enabled)
-  {
-    run_motor_button->setVisible(true);
-    run_motor_button->setStyleSheet("background-color: green");
-  }
-  else
-    run_motor_button->setVisible(false);
 }
 
 void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
