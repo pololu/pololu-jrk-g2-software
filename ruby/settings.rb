@@ -712,7 +712,7 @@ EOF
     type: :uint16_t,
     overridable: true,
     default: 26,  # about 10 A on umc04a
-    max: 31,
+    max: 95,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
@@ -732,7 +732,7 @@ EOF
     type: :uint16_t,
     overridable: true,
     default: 10,
-    max: 31,
+    max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
       "See the documentation of motor_current_limit_code_forward."

@@ -1305,13 +1305,13 @@ QWidget *main_window::setup_motor_tab()
 
   motor_current_limit_forward_spinbox = new QSpinBox();
   motor_current_limit_forward_spinbox->setObjectName("motor_current_limit_forward_spinbox");
-  motor_current_limit_forward_spinbox->setRange(0, 31); // TODO: add macro for max
+  motor_current_limit_forward_spinbox->setRange(0, 95);
 
   motor_current_limit_reverse_spinbox = new QSpinBox();
   motor_current_limit_reverse_spinbox->setObjectName("motor_current_limit_reverse_spinbox");
-  motor_current_limit_reverse_spinbox->setRange(0, 31); // TODO: add macro for max
+  motor_current_limit_reverse_spinbox->setRange(0, 95);
 
-  motor_current_limit_means_label = new QLabel(tr("(0 to 31)"));
+  motor_current_limit_means_label = new QLabel(tr("(0 to 95)"));
   motor_current_limit_means_label->setObjectName("motor_current_limit_means_label");
 
   motor_calibration_label = new QLabel(tr("Current calibration:"));

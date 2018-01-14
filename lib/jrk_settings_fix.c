@@ -528,9 +528,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint16_t motor_current_limit_code_forward = jrk_settings_get_motor_current_limit_code_forward(settings);
-    if (motor_current_limit_code_forward > 31)
+    if (motor_current_limit_code_forward > 95)
     {
-      motor_current_limit_code_forward = 31;
+      motor_current_limit_code_forward = 95;
       jrk_sprintf(warnings,
         "Warning: The motor current limit code forward was too high "
         "so it will be changed to %u.\n", motor_current_limit_code_forward);
@@ -540,9 +540,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint16_t motor_current_limit_code_reverse = jrk_settings_get_motor_current_limit_code_reverse(settings);
-    if (motor_current_limit_code_reverse > 31)
+    if (motor_current_limit_code_reverse > 95)
     {
-      motor_current_limit_code_reverse = 31;
+      motor_current_limit_code_reverse = 95;
       jrk_sprintf(warnings,
         "Warning: The motor current limit code reverse was too high "
         "so it will be changed to %u.\n", motor_current_limit_code_reverse);
