@@ -653,10 +653,8 @@ void main_controller::handle_settings_changed()
   window->set_motor_brake_duration_forward(settings.get_motor_brake_duration_forward());
   window->set_motor_current_limit_code_forward(settings.get_motor_current_limit_code_forward());
 
-  // TODO: remove directional current calibration settings from the gui
-  // because they were removed from the firmware
-  window->set_motor_current_calibration_reverse(0);
-  window->set_motor_current_calibration_forward(0);
+  window->set_current_offset_calibration(settings.get_current_offset_calibration());
+  window->set_current_scale_calibration(settings.get_current_scale_calibration());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
 
@@ -1248,30 +1246,28 @@ void main_controller::handle_motor_current_limit_reverse_input(uint16_t current)
   handle_settings_changed();
 }
 
-void main_controller::handle_motor_current_calibration_forward_input(uint16_t current)
+void main_controller::handle_current_offset_calibration_input(int16_t cal)
 {
-  // TODO: remove
   if (!connected()) { return; }
+  settings.set_current_offset_calibration(cal);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_motor_current_calibration_reverse_input(uint16_t current)
+void main_controller::handle_current_scale_calibration_input(int16_t cal)
 {
-  // TODO: remove
   if (!connected()) { return; }
+  settings.set_current_scale_calibration(cal);
   settings_modified = true;
   handle_settings_changed();
 }
 
 void main_controller::handle_motor_out_range_input(uint16_t value)
 {
-  {
   if (!connected()) { return; }
   settings.set_motor_max_duty_cycle_while_feedback_out_of_range(value);
   settings_modified = true;
   handle_settings_changed();
-}
 }
 
 void main_controller::handle_motor_coast_when_off_input(bool motor_coast)

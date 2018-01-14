@@ -1305,27 +1305,28 @@ QWidget *main_window::setup_motor_tab()
 
   motor_current_limit_forward_spinbox = new QSpinBox();
   motor_current_limit_forward_spinbox->setObjectName("motor_current_limit_forward_spinbox");
-  motor_current_limit_forward_spinbox->setRange(0, 95);
+  motor_current_limit_forward_spinbox->setRange(0, 95);  // TODO: macro would be nice
 
   motor_current_limit_reverse_spinbox = new QSpinBox();
   motor_current_limit_reverse_spinbox->setObjectName("motor_current_limit_reverse_spinbox");
-  motor_current_limit_reverse_spinbox->setRange(0, 95);
+  motor_current_limit_reverse_spinbox->setRange(0, 95);  // TODO: macro would be nice
 
   motor_current_limit_means_label = new QLabel(tr("(0 to 95)"));
   motor_current_limit_means_label->setObjectName("motor_current_limit_means_label");
 
-  motor_calibration_label = new QLabel(tr("Current calibration:"));
-  motor_calibration_label->setObjectName("motor_calibration_label");
+  current_offset_calibration_label = new QLabel(tr("Current offset calibration:"));
+  current_offset_calibration_label->setObjectName("current_offset_calibration_label");
 
-  motor_calibration_forward_spinbox = new QSpinBox();
-  motor_calibration_forward_spinbox->setObjectName("motor_calibration_forward_spinbox");
-  motor_calibration_forward_spinbox->setRange(1, 255);
-  motor_calibration_forward_spinbox->setEnabled(false);  // setting will be removed
+  current_offset_calibration_spinbox = new QSpinBox();
+  current_offset_calibration_spinbox->setObjectName("current_offset_calibration_spinbox");
+  current_offset_calibration_spinbox->setRange(-800, 800);
 
-  motor_calibration_reverse_spinbox = new QSpinBox();
-  motor_calibration_reverse_spinbox->setObjectName("motor_calibration_reverse_spinbox");
-  motor_calibration_reverse_spinbox->setRange(1, 255);
-  motor_calibration_reverse_spinbox->setEnabled(false);  // setting will be removed
+  current_scale_calibration_label = new QLabel(tr("Current scale calibration:"));
+  current_scale_calibration_label->setObjectName("current_scale_calibration_label");
+
+  current_scale_calibration_spinbox = new QSpinBox();
+  current_scale_calibration_spinbox->setObjectName("current_scale_calibration_spinbox");
+  current_scale_calibration_spinbox->setRange(-1875, 1875);
 
   motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
@@ -1349,9 +1350,10 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_current_limit_forward_spinbox,6,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_current_limit_reverse_spinbox,6,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_current_limit_means_label,6,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_calibration_label,7,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_calibration_forward_spinbox,7,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,7,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_offset_calibration_label,7,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_offset_calibration_spinbox,7,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_scale_calibration_label,8,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_scale_calibration_spinbox,8,1,Qt::AlignLeft);
 
   motor_out_of_range_label = new QLabel(tr("Max. duty cycle while feedback is out of range:"));
   motor_out_of_range_label->setObjectName("motor_out_of_range_label");
@@ -2056,16 +2058,16 @@ void main_window::on_motor_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_motor_current_limit_reverse_input(value);
 }
 
-void main_window::on_motor_calibration_forward_spinbox_valueChanged(int value)
+void main_window::on_current_offset_calibration_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_motor_current_calibration_forward_input(value);
+  controller->handle_current_offset_calibration_input(value);
 }
 
-void main_window::on_motor_calibration_reverse_spinbox_valueChanged(int value)
+void main_window::on_current_scale_calibration_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_motor_current_calibration_reverse_input(value);
+  controller->handle_current_scale_calibration_input(value);
 }
 
 void main_window::on_motor_out_of_range_spinbox_valueChanged(int value)
@@ -2543,14 +2545,14 @@ void main_window::set_motor_current_limit_code_reverse(uint16_t current)
   set_spin_box(motor_current_limit_reverse_spinbox, current);
 }
 
-void main_window::set_motor_current_calibration_forward(uint16_t current)
+void main_window::set_current_offset_calibration(int16_t cal)
 {
-  set_spin_box(motor_calibration_forward_spinbox, current);
+  set_spin_box(current_offset_calibration_spinbox, cal);
 }
 
-void main_window::set_motor_current_calibration_reverse(uint16_t current)
+void main_window::set_current_scale_calibration(int16_t cal)
 {
-  set_spin_box(motor_calibration_reverse_spinbox, current);
+  set_spin_box(current_scale_calibration_spinbox, cal);
 }
 
 void main_window::set_motor_max_duty_cycle_out_of_range(uint16_t value)

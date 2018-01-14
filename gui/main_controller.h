@@ -132,8 +132,8 @@ public:
   void handle_motor_brake_duration_reverse_input(uint32_t);
   void handle_motor_current_limit_forward_input(uint16_t);
   void handle_motor_current_limit_reverse_input(uint16_t);
-  void handle_motor_current_calibration_forward_input(uint16_t);
-  void handle_motor_current_calibration_reverse_input(uint16_t);
+  void handle_current_offset_calibration_input(int16_t);
+  void handle_current_scale_calibration_input(int16_t);
   void handle_motor_out_range_input(uint16_t value);
   void handle_motor_coast_when_off_input(bool motor_coast);
 
