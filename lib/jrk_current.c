@@ -56,10 +56,10 @@ static int32_t jrk_calculate_measured_current_ma_umc04a(
     current_scale_calibration = 1875;
   }
 
-  uint8_t dac_reference_num = max_current_code >> 5 & 3;
+  uint8_t dac_ref = max_current_code >> 5 & 3;
 
   // Convert the reading on the current sense line to units of mV/16.
-  uint16_t current = current_reading >> ((2 - dac_reference_num) & 3);
+  uint16_t current = current_reading >> ((2 - dac_ref) & 3);
 
   // Subtract the 50mV offset voltage, without making the reading negative.
   uint16_t offset = 800 + current_offset_calibration;
@@ -103,6 +103,23 @@ int32_t jrk_calculate_measured_current_ma(
       jrk_settings_get_current_offset_calibration(settings),
       jrk_settings_get_current_scale_calibration(settings)
     );
+  }
+
+  return 0;
+}
+
+int32_t jrk_calculate_raw_current_mv64(
+  const jrk_settings * settings, const jrk_variables * vars)
+{
+  if (settings == NULL || vars == NULL) { return 0; }
+
+  uint32_t product = jrk_settings_get_product(settings);
+
+  if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V)
+  {
+    uint16_t current = jrk_variables_get_current_high_res(vars);
+    uint8_t dac_ref = jrk_variables_get_max_current(vars) >> 5 & 3;
+    return current << dac_ref;
   }
 
   return 0;

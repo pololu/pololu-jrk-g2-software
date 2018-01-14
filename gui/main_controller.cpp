@@ -580,10 +580,8 @@ void main_controller::handle_variables_changed()
   window->set_duty_cycle_target(variables.get_duty_cycle_target());
   window->set_duty_cycle(variables.get_duty_cycle());
 
-  // TODO: figure out what current stuff to show/graph
-  window->set_scaled_current_mv(
-    variables.get_scaled_current_mv(window->get_current_offset_mv()));
-  window->set_raw_current_mv(variables.get_raw_current_mv());
+  window->set_current(jrk::calculate_measured_current_ma(settings, variables));
+  window->set_raw_current_mv(jrk::calculate_raw_current_mv64(settings, variables) / 64);
   window->set_current_chopping_log(0);
 
   window->set_vin_voltage(variables.get_vin_voltage());

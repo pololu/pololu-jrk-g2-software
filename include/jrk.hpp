@@ -1523,18 +1523,6 @@ namespace jrk
       return jrk_variables_get_error(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_raw_current_mv().
-    uint16_t get_raw_current_mv() const noexcept
-    {
-      return jrk_variables_get_raw_current_mv(pointer);
-    }
-
-    /// Wrapper for jrk_variables_get_scaled_current_mv().
-    int32_t get_scaled_current_mv(int32_t offset_mv) const noexcept
-    {
-      return jrk_variables_get_scaled_current_mv(pointer, offset_mv);
-    }
-
     /// Wrapper for jrk_variables_get_analog_reading().
     uint16_t get_analog_reading(uint8_t pin) const noexcept
     {
@@ -1763,11 +1751,21 @@ namespace jrk
     /// \endcond
   };
 
+  /// Wrapper for jrk_calculate_measured_current_ma().
   inline int32_t calculate_measured_current_ma(
     const settings & settings, const variables & variables)
   {
     return jrk_calculate_measured_current_ma(
       settings.get_pointer(), variables.get_pointer());
   }
+
+  /// Wrapper for jrk_calculate_raw_current_mv64().
+  inline int32_t calculate_raw_current_mv64(
+    const settings & settings, const variables & variables)
+  {
+    return jrk_calculate_raw_current_mv64(
+      settings.get_pointer(), variables.get_pointer());
+  }
+
 }
 

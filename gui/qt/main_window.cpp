@@ -214,10 +214,10 @@ void main_window::set_raw_current_mv(uint16_t current)
   raw_current_value->setText(QString::number(current) + " mV");
 }
 
-void main_window::set_scaled_current_mv(int32_t current)
+void main_window::set_current(int32_t current)
 {
-  preview_window->scaled_current.plot_value = current;
-  scaled_current_value->setText(QString::number(current) + " mV");
+  preview_window->current.plot_value = current;
+  current_value->setText(QString::number(current) + " mA");
 }
 
 void main_window::set_current_chopping_log(uint16_t log)
@@ -670,21 +670,9 @@ QWidget * main_window::setup_variables_box()
     &raw_current_value);
   raw_current_label->setText(tr("Raw current:"));
 
-  current_offset_label = new QLabel();
-  current_offset_label->setText(tr("Current offset:"));
-  layout->addWidget(current_offset_label, row, 0, Qt::AlignLeft);
-
-  current_offset_value = new QSpinBox();
-  current_offset_value->setObjectName("current_offset_value");
-  current_offset_value->setRange(0, 5000);
-  current_offset_value->setValue(50);
-  current_offset_value->setSuffix(" mV");
-  layout->addWidget(current_offset_value, row, 1, Qt::AlignLeft);
-  row++;
-
-  setup_read_only_text_field(layout, row++, &scaled_current_label,
-    &scaled_current_value);
-  scaled_current_label->setText(tr("Scaled current:"));
+  setup_read_only_text_field(layout, row++, &current_label,
+    &current_value);
+  current_label->setText(tr("Current:"));
 
   setup_read_only_text_field(layout, row++,
     &current_chopping_log_label, &current_chopping_log_value);
@@ -2631,11 +2619,6 @@ void main_window::on_update_timer_timeout()
 bool main_window::motor_asymmetric_checked()
 {
   return motor_asymmetric_checkbox->isChecked();
-}
-
-int32_t main_window::get_current_offset_mv()
-{
-  return current_offset_value->value();
 }
 
 void pid_constant_control::setup(QGroupBox * groupbox)

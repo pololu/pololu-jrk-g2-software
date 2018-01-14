@@ -88,7 +88,7 @@ public:
   void set_duty_cycle_target(int16_t);
   void set_duty_cycle(int16_t);
   void set_raw_current_mv(uint16_t);
-  void set_scaled_current_mv(int32_t);
+  void set_current(int32_t);
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
 
@@ -194,8 +194,6 @@ public:
   void set_restore_defaults_enabled(bool enabled);
   void set_stop_motor_enabled(bool enabled);
   void set_run_motor_enabled(bool enabled);
-
-  int32_t get_current_offset_mv();  // tmphax
 
   bool motor_asymmetric_checked();
 
@@ -358,8 +356,6 @@ private:
   QLabel * raw_current_value;
   QLabel * scaled_current_label;
   QLabel * scaled_current_value;
-  QLabel * current_offset_label;
-  QSpinBox * current_offset_value;
   QLabel * current_chopping_log_label;
   QLabel * current_chopping_log_value;
   QLabel * vin_voltage_label;

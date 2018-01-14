@@ -1766,18 +1766,6 @@ uint8_t jrk_variables_get_current_chopping_occurrence_count(const jrk_variables 
 JRK_API
 int16_t jrk_variables_get_error(const jrk_variables *);
 
-// Gets the raw reading on the current sense line, in millivolts.
-JRK_API
-uint16_t jrk_variables_get_raw_current_mv(const jrk_variables *);
-
-// Gets the reading on the current sense line, in millivolts, scaled up by
-// dividing by the duty cycle (as a number between 0 and 1).
-//
-// offset_mv is the reading of raw_current_mv that we expect to see when there
-// is no current, in units of millivolts.
-JRK_API
-int32_t jrk_variables_get_scaled_current_mv(const jrk_variables *, int32_t offset_mv);
-
 // Gets the analog reading from the specified pin.
 //
 // The pin_number argument should be one of the JRK_PIN_NUM_* macros.
@@ -2148,6 +2136,14 @@ uint16_t jrk_max_current_code_step(const jrk_settings *, uint16_t code, int32_t 
 // here will not be trustable.
 JRK_API
 int32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
+
+// Calculates the voltage on the current sense line in units of mV/64.
+//
+// To get millivolts from this, divide the return value by 64.
+JRK_API
+int32_t jrk_calculate_raw_current_mv64(
+  const jrk_settings * settings, const jrk_variables *);
+
 
 #ifdef __cplusplus
 }

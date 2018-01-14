@@ -39,7 +39,7 @@ public:
   plot duty_cycle_target;
   plot duty_cycle;
   plot raw_current;
-  plot scaled_current;
+  plot current;
   plot current_chopping_log;
 
   double key = 0;
