@@ -960,22 +960,23 @@ uint8_t jrk_settings_get_max_current_exceeded_threshold(const jrk_settings *);
 
 // Sets the current_offset_calibration setting.
 //
+// You can use this current calibration setting to correct current measurements
+// and current limit settings that are off by a constant amount.
+//
 // The current sense circuitry on a umc04a jrk produces a constant voltage of
 // about 50 mV when the motor driver is powered, even if there is no current
-// flowing through the motor.  That offset voltage varies from model to model.
-// For more accurate current measurements and current limit settings, you can
-// use the current_offset_calibration setting to record the value of that
-// offset.
+// flowing through the motor.  This offset must be subtracted from analog
+// voltages representing current limits or current measurements in order to
+// convert those values to amps.
 //
-// For the umc04a jrk, use this formula:
+// For the umc04a jrk models, this setting is defined by the formula:
 //
-//   current_offset_calibration = (voltage offset in millivolts - 50) * 64
+//   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 //
-// The current_offset_calibration should be between -3200 (for an offset of 0
-// mV) and 3200 (for an offset of 100 mV).
+// This setting should be between -800 (for an offset of 0 mV) and 800 (for an
+// offset of 100 mV).
 //
-// This calibration constant is stored in the device's EEPROM but the device
-// does not use it.
+// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_offset_calibration(jrk_settings *,
   int16_t current_offset_calibration);
@@ -990,19 +991,14 @@ int16_t jrk_settings_get_current_offset_calibration(const jrk_settings *);
 // You can use this current calibration setting to correct current measurements
 // and current limit settings that are off by a constant percentage.
 //
-// The algorithm for calculating currents in amps in this software involves
-// applying this formula to the current:
-//
-//   current = current * (5000 + current_scale_calibration)
+// The algorithm for calculating currents in amps involves multiplying the
+// current by (1875 + current_scale_calibration).
 //
 // The default current_scale_calibration value is 0.
-// A current_scale_calibration value of 50 would increase the current
-// readings by 1%.
+// A current_scale_calibration value of 19 would increase the current
+// readings by about 1%.
 //
-// You should probably set current_offset_calibration before setting this.
-//
-// This calibration constant is stored in the device's EEPROM but the device
-// does not use it.
+// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_scale_calibration(jrk_settings *,
   int16_t current_scale_calibration);

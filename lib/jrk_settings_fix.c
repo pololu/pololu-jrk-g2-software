@@ -371,16 +371,16 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     int16_t current_offset_calibration = jrk_settings_get_current_offset_calibration(settings);
-    if (current_offset_calibration < -5000)
+    if (current_offset_calibration < -800)
     {
-      current_offset_calibration = -5000;
+      current_offset_calibration = -800;
       jrk_sprintf(warnings,
         "Warning: The current offset calibration was too low "
         "so it will be changed to %d.\n", current_offset_calibration);
     }
-    if (current_offset_calibration > 5000)
+    if (current_offset_calibration > 800)
     {
-      current_offset_calibration = 5000;
+      current_offset_calibration = 800;
       jrk_sprintf(warnings,
         "Warning: The current offset calibration was too high "
         "so it will be changed to %d.\n", current_offset_calibration);
@@ -390,16 +390,16 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     int16_t current_scale_calibration = jrk_settings_get_current_scale_calibration(settings);
-    if (current_scale_calibration < -3200)
+    if (current_scale_calibration < -1875)
     {
-      current_scale_calibration = -3200;
+      current_scale_calibration = -1875;
       jrk_sprintf(warnings,
         "Warning: The current scale calibration was too low "
         "so it will be changed to %d.\n", current_scale_calibration);
     }
-    if (current_scale_calibration > 3200)
+    if (current_scale_calibration > 1875)
     {
-      current_scale_calibration = 3200;
+      current_scale_calibration = 1875;
       jrk_sprintf(warnings,
         "Warning: The current scale calibration was too high "
         "so it will be changed to %d.\n", current_scale_calibration);
