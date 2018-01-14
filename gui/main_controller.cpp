@@ -680,6 +680,8 @@ void main_controller::handle_settings_loaded()
   handle_settings_changed();
 }
 
+// Note: Really this function should just update the model and not the window,
+// we like to have a separation between those two tasks.
 void main_controller::recompute_constant(int index, uint16_t multiplier, uint16_t exponent)
 {
   double x = multiplier;
@@ -692,6 +694,8 @@ void main_controller::recompute_constant(int index, uint16_t multiplier, uint16_
   window->set_pid_exponent(index, exponent);
 }
 
+// Note: Really this function should just update the model and not the window,
+// we like to have a separation between those two tasks.
 void main_controller::handle_pid_constant_control_constant(int index, double constant)
 {
   double input = constant;
