@@ -83,7 +83,7 @@ jrk_calculate_measured_current_ma().
 EOF
   },
   {
-    name: 'max_current',
+    name: 'current_limit_code',
     type: :uint16_t,
   },
   {

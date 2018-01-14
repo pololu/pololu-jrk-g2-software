@@ -545,7 +545,7 @@ EOF
       "the current.  The number of samples will be 2^x, where x is this setting.",
   },
   {
-    name: 'max_current_exceeded_threshold',
+    name: 'overcurrent_threshold',
     type: :uint8_t,
     default: 1,
     min: 1,
@@ -708,7 +708,7 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'motor_max_current_forward',
+    name: 'motor_current_limit_code_forward',
     type: :uint16_t,
     overridable: true,
     default: 26,  # about 10 A on umc04a
@@ -722,20 +722,20 @@ set up its current limiting hardware.
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
 
-- jrk_max_current_code_to_ma()
-- jrk_max_current_ma_to_code()
-- jrk_max_current_code_step()
+- jrk_current_limit_code_to_ma()
+- jrk_current_limit_ma_to_code()
+- jrk_current_limig_code_step()
 EOF
   },
   {
-    name: 'motor_max_current_reverse',
+    name: 'motor_current_limit_code_reverse',
     type: :uint16_t,
     overridable: true,
     default: 10,
     max: 31,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
-      "See the documentation of motor_max_current_forward."
+      "See the documentation of motor_current_limit_code_forward."
   },
   {
     name: 'motor_brake_duration_forward',

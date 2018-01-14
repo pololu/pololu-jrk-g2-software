@@ -287,8 +287,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t max_current_exceeded_threshold = jrk_settings_get_max_current_exceeded_threshold(settings);
-    jrk_sprintf(&str, "max_current_exceeded_threshold: %u\n", max_current_exceeded_threshold);
+    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
+    jrk_sprintf(&str, "overcurrent_threshold: %u\n", overcurrent_threshold);
   }
 
   {
@@ -343,13 +343,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
-    jrk_sprintf(&str, "motor_max_current_forward: %u\n", motor_max_current_forward);
+    uint16_t motor_current_limit_code_forward = jrk_settings_get_motor_current_limit_code_forward(settings);
+    jrk_sprintf(&str, "motor_current_limit_code_forward: %u\n", motor_current_limit_code_forward);
   }
 
   {
-    uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
-    jrk_sprintf(&str, "motor_max_current_reverse: %u\n", motor_max_current_reverse);
+    uint16_t motor_current_limit_code_reverse = jrk_settings_get_motor_current_limit_code_reverse(settings);
+    jrk_sprintf(&str, "motor_current_limit_code_reverse: %u\n", motor_current_limit_code_reverse);
   }
 
   {

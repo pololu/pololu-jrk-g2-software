@@ -84,7 +84,7 @@ const jrk_name jrk_error_names_ui[] =
   { "Input invalid", 1 << JRK_ERROR_INPUT_INVALID },
   { "Input disconnect", 1 << JRK_ERROR_INPUT_DISCONNECT },
   { "Feedback disconnect", 1 << JRK_ERROR_FEEDBACK_DISCONNECT },
-  { "Max. current exceeded", 1 << JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED },
+  { "Overcurrent", 1 << JRK_ERROR_OVERCURRENT },
   { "Serial signal error", 1 << JRK_ERROR_SERIAL_SIGNAL },
   { "Serial overrun", 1 << JRK_ERROR_SERIAL_OVERRUN },
   { "Serial RX buffer full", 1 << JRK_ERROR_SERIAL_BUFFER_FULL },

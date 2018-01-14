@@ -25,7 +25,7 @@ struct jrk_variables {
   uint16_t rc_pulse_width;
   uint16_t tachometer_reading;
   uint16_t current_high_res;
-  uint16_t max_current;
+  uint16_t current_limit_code;
   int16_t last_duty_cycle;
   uint8_t current_chopping_consecutive_count;
   uint8_t current_chopping_occurrence_count;
@@ -137,7 +137,7 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
   vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
   vars->current_high_res = read_uint16_t(buf + JRK_VAR_CURRENT_HIGH_RES);
-  vars->max_current = read_uint16_t(buf + JRK_VAR_MAX_CURRENT);
+  vars->current_limit_code = read_uint16_t(buf + JRK_VAR_CURRENT_LIMIT_CODE);
   vars->last_duty_cycle = read_int16_t(buf + JRK_VAR_LAST_DUTY_CYCLE);
   vars->current_chopping_consecutive_count = buf[JRK_VAR_CURRENT_CHOPPING_CONSECUTIVE_COUNT];
   vars->current_chopping_occurrence_count = buf[JRK_VAR_CURRENT_CHOPPING_OCCURRENCE_COUNT];
@@ -360,10 +360,10 @@ uint16_t jrk_variables_get_current_high_res(const jrk_variables * vars)
   return vars->current_high_res;
 }
 
-uint16_t jrk_variables_get_max_current(const jrk_variables * vars)
+uint16_t jrk_variables_get_current_limit_code(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
-  return vars->max_current;
+  return vars->current_limit_code;
 }
 
 int16_t jrk_variables_get_last_duty_cycle(const jrk_variables * vars)

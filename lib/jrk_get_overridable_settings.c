@@ -104,15 +104,15 @@ static void write_buffer_to_overridable_settings(const uint8_t * buf,
   }
 
   {
-    uint16_t motor_max_current_forward = read_uint16_t(
-      buf + (JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD - JRK_OVERRIDABLE_SETTINGS_START));
-    jrk_overridable_settings_set_motor_max_current_forward(settings, motor_max_current_forward);
+    uint16_t motor_current_limit_code_forward = read_uint16_t(
+      buf + (JRK_SETTING_MOTOR_CURRENT_LIMIT_CODE_FORWARD - JRK_OVERRIDABLE_SETTINGS_START));
+    jrk_overridable_settings_set_motor_current_limit_code_forward(settings, motor_current_limit_code_forward);
   }
 
   {
-    uint16_t motor_max_current_reverse = read_uint16_t(
-      buf + (JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE - JRK_OVERRIDABLE_SETTINGS_START));
-    jrk_overridable_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
+    uint16_t motor_current_limit_code_reverse = read_uint16_t(
+      buf + (JRK_SETTING_MOTOR_CURRENT_LIMIT_CODE_REVERSE - JRK_OVERRIDABLE_SETTINGS_START));
+    jrk_overridable_settings_set_motor_current_limit_code_reverse(settings, motor_current_limit_code_reverse);
   }
 
   {

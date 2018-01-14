@@ -20,8 +20,8 @@ struct jrk_overridable_settings
   uint16_t motor_max_deceleration_reverse;
   uint16_t motor_max_duty_cycle_forward;
   uint16_t motor_max_duty_cycle_reverse;
-  uint16_t motor_max_current_forward;
-  uint16_t motor_max_current_reverse;
+  uint16_t motor_current_limit_code_forward;
+  uint16_t motor_current_limit_code_reverse;
   uint32_t motor_brake_duration_forward;
   uint32_t motor_brake_duration_reverse;
   bool motor_coast_when_off;
@@ -348,34 +348,34 @@ uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_reverse(
   return settings->motor_max_duty_cycle_reverse;
 }
 
-void jrk_overridable_settings_set_motor_max_current_forward(
+void jrk_overridable_settings_set_motor_current_limit_code_forward(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_current_forward)
+  uint16_t motor_current_limit_code_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_current_forward = motor_max_current_forward;
+  settings->motor_current_limit_code_forward = motor_current_limit_code_forward;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_current_forward(
+uint16_t jrk_overridable_settings_get_motor_current_limit_code_forward(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_current_forward;
+  return settings->motor_current_limit_code_forward;
 }
 
-void jrk_overridable_settings_set_motor_max_current_reverse(
+void jrk_overridable_settings_set_motor_current_limit_code_reverse(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_current_reverse)
+  uint16_t motor_current_limit_code_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_current_reverse = motor_max_current_reverse;
+  settings->motor_current_limit_code_reverse = motor_current_limit_code_reverse;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_current_reverse(
+uint16_t jrk_overridable_settings_get_motor_current_limit_code_reverse(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_current_reverse;
+  return settings->motor_current_limit_code_reverse;
 }
 
 void jrk_overridable_settings_set_motor_brake_duration_forward(

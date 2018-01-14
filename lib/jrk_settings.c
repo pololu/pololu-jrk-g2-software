@@ -49,7 +49,7 @@ struct jrk_settings
   bool pid_reset_integral;
   uint8_t motor_pwm_frequency;
   uint8_t current_samples_exponent;
-  uint8_t max_current_exceeded_threshold;
+  uint8_t overcurrent_threshold;
   int16_t current_offset_calibration;
   int16_t current_scale_calibration;
   bool motor_invert;
@@ -60,8 +60,8 @@ struct jrk_settings
   uint16_t motor_max_deceleration_reverse;
   uint16_t motor_max_duty_cycle_forward;
   uint16_t motor_max_duty_cycle_reverse;
-  uint16_t motor_max_current_forward;
-  uint16_t motor_max_current_reverse;
+  uint16_t motor_current_limit_code_forward;
+  uint16_t motor_current_limit_code_reverse;
   uint32_t motor_brake_duration_forward;
   uint32_t motor_brake_duration_reverse;
   bool motor_coast_when_off;
@@ -112,7 +112,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_pid_period(settings, 10);
   jrk_settings_set_pid_integral_limit(settings, 1000);
   jrk_settings_set_current_samples_exponent(settings, 2);
-  jrk_settings_set_max_current_exceeded_threshold(settings, 1);
+  jrk_settings_set_overcurrent_threshold(settings, 1);
   jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, 600);
   jrk_settings_set_motor_max_acceleration_forward(settings, 600);
   jrk_settings_set_motor_max_acceleration_reverse(settings, 600);
@@ -120,8 +120,8 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_motor_max_deceleration_reverse(settings, 600);
   jrk_settings_set_motor_max_duty_cycle_forward(settings, 600);
   jrk_settings_set_motor_max_duty_cycle_reverse(settings, 600);
-  jrk_settings_set_motor_max_current_forward(settings, 26);
-  jrk_settings_set_motor_max_current_reverse(settings, 10);
+  jrk_settings_set_motor_current_limit_code_forward(settings, 26);
+  jrk_settings_set_motor_current_limit_code_reverse(settings, 10);
 
   // End of auto-generated settings defaults.
 }
@@ -729,16 +729,16 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings * settings)
   return settings->current_samples_exponent;
 }
 
-void jrk_settings_set_max_current_exceeded_threshold(jrk_settings * settings, uint8_t max_current_exceeded_threshold)
+void jrk_settings_set_overcurrent_threshold(jrk_settings * settings, uint8_t overcurrent_threshold)
 {
   if (settings == NULL) { return; }
-  settings->max_current_exceeded_threshold = max_current_exceeded_threshold;
+  settings->overcurrent_threshold = overcurrent_threshold;
 }
 
-uint8_t jrk_settings_get_max_current_exceeded_threshold(const jrk_settings * settings)
+uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->max_current_exceeded_threshold;
+  return settings->overcurrent_threshold;
 }
 
 void jrk_settings_set_current_offset_calibration(jrk_settings * settings, int16_t current_offset_calibration)
@@ -861,28 +861,28 @@ uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings * sett
   return settings->motor_max_duty_cycle_reverse;
 }
 
-void jrk_settings_set_motor_max_current_forward(jrk_settings * settings, uint16_t motor_max_current_forward)
+void jrk_settings_set_motor_current_limit_code_forward(jrk_settings * settings, uint16_t motor_current_limit_code_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_current_forward = motor_max_current_forward;
+  settings->motor_current_limit_code_forward = motor_current_limit_code_forward;
 }
 
-uint16_t jrk_settings_get_motor_max_current_forward(const jrk_settings * settings)
+uint16_t jrk_settings_get_motor_current_limit_code_forward(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_current_forward;
+  return settings->motor_current_limit_code_forward;
 }
 
-void jrk_settings_set_motor_max_current_reverse(jrk_settings * settings, uint16_t motor_max_current_reverse)
+void jrk_settings_set_motor_current_limit_code_reverse(jrk_settings * settings, uint16_t motor_current_limit_code_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_current_reverse = motor_max_current_reverse;
+  settings->motor_current_limit_code_reverse = motor_current_limit_code_reverse;
 }
 
-uint16_t jrk_settings_get_motor_max_current_reverse(const jrk_settings * settings)
+uint16_t jrk_settings_get_motor_current_limit_code_reverse(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_current_reverse;
+  return settings->motor_current_limit_code_reverse;
 }
 
 void jrk_settings_set_motor_brake_duration_forward(jrk_settings * settings, uint32_t motor_brake_duration_forward)

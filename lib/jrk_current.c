@@ -18,14 +18,14 @@ struct jrk_current_setting jrk_currents_null[] =
 //
 // current_reading: Raw current reading from the device,
 //   from jrk_variables_get_curent_high_res().
-// max_current_code: The hardware current limiting configuration, from
+// current_limit_code: The hardware current limiting configuration, from
 //   from jrk_variables_get_max_current().
 // rsense: Sense resistor resistance, in units of mohms/16.
 // current_offset_calibration: from jrk_settings_get_current_offset_calibration()
 // current_scale_calibration: from jrk_settings_get_current_scale_calibration()
 static int32_t jrk_calculate_measured_current_ma_umc04a(
   uint16_t current_reading,
-  uint16_t max_current_code,
+  uint16_t current_limit_code,
   int16_t duty_cycle,
   uint8_t rsense,
   int16_t current_offset_calibration,
@@ -56,7 +56,7 @@ static int32_t jrk_calculate_measured_current_ma_umc04a(
     current_scale_calibration = 1875;
   }
 
-  uint8_t dac_ref = max_current_code >> 5 & 3;
+  uint8_t dac_ref = current_limit_code >> 5 & 3;
 
   // Convert the reading on the current sense line to units of mV/16.
   uint16_t current = current_reading >> ((2 - dac_ref) & 3);
@@ -97,7 +97,7 @@ int32_t jrk_calculate_measured_current_ma(
 
     return jrk_calculate_measured_current_ma_umc04a(
       jrk_variables_get_current_high_res(vars),
-      jrk_variables_get_max_current(vars),
+      jrk_variables_get_current_limit_code(vars),
       jrk_variables_get_last_duty_cycle(vars),
       rsense,
       jrk_settings_get_current_offset_calibration(settings),
@@ -118,7 +118,7 @@ int32_t jrk_calculate_raw_current_mv64(
   if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V)
   {
     uint16_t current = jrk_variables_get_current_high_res(vars);
-    uint8_t dac_ref = jrk_variables_get_max_current(vars) >> 5 & 3;
+    uint8_t dac_ref = jrk_variables_get_current_limit_code(vars) >> 5 & 3;
     return current << dac_ref;
   }
 

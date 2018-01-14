@@ -212,8 +212,8 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t max_current_exceeded_threshold = buf[JRK_SETTING_MAX_CURRENT_EXCEEDED_THRESHOLD];
-    jrk_settings_set_max_current_exceeded_threshold(settings, max_current_exceeded_threshold);
+    uint8_t overcurrent_threshold = buf[JRK_SETTING_OVERCURRENT_THRESHOLD];
+    jrk_settings_set_overcurrent_threshold(settings, overcurrent_threshold);
   }
 
   {
@@ -267,13 +267,13 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint16_t motor_max_current_forward = read_uint16_t(buf + JRK_SETTING_MOTOR_MAX_CURRENT_FORWARD);
-    jrk_settings_set_motor_max_current_forward(settings, motor_max_current_forward);
+    uint16_t motor_current_limit_code_forward = read_uint16_t(buf + JRK_SETTING_MOTOR_CURRENT_LIMIT_CODE_FORWARD);
+    jrk_settings_set_motor_current_limit_code_forward(settings, motor_current_limit_code_forward);
   }
 
   {
-    uint16_t motor_max_current_reverse = read_uint16_t(buf + JRK_SETTING_MOTOR_MAX_CURRENT_REVERSE);
-    jrk_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
+    uint16_t motor_current_limit_code_reverse = read_uint16_t(buf + JRK_SETTING_MOTOR_CURRENT_LIMIT_CODE_REVERSE);
+    jrk_settings_set_motor_current_limit_code_reverse(settings, motor_current_limit_code_reverse);
   }
 
   {

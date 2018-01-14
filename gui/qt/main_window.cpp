@@ -1299,19 +1299,20 @@ QWidget *main_window::setup_motor_tab()
   motor_brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   motor_brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  motor_max_current_label = new QLabel(tr("Max. current:"));
-  motor_max_current_label->setObjectName("motor_max_current_label");
+  // TODO: show in amps instead of showing the code
+  motor_current_limit_label = new QLabel(tr("Current limit code:"));
+  motor_current_limit_label->setObjectName("motor_current_limit_label");
 
-  motor_max_current_forward_spinbox = new QSpinBox();
-  motor_max_current_forward_spinbox->setObjectName("motor_max_current_forward_spinbox");
-  motor_max_current_forward_spinbox->setRange(0, 31); // TODO: add macro for max
+  motor_current_limit_forward_spinbox = new QSpinBox();
+  motor_current_limit_forward_spinbox->setObjectName("motor_current_limit_forward_spinbox");
+  motor_current_limit_forward_spinbox->setRange(0, 31); // TODO: add macro for max
 
-  motor_max_current_reverse_spinbox = new QSpinBox();
-  motor_max_current_reverse_spinbox->setObjectName("motor_max_current_reverse_spinbox");
-  motor_max_current_reverse_spinbox->setRange(0, 31); // TODO: add macro for max
+  motor_current_limit_reverse_spinbox = new QSpinBox();
+  motor_current_limit_reverse_spinbox->setObjectName("motor_current_limit_reverse_spinbox");
+  motor_current_limit_reverse_spinbox->setRange(0, 31); // TODO: add macro for max
 
-  motor_max_current_means_label = new QLabel(tr("(0 to 31)"));
-  motor_max_current_means_label->setObjectName("motor_max_current_means_label");
+  motor_current_limit_means_label = new QLabel(tr("(0 to 31)"));
+  motor_current_limit_means_label->setObjectName("motor_current_limit_means_label");
 
   motor_calibration_label = new QLabel(tr("Current calibration:"));
   motor_calibration_label->setObjectName("motor_calibration_label");
@@ -1344,10 +1345,10 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(motor_brake_duration_label,5,0,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_brake_duration_forward_spinbox,5,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_brake_duration_reverse_spinbox,5,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_label,6,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_forward_spinbox,6,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_reverse_spinbox,6,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_max_current_means_label,6,3,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_current_limit_label,6,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_current_limit_forward_spinbox,6,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_current_limit_reverse_spinbox,6,2,Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_current_limit_means_label,6,3,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_label,7,0,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_forward_spinbox,7,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_calibration_reverse_spinbox,7,2,Qt::AlignLeft);
@@ -2043,16 +2044,16 @@ void main_window::on_motor_brake_duration_reverse_spinbox_valueChanged(int value
   controller->handle_motor_brake_duration_reverse_input(value);
 }
 
-void main_window::on_motor_max_current_forward_spinbox_valueChanged(int value)
+void main_window::on_motor_current_limit_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_motor_max_current_forward_input(value);
+  controller->handle_motor_current_limit_forward_input(value);
 }
 
-void main_window::on_motor_max_current_reverse_spinbox_valueChanged(int value)
+void main_window::on_motor_current_limit_reverse_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_motor_max_current_reverse_input(value);
+  controller->handle_motor_current_limit_reverse_input(value);
 }
 
 void main_window::on_motor_calibration_forward_spinbox_valueChanged(int value)
@@ -2488,7 +2489,7 @@ void main_window::set_motor_asymmetric(bool checked)
   motor_max_acceleration_reverse_spinbox->setEnabled(checked);
   motor_max_deceleration_reverse_spinbox->setEnabled(checked);
   motor_brake_duration_reverse_spinbox->setEnabled(checked);
-  motor_max_current_reverse_spinbox->setEnabled(checked);
+  motor_current_limit_reverse_spinbox->setEnabled(checked);
   //TODO: remove this comment: motor_calibration_reverse_spinbox->setEnabled(checked);
 }
 
@@ -2532,14 +2533,14 @@ void main_window::set_motor_brake_duration_reverse(uint32_t brake_duration)
   set_spin_box(motor_brake_duration_reverse_spinbox, brake_duration);
 }
 
-void main_window::set_motor_max_current_forward(uint16_t current)
+void main_window::set_motor_current_limit_code_forward(uint16_t current)
 {
-  set_spin_box(motor_max_current_forward_spinbox, current);
+  set_spin_box(motor_current_limit_forward_spinbox, current);
 }
 
-void main_window::set_motor_max_current_reverse(uint16_t current)
+void main_window::set_motor_current_limit_code_reverse(uint16_t current)
 {
-  set_spin_box(motor_max_current_reverse_spinbox, current);
+  set_spin_box(motor_current_limit_reverse_spinbox, current);
 }
 
 void main_window::set_motor_current_calibration_forward(uint16_t current)

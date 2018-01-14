@@ -645,13 +645,13 @@ void main_controller::handle_settings_changed()
   window->set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_reverse());
   window->set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_reverse());
   window->set_motor_brake_duration_reverse(settings.get_motor_brake_duration_reverse());
-  window->set_motor_max_current_reverse(settings.get_motor_max_current_reverse());
+  window->set_motor_current_limit_code_reverse(settings.get_motor_current_limit_code_reverse());
 
   window->set_motor_max_duty_cycle_forward(settings.get_motor_max_duty_cycle_forward());
   window->set_motor_max_acceleration_forward(settings.get_motor_max_acceleration_forward());
   window->set_motor_max_deceleration_forward(settings.get_motor_max_deceleration_forward());
   window->set_motor_brake_duration_forward(settings.get_motor_brake_duration_forward());
-  window->set_motor_max_current_forward(settings.get_motor_max_current_forward());
+  window->set_motor_current_limit_code_forward(settings.get_motor_current_limit_code_forward());
 
   // TODO: remove directional current calibration settings from the gui
   // because they were removed from the firmware
@@ -804,8 +804,8 @@ void main_controller::recalculate_motor_asymmetric()
       settings.get_motor_max_deceleration_reverse()) ||
     (settings.get_motor_brake_duration_forward() !=
       settings.get_motor_brake_duration_reverse()) ||
-    (settings.get_motor_max_current_forward() !=
-      settings.get_motor_max_current_reverse());
+    (settings.get_motor_current_limit_code_forward() !=
+      settings.get_motor_current_limit_code_reverse());
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -1151,7 +1151,7 @@ void main_controller::handle_motor_asymmetric_input(bool checked)
     settings.set_motor_max_acceleration_reverse(settings.get_motor_max_acceleration_forward());
     settings.set_motor_max_deceleration_reverse(settings.get_motor_max_deceleration_forward());
     settings.set_motor_brake_duration_reverse(settings.get_motor_brake_duration_forward());
-    settings.set_motor_max_current_reverse(settings.get_motor_max_current_forward());
+    settings.set_motor_current_limit_code_reverse(settings.get_motor_current_limit_code_forward());
   }
 
   settings_modified = true;
@@ -1230,20 +1230,20 @@ void main_controller::handle_motor_brake_duration_reverse_input(uint32_t deceler
   handle_settings_changed();
 }
 
-void main_controller::handle_motor_max_current_forward_input(uint16_t current)
+void main_controller::handle_motor_current_limit_forward_input(uint16_t current)
 {
   if (!connected()) { return; }
-  settings.set_motor_max_current_forward(current);
+  settings.set_motor_current_limit_code_forward(current);
   if (!motor_asymmetric)
-    settings.set_motor_max_current_reverse(current);
+    settings.set_motor_current_limit_code_reverse(current);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_motor_max_current_reverse_input(uint16_t current)
+void main_controller::handle_motor_current_limit_reverse_input(uint16_t current)
 {
   if (!connected()) { return; }
-  settings.set_motor_max_current_reverse(current);
+  settings.set_motor_current_limit_code_reverse(current);
   settings_modified = true;
   handle_settings_changed();
 }

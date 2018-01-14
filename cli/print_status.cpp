@@ -252,12 +252,14 @@ void print_status(const jrk::variables & vars,
     // TODO: fix the current readings below; they are 0 because we marked the
     // current settings as custom_eeprom.
 
-    std::cout << left_column << "Max. current forward: "
-      << (uint32_t)osettings.get_motor_max_current_forward()  // TODO: format in amps
+     // TODO: format in amps
+    std::cout << left_column << "Current limit forward: "
+      << "code " << (uint32_t)osettings.get_motor_current_limit_code_forward()
       << std::endl;
 
-    std::cout << left_column << "Max. current reverse: "
-      << (uint32_t)osettings.get_motor_max_current_reverse()  // TODO: format in amps
+    // TODO: format in amps
+    std::cout << left_column << "Current limit reverse: "
+      << "code " << (uint32_t)osettings.get_motor_current_limit_code_reverse()
       << std::endl;
 
     std::cout << left_column << "Brake duration forward: "
@@ -285,8 +287,9 @@ void print_status(const jrk::variables & vars,
       << vars.get_last_duty_cycle()
       << std::endl;
 
-    std::cout << left_column << "Max current: "
-      << vars.get_max_current()
+    // TODO: format in amps
+    std::cout << left_column << "Current limit: "
+      << "code " << vars.get_current_limit_code()
       << std::endl;
 
     std::cout << left_column << "Current chopping consecutive count: "
