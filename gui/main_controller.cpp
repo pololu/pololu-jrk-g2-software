@@ -582,7 +582,10 @@ void main_controller::handle_variables_changed()
 
   window->set_current(jrk::calculate_measured_current_ma(settings, variables));
   window->set_raw_current_mv(jrk::calculate_raw_current_mv64(settings, variables) / 64);
-  window->set_current_chopping_log(0);
+
+  // TODO: rename 'Current chopping log' in the window
+  window->set_current_chopping_log(
+    variables.get_current_chopping_occurrence_count() ? 1 : 0);
 
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());

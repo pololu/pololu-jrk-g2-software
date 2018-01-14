@@ -161,14 +161,13 @@ void graph_widget::setup_ui()
 
   current_chopping_log.range = new QDoubleSpinBox();
   current_chopping_log.display = new QCheckBox("Current chopping log");
-  // TODO: why is the name cut off?  "log" is not shown
   current_chopping_log.display->
     setStyleSheet(QStringLiteral("border: 5px solid #ff00ff; background-color: white;"));
   current_chopping_log.color = "#ff00ff";
   current_chopping_log.range_label = new QLabel("0\u2013");
    // TODO: use en dashes on the other plots too
   current_chopping_log.graph_data_selection_bar = new QHBoxLayout();
-  current_chopping_log.range_value = 65535;
+  current_chopping_log.range_value = 1;
 
   all_plots.append(&input);
   all_plots.append(&target);
