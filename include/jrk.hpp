@@ -1764,11 +1764,10 @@ namespace jrk
   };
 
   inline int32_t calculate_measured_current_ma(
-    const settings & settings, const variables & variables,
-    bool * trustable = NULL)
+    const settings & settings, const variables & variables)
   {
     return jrk_calculate_measured_current_ma(
-      settings.get_pointer(), variables.get_pointer(), trustable);
+      settings.get_pointer(), variables.get_pointer());
   }
 }
 

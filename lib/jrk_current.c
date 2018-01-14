@@ -77,11 +77,8 @@ static int32_t jrk_calculate_measured_current_ma_umc04a(
 }
 
 int32_t jrk_calculate_measured_current_ma(
-  const jrk_settings * settings, const jrk_variables * vars,
-  bool * trustable)
+  const jrk_settings * settings, const jrk_variables * vars)
 {
-  if (trustable != NULL) { *trustable = 0; }
-
   if (settings == NULL || vars == NULL) { return 0; }
 
   uint32_t product = jrk_settings_get_product(settings);
@@ -96,11 +93,6 @@ int32_t jrk_calculate_measured_current_ma(
     else
     {
       rsense = 4;  // 1 mOhm
-    }
-
-    if (jrk_variables_get_current_chopping_consecutive_count(vars) == 0)
-    {
-      if (trustable != NULL) { *trustable = 1; }
     }
 
     return jrk_calculate_measured_current_ma_umc04a(

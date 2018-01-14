@@ -2144,13 +2144,10 @@ uint16_t jrk_max_current_code_step(const jrk_settings *, uint16_t code, int32_t 
 // current indicates its direction, and generally corresponds to the sign of the
 // duty cycle (negative for reverse, positive for forward).
 //
-// The optional 'trustable' pointer, if not NULL, will receive a boolean
-// indicating whether the reading is trustable.  The main reason for the current
-// not to be trustable is if current chopping was happening during the PID
-// period when the current was measured.
+// Note: If current chopping happened during the PID period, the value returned
+// here will not be trustable.
 JRK_API
-int32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *,
-  bool * trustable);
+int32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
 
 #ifdef __cplusplus
 }

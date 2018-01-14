@@ -152,16 +152,8 @@ void print_status(const jrk::variables & vars,
     << vars.get_duty_cycle()
     << std::endl;
 
-  bool current_ma_trustable;
-  int32_t current_ma = jrk::calculate_measured_current_ma(
-    settings, vars, &current_ma_trustable);
-
   std::cout << left_column << "Current (mA): "
-    << current_ma
-    << std::endl;
-
-  std::cout << left_column << "Current trustable: "
-    << (current_ma_trustable ? "Yes" : "No")
+    << jrk::calculate_measured_current_ma(settings, vars)
     << std::endl;
 
   std::cout << left_column << "VIN voltage: "
