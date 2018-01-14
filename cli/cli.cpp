@@ -519,12 +519,12 @@ static void override_settings(device_selector & selector,
 
   if (args.override_max_duty_cycle_forward)
   {
-    s.set_motor_max_duty_cycle_forward(args.max_duty_cycle_forward);
+    s.set_max_duty_cycle_forward(args.max_duty_cycle_forward);
   }
 
   if (args.override_max_duty_cycle_reverse)
   {
-    s.set_motor_max_duty_cycle_reverse(args.max_duty_cycle_reverse);
+    s.set_max_duty_cycle_reverse(args.max_duty_cycle_reverse);
   }
 
   handle.set_overridable_settings(s);

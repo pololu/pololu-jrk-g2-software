@@ -66,13 +66,8 @@ extern const jrk_name jrk_input_mode_names_short[];
 extern const jrk_name jrk_input_scaling_degree_names_short[];
 extern const jrk_name jrk_feedback_mode_names_short[];
 extern const jrk_name jrk_serial_mode_names_short[];
-extern const jrk_name jrk_motor_pwm_frequency_names_short[];
+extern const jrk_name jrk_pwm_frequency_names_short[];
 extern const jrk_name jrk_pin_func_names[];
-
-
-// Intenral variables functions.
-
-void jrk_variables_set_from_device(jrk_variables *, const uint8_t * buffer);
 
 
 // Internal settings conversion functions.

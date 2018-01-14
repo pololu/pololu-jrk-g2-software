@@ -499,42 +499,45 @@ EOF
     overridable: true,
     range: 1..8191,
     default: 10,
-    comment:
-      "The PID period specifies how often the jrk should run its PID calculation\n" \
-      "and update the motor speed, in units of milliseconds."
+    comment: <<EOF
+The PID period specifies how often the jrk should calculate its input and
+feedback, run its PID calculation, and update the motor speed, in units of
+milliseconds.  This period is still used even if feedback and PID are
+disabled.
+EOF
   },
   {
-    name: 'pid_integral_limit',
+    name: 'integral_limit',
     type: :uint16_t,
     overridable: true,
     default: 1000,
     max: 0x7FFF,
     comment:
       "The PID algorithm prevents the absolute value of the accumulated error\n" \
-      "(known as error sum) from exceeding pid_integral_limit.",
+      "(known as error sum) from exceeding this limit.",
   },
   {
-    name: 'pid_reset_integral',
+    name: 'reset_integral',
     type: :bool,
     overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
-    bit_address: 'JRK_OPTIONS_BYTE3_PID_RESET_INTEGRAL',
+    bit_address: 'JRK_OPTIONS_BYTE3_RESET_INTEGRAL',
     comment:
       "If this setting is set to true, the PID algorithm will reset the accumulated\n" \
       "error (also known as error sum) whenever the absolute value of the\n" \
       "proportional term (see proportional_multiplier) exceeds 600."
   },
   {
-    name: 'motor_pwm_frequency',
+    name: 'pwm_frequency',
     type: :enum,
-    default: 'JRK_MOTOR_PWM_FREQUENCY_20',
+    default: 'JRK_PWM_FREQUENCY_20',
     default_is_zero: true,
     english_default: '20 kHz',
-    max: 'JRK_MOTOR_PWM_FREQUENCY_5',
+    max: 'JRK_PWM_FREQUENCY_5',
     comment:
       "This setting specifies whether to use 20 kHz (the default) or 5 kHz for the\n" \
       "motor PWM signal.  This setting should be either\n" \
-      "JRK_MOTOR_PWM_FREQUENCY_20 or JRK_MOTOR_PWM_FREQUENCY_5.\n"
+      "JRK_PWM_FREQUENCY_20 or JRK_PWM_FREQUENCY_5.\n"
   },
   {
     name: 'current_samples_exponent',
@@ -616,19 +619,19 @@ EOF
       "from B to A."
   },
   {
-    name: 'motor_max_duty_cycle_while_feedback_out_of_range',
+    name: 'max_duty_cycle_while_feedback_out_of_range',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
-If the feedback is beyong the range specified by the feedback absolute
+If the feedback is beyond the range specified by the feedback absolute
 minimum and feedback absolute maximum values, then the duty cycle's magnitude
 cannot exceed this value.
 EOF
   },
   {
-    name: 'motor_max_acceleration_forward',
+    name: 'max_acceleration_forward',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -641,7 +644,7 @@ period if the duty cycle is positive.
 EOF
   },
   {
-    name: 'motor_max_acceleration_reverse',
+    name: 'max_acceleration_reverse',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -654,7 +657,7 @@ period if the duty cycle is negative.
 EOF
   },
   {
-    name: 'motor_max_deceleration_forward',
+    name: 'max_deceleration_forward',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -667,7 +670,7 @@ period if the duty cycle is positive.
 EOF
   },
   {
-    name: 'motor_max_deceleration_reverse',
+    name: 'max_deceleration_reverse',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -680,7 +683,7 @@ period if the duty cycle is negative.
 EOF
   },
   {
-    name: 'motor_max_duty_cycle_forward',
+    name: 'max_duty_cycle_forward',
     type: :uint16_t,
     overridable: true,
     max: 600,
@@ -694,7 +697,7 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'motor_max_duty_cycle_reverse',
+    name: 'max_duty_cycle_reverse',
     type: :uint16_t,
     overridable: true,
     max: 600,
@@ -708,7 +711,7 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'motor_current_limit_code_forward',
+    name: 'current_limit_code_forward',
     type: :uint16_t,
     overridable: true,
     default: 26,  # about 10 A on umc04a
@@ -728,17 +731,17 @@ in milliamps depends on what product you are using.  See also:
 EOF
   },
   {
-    name: 'motor_current_limit_code_reverse',
+    name: 'current_limit_code_reverse',
     type: :uint16_t,
     overridable: true,
     default: 10,
     max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
-      "See the documentation of motor_current_limit_code_forward."
+      "See the documentation of current_limit_code_forward."
   },
   {
-    name: 'motor_brake_duration_forward',
+    name: 'brake_duration_forward',
     type: :uint32_t,
     overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
@@ -752,7 +755,7 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'motor_brake_duration_reverse',
+    name: 'brake_duration_reverse',
     type: :uint32_t,
     overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
@@ -767,11 +770,11 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'motor_coast_when_off',
+    name: 'coast_when_off',
     type: :bool,
     overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
-    bit_address: 'JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF',
+    bit_address: 'JRK_OPTIONS_BYTE3_COAST_WHEN_OFF',
     comment:
       "By default, the jrk drives both motor outputs low when the motor is\n" \
       "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \

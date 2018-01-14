@@ -57,10 +57,10 @@ const jrk_name jrk_serial_mode_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_motor_pwm_frequency_names_short[] =
+const jrk_name jrk_pwm_frequency_names_short[] =
 {
-  { "20", JRK_MOTOR_PWM_FREQUENCY_20 },
-  { "5", JRK_MOTOR_PWM_FREQUENCY_5 },
+  { "20", JRK_PWM_FREQUENCY_20 },
+  { "5", JRK_PWM_FREQUENCY_5 },
   { NULL, 0 },
 };
 

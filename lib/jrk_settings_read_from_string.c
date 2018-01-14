@@ -558,38 +558,38 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_pid_period(settings, pid_period);
   }
-  else if (!strcmp(key, "pid_integral_limit"))
+  else if (!strcmp(key, "integral_limit"))
   {
-    int64_t pid_integral_limit;
-    if (jrk_string_to_i64(value, &pid_integral_limit))
+    int64_t integral_limit;
+    if (jrk_string_to_i64(value, &integral_limit))
     {
-      return jrk_error_create("Invalid pid_integral_limit value.");
+      return jrk_error_create("Invalid integral_limit value.");
     }
-    if (pid_integral_limit < 0 || pid_integral_limit > UINT16_MAX)
+    if (integral_limit < 0 || integral_limit > UINT16_MAX)
     {
       return jrk_error_create(
-        "The pid_integral_limit value is out of range.");
+        "The integral_limit value is out of range.");
     }
-    jrk_settings_set_pid_integral_limit(settings, pid_integral_limit);
+    jrk_settings_set_integral_limit(settings, integral_limit);
   }
-  else if (!strcmp(key, "pid_reset_integral"))
+  else if (!strcmp(key, "reset_integral"))
   {
-    uint32_t pid_reset_integral;
-    if (!jrk_name_to_code(jrk_bool_names, value, &pid_reset_integral))
+    uint32_t reset_integral;
+    if (!jrk_name_to_code(jrk_bool_names, value, &reset_integral))
     {
-      return jrk_error_create("Unrecognized pid_reset_integral value.");
+      return jrk_error_create("Unrecognized reset_integral value.");
     }
-    jrk_settings_set_pid_reset_integral(settings, pid_reset_integral);
-    jrk_settings_set_pid_reset_integral(settings, pid_reset_integral);
+    jrk_settings_set_reset_integral(settings, reset_integral);
+    jrk_settings_set_reset_integral(settings, reset_integral);
   }
-  else if (!strcmp(key, "motor_pwm_frequency"))
+  else if (!strcmp(key, "pwm_frequency"))
   {
-    uint32_t motor_pwm_frequency;
-    if (!jrk_name_to_code(jrk_motor_pwm_frequency_names_short, value, &motor_pwm_frequency))
+    uint32_t pwm_frequency;
+    if (!jrk_name_to_code(jrk_pwm_frequency_names_short, value, &pwm_frequency))
     {
-      return jrk_error_create("Unrecognized motor_pwm_frequency value.");
+      return jrk_error_create("Unrecognized pwm_frequency value.");
     }
-    jrk_settings_set_motor_pwm_frequency(settings, motor_pwm_frequency);
+    jrk_settings_set_pwm_frequency(settings, pwm_frequency);
   }
   else if (!strcmp(key, "current_samples_exponent"))
   {
@@ -657,169 +657,169 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     jrk_settings_set_motor_invert(settings, motor_invert);
     jrk_settings_set_motor_invert(settings, motor_invert);
   }
-  else if (!strcmp(key, "motor_max_duty_cycle_while_feedback_out_of_range"))
+  else if (!strcmp(key, "max_duty_cycle_while_feedback_out_of_range"))
   {
-    int64_t motor_max_duty_cycle_while_feedback_out_of_range;
-    if (jrk_string_to_i64(value, &motor_max_duty_cycle_while_feedback_out_of_range))
+    int64_t max_duty_cycle_while_feedback_out_of_range;
+    if (jrk_string_to_i64(value, &max_duty_cycle_while_feedback_out_of_range))
     {
-      return jrk_error_create("Invalid motor_max_duty_cycle_while_feedback_out_of_range value.");
+      return jrk_error_create("Invalid max_duty_cycle_while_feedback_out_of_range value.");
     }
-    if (motor_max_duty_cycle_while_feedback_out_of_range < 0 || motor_max_duty_cycle_while_feedback_out_of_range > UINT16_MAX)
+    if (max_duty_cycle_while_feedback_out_of_range < 0 || max_duty_cycle_while_feedback_out_of_range > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_duty_cycle_while_feedback_out_of_range value is out of range.");
+        "The max_duty_cycle_while_feedback_out_of_range value is out of range.");
     }
-    jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, motor_max_duty_cycle_while_feedback_out_of_range);
+    jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(settings, max_duty_cycle_while_feedback_out_of_range);
   }
-  else if (!strcmp(key, "motor_max_acceleration_forward"))
+  else if (!strcmp(key, "max_acceleration_forward"))
   {
-    int64_t motor_max_acceleration_forward;
-    if (jrk_string_to_i64(value, &motor_max_acceleration_forward))
+    int64_t max_acceleration_forward;
+    if (jrk_string_to_i64(value, &max_acceleration_forward))
     {
-      return jrk_error_create("Invalid motor_max_acceleration_forward value.");
+      return jrk_error_create("Invalid max_acceleration_forward value.");
     }
-    if (motor_max_acceleration_forward < 0 || motor_max_acceleration_forward > UINT16_MAX)
+    if (max_acceleration_forward < 0 || max_acceleration_forward > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_acceleration_forward value is out of range.");
+        "The max_acceleration_forward value is out of range.");
     }
-    jrk_settings_set_motor_max_acceleration_forward(settings, motor_max_acceleration_forward);
+    jrk_settings_set_max_acceleration_forward(settings, max_acceleration_forward);
   }
-  else if (!strcmp(key, "motor_max_acceleration_reverse"))
+  else if (!strcmp(key, "max_acceleration_reverse"))
   {
-    int64_t motor_max_acceleration_reverse;
-    if (jrk_string_to_i64(value, &motor_max_acceleration_reverse))
+    int64_t max_acceleration_reverse;
+    if (jrk_string_to_i64(value, &max_acceleration_reverse))
     {
-      return jrk_error_create("Invalid motor_max_acceleration_reverse value.");
+      return jrk_error_create("Invalid max_acceleration_reverse value.");
     }
-    if (motor_max_acceleration_reverse < 0 || motor_max_acceleration_reverse > UINT16_MAX)
+    if (max_acceleration_reverse < 0 || max_acceleration_reverse > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_acceleration_reverse value is out of range.");
+        "The max_acceleration_reverse value is out of range.");
     }
-    jrk_settings_set_motor_max_acceleration_reverse(settings, motor_max_acceleration_reverse);
+    jrk_settings_set_max_acceleration_reverse(settings, max_acceleration_reverse);
   }
-  else if (!strcmp(key, "motor_max_deceleration_forward"))
+  else if (!strcmp(key, "max_deceleration_forward"))
   {
-    int64_t motor_max_deceleration_forward;
-    if (jrk_string_to_i64(value, &motor_max_deceleration_forward))
+    int64_t max_deceleration_forward;
+    if (jrk_string_to_i64(value, &max_deceleration_forward))
     {
-      return jrk_error_create("Invalid motor_max_deceleration_forward value.");
+      return jrk_error_create("Invalid max_deceleration_forward value.");
     }
-    if (motor_max_deceleration_forward < 0 || motor_max_deceleration_forward > UINT16_MAX)
+    if (max_deceleration_forward < 0 || max_deceleration_forward > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_deceleration_forward value is out of range.");
+        "The max_deceleration_forward value is out of range.");
     }
-    jrk_settings_set_motor_max_deceleration_forward(settings, motor_max_deceleration_forward);
+    jrk_settings_set_max_deceleration_forward(settings, max_deceleration_forward);
   }
-  else if (!strcmp(key, "motor_max_deceleration_reverse"))
+  else if (!strcmp(key, "max_deceleration_reverse"))
   {
-    int64_t motor_max_deceleration_reverse;
-    if (jrk_string_to_i64(value, &motor_max_deceleration_reverse))
+    int64_t max_deceleration_reverse;
+    if (jrk_string_to_i64(value, &max_deceleration_reverse))
     {
-      return jrk_error_create("Invalid motor_max_deceleration_reverse value.");
+      return jrk_error_create("Invalid max_deceleration_reverse value.");
     }
-    if (motor_max_deceleration_reverse < 0 || motor_max_deceleration_reverse > UINT16_MAX)
+    if (max_deceleration_reverse < 0 || max_deceleration_reverse > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_deceleration_reverse value is out of range.");
+        "The max_deceleration_reverse value is out of range.");
     }
-    jrk_settings_set_motor_max_deceleration_reverse(settings, motor_max_deceleration_reverse);
+    jrk_settings_set_max_deceleration_reverse(settings, max_deceleration_reverse);
   }
-  else if (!strcmp(key, "motor_max_duty_cycle_forward"))
+  else if (!strcmp(key, "max_duty_cycle_forward"))
   {
-    int64_t motor_max_duty_cycle_forward;
-    if (jrk_string_to_i64(value, &motor_max_duty_cycle_forward))
+    int64_t max_duty_cycle_forward;
+    if (jrk_string_to_i64(value, &max_duty_cycle_forward))
     {
-      return jrk_error_create("Invalid motor_max_duty_cycle_forward value.");
+      return jrk_error_create("Invalid max_duty_cycle_forward value.");
     }
-    if (motor_max_duty_cycle_forward < 0 || motor_max_duty_cycle_forward > UINT16_MAX)
+    if (max_duty_cycle_forward < 0 || max_duty_cycle_forward > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_duty_cycle_forward value is out of range.");
+        "The max_duty_cycle_forward value is out of range.");
     }
-    jrk_settings_set_motor_max_duty_cycle_forward(settings, motor_max_duty_cycle_forward);
+    jrk_settings_set_max_duty_cycle_forward(settings, max_duty_cycle_forward);
   }
-  else if (!strcmp(key, "motor_max_duty_cycle_reverse"))
+  else if (!strcmp(key, "max_duty_cycle_reverse"))
   {
-    int64_t motor_max_duty_cycle_reverse;
-    if (jrk_string_to_i64(value, &motor_max_duty_cycle_reverse))
+    int64_t max_duty_cycle_reverse;
+    if (jrk_string_to_i64(value, &max_duty_cycle_reverse))
     {
-      return jrk_error_create("Invalid motor_max_duty_cycle_reverse value.");
+      return jrk_error_create("Invalid max_duty_cycle_reverse value.");
     }
-    if (motor_max_duty_cycle_reverse < 0 || motor_max_duty_cycle_reverse > UINT16_MAX)
+    if (max_duty_cycle_reverse < 0 || max_duty_cycle_reverse > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_max_duty_cycle_reverse value is out of range.");
+        "The max_duty_cycle_reverse value is out of range.");
     }
-    jrk_settings_set_motor_max_duty_cycle_reverse(settings, motor_max_duty_cycle_reverse);
+    jrk_settings_set_max_duty_cycle_reverse(settings, max_duty_cycle_reverse);
   }
-  else if (!strcmp(key, "motor_current_limit_code_forward"))
+  else if (!strcmp(key, "current_limit_code_forward"))
   {
-    int64_t motor_current_limit_code_forward;
-    if (jrk_string_to_i64(value, &motor_current_limit_code_forward))
+    int64_t current_limit_code_forward;
+    if (jrk_string_to_i64(value, &current_limit_code_forward))
     {
-      return jrk_error_create("Invalid motor_current_limit_code_forward value.");
+      return jrk_error_create("Invalid current_limit_code_forward value.");
     }
-    if (motor_current_limit_code_forward < 0 || motor_current_limit_code_forward > UINT16_MAX)
+    if (current_limit_code_forward < 0 || current_limit_code_forward > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_current_limit_code_forward value is out of range.");
+        "The current_limit_code_forward value is out of range.");
     }
-    jrk_settings_set_motor_current_limit_code_forward(settings, motor_current_limit_code_forward);
+    jrk_settings_set_current_limit_code_forward(settings, current_limit_code_forward);
   }
-  else if (!strcmp(key, "motor_current_limit_code_reverse"))
+  else if (!strcmp(key, "current_limit_code_reverse"))
   {
-    int64_t motor_current_limit_code_reverse;
-    if (jrk_string_to_i64(value, &motor_current_limit_code_reverse))
+    int64_t current_limit_code_reverse;
+    if (jrk_string_to_i64(value, &current_limit_code_reverse))
     {
-      return jrk_error_create("Invalid motor_current_limit_code_reverse value.");
+      return jrk_error_create("Invalid current_limit_code_reverse value.");
     }
-    if (motor_current_limit_code_reverse < 0 || motor_current_limit_code_reverse > UINT16_MAX)
+    if (current_limit_code_reverse < 0 || current_limit_code_reverse > UINT16_MAX)
     {
       return jrk_error_create(
-        "The motor_current_limit_code_reverse value is out of range.");
+        "The current_limit_code_reverse value is out of range.");
     }
-    jrk_settings_set_motor_current_limit_code_reverse(settings, motor_current_limit_code_reverse);
+    jrk_settings_set_current_limit_code_reverse(settings, current_limit_code_reverse);
   }
-  else if (!strcmp(key, "motor_brake_duration_forward"))
+  else if (!strcmp(key, "brake_duration_forward"))
   {
-    int64_t motor_brake_duration_forward;
-    if (jrk_string_to_i64(value, &motor_brake_duration_forward))
+    int64_t brake_duration_forward;
+    if (jrk_string_to_i64(value, &brake_duration_forward))
     {
-      return jrk_error_create("Invalid motor_brake_duration_forward value.");
+      return jrk_error_create("Invalid brake_duration_forward value.");
     }
-    if (motor_brake_duration_forward < 0 || motor_brake_duration_forward > UINT32_MAX)
+    if (brake_duration_forward < 0 || brake_duration_forward > UINT32_MAX)
     {
       return jrk_error_create(
-        "The motor_brake_duration_forward value is out of range.");
+        "The brake_duration_forward value is out of range.");
     }
-    jrk_settings_set_motor_brake_duration_forward(settings, motor_brake_duration_forward);
+    jrk_settings_set_brake_duration_forward(settings, brake_duration_forward);
   }
-  else if (!strcmp(key, "motor_brake_duration_reverse"))
+  else if (!strcmp(key, "brake_duration_reverse"))
   {
-    int64_t motor_brake_duration_reverse;
-    if (jrk_string_to_i64(value, &motor_brake_duration_reverse))
+    int64_t brake_duration_reverse;
+    if (jrk_string_to_i64(value, &brake_duration_reverse))
     {
-      return jrk_error_create("Invalid motor_brake_duration_reverse value.");
+      return jrk_error_create("Invalid brake_duration_reverse value.");
     }
-    if (motor_brake_duration_reverse < 0 || motor_brake_duration_reverse > UINT32_MAX)
+    if (brake_duration_reverse < 0 || brake_duration_reverse > UINT32_MAX)
     {
       return jrk_error_create(
-        "The motor_brake_duration_reverse value is out of range.");
+        "The brake_duration_reverse value is out of range.");
     }
-    jrk_settings_set_motor_brake_duration_reverse(settings, motor_brake_duration_reverse);
+    jrk_settings_set_brake_duration_reverse(settings, brake_duration_reverse);
   }
-  else if (!strcmp(key, "motor_coast_when_off"))
+  else if (!strcmp(key, "coast_when_off"))
   {
-    uint32_t motor_coast_when_off;
-    if (!jrk_name_to_code(jrk_bool_names, value, &motor_coast_when_off))
+    uint32_t coast_when_off;
+    if (!jrk_name_to_code(jrk_bool_names, value, &coast_when_off))
     {
-      return jrk_error_create("Unrecognized motor_coast_when_off value.");
+      return jrk_error_create("Unrecognized coast_when_off value.");
     }
-    jrk_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
-    jrk_settings_set_motor_coast_when_off(settings, motor_coast_when_off);
+    jrk_settings_set_coast_when_off(settings, coast_when_off);
+    jrk_settings_set_coast_when_off(settings, coast_when_off);
   }
   else if (!strcmp(key, "error_enable"))
   {
