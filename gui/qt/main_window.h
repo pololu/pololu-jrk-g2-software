@@ -34,14 +34,14 @@ class main_controller;
 struct error_row
 {
   unsigned int count;
-	QLabel *bit_mask_label = NULL;
-	QLabel *error_label = NULL;
-	QRadioButton *disabled_radio;
-	QRadioButton *enabled_radio;
-	QRadioButton *latched_radio;
-	QLabel *stopping_value = NULL;
-	QLabel *count_value = NULL;
-	QWidget *errors_frame;
+  QLabel *bit_mask_label = NULL;
+  QLabel *error_label = NULL;
+  QRadioButton *disabled_radio;
+  QRadioButton *enabled_radio;
+  QRadioButton *latched_radio;
+  QLabel *stopping_value = NULL;
+  QLabel *count_value = NULL;
+  QWidget *errors_frame;
   QButtonGroup *error_enable_group;
   bool always_enabled = false;
   bool always_latched = false;
@@ -50,10 +50,10 @@ struct error_row
 
 class main_window : public QMainWindow
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	main_window(QWidget * parent = 0);
+  main_window(QWidget * parent = 0);
   void set_controller(main_controller * controller);
 
   // This causes the window to call the controller's update() function
@@ -97,7 +97,7 @@ public:
   bool suppress_events = false;
   main_controller * window_controller() const;
   main_controller * controller;
-	void set_device_list_contents(std::vector<jrk::device> const & device_list);
+  void set_device_list_contents(std::vector<jrk::device> const & device_list);
   void set_device_list_selected(jrk::device const & device);
 
   // Sets the label that shows the connection status/error.
@@ -182,11 +182,11 @@ public:
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
 
-	void set_current_velocity(int32_t current_velocity);
+  void set_current_velocity(int32_t current_velocity);
 
-	void set_current_position(int32_t current_position);
+  void set_current_position(int32_t current_position);
 
-	void set_target_none();
+  void set_target_none();
 
   void set_tab_pages_enabled(bool enabled);
   void set_open_save_settings_enabled(bool enabled);
@@ -199,10 +199,10 @@ public:
   bool motor_asymmetric_checked();
 
 signals:
-	void pass_widget(graph_widget *widget);
+  void pass_widget(graph_widget *widget);
 
 protected:
-	// void context_menu_event(QContextMenuEvent *event);
+  // void context_menu_event(QContextMenuEvent *event);
 
   // This is called by Qt just before the window is shown for the first time,
   // and is also called whenever the window becomes unminimized.
@@ -296,12 +296,12 @@ private slots:
   void on_errors_reset_counts_clicked();
 
 private:
-	QTimer *update_timer = NULL;
+  QTimer *update_timer = NULL;
 
-	QWidget *central_widget;
-	QGridLayout *grid_layout;
-	QHBoxLayout *horizontal_layout;
-	graph_widget *preview_window;
+  QWidget *central_widget;
+  QGridLayout *grid_layout;
+  QHBoxLayout *horizontal_layout;
+  graph_widget *preview_window;
   graph_window *altw;
   QWidget * preview_plot;
 
@@ -322,13 +322,13 @@ private:
   QAction * documentation_action;
   QAction * about_action;
 
-	QHBoxLayout * header_layout;
-	QLabel * device_list_label;
-	QComboBox * device_list_value;
-	QLabel * connection_status_value;
-	QCheckBox *stop_motor;
+  QHBoxLayout * header_layout;
+  QLabel * device_list_label;
+  QComboBox * device_list_value;
+  QLabel * connection_status_value;
+  QCheckBox *stop_motor;
 
-	QTabWidget *tab_widget;
+  QTabWidget *tab_widget;
 
   // status tab
 
@@ -370,115 +370,115 @@ private:
   QPushButton * set_target_button;
   QScrollBar * manual_target_scroll_bar;
 
-	// input tab
+  // input tab
 
-	QWidget *input_page_widget;
-	QGridLayout *input_page_layout;
-	QLabel *input_mode_label;
-	QComboBox *input_mode_combobox;
+  QWidget *input_page_widget;
+  QGridLayout *input_page_layout;
+  QLabel *input_mode_label;
+  QComboBox *input_mode_combobox;
 
-	// input tab "Analog to digital conversion" groupbox
+  // input tab "Analog to digital conversion" groupbox
 
-	QGroupBox *input_analog_groupbox;
-	QLabel *input_analog_samples_label;
-	QCheckBox *input_detect_disconnect_checkbox;
-	QComboBox *input_analog_samples_combobox;
+  QGroupBox *input_analog_groupbox;
+  QLabel *input_analog_samples_label;
+  QCheckBox *input_detect_disconnect_checkbox;
+  QComboBox *input_analog_samples_combobox;
 
-	// input tab "Scaling (Analog and Pulse Width mode only)" groupbox
+  // input tab "Scaling (Analog and Pulse Width mode only)" groupbox
 
-	QGroupBox *input_scaling_groupbox;
-	QLabel *input_scaling_order_warning_label;
-	QLabel *input_absolute_max_label;
-	QSpinBox *input_absolute_maximum_spinbox;
-	QLabel *input_maximum_label;
-	QSpinBox *input_maximum_spinbox;
-	QLabel *input_neutral_max_label;
-	QSpinBox *input_neutral_maximum_spinbox;
-	QLabel *input_neutral_min_label;
-	QSpinBox *input_neutral_minimum_spinbox;
-	QLabel *input_minimum_label;
-	QSpinBox *input_minimum_spinbox;
-	QLabel *input_absolute_min_label;
-	QSpinBox *input_absolute_minimum_spinbox;
-	QLabel *input_degree_label;
-	QComboBox *input_scaling_degree_combobox;
-	QCheckBox *input_invert_checkbox;
-	QPushButton *input_learn_button;
-	QPushButton *input_reset_range_button;
-	QLabel *input_input_label;
-	QLabel *input_target_label;
-	QSpinBox *input_output_maximum_spinbox;
-	QSpinBox *input_output_neutral_spinbox;
-	QSpinBox *input_output_minimum_spinbox;
+  QGroupBox *input_scaling_groupbox;
+  QLabel *input_scaling_order_warning_label;
+  QLabel *input_absolute_max_label;
+  QSpinBox *input_absolute_maximum_spinbox;
+  QLabel *input_maximum_label;
+  QSpinBox *input_maximum_spinbox;
+  QLabel *input_neutral_max_label;
+  QSpinBox *input_neutral_maximum_spinbox;
+  QLabel *input_neutral_min_label;
+  QSpinBox *input_neutral_minimum_spinbox;
+  QLabel *input_minimum_label;
+  QSpinBox *input_minimum_spinbox;
+  QLabel *input_absolute_min_label;
+  QSpinBox *input_absolute_minimum_spinbox;
+  QLabel *input_degree_label;
+  QComboBox *input_scaling_degree_combobox;
+  QCheckBox *input_invert_checkbox;
+  QPushButton *input_learn_button;
+  QPushButton *input_reset_range_button;
+  QLabel *input_input_label;
+  QLabel *input_target_label;
+  QSpinBox *input_output_maximum_spinbox;
+  QSpinBox *input_output_neutral_spinbox;
+  QSpinBox *input_output_minimum_spinbox;
 
-	// input tab "Serial interface" groupbox
+  // input tab "Serial interface" groupbox
 
-	QGroupBox *input_serial_groupbox;
-	QButtonGroup *input_serial_mode_button_group;
+  QGroupBox *input_serial_groupbox;
+  QButtonGroup *input_serial_mode_button_group;
   QCheckBox *input_never_sleep_checkbox;
-	QRadioButton *input_usb_dual_port_radio;
-	QRadioButton *input_usb_chained_radio;
-	QLabel *input_device_label;
-	QSpinBox *input_device_spinbox;
-	QSpinBox *input_uart_fixed_baud_spinbox;;
-	QCheckBox *input_enable_crc_checkbox;
+  QRadioButton *input_usb_dual_port_radio;
+  QRadioButton *input_usb_chained_radio;
+  QLabel *input_device_label;
+  QSpinBox *input_device_spinbox;
+  QSpinBox *input_uart_fixed_baud_spinbox;;
+  QCheckBox *input_enable_crc_checkbox;
   QCheckBox *input_device_number_checkbox;
-	QLabel *input_timeout_label;
-	QRadioButton *input_uart_fixed_baud_radio;
-	QDoubleSpinBox *input_timeout_spinbox;
+  QLabel *input_timeout_label;
+  QRadioButton *input_uart_fixed_baud_radio;
+  QDoubleSpinBox *input_timeout_spinbox;
   QCheckBox *input_disable_compact_protocol_checkbox;
 
-	// feedback tab
+  // feedback tab
 
-	QWidget *feedback_page_widget;
-	QGridLayout *feedback_page_layout;
-	QLabel *feedback_mode_label;
-	QComboBox *feedback_mode_combobox;
+  QWidget *feedback_page_widget;
+  QGridLayout *feedback_page_layout;
+  QLabel *feedback_mode_label;
+  QComboBox *feedback_mode_combobox;
 
-	// feedback tab "Scaling (Analog and Tachometer mode only)" groupbox
+  // feedback tab "Scaling (Analog and Tachometer mode only)" groupbox
 
-	QGroupBox *feedback_scaling_groupbox;
-	QCheckBox *feedback_invert_checkbox;
-	QLabel *feedback_absolute_max_label;
-	QLabel *feedback_maximum_label;
-	QLabel *feedback_minimum_label;
-	QLabel *feedback_absolute_min_label;
-	QLabel *feedback_calibration_label;
-	QLabel *feedback_scaling_order_warning_label;
-	QSpinBox *feedback_absolute_maximum_spinbox;
-	QSpinBox *feedback_maximum_spinbox;
-	QSpinBox *feedback_minimum_spinbox;
-	QSpinBox *feedback_absolute_minimum_spinbox;
-	QPushButton *feedback_learn_button;
-	QPushButton *feedback_reset_range_button;
+  QGroupBox *feedback_scaling_groupbox;
+  QCheckBox *feedback_invert_checkbox;
+  QLabel *feedback_absolute_max_label;
+  QLabel *feedback_maximum_label;
+  QLabel *feedback_minimum_label;
+  QLabel *feedback_absolute_min_label;
+  QLabel *feedback_calibration_label;
+  QLabel *feedback_scaling_order_warning_label;
+  QSpinBox *feedback_absolute_maximum_spinbox;
+  QSpinBox *feedback_maximum_spinbox;
+  QSpinBox *feedback_minimum_spinbox;
+  QSpinBox *feedback_absolute_minimum_spinbox;
+  QPushButton *feedback_learn_button;
+  QPushButton *feedback_reset_range_button;
 
-	// feedback tab "Analog to digital conversion" groupbox
+  // feedback tab "Analog to digital conversion" groupbox
 
-	QGroupBox *feedback_analog_groupbox;
-	QLabel *feedback_analog_samples_label;
-	QComboBox *feedback_analog_samples_combobox;
-	QCheckBox *feedback_detect_disconnect_checkbox;
+  QGroupBox *feedback_analog_groupbox;
+  QLabel *feedback_analog_samples_label;
+  QComboBox *feedback_analog_samples_combobox;
+  QCheckBox *feedback_detect_disconnect_checkbox;
 
-	// pid tab
+  // pid tab
 
-	QWidget * pid_page_widget;
-	QGridLayout * pid_page_layout;
-	QLabel * pid_period_label;
-	QSpinBox * pid_period_spinbox;
-	QLabel * integral_limit_label;
-	QSpinBox * integral_limit_spinbox;
-	QCheckBox * reset_integral_checkbox;
-	QLabel * feedback_dead_zone_label;
-	QSpinBox * feedback_dead_zone_spinbox;
+  QWidget * pid_page_widget;
+  QGridLayout * pid_page_layout;
+  QLabel * pid_period_label;
+  QSpinBox * pid_period_spinbox;
+  QLabel * integral_limit_label;
+  QSpinBox * integral_limit_spinbox;
+  QCheckBox * reset_integral_checkbox;
+  QLabel * feedback_dead_zone_label;
+  QSpinBox * feedback_dead_zone_spinbox;
 
-	// pid tab constant controls
+  // pid tab constant controls
   std::array<pid_constant_control *, 3> pid_constant_controls;
 
-	QGroupBox *pid_proportional_coefficient_groupbox;
-	QGroupBox *pid_integral_coefficient_groupbox;
-	QGroupBox *pid_derivative_coefficient_groupbox;
+  QGroupBox *pid_proportional_coefficient_groupbox;
+  QGroupBox *pid_integral_coefficient_groupbox;
+  QGroupBox *pid_derivative_coefficient_groupbox;
 
-	// motor tab
+  // motor tab
 
   QWidget * motor_page_widget;
   QGridLayout * motor_page_layout;
@@ -520,23 +520,23 @@ private:
   QRadioButton * motor_brake_radio;
   QRadioButton * motor_coast_radio;
 
-	QWidget *errors_page_widget;
-	QGridLayout *errors_page_layout;
-	QLabel *errors_bit_mask_label;
-	QLabel *errors_error_label;
-	QLabel *errors_setting_label;
-	QLabel *errors_stopping_motor_label;
-	QLabel *errors_occurence_count_label;
-	QPushButton *errors_clear_errors;
-	QPushButton *errors_reset_counts;
+  QWidget *errors_page_widget;
+  QGridLayout *errors_page_layout;
+  QLabel *errors_bit_mask_label;
+  QLabel *errors_error_label;
+  QLabel *errors_setting_label;
+  QLabel *errors_stopping_motor_label;
+  QLabel *errors_occurence_count_label;
+  QPushButton *errors_clear_errors;
+  QPushButton *errors_reset_counts;
 
   QHBoxLayout * footer_layout;
   QPushButton * stop_motor_button;
   QPushButton * run_motor_button;
   QPushButton * apply_settings_button;
 
-	QAction *sepAct;
-	bool widgetAtHome;
+  QAction *sepAct;
+  bool widgetAtHome;
 
   QWidget * setup_status_tab();
   QWidget * setup_variables_box();
@@ -553,14 +553,14 @@ private:
 
   QWidget * setup_pid_tab();
 
-	QWidget * setup_motor_tab();
-	QWidget * setup_errors_tab();
+  QWidget * setup_motor_tab();
+  QWidget * setup_errors_tab();
   QWidget * setup_error_row(int row_number, bool disabled_visible,
    bool enabled_visible, bool always_enabled, bool always_latched);
   QWidget * new_error_row;
   std::array<error_row, 16> error_rows;
 
-	void setup_ui();
+  void setup_ui();
 
   // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified
@@ -579,7 +579,7 @@ private:
 
 class pid_constant_control : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
   explicit pid_constant_control(QObject * parent = Q_NULLPTR) : QObject(parent)
@@ -587,7 +587,7 @@ public:
   explicit pid_constant_control(int index, QObject * parent = Q_NULLPTR)
     : index(index), QObject(parent)
     {}
-	void setup(QGroupBox * groupbox);
+  void setup(QGroupBox * groupbox);
   int index;
 
 private:
@@ -597,13 +597,13 @@ private:
 
   QFocusEvent *pid_focus_event;
   QWidget *central_widget;
-	QFrame *pid_control_frame;
-	QFrame *pid_proportion_frame;
-	QLineEdit *pid_constant_lineedit;
-	QLabel *pid_equal_label;
-	QSpinBox *pid_multiplier_spinbox;
-	QLabel *pid_base_label;
-	QSpinBox *pid_exponent_spinbox;
+  QFrame *pid_control_frame;
+  QFrame *pid_proportion_frame;
+  QLineEdit *pid_constant_lineedit;
+  QLabel *pid_equal_label;
+  QSpinBox *pid_multiplier_spinbox;
+  QLabel *pid_base_label;
+  QSpinBox *pid_exponent_spinbox;
 
 private slots:
   void on_pid_multiplier_spinbox_valueChanged(int value);
