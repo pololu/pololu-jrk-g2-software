@@ -12,8 +12,7 @@ int main(int argc, char ** argv)
   QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
 #else
   qputenv("QT_DEVICE_PIXEL_RATIO", QByteArray("1"));
-#endif // QT_VERSION
-
+#endif
 
   QApplication app(argc, argv);
   main_controller controller;
