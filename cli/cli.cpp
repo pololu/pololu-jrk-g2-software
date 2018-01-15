@@ -38,6 +38,9 @@ static const char help[] =
   "  --max-duty-cycle NUM         Set max duty cycle to NUM (0 to 600)\n"
   "  --max-duty-cycle-fwd NUM     Set max duty cycle forward to NUM (0 to 600)\n"
   "  --max-duty-cycle-rev NUM     Set max duty cycle reverse to NUM (0 to 600)\n"
+  "  --current-limit NUM          Set current limit in milliamps.\n"
+  "  --current-limit-fwd NUM      Set forward current limit in milliamps.\n"
+  "  --current-limit-rev NUM      Set reverse current limit in milliamps.\n"
   // TODO: add options for the rest of the overridable settings
   "\n"
   "For more help, see: " DOCUMENTATION_URL "\n"
@@ -70,8 +73,8 @@ struct arguments
   uint16_t target;
 
   bool override_duty_cycle = false;
-  int16_t override_duty_cycle_value;
-  uint8_t override_duty_cycle_timeout;
+  int16_t override_duty_cycle_value = 0;
+  uint8_t override_duty_cycle_timeout = 0;
 
   bool stop_motor = false;
 
@@ -92,22 +95,28 @@ struct arguments
   std::string fix_settings_output_filename;
 
   bool override_proportional_coefficient = false;
-  uint16_t proportional_multiplier;
-  uint8_t proportional_exponent;
+  uint16_t proportional_multiplier = 0;
+  uint8_t proportional_exponent = 0;
 
   bool override_integral_coefficient = false;
-  uint16_t integral_multiplier;
-  uint8_t integral_exponent;
+  uint16_t integral_multiplier = 0;
+  uint8_t integral_exponent = 0;
 
   bool override_derivative_coefficient = false;
-  uint16_t derivative_multiplier;
-  uint8_t derivative_exponent;
+  uint16_t derivative_multiplier = 0;
+  uint8_t derivative_exponent = 0;
 
   bool override_max_duty_cycle_forward = false;
-  uint16_t max_duty_cycle_forward;
+  uint16_t max_duty_cycle_forward = 0;
 
   bool override_max_duty_cycle_reverse = false;
-  uint16_t max_duty_cycle_reverse;
+  uint16_t max_duty_cycle_reverse = 0;
+
+  bool override_current_limit_forward = false;
+  uint32_t current_limit_forward_ma = 0;
+
+  bool override_current_limit_reverse = false;
+  uint32_t current_limit_reverse_ma = 0;
 
   bool get_debug_data = false;
 
@@ -140,7 +149,9 @@ struct arguments
       override_integral_coefficient ||
       override_derivative_coefficient ||
       override_max_duty_cycle_forward ||
-      override_max_duty_cycle_reverse;
+      override_max_duty_cycle_reverse ||
+      override_current_limit_forward ||
+      override_current_limit_reverse;
   }
 };
 
@@ -366,6 +377,24 @@ static arguments parse_args(int argc, char ** argv)
       args.override_max_duty_cycle_reverse = true;
       args.max_duty_cycle_reverse = parse_arg_int<uint16_t>(arg_reader, 0, 600);
     }
+    else if (arg == "--current-limit")
+    {
+      uint32_t ma = parse_arg_int<uint32_t>(arg_reader);
+      args.override_current_limit_forward = true;
+      args.override_current_limit_reverse = true;
+      args.current_limit_forward_ma = ma;
+      args.current_limit_reverse_ma = ma;
+    }
+    else if (arg == "--current-limit-fwd")
+    {
+      args.override_current_limit_forward = true;
+      args.current_limit_forward_ma = parse_arg_int<uint32_t>(arg_reader);
+    }
+    else if (arg == "--current-limit-rev")
+    {
+      args.override_current_limit_reverse = true;
+      args.current_limit_reverse_ma = parse_arg_int<uint32_t>(arg_reader);
+    }
     else if (arg == "--debug")
     {
       // This is an unadvertized option for helping customers troubleshoot
@@ -499,6 +528,14 @@ static void override_settings(device_selector & selector,
 
   jrk::overridable_settings s = handle.get_overridable_settings();
 
+  // Fetch the current calibration constants if we need to convert from
+  // milliamps into a current code.
+  jrk::settings settings;
+  if (args.override_current_limit_forward || args.override_current_limit_reverse)
+  {
+    settings = handle.get_settings();
+  }
+
   if (args.override_proportional_coefficient)
   {
     s.set_proportional_multiplier(args.proportional_multiplier);
@@ -525,6 +562,18 @@ static void override_settings(device_selector & selector,
   if (args.override_max_duty_cycle_reverse)
   {
     s.set_max_duty_cycle_reverse(args.max_duty_cycle_reverse);
+  }
+
+  if (args.override_current_limit_forward)
+  {
+    uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_forward_ma);
+    s.set_current_limit_code_forward(code);
+  }
+
+  if (args.override_current_limit_reverse)
+  {
+    uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_reverse_ma);
+    s.set_current_limit_code_reverse(code);
   }
 
   handle.set_overridable_settings(s);

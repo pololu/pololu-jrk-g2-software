@@ -201,13 +201,13 @@ jrk_error * jrk_settings_copy(const jrk_settings * source, jrk_settings ** dest)
 
 void jrk_settings_set_product(jrk_settings * settings, uint32_t product)
 {
-  if (!settings) { return; }
+  if (settings == NULL) { return; }
   settings->product = product;
 }
 
 uint32_t jrk_settings_get_product(const jrk_settings * settings)
 {
-  if (!settings) { return 0; }
+  if (settings == NULL) { return 0; }
   return settings->product;
 }
 

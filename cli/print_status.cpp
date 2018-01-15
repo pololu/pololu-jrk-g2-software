@@ -298,7 +298,12 @@ void print_status(const jrk::variables & vars,
       << std::endl;
 
     // TODO: format in amps
-    std::cout << left_column << "Current limit: "
+    std::cout << left_column << "Current limit (mA): "
+      << jrk::current_limit_code_to_ma(settings,
+        vars.get_current_limit_code())
+      << std::endl;
+
+    std::cout << left_column << "Current limit (code): "
       << "code " << vars.get_current_limit_code()
       << std::endl;
 
