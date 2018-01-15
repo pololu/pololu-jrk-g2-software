@@ -13,7 +13,6 @@ def compute_vilim_relative(config, dac_level)
 end
 
 def compute_vilim_and_ilim(config, code)
-  # TODO: use same algorithm as the C code
   rsense = config.fetch(:rsense)
   reference = [1.024, 2.048, 4.096][code >> 5 & 3]
   vilim = reference * compute_vilim_relative(config, code & 0x1F)
