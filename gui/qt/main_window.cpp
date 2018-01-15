@@ -579,7 +579,6 @@ void main_window::receive_widget(graph_widget *widget)
   widget->custom_plot->setCursor(Qt::PointingHandCursor);
   widget->custom_plot->setToolTip("Click on preview to view full plot");
   grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignLeft);
-  // header_layout->addWidget(widget->custom_plot);
   widgetAtHome = true;
 }
 
@@ -984,6 +983,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_reset_range_button = new QPushButton();
   input_reset_range_button->setObjectName("input_reset_range_button");
   input_reset_range_button->setText(tr("Reset to full range"));
+  input_reset_range_button->resize(input_reset_range_button->sizeHint().width(), input_reset_range_button->sizeHint().height());
 
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));

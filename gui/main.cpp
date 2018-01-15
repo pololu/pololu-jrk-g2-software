@@ -5,10 +5,12 @@
 
 int main(int argc, char ** argv)
 {
-  // QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
+#if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
+  QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+#else
+  qputenv("QT_DEVICE_PIXEL_RATIO", QByteArray("1"));
+#endif // QT_VERSION
 
-  // SetProcessDPIAware();
 
   QApplication app(argc, argv);
   main_controller controller;
