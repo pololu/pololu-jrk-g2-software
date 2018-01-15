@@ -161,6 +161,7 @@ EOF
     name: 'input_analog_samples_exponent',
     type: :uint8_t,
     range: 0..10,
+    default: 7,
     comment:
       "This setting specifies how many analog samples to take if the input mode\n" \
       "is analog.  The number of samples will be 2^x, where x is this setting.",
@@ -286,6 +287,7 @@ EOF
     name: 'feedback_analog_samples_exponent',
     type: :uint8_t,
     range: 0..10,
+    default: 7,
     comment:
       "This setting specifies how many analog samples to take if the feedback mode\n" \
       "is analog.  The number of samples will be 2^x, where x is this setting.",
@@ -542,7 +544,8 @@ EOF
   {
     name: 'current_samples_exponent',
     type: :uint8_t,
-    default: 2,
+    range: 0..10,
+    default: 7,  # TODO: are we going to reduce this?
     comment:
       "This setting specifies how many analog samples to take when measuring\n" \
       "the current.  The number of samples will be 2^x, where x is this setting.",

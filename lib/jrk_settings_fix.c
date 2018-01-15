@@ -354,6 +354,13 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t current_samples_exponent = jrk_settings_get_current_samples_exponent(settings);
+    if (current_samples_exponent > 10)
+    {
+      current_samples_exponent = 10;
+      jrk_sprintf(warnings,
+        "Warning: The current samples exponent was too high "
+        "so it will be changed to %u.\n", current_samples_exponent);
+    }
     jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
   }
 

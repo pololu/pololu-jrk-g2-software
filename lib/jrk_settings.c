@@ -111,7 +111,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_serial_device_number(settings, 11);
   jrk_settings_set_pid_period(settings, 10);
   jrk_settings_set_integral_limit(settings, 1000);
-  jrk_settings_set_current_samples_exponent(settings, 2);
+  jrk_settings_set_current_samples_exponent(settings, 7);
   jrk_settings_set_overcurrent_threshold(settings, 1);
   jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(settings, 600);
   jrk_settings_set_max_acceleration_forward(settings, 600);
