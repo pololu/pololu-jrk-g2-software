@@ -2105,28 +2105,6 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 JRK_API
 uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 
-// You can use this function to step up and down through the set of recommended
-// current limit codes.
-//
-// If the given code is not a recommended current code, this function first
-// converts it to a recommended current code for the given product, rounding
-// down.  Invalid codes are treated as 0.
-//
-// This function then takes the specified number of steps up or down through the
-// list of recommended current codes and returns the resulting code.  For
-// example, if "steps" is 1, this function will step up to the next higher current
-// code and return it.  If "steps" is -1, this function will step down to the next
-// lower current code and return it.  Stepping up from the maximum recommended code
-// or down from the minimum recommended code results in no change.
-//
-// This function can be useful in several ways:
-// - You can start at 0 (which is a recommended code) and step up one at a time
-//   to enumerate all the recommended code.
-// - If the user wants to increase or decrease the current to the next recommended
-//   level, you can use this function to change the current limit code.
-JRK_API
-uint16_t jrk_current_limit_code_step(const jrk_settings *, uint16_t code, int32_t steps);
-
 // Calculates the measured motor current, in milliamps, given a settings object
 // and a variables object read from the same device.
 //
