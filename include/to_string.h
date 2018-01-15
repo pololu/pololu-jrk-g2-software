@@ -33,3 +33,11 @@ static std::string convert_up_time_to_hms_string(uint32_t up_time)
     ":" << std::setfill('0') << std::setw(2) << seconds % 60;
   return ss.str();
 }
+
+static std::string convert_current_limit_ma_to_string(uint32_t ma)
+{
+  std::ostringstream ss;
+  ss << (ma / 1000) << "."
+    << std::setfill('0') << std::setw(3) << (ma % 1000) << " A";
+  return ss.str();
+}

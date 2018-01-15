@@ -168,6 +168,7 @@ public:
   void set_brake_duration_reverse(uint32_t);
   void set_current_limit_code_forward(uint16_t);
   void set_current_limit_code_reverse(uint16_t);
+  void set_current_limit_meaning(const char *);
   void set_current_offset_calibration(int16_t);
   void set_current_scale_calibration(int16_t);
   void set_max_duty_cycle_while_feedback_out_of_range(uint16_t);

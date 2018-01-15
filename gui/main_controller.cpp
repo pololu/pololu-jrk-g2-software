@@ -1,9 +1,11 @@
 #include "main_controller.h"
 #include "main_window.h"
 #include <file_util.h>
+#include <to_string.h>
 
 #include <cassert>
 #include <cmath>
+#include <sstream>
 #include <iostream>  // tmphax
 
 // This is how often we fetch the variables from the device.
@@ -657,6 +659,23 @@ void main_controller::handle_settings_changed()
   window->set_max_deceleration_forward(settings.get_max_deceleration_forward());
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_current_limit_code_forward(settings.get_current_limit_code_forward());
+
+  {
+    std::ostringstream meaning;
+    meaning << "(";
+    meaning << convert_current_limit_ma_to_string(
+      jrk::current_limit_code_to_ma(
+        settings, settings.get_current_limit_code_forward()));
+    if (motor_asymmetric)
+    {
+      meaning << ", ";
+      meaning << convert_current_limit_ma_to_string(
+        jrk::current_limit_code_to_ma(
+          settings, settings.get_current_limit_code_reverse()));
+    }
+    meaning << ")";
+    window->set_current_limit_meaning(meaning.str().c_str());
+  }
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());

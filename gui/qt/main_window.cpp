@@ -2552,6 +2552,11 @@ void main_window::set_current_limit_code_reverse(uint16_t current)
   set_spin_box(current_limit_reverse_spinbox, current);
 }
 
+void main_window::set_current_limit_meaning(const char * str)
+{
+  current_limit_means_label->setText(str);
+}
+
 void main_window::set_current_offset_calibration(int16_t cal)
 {
   set_spin_box(current_offset_calibration_spinbox, cal);
