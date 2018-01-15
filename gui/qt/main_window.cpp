@@ -1620,6 +1620,7 @@ void main_window::closeEvent(QCloseEvent * event)
     // User canceled exit when prompted about settings that have not been applied.
     event->ignore();
   }
+  altw->deleteLater();
 }
 
 void main_window::on_device_name_value_linkActivated()
