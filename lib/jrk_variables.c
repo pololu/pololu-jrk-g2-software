@@ -25,7 +25,7 @@ struct jrk_variables {
   uint16_t rc_pulse_width;
   uint16_t tachometer_reading;
   uint16_t current_high_res;
-  uint16_t max_current;
+  uint16_t current_limit_code;
   int16_t last_duty_cycle;
   uint8_t current_chopping_consecutive_count;
   uint8_t current_chopping_occurrence_count;
@@ -137,7 +137,7 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
   vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
   vars->current_high_res = read_uint16_t(buf + JRK_VAR_CURRENT_HIGH_RES);
-  vars->max_current = read_uint16_t(buf + JRK_VAR_MAX_CURRENT);
+  vars->current_limit_code = read_uint16_t(buf + JRK_VAR_CURRENT_LIMIT_CODE);
   vars->last_duty_cycle = read_int16_t(buf + JRK_VAR_LAST_DUTY_CYCLE);
   vars->current_chopping_consecutive_count = buf[JRK_VAR_CURRENT_CHOPPING_CONSECUTIVE_COUNT];
   vars->current_chopping_occurrence_count = buf[JRK_VAR_CURRENT_CHOPPING_OCCURRENCE_COUNT];
@@ -360,10 +360,10 @@ uint16_t jrk_variables_get_current_high_res(const jrk_variables * vars)
   return vars->current_high_res;
 }
 
-uint16_t jrk_variables_get_max_current(const jrk_variables * vars)
+uint16_t jrk_variables_get_current_limit_code(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
-  return vars->max_current;
+  return vars->current_limit_code;
 }
 
 int16_t jrk_variables_get_last_duty_cycle(const jrk_variables * vars)
@@ -390,38 +390,6 @@ int16_t jrk_variables_get_error(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->scaled_feedback - vars->target;
-}
-
-uint16_t jrk_variables_get_raw_current_mv(const jrk_variables * vars)
-{
-  return jrk_variables_get_current_high_res(vars) >> 4;
-}
-
-int32_t jrk_variables_get_scaled_current_mv(const jrk_variables * vars, int32_t offset_mv)
-{
-  int16_t duty_cycle = jrk_variables_get_duty_cycle(vars);
-  uint16_t raw_current_mv = jrk_variables_get_raw_current_mv(vars);
-
-  // We can't divide by the duty cycle if it's zero.
-  if (duty_cycle == 0) { return 0; }
-
-  // Disallow negative offsets for now because it could cause overflows below,
-  // and does not make sense.
-  if (offset_mv < 0) { offset_mv = 0; }
-
-  // Subtract the offset, making sure we don't make the raw current negative.
-  if (raw_current_mv < offset_mv)
-  {
-    raw_current_mv = 0;
-  }
-  else
-  {
-    raw_current_mv -= offset_mv;
-  }
-
-  // Divide by the duty cycle as a number between 0 and 1.  The multiplication
-  // cannot overflow because 0xFFFF * 600 is expressible as an int32_t.
-  return (int32_t)raw_current_mv * 600 / duty_cycle;
 }
 
 uint16_t jrk_variables_get_analog_reading(const jrk_variables * variables,

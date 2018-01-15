@@ -876,8 +876,10 @@ uint8_t jrk_settings_get_derivative_exponent(const jrk_settings *);
 
 // Sets the pid_period setting.
 //
-// The PID period specifies how often the jrk should run its PID calculation
-// and update the motor speed, in units of milliseconds.
+// The PID period specifies how often the jrk should calculate its input and
+// feedback, run its PID calculation, and update the motor speed, in units of
+// milliseconds.  This period is still used even if feedback and PID are
+// disabled.
 JRK_API
 void jrk_settings_set_pid_period(jrk_settings *,
   uint16_t pid_period);
@@ -887,46 +889,46 @@ void jrk_settings_set_pid_period(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_pid_period(const jrk_settings *);
 
-// Sets the pid_integral_limit setting.
+// Sets the integral_limit setting.
 //
 // The PID algorithm prevents the absolute value of the accumulated error
-// (known as error sum) from exceeding pid_integral_limit.
+// (known as error sum) from exceeding this limit.
 JRK_API
-void jrk_settings_set_pid_integral_limit(jrk_settings *,
-  uint16_t pid_integral_limit);
+void jrk_settings_set_integral_limit(jrk_settings *,
+  uint16_t integral_limit);
 
-// Gets the pid_integral_limit setting, which is described in
-// jrk_settings_set_pid_integral_limit.
+// Gets the integral_limit setting, which is described in
+// jrk_settings_set_integral_limit.
 JRK_API
-uint16_t jrk_settings_get_pid_integral_limit(const jrk_settings *);
+uint16_t jrk_settings_get_integral_limit(const jrk_settings *);
 
-// Sets the pid_reset_integral setting.
+// Sets the reset_integral setting.
 //
 // If this setting is set to true, the PID algorithm will reset the accumulated
 // error (also known as error sum) whenever the absolute value of the
 // proportional term (see proportional_multiplier) exceeds 600.
 JRK_API
-void jrk_settings_set_pid_reset_integral(jrk_settings *,
-  bool pid_reset_integral);
+void jrk_settings_set_reset_integral(jrk_settings *,
+  bool reset_integral);
 
-// Gets the pid_reset_integral setting, which is described in
-// jrk_settings_set_pid_reset_integral.
+// Gets the reset_integral setting, which is described in
+// jrk_settings_set_reset_integral.
 JRK_API
-bool jrk_settings_get_pid_reset_integral(const jrk_settings *);
+bool jrk_settings_get_reset_integral(const jrk_settings *);
 
-// Sets the motor_pwm_frequency setting.
+// Sets the pwm_frequency setting.
 //
 // This setting specifies whether to use 20 kHz (the default) or 5 kHz for the
 // motor PWM signal.  This setting should be either
-// JRK_MOTOR_PWM_FREQUENCY_20 or JRK_MOTOR_PWM_FREQUENCY_5.
+// JRK_PWM_FREQUENCY_20 or JRK_PWM_FREQUENCY_5.
 JRK_API
-void jrk_settings_set_motor_pwm_frequency(jrk_settings *,
-  uint8_t motor_pwm_frequency);
+void jrk_settings_set_pwm_frequency(jrk_settings *,
+  uint8_t pwm_frequency);
 
-// Gets the motor_pwm_frequency setting, which is described in
-// jrk_settings_set_motor_pwm_frequency.
+// Gets the pwm_frequency setting, which is described in
+// jrk_settings_set_pwm_frequency.
 JRK_API
-uint8_t jrk_settings_get_motor_pwm_frequency(const jrk_settings *);
+uint8_t jrk_settings_get_pwm_frequency(const jrk_settings *);
 
 // Sets the current_samples_exponent setting.
 //
@@ -941,7 +943,7 @@ void jrk_settings_set_current_samples_exponent(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 
-// Sets the max_current_exceeded_threshold setting.
+// Sets the overcurrent_threshold setting.
 //
 // This is the number of consecutive PID periods where the the hardware current
 // chopping must occur before the jrk triggers a "Max. current exceeded" error.
@@ -950,32 +952,33 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 // starting up) but you still want to it to be an error when your motor leads
 // are shorted out.
 JRK_API
-void jrk_settings_set_max_current_exceeded_threshold(jrk_settings *,
-  uint8_t max_current_exceeded_threshold);
+void jrk_settings_set_overcurrent_threshold(jrk_settings *,
+  uint8_t overcurrent_threshold);
 
-// Gets the max_current_exceeded_threshold setting, which is described in
-// jrk_settings_set_max_current_exceeded_threshold.
+// Gets the overcurrent_threshold setting, which is described in
+// jrk_settings_set_overcurrent_threshold.
 JRK_API
-uint8_t jrk_settings_get_max_current_exceeded_threshold(const jrk_settings *);
+uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings *);
 
 // Sets the current_offset_calibration setting.
 //
+// You can use this current calibration setting to correct current measurements
+// and current limit settings that are off by a constant amount.
+//
 // The current sense circuitry on a umc04a jrk produces a constant voltage of
 // about 50 mV when the motor driver is powered, even if there is no current
-// flowing through the motor.  That offset voltage varies from model to model.
-// For more accurate current measurements and current limit settings, you can
-// use the current_offset_calibration setting to record the value of that
-// offset.
+// flowing through the motor.  This offset must be subtracted from analog
+// voltages representing current limits or current measurements in order to
+// convert those values to amps.
 //
-// For the umc04a jrk, use this formula:
+// For the umc04a jrk models, this setting is defined by the formula:
 //
-//   current_offset_calibration = (voltage offset in millivolts - 50) * 64
+//   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 //
-// The current_offset_calibration should be between -3200 (for an offset of 0
-// mV) and 3200 (for an offset of 100 mV).
+// This setting should be between -800 (for an offset of 0 mV) and 800 (for an
+// offset of 100 mV).
 //
-// This calibration constant is stored in the device's EEPROM but the device
-// does not use it.
+// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_offset_calibration(jrk_settings *,
   int16_t current_offset_calibration);
@@ -990,19 +993,14 @@ int16_t jrk_settings_get_current_offset_calibration(const jrk_settings *);
 // You can use this current calibration setting to correct current measurements
 // and current limit settings that are off by a constant percentage.
 //
-// The algorithm for calculating currents in amps in this software involves
-// applying this formula to the current:
+// The algorithm for calculating currents in amps involves multiplying the
+// current by (1875 + current_scale_calibration).
 //
-//   current = current * (65536 + current_scale_calibration) / 65536
+// The default current_scale_calibration value is 0.
+// A current_scale_calibration value of 19 would increase the current
+// readings by about 1%.
 //
-// With the default current_scale_calibration value of 0, this scaling step has
-// no effect.  With a current_scale_calibration value of 655, the scaling step
-// would increase the current by about 1%.
-//
-// You should probably set current_offset_calibration before setting this.
-//
-// This calibration constant is stored in the device's EEPROM but the device
-// does not use it.
+// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_scale_calibration(jrk_settings *,
   int16_t current_scale_calibration);
@@ -1027,81 +1025,81 @@ void jrk_settings_set_motor_invert(jrk_settings *,
 JRK_API
 bool jrk_settings_get_motor_invert(const jrk_settings *);
 
-// Sets the motor_max_duty_cycle_while_feedback_out_of_range setting.
+// Sets the max_duty_cycle_while_feedback_out_of_range setting.
 //
-// If the feedback is beyong the range specified by the feedback absolute
+// If the feedback is beyond the range specified by the feedback absolute
 // minimum and feedback absolute maximum values, then the duty cycle's magnitude
 // cannot exceed this value.
 JRK_API
-void jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(jrk_settings *,
-  uint16_t motor_max_duty_cycle_while_feedback_out_of_range);
+void jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(jrk_settings *,
+  uint16_t max_duty_cycle_while_feedback_out_of_range);
 
-// Gets the motor_max_duty_cycle_while_feedback_out_of_range setting, which is described in
-// jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range.
+// Gets the max_duty_cycle_while_feedback_out_of_range setting, which is described in
+// jrk_settings_set_max_duty_cycle_while_feedback_out_of_range.
 JRK_API
-uint16_t jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(const jrk_settings *);
+uint16_t jrk_settings_get_max_duty_cycle_while_feedback_out_of_range(const jrk_settings *);
 
-// Sets the motor_max_acceleration_forward setting.
+// Sets the max_acceleration_forward setting.
 //
 // This is the maximum allowed acceleration in the forward direction.
 //
 // This is the maximum amount that the duty cycle can increase during each PID
 // period if the duty cycle is positive.
 JRK_API
-void jrk_settings_set_motor_max_acceleration_forward(jrk_settings *,
-  uint16_t motor_max_acceleration_forward);
+void jrk_settings_set_max_acceleration_forward(jrk_settings *,
+  uint16_t max_acceleration_forward);
 
-// Gets the motor_max_acceleration_forward setting, which is described in
-// jrk_settings_set_motor_max_acceleration_forward.
+// Gets the max_acceleration_forward setting, which is described in
+// jrk_settings_set_max_acceleration_forward.
 JRK_API
-uint16_t jrk_settings_get_motor_max_acceleration_forward(const jrk_settings *);
+uint16_t jrk_settings_get_max_acceleration_forward(const jrk_settings *);
 
-// Sets the motor_max_acceleration_reverse setting.
+// Sets the max_acceleration_reverse setting.
 //
 // This is the maximum allowed acceleration in the reverse direction.
 //
 // This is the maximum amount that the duty cycle can decrease during each PID
 // period if the duty cycle is negative.
 JRK_API
-void jrk_settings_set_motor_max_acceleration_reverse(jrk_settings *,
-  uint16_t motor_max_acceleration_reverse);
+void jrk_settings_set_max_acceleration_reverse(jrk_settings *,
+  uint16_t max_acceleration_reverse);
 
-// Gets the motor_max_acceleration_reverse setting, which is described in
-// jrk_settings_set_motor_max_acceleration_reverse.
+// Gets the max_acceleration_reverse setting, which is described in
+// jrk_settings_set_max_acceleration_reverse.
 JRK_API
-uint16_t jrk_settings_get_motor_max_acceleration_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_max_acceleration_reverse(const jrk_settings *);
 
-// Sets the motor_max_deceleration_forward setting.
+// Sets the max_deceleration_forward setting.
 //
 // This is the maximum allowed deceleration in the forward direction.
 //
 // This is the maximum amount that the duty cycle can decrease during each PID
 // period if the duty cycle is positive.
 JRK_API
-void jrk_settings_set_motor_max_deceleration_forward(jrk_settings *,
-  uint16_t motor_max_deceleration_forward);
+void jrk_settings_set_max_deceleration_forward(jrk_settings *,
+  uint16_t max_deceleration_forward);
 
-// Gets the motor_max_deceleration_forward setting, which is described in
-// jrk_settings_set_motor_max_deceleration_forward.
+// Gets the max_deceleration_forward setting, which is described in
+// jrk_settings_set_max_deceleration_forward.
 JRK_API
-uint16_t jrk_settings_get_motor_max_deceleration_forward(const jrk_settings *);
+uint16_t jrk_settings_get_max_deceleration_forward(const jrk_settings *);
 
-// Sets the motor_max_deceleration_reverse setting.
+// Sets the max_deceleration_reverse setting.
 //
 // This is the maximum allowed deceleration in the reverse direction.
 //
 // This is the maximum amount that the duty cycle can increase during each PID
 // period if the duty cycle is negative.
 JRK_API
-void jrk_settings_set_motor_max_deceleration_reverse(jrk_settings *,
-  uint16_t motor_max_deceleration_reverse);
+void jrk_settings_set_max_deceleration_reverse(jrk_settings *,
+  uint16_t max_deceleration_reverse);
 
-// Gets the motor_max_deceleration_reverse setting, which is described in
-// jrk_settings_set_motor_max_deceleration_reverse.
+// Gets the max_deceleration_reverse setting, which is described in
+// jrk_settings_set_max_deceleration_reverse.
 JRK_API
-uint16_t jrk_settings_get_motor_max_deceleration_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_max_deceleration_reverse(const jrk_settings *);
 
-// Sets the motor_max_duty_cycle_forward setting.
+// Sets the max_duty_cycle_forward setting.
 //
 // This is the maximum allowed duty cycle in the forward direction.
 //
@@ -1109,15 +1107,15 @@ uint16_t jrk_settings_get_motor_max_deceleration_reverse(const jrk_settings *);
 //
 // A value of 600 means 100%.
 JRK_API
-void jrk_settings_set_motor_max_duty_cycle_forward(jrk_settings *,
-  uint16_t motor_max_duty_cycle_forward);
+void jrk_settings_set_max_duty_cycle_forward(jrk_settings *,
+  uint16_t max_duty_cycle_forward);
 
-// Gets the motor_max_duty_cycle_forward setting, which is described in
-// jrk_settings_set_motor_max_duty_cycle_forward.
+// Gets the max_duty_cycle_forward setting, which is described in
+// jrk_settings_set_max_duty_cycle_forward.
 JRK_API
-uint16_t jrk_settings_get_motor_max_duty_cycle_forward(const jrk_settings *);
+uint16_t jrk_settings_get_max_duty_cycle_forward(const jrk_settings *);
 
-// Sets the motor_max_duty_cycle_reverse setting.
+// Sets the max_duty_cycle_reverse setting.
 //
 // This is the maximum allowed duty cycle in the reverse direction.
 //
@@ -1125,65 +1123,65 @@ uint16_t jrk_settings_get_motor_max_duty_cycle_forward(const jrk_settings *);
 //
 // A value of 600 means 100%.
 JRK_API
-void jrk_settings_set_motor_max_duty_cycle_reverse(jrk_settings *,
-  uint16_t motor_max_duty_cycle_reverse);
+void jrk_settings_set_max_duty_cycle_reverse(jrk_settings *,
+  uint16_t max_duty_cycle_reverse);
 
-// Gets the motor_max_duty_cycle_reverse setting, which is described in
-// jrk_settings_set_motor_max_duty_cycle_reverse.
+// Gets the max_duty_cycle_reverse setting, which is described in
+// jrk_settings_set_max_duty_cycle_reverse.
 JRK_API
-uint16_t jrk_settings_get_motor_max_duty_cycle_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 
-// Sets the motor_max_current_forward setting.
+// Sets the current_limit_code_forward setting.
 //
 // Sets the current limit to be used when driving forward.
 //
-// THE COMMENTS BELOW ARE OUTDATED (TODO).
+// This setting is not actually a current, it is a code telling the jrk how to
+// set up its current limiting hardware.
 //
-// This is the native current limit value stored on the device.
 // The correspondence between this setting and the actual current limit
 // in milliamps depends on what product you are using.  See also:
 //
-// - jrk_current_limit_native_to_ma()
-// - jrk_current_limit_ma_to_native()
-// - jrk_achievable_current_limit()
+// - jrk_current_limit_code_to_ma()
+// - jrk_current_limit_ma_to_code()
+// - jrk_current_limig_code_step()
 JRK_API
-void jrk_settings_set_motor_max_current_forward(jrk_settings *,
-  uint16_t motor_max_current_forward);
+void jrk_settings_set_current_limit_code_forward(jrk_settings *,
+  uint16_t current_limit_code_forward);
 
-// Gets the motor_max_current_forward setting, which is described in
-// jrk_settings_set_motor_max_current_forward.
+// Gets the current_limit_code_forward setting, which is described in
+// jrk_settings_set_current_limit_code_forward.
 JRK_API
-uint16_t jrk_settings_get_motor_max_current_forward(const jrk_settings *);
+uint16_t jrk_settings_get_current_limit_code_forward(const jrk_settings *);
 
-// Sets the motor_max_current_reverse setting.
+// Sets the current_limit_code_reverse setting.
 //
 // Sets the current limit to be used when driving in reverse.
-// See the documentation of motor_max_current_forward.
+// See the documentation of current_limit_code_forward.
 JRK_API
-void jrk_settings_set_motor_max_current_reverse(jrk_settings *,
-  uint16_t motor_max_current_reverse);
+void jrk_settings_set_current_limit_code_reverse(jrk_settings *,
+  uint16_t current_limit_code_reverse);
 
-// Gets the motor_max_current_reverse setting, which is described in
-// jrk_settings_set_motor_max_current_reverse.
+// Gets the current_limit_code_reverse setting, which is described in
+// jrk_settings_set_current_limit_code_reverse.
 JRK_API
-uint16_t jrk_settings_get_motor_max_current_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_current_limit_code_reverse(const jrk_settings *);
 
-// Sets the motor_brake_duration_forward setting.
+// Sets the brake_duration_forward setting.
 //
 // The number of milliseconds to spend braking before starting to drive forward.
 //
 // This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
 // between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 JRK_API
-void jrk_settings_set_motor_brake_duration_forward(jrk_settings *,
-  uint32_t motor_brake_duration_forward);
+void jrk_settings_set_brake_duration_forward(jrk_settings *,
+  uint32_t brake_duration_forward);
 
-// Gets the motor_brake_duration_forward setting, which is described in
-// jrk_settings_set_motor_brake_duration_forward.
+// Gets the brake_duration_forward setting, which is described in
+// jrk_settings_set_brake_duration_forward.
 JRK_API
-uint32_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
+uint32_t jrk_settings_get_brake_duration_forward(const jrk_settings *);
 
-// Sets the motor_brake_duration_reverse setting.
+// Sets the brake_duration_reverse setting.
 //
 // The number of milliseconds to spend braking before starting to drive in
 // reverse.
@@ -1191,28 +1189,28 @@ uint32_t jrk_settings_get_motor_brake_duration_forward(const jrk_settings *);
 // This setting should be a multiple of 5 (JRK_BRAKE_DURATION_UNITS) and be
 // between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 JRK_API
-void jrk_settings_set_motor_brake_duration_reverse(jrk_settings *,
-  uint32_t motor_brake_duration_reverse);
+void jrk_settings_set_brake_duration_reverse(jrk_settings *,
+  uint32_t brake_duration_reverse);
 
-// Gets the motor_brake_duration_reverse setting, which is described in
-// jrk_settings_set_motor_brake_duration_reverse.
+// Gets the brake_duration_reverse setting, which is described in
+// jrk_settings_set_brake_duration_reverse.
 JRK_API
-uint32_t jrk_settings_get_motor_brake_duration_reverse(const jrk_settings *);
+uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 
-// Sets the motor_coast_when_off setting.
+// Sets the coast_when_off setting.
 //
 // By default, the jrk drives both motor outputs low when the motor is
 // stopped (duty cycle is zero or there is an error), causing it to brake.
 // If enabled, this setting causes it to instead tri-state both inputs, making
 // the motor coast.
 JRK_API
-void jrk_settings_set_motor_coast_when_off(jrk_settings *,
-  bool motor_coast_when_off);
+void jrk_settings_set_coast_when_off(jrk_settings *,
+  bool coast_when_off);
 
-// Gets the motor_coast_when_off setting, which is described in
-// jrk_settings_set_motor_coast_when_off.
+// Gets the coast_when_off setting, which is described in
+// jrk_settings_set_coast_when_off.
 JRK_API
-bool jrk_settings_get_motor_coast_when_off(const jrk_settings *);
+bool jrk_settings_get_coast_when_off(const jrk_settings *);
 
 // Sets the error_enable setting.
 //
@@ -1435,215 +1433,215 @@ void jrk_overridable_settings_set_pid_period(jrk_overridable_settings *,
 JRK_API
 uint16_t jrk_overridable_settings_get_pid_period(const jrk_overridable_settings *);
 
-// Sets the pid_integral_limit setting
+// Sets the integral_limit setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_pid_integral_limit() for more info.
+// See jrk_settings_set_integral_limit() for more info.
 JRK_API
-void jrk_overridable_settings_set_pid_integral_limit(jrk_overridable_settings *,
-  uint16_t pid_integral_limit);
+void jrk_overridable_settings_set_integral_limit(jrk_overridable_settings *,
+  uint16_t integral_limit);
 
-// Gets the pid_integral_limit setting
+// Gets the integral_limit setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_pid_integral_limit() for more info.
+// See jrk_settings_set_integral_limit() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_pid_integral_limit(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_integral_limit(const jrk_overridable_settings *);
 
-// Sets the pid_reset_integral setting
+// Sets the reset_integral setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_pid_reset_integral() for more info.
+// See jrk_settings_set_reset_integral() for more info.
 JRK_API
-void jrk_overridable_settings_set_pid_reset_integral(jrk_overridable_settings *,
-  bool pid_reset_integral);
+void jrk_overridable_settings_set_reset_integral(jrk_overridable_settings *,
+  bool reset_integral);
 
-// Gets the pid_reset_integral setting
+// Gets the reset_integral setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_pid_reset_integral() for more info.
+// See jrk_settings_set_reset_integral() for more info.
 JRK_API
-bool jrk_overridable_settings_get_pid_reset_integral(const jrk_overridable_settings *);
+bool jrk_overridable_settings_get_reset_integral(const jrk_overridable_settings *);
 
-// Sets the motor_max_duty_cycle_while_feedback_out_of_range setting
+// Sets the max_duty_cycle_while_feedback_out_of_range setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range() for more info.
+// See jrk_settings_set_max_duty_cycle_while_feedback_out_of_range() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(jrk_overridable_settings *,
-  uint16_t motor_max_duty_cycle_while_feedback_out_of_range);
+void jrk_overridable_settings_set_max_duty_cycle_while_feedback_out_of_range(jrk_overridable_settings *,
+  uint16_t max_duty_cycle_while_feedback_out_of_range);
 
-// Gets the motor_max_duty_cycle_while_feedback_out_of_range setting
+// Gets the max_duty_cycle_while_feedback_out_of_range setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range() for more info.
+// See jrk_settings_set_max_duty_cycle_while_feedback_out_of_range() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_duty_cycle_while_feedback_out_of_range(const jrk_overridable_settings *);
 
-// Sets the motor_max_acceleration_forward setting
+// Sets the max_acceleration_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_acceleration_forward() for more info.
+// See jrk_settings_set_max_acceleration_forward() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_acceleration_forward(jrk_overridable_settings *,
-  uint16_t motor_max_acceleration_forward);
+void jrk_overridable_settings_set_max_acceleration_forward(jrk_overridable_settings *,
+  uint16_t max_acceleration_forward);
 
-// Gets the motor_max_acceleration_forward setting
+// Gets the max_acceleration_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_acceleration_forward() for more info.
+// See jrk_settings_set_max_acceleration_forward() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_acceleration_forward(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_acceleration_forward(const jrk_overridable_settings *);
 
-// Sets the motor_max_acceleration_reverse setting
+// Sets the max_acceleration_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_acceleration_reverse() for more info.
+// See jrk_settings_set_max_acceleration_reverse() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_acceleration_reverse(jrk_overridable_settings *,
-  uint16_t motor_max_acceleration_reverse);
+void jrk_overridable_settings_set_max_acceleration_reverse(jrk_overridable_settings *,
+  uint16_t max_acceleration_reverse);
 
-// Gets the motor_max_acceleration_reverse setting
+// Gets the max_acceleration_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_acceleration_reverse() for more info.
+// See jrk_settings_set_max_acceleration_reverse() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_acceleration_reverse(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_acceleration_reverse(const jrk_overridable_settings *);
 
-// Sets the motor_max_deceleration_forward setting
+// Sets the max_deceleration_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_deceleration_forward() for more info.
+// See jrk_settings_set_max_deceleration_forward() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_deceleration_forward(jrk_overridable_settings *,
-  uint16_t motor_max_deceleration_forward);
+void jrk_overridable_settings_set_max_deceleration_forward(jrk_overridable_settings *,
+  uint16_t max_deceleration_forward);
 
-// Gets the motor_max_deceleration_forward setting
+// Gets the max_deceleration_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_deceleration_forward() for more info.
+// See jrk_settings_set_max_deceleration_forward() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_deceleration_forward(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_deceleration_forward(const jrk_overridable_settings *);
 
-// Sets the motor_max_deceleration_reverse setting
+// Sets the max_deceleration_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_deceleration_reverse() for more info.
+// See jrk_settings_set_max_deceleration_reverse() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_deceleration_reverse(jrk_overridable_settings *,
-  uint16_t motor_max_deceleration_reverse);
+void jrk_overridable_settings_set_max_deceleration_reverse(jrk_overridable_settings *,
+  uint16_t max_deceleration_reverse);
 
-// Gets the motor_max_deceleration_reverse setting
+// Gets the max_deceleration_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_deceleration_reverse() for more info.
+// See jrk_settings_set_max_deceleration_reverse() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_deceleration_reverse(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_deceleration_reverse(const jrk_overridable_settings *);
 
-// Sets the motor_max_duty_cycle_forward setting
+// Sets the max_duty_cycle_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_duty_cycle_forward() for more info.
+// See jrk_settings_set_max_duty_cycle_forward() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_duty_cycle_forward(jrk_overridable_settings *,
-  uint16_t motor_max_duty_cycle_forward);
+void jrk_overridable_settings_set_max_duty_cycle_forward(jrk_overridable_settings *,
+  uint16_t max_duty_cycle_forward);
 
-// Gets the motor_max_duty_cycle_forward setting
+// Gets the max_duty_cycle_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_duty_cycle_forward() for more info.
+// See jrk_settings_set_max_duty_cycle_forward() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_forward(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_duty_cycle_forward(const jrk_overridable_settings *);
 
-// Sets the motor_max_duty_cycle_reverse setting
+// Sets the max_duty_cycle_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_duty_cycle_reverse() for more info.
+// See jrk_settings_set_max_duty_cycle_reverse() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_duty_cycle_reverse(jrk_overridable_settings *,
-  uint16_t motor_max_duty_cycle_reverse);
+void jrk_overridable_settings_set_max_duty_cycle_reverse(jrk_overridable_settings *,
+  uint16_t max_duty_cycle_reverse);
 
-// Gets the motor_max_duty_cycle_reverse setting
+// Gets the max_duty_cycle_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_duty_cycle_reverse() for more info.
+// See jrk_settings_set_max_duty_cycle_reverse() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_reverse(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_max_duty_cycle_reverse(const jrk_overridable_settings *);
 
-// Sets the motor_max_current_forward setting
+// Sets the current_limit_code_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_current_forward() for more info.
+// See jrk_settings_set_current_limit_code_forward() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_current_forward(jrk_overridable_settings *,
-  uint16_t motor_max_current_forward);
+void jrk_overridable_settings_set_current_limit_code_forward(jrk_overridable_settings *,
+  uint16_t current_limit_code_forward);
 
-// Gets the motor_max_current_forward setting
+// Gets the current_limit_code_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_current_forward() for more info.
+// See jrk_settings_set_current_limit_code_forward() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_current_forward(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_current_limit_code_forward(const jrk_overridable_settings *);
 
-// Sets the motor_max_current_reverse setting
+// Sets the current_limit_code_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_current_reverse() for more info.
+// See jrk_settings_set_current_limit_code_reverse() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_max_current_reverse(jrk_overridable_settings *,
-  uint16_t motor_max_current_reverse);
+void jrk_overridable_settings_set_current_limit_code_reverse(jrk_overridable_settings *,
+  uint16_t current_limit_code_reverse);
 
-// Gets the motor_max_current_reverse setting
+// Gets the current_limit_code_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_max_current_reverse() for more info.
+// See jrk_settings_set_current_limit_code_reverse() for more info.
 JRK_API
-uint16_t jrk_overridable_settings_get_motor_max_current_reverse(const jrk_overridable_settings *);
+uint16_t jrk_overridable_settings_get_current_limit_code_reverse(const jrk_overridable_settings *);
 
-// Sets the motor_brake_duration_forward setting
+// Sets the brake_duration_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_brake_duration_forward() for more info.
+// See jrk_settings_set_brake_duration_forward() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_brake_duration_forward(jrk_overridable_settings *,
-  uint32_t motor_brake_duration_forward);
+void jrk_overridable_settings_set_brake_duration_forward(jrk_overridable_settings *,
+  uint32_t brake_duration_forward);
 
-// Gets the motor_brake_duration_forward setting
+// Gets the brake_duration_forward setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_brake_duration_forward() for more info.
+// See jrk_settings_set_brake_duration_forward() for more info.
 JRK_API
-uint32_t jrk_overridable_settings_get_motor_brake_duration_forward(const jrk_overridable_settings *);
+uint32_t jrk_overridable_settings_get_brake_duration_forward(const jrk_overridable_settings *);
 
-// Sets the motor_brake_duration_reverse setting
+// Sets the brake_duration_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_brake_duration_reverse() for more info.
+// See jrk_settings_set_brake_duration_reverse() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_brake_duration_reverse(jrk_overridable_settings *,
-  uint32_t motor_brake_duration_reverse);
+void jrk_overridable_settings_set_brake_duration_reverse(jrk_overridable_settings *,
+  uint32_t brake_duration_reverse);
 
-// Gets the motor_brake_duration_reverse setting
+// Gets the brake_duration_reverse setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_brake_duration_reverse() for more info.
+// See jrk_settings_set_brake_duration_reverse() for more info.
 JRK_API
-uint32_t jrk_overridable_settings_get_motor_brake_duration_reverse(const jrk_overridable_settings *);
+uint32_t jrk_overridable_settings_get_brake_duration_reverse(const jrk_overridable_settings *);
 
-// Sets the motor_coast_when_off setting
+// Sets the coast_when_off setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_coast_when_off() for more info.
+// See jrk_settings_set_coast_when_off() for more info.
 JRK_API
-void jrk_overridable_settings_set_motor_coast_when_off(jrk_overridable_settings *,
-  bool motor_coast_when_off);
+void jrk_overridable_settings_set_coast_when_off(jrk_overridable_settings *,
+  bool coast_when_off);
 
-// Gets the motor_coast_when_off setting
+// Gets the coast_when_off setting
 // in a jrk_overridable_settings object.
 //
-// See jrk_settings_set_motor_coast_when_off() for more info.
+// See jrk_settings_set_coast_when_off() for more info.
 JRK_API
-bool jrk_overridable_settings_get_motor_coast_when_off(const jrk_overridable_settings *);
+bool jrk_overridable_settings_get_coast_when_off(const jrk_overridable_settings *);
 
 // End of auto-generated overridable settings accessor prototypes.
 
@@ -1696,6 +1694,10 @@ JRK_API
 int16_t jrk_variables_get_duty_cycle(const jrk_variables *);
 
 // Gets the current variable.
+//
+// This is the most-significant 8 bits of the current_high_res variable.
+//
+// See the jrk_variables_get_current_high_res().
 JRK_API
 uint8_t jrk_variables_get_current(const jrk_variables *);
 
@@ -1736,12 +1738,17 @@ JRK_API
 uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
 
 // Gets the current_high_res variable.
+//
+// This is a 16-bit current reading.
+//
+// The conversion of this number to milliamps depends on several factors: see
+// jrk_calculate_measured_current_ma().
 JRK_API
 uint16_t jrk_variables_get_current_high_res(const jrk_variables *);
 
-// Gets the max_current variable.
+// Gets the current_limit_code variable.
 JRK_API
-uint16_t jrk_variables_get_max_current(const jrk_variables *);
+uint16_t jrk_variables_get_current_limit_code(const jrk_variables *);
 
 // Gets the last_duty_cycle variable.
 JRK_API
@@ -1760,18 +1767,6 @@ uint8_t jrk_variables_get_current_chopping_occurrence_count(const jrk_variables 
 // Gets the error, which is the scaled feedback minus the target.
 JRK_API
 int16_t jrk_variables_get_error(const jrk_variables *);
-
-// Gets the raw reading on the current sense line, in millivolts.
-JRK_API
-uint16_t jrk_variables_get_raw_current_mv(const jrk_variables *);
-
-// Gets the reading on the current sense line, in millivolts, scaled up by
-// dividing by the duty cycle (as a number between 0 and 1).
-//
-// offset_mv is the reading of raw_current_mv that we expect to see when there
-// is no current, in units of millivolts.
-JRK_API
-int32_t jrk_variables_get_scaled_current_mv(const jrk_variables *, int32_t offset_mv);
 
 // Gets the analog reading from the specified pin.
 //
@@ -2083,39 +2078,51 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 /// \endcond
 
 
-//// Miscellaneous //////////////////////////////////////////////////////////////
+//// Current limiting and measurment ////////////////////////////////////////////
 
-// Converts raw current limit values to milliamps for the specified
-// product.  You can use this to interpret the raw values returned by
-// jrk_settings_get_motor_max_current_forward() or
-// jrk_settings_get_motor_max_current_reverse().
-//
-// The product argument should be one of the JRK_PRODUCT_* macros.
+// Converts max current codes to milliamps for the specified product.  You can
+// use this to interpret the codes returned by
+// jrk_settings_get_current_limit_code_forward() or
+// jrk_settings_get_current_limit_code_reverse().
 //
 // The raw argument should be a raw current limit value.
 //
 // See also jrk_current_limit_ma_to_raw().
 JRK_API
-uint32_t jrk_current_limit_raw_to_ma(uint32_t product, uint32_t raw);
+uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 
-// Converts raw current limit values to milliamps for the specified
-// product.  You can use this to get the raw values needed by
-// jrk_settings_set_motor_max_current_forward() or
-// jrk_settings_set_motor_max_current_reverse().
+// Converts a max current value in milliamps into a recommended max current
+// code.  You can use this to get the raw values needed by
+// jrk_settings_set_current_limit_code_forward() or
+// jrk_settings_set_current_limit_code_reverse().
 //
-// The product argument should be one of the JRK_PRODUCT_* macros.
+// Note that this function only returns codes that are in the recommended set, a
+// subset of the codes supported by the device.
 //
 // The raw argument should be a raw current limit value.
 //
-// See also jrk_current_limit_raw_to_ma().
+// See also jrk_current_limit_code_to_ma().
 JRK_API
-uint32_t jrk_current_limit_ma_to_raw(uint32_t product, uint32_t ma);
+uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 
-// Returns the highest achievable current limit in milliamps that is less than
-// the given current limit in milliamps.
+// Calculates the measured motor current, in milliamps, given a settings object
+// and a variables object read from the same device.
 //
-// The product argument should be one of the JRK_PRODUCT_* macros.
-uint32_t jrk_achievable_current_limit(uint32_t product, uint32_t ma);
+// The function returns the measured current, in milliamps.  The sign of the
+// current indicates its direction, and generally corresponds to the sign of the
+// duty cycle (negative for reverse, positive for forward).
+//
+// Note: If current chopping happened during the PID period, the value returned
+// here will not be trustable.
+JRK_API
+int32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
+
+// Calculates the voltage on the current sense line in units of mV/64.
+//
+// To get millivolts, divide the return value by 64.
+JRK_API
+int32_t jrk_calculate_raw_current_mv64(
+  const jrk_settings * settings, const jrk_variables *);
 
 
 #ifdef __cplusplus

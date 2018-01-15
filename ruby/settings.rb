@@ -499,42 +499,45 @@ EOF
     overridable: true,
     range: 1..8191,
     default: 10,
-    comment:
-      "The PID period specifies how often the jrk should run its PID calculation\n" \
-      "and update the motor speed, in units of milliseconds."
+    comment: <<EOF
+The PID period specifies how often the jrk should calculate its input and
+feedback, run its PID calculation, and update the motor speed, in units of
+milliseconds.  This period is still used even if feedback and PID are
+disabled.
+EOF
   },
   {
-    name: 'pid_integral_limit',
+    name: 'integral_limit',
     type: :uint16_t,
     overridable: true,
     default: 1000,
     max: 0x7FFF,
     comment:
       "The PID algorithm prevents the absolute value of the accumulated error\n" \
-      "(known as error sum) from exceeding pid_integral_limit.",
+      "(known as error sum) from exceeding this limit.",
   },
   {
-    name: 'pid_reset_integral',
+    name: 'reset_integral',
     type: :bool,
     overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
-    bit_address: 'JRK_OPTIONS_BYTE3_PID_RESET_INTEGRAL',
+    bit_address: 'JRK_OPTIONS_BYTE3_RESET_INTEGRAL',
     comment:
       "If this setting is set to true, the PID algorithm will reset the accumulated\n" \
       "error (also known as error sum) whenever the absolute value of the\n" \
       "proportional term (see proportional_multiplier) exceeds 600."
   },
   {
-    name: 'motor_pwm_frequency',
+    name: 'pwm_frequency',
     type: :enum,
-    default: 'JRK_MOTOR_PWM_FREQUENCY_20',
+    default: 'JRK_PWM_FREQUENCY_20',
     default_is_zero: true,
     english_default: '20 kHz',
-    max: 'JRK_MOTOR_PWM_FREQUENCY_5',
+    max: 'JRK_PWM_FREQUENCY_5',
     comment:
       "This setting specifies whether to use 20 kHz (the default) or 5 kHz for the\n" \
       "motor PWM signal.  This setting should be either\n" \
-      "JRK_MOTOR_PWM_FREQUENCY_20 or JRK_MOTOR_PWM_FREQUENCY_5.\n"
+      "JRK_PWM_FREQUENCY_20 or JRK_PWM_FREQUENCY_5.\n"
   },
   {
     name: 'current_samples_exponent',
@@ -545,7 +548,7 @@ EOF
       "the current.  The number of samples will be 2^x, where x is this setting.",
   },
   {
-    name: 'max_current_exceeded_threshold',
+    name: 'overcurrent_threshold',
     type: :uint8_t,
     default: 1,
     min: 1,
@@ -562,48 +565,46 @@ EOF
     name: 'current_offset_calibration',
     type: :int16_t,
     default: 0,
-    min: 'JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION',
-    max: 'JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION',
+    min: -800,
+    max: 800,
     comment: <<EOF
+You can use this current calibration setting to correct current measurements
+and current limit settings that are off by a constant amount.
+
 The current sense circuitry on a umc04a jrk produces a constant voltage of
 about 50 mV when the motor driver is powered, even if there is no current
-flowing through the motor.  That offset voltage varies from model to model.
-For more accurate current measurements and current limit settings, you can
-use the current_offset_calibration setting to record the value of that
-offset.
+flowing through the motor.  This offset must be subtracted from analog
+voltages representing current limits or current measurements in order to
+convert those values to amps.
 
-For the umc04a jrk, use this formula:
+For the umc04a jrk models, this setting is defined by the formula:
 
-  current_offset_calibration = (voltage offset in millivolts - 50) * 64
+  current_offset_calibration = (voltage offset in millivolts - 50) * 16
 
-The current_offset_calibration should be between -3200 (for an offset of 0
-mV) and 3200 (for an offset of 100 mV).
+This setting should be between -800 (for an offset of 0 mV) and 800 (for an
+offset of 100 mV).
 
-This calibration constant is stored in the device's EEPROM but the device
-does not use it.
+This setting is stored in the device's EEPROM but the device does not use it.
 EOF
   },
   {
     name: 'current_scale_calibration',
     type: :int16_t,
     default: 0,
+    min: -1875,
+    max: 1875,
     comment: <<EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant percentage.
 
-The algorithm for calculating currents in amps in this software involves
-applying this formula to the current:
+The algorithm for calculating currents in amps involves multiplying the
+current by (1875 + current_scale_calibration).
 
-  current = current * (65536 + current_scale_calibration) / 65536
+The default current_scale_calibration value is 0.
+A current_scale_calibration value of 19 would increase the current
+readings by about 1%.
 
-With the default current_scale_calibration value of 0, this scaling step has
-no effect.  With a current_scale_calibration value of 655, the scaling step
-would increase the current by about 1%.
-
-You should probably set current_offset_calibration before setting this.
-
-This calibration constant is stored in the device's EEPROM but the device
-does not use it.
+This setting is stored in the device's EEPROM but the device does not use it.
 EOF
   },
   {
@@ -618,19 +619,19 @@ EOF
       "from B to A."
   },
   {
-    name: 'motor_max_duty_cycle_while_feedback_out_of_range',
+    name: 'max_duty_cycle_while_feedback_out_of_range',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
-If the feedback is beyong the range specified by the feedback absolute
+If the feedback is beyond the range specified by the feedback absolute
 minimum and feedback absolute maximum values, then the duty cycle's magnitude
 cannot exceed this value.
 EOF
   },
   {
-    name: 'motor_max_acceleration_forward',
+    name: 'max_acceleration_forward',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -643,7 +644,7 @@ period if the duty cycle is positive.
 EOF
   },
   {
-    name: 'motor_max_acceleration_reverse',
+    name: 'max_acceleration_reverse',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -656,7 +657,7 @@ period if the duty cycle is negative.
 EOF
   },
   {
-    name: 'motor_max_deceleration_forward',
+    name: 'max_deceleration_forward',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -669,7 +670,7 @@ period if the duty cycle is positive.
 EOF
   },
   {
-    name: 'motor_max_deceleration_reverse',
+    name: 'max_deceleration_reverse',
     type: :uint16_t,
     overridable: true,
     range: 1..600,
@@ -682,7 +683,7 @@ period if the duty cycle is negative.
 EOF
   },
   {
-    name: 'motor_max_duty_cycle_forward',
+    name: 'max_duty_cycle_forward',
     type: :uint16_t,
     overridable: true,
     max: 600,
@@ -696,7 +697,7 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'motor_max_duty_cycle_reverse',
+    name: 'max_duty_cycle_reverse',
     type: :uint16_t,
     overridable: true,
     max: 600,
@@ -710,39 +711,37 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'motor_max_current_forward',
+    name: 'current_limit_code_forward',
     type: :uint16_t,
     overridable: true,
-    default: 10,
-    max: 31,
-    custom_eeprom: true,  # tmphax just so we could divide by 4
+    default: 26,  # about 10 A on umc04a
+    max: 95,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
-THE COMMENTS BELOW ARE OUTDATED (TODO).
+This setting is not actually a current, it is a code telling the jrk how to
+set up its current limiting hardware.
 
-This is the native current limit value stored on the device.
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
 
-- jrk_current_limit_native_to_ma()
-- jrk_current_limit_ma_to_native()
-- jrk_achievable_current_limit()
+- jrk_current_limit_code_to_ma()
+- jrk_current_limit_ma_to_code()
+- jrk_current_limig_code_step()
 EOF
   },
   {
-    name: 'motor_max_current_reverse',
+    name: 'current_limit_code_reverse',
     type: :uint16_t,
     overridable: true,
     default: 10,
-    max: 31,
-    custom_eeprom: true,  # tmphax just so we could divide by 4
+    max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
-      "See the documentation of motor_max_current_forward."
+      "See the documentation of current_limit_code_forward."
   },
   {
-    name: 'motor_brake_duration_forward',
+    name: 'brake_duration_forward',
     type: :uint32_t,
     overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
@@ -756,7 +755,7 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'motor_brake_duration_reverse',
+    name: 'brake_duration_reverse',
     type: :uint32_t,
     overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
@@ -771,11 +770,11 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'motor_coast_when_off',
+    name: 'coast_when_off',
     type: :bool,
     overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
-    bit_address: 'JRK_OPTIONS_BYTE3_MOTOR_COAST_WHEN_OFF',
+    bit_address: 'JRK_OPTIONS_BYTE3_COAST_WHEN_OFF',
     comment:
       "By default, the jrk drives both motor outputs low when the motor is\n" \
       "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \

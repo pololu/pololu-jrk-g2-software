@@ -27,9 +27,6 @@
 // A descriptor type from USB 2.0 Table 9-5
 #define USB_DESCRIPTOR_TYPE_STRING 3
 
-// TODO: remove this and remove custom_eeprom on the max current settings
-#define TMPHAX_CURRENT_UNITS 4
-
 // Internal string manipulation library.
 
 typedef struct jrk_string
@@ -69,13 +66,8 @@ extern const jrk_name jrk_input_mode_names_short[];
 extern const jrk_name jrk_input_scaling_degree_names_short[];
 extern const jrk_name jrk_feedback_mode_names_short[];
 extern const jrk_name jrk_serial_mode_names_short[];
-extern const jrk_name jrk_motor_pwm_frequency_names_short[];
+extern const jrk_name jrk_pwm_frequency_names_short[];
 extern const jrk_name jrk_pin_func_names[];
-
-
-// Intenral variables functions.
-
-void jrk_variables_set_from_device(jrk_variables *, const uint8_t * buffer);
 
 
 // Internal settings conversion functions.

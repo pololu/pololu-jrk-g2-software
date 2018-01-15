@@ -3,6 +3,7 @@
 #include <jrk.hpp>
 #include <file_util.h>
 #include <string_to_int.h>
+#include <to_string.h>
 #include "config.h"
 
 #include "arg_reader.h"
@@ -21,8 +22,9 @@
 #include <thread>
 
 void print_status(
-  const jrk::variables & vars,
-  const jrk::overridable_settings & overridable_settings,
+  const jrk::variables &,
+  const jrk::overridable_settings &,
+  const jrk::settings &,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,

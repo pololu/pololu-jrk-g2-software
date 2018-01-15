@@ -11,20 +11,20 @@ struct jrk_overridable_settings
   uint16_t derivative_multiplier;
   uint8_t derivative_exponent;
   uint16_t pid_period;
-  uint16_t pid_integral_limit;
-  bool pid_reset_integral;
-  uint16_t motor_max_duty_cycle_while_feedback_out_of_range;
-  uint16_t motor_max_acceleration_forward;
-  uint16_t motor_max_acceleration_reverse;
-  uint16_t motor_max_deceleration_forward;
-  uint16_t motor_max_deceleration_reverse;
-  uint16_t motor_max_duty_cycle_forward;
-  uint16_t motor_max_duty_cycle_reverse;
-  uint16_t motor_max_current_forward;
-  uint16_t motor_max_current_reverse;
-  uint32_t motor_brake_duration_forward;
-  uint32_t motor_brake_duration_reverse;
-  bool motor_coast_when_off;
+  uint16_t integral_limit;
+  bool reset_integral;
+  uint16_t max_duty_cycle_while_feedback_out_of_range;
+  uint16_t max_acceleration_forward;
+  uint16_t max_acceleration_reverse;
+  uint16_t max_deceleration_forward;
+  uint16_t max_deceleration_reverse;
+  uint16_t max_duty_cycle_forward;
+  uint16_t max_duty_cycle_reverse;
+  uint16_t current_limit_code_forward;
+  uint16_t current_limit_code_reverse;
+  uint32_t brake_duration_forward;
+  uint32_t brake_duration_reverse;
+  bool coast_when_off;
 
   // End of auto-generated overridable settings struct members.
 };
@@ -213,214 +213,214 @@ uint16_t jrk_overridable_settings_get_pid_period(
   return settings->pid_period;
 }
 
-void jrk_overridable_settings_set_pid_integral_limit(
+void jrk_overridable_settings_set_integral_limit(
   jrk_overridable_settings * settings,
-  uint16_t pid_integral_limit)
+  uint16_t integral_limit)
 {
   if (settings == NULL) { return; }
-  settings->pid_integral_limit = pid_integral_limit;
+  settings->integral_limit = integral_limit;
 }
 
-uint16_t jrk_overridable_settings_get_pid_integral_limit(
+uint16_t jrk_overridable_settings_get_integral_limit(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->pid_integral_limit;
+  return settings->integral_limit;
 }
 
-void jrk_overridable_settings_set_pid_reset_integral(
+void jrk_overridable_settings_set_reset_integral(
   jrk_overridable_settings * settings,
-  bool pid_reset_integral)
+  bool reset_integral)
 {
   if (settings == NULL) { return; }
-  settings->pid_reset_integral = pid_reset_integral;
+  settings->reset_integral = reset_integral;
 }
 
-bool jrk_overridable_settings_get_pid_reset_integral(
+bool jrk_overridable_settings_get_reset_integral(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->pid_reset_integral;
+  return settings->reset_integral;
 }
 
-void jrk_overridable_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(
+void jrk_overridable_settings_set_max_duty_cycle_while_feedback_out_of_range(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_duty_cycle_while_feedback_out_of_range)
+  uint16_t max_duty_cycle_while_feedback_out_of_range)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_duty_cycle_while_feedback_out_of_range = motor_max_duty_cycle_while_feedback_out_of_range;
+  settings->max_duty_cycle_while_feedback_out_of_range = max_duty_cycle_while_feedback_out_of_range;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(
+uint16_t jrk_overridable_settings_get_max_duty_cycle_while_feedback_out_of_range(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_duty_cycle_while_feedback_out_of_range;
+  return settings->max_duty_cycle_while_feedback_out_of_range;
 }
 
-void jrk_overridable_settings_set_motor_max_acceleration_forward(
+void jrk_overridable_settings_set_max_acceleration_forward(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_acceleration_forward)
+  uint16_t max_acceleration_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_acceleration_forward = motor_max_acceleration_forward;
+  settings->max_acceleration_forward = max_acceleration_forward;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_acceleration_forward(
+uint16_t jrk_overridable_settings_get_max_acceleration_forward(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_acceleration_forward;
+  return settings->max_acceleration_forward;
 }
 
-void jrk_overridable_settings_set_motor_max_acceleration_reverse(
+void jrk_overridable_settings_set_max_acceleration_reverse(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_acceleration_reverse)
+  uint16_t max_acceleration_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_acceleration_reverse = motor_max_acceleration_reverse;
+  settings->max_acceleration_reverse = max_acceleration_reverse;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_acceleration_reverse(
+uint16_t jrk_overridable_settings_get_max_acceleration_reverse(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_acceleration_reverse;
+  return settings->max_acceleration_reverse;
 }
 
-void jrk_overridable_settings_set_motor_max_deceleration_forward(
+void jrk_overridable_settings_set_max_deceleration_forward(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_deceleration_forward)
+  uint16_t max_deceleration_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_deceleration_forward = motor_max_deceleration_forward;
+  settings->max_deceleration_forward = max_deceleration_forward;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_deceleration_forward(
+uint16_t jrk_overridable_settings_get_max_deceleration_forward(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_deceleration_forward;
+  return settings->max_deceleration_forward;
 }
 
-void jrk_overridable_settings_set_motor_max_deceleration_reverse(
+void jrk_overridable_settings_set_max_deceleration_reverse(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_deceleration_reverse)
+  uint16_t max_deceleration_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_deceleration_reverse = motor_max_deceleration_reverse;
+  settings->max_deceleration_reverse = max_deceleration_reverse;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_deceleration_reverse(
+uint16_t jrk_overridable_settings_get_max_deceleration_reverse(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_deceleration_reverse;
+  return settings->max_deceleration_reverse;
 }
 
-void jrk_overridable_settings_set_motor_max_duty_cycle_forward(
+void jrk_overridable_settings_set_max_duty_cycle_forward(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_duty_cycle_forward)
+  uint16_t max_duty_cycle_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_duty_cycle_forward = motor_max_duty_cycle_forward;
+  settings->max_duty_cycle_forward = max_duty_cycle_forward;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_forward(
+uint16_t jrk_overridable_settings_get_max_duty_cycle_forward(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_duty_cycle_forward;
+  return settings->max_duty_cycle_forward;
 }
 
-void jrk_overridable_settings_set_motor_max_duty_cycle_reverse(
+void jrk_overridable_settings_set_max_duty_cycle_reverse(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_duty_cycle_reverse)
+  uint16_t max_duty_cycle_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_duty_cycle_reverse = motor_max_duty_cycle_reverse;
+  settings->max_duty_cycle_reverse = max_duty_cycle_reverse;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_duty_cycle_reverse(
+uint16_t jrk_overridable_settings_get_max_duty_cycle_reverse(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_duty_cycle_reverse;
+  return settings->max_duty_cycle_reverse;
 }
 
-void jrk_overridable_settings_set_motor_max_current_forward(
+void jrk_overridable_settings_set_current_limit_code_forward(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_current_forward)
+  uint16_t current_limit_code_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_current_forward = motor_max_current_forward;
+  settings->current_limit_code_forward = current_limit_code_forward;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_current_forward(
+uint16_t jrk_overridable_settings_get_current_limit_code_forward(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_current_forward;
+  return settings->current_limit_code_forward;
 }
 
-void jrk_overridable_settings_set_motor_max_current_reverse(
+void jrk_overridable_settings_set_current_limit_code_reverse(
   jrk_overridable_settings * settings,
-  uint16_t motor_max_current_reverse)
+  uint16_t current_limit_code_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_max_current_reverse = motor_max_current_reverse;
+  settings->current_limit_code_reverse = current_limit_code_reverse;
 }
 
-uint16_t jrk_overridable_settings_get_motor_max_current_reverse(
+uint16_t jrk_overridable_settings_get_current_limit_code_reverse(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_max_current_reverse;
+  return settings->current_limit_code_reverse;
 }
 
-void jrk_overridable_settings_set_motor_brake_duration_forward(
+void jrk_overridable_settings_set_brake_duration_forward(
   jrk_overridable_settings * settings,
-  uint32_t motor_brake_duration_forward)
+  uint32_t brake_duration_forward)
 {
   if (settings == NULL) { return; }
-  settings->motor_brake_duration_forward = motor_brake_duration_forward;
+  settings->brake_duration_forward = brake_duration_forward;
 }
 
-uint32_t jrk_overridable_settings_get_motor_brake_duration_forward(
+uint32_t jrk_overridable_settings_get_brake_duration_forward(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_brake_duration_forward;
+  return settings->brake_duration_forward;
 }
 
-void jrk_overridable_settings_set_motor_brake_duration_reverse(
+void jrk_overridable_settings_set_brake_duration_reverse(
   jrk_overridable_settings * settings,
-  uint32_t motor_brake_duration_reverse)
+  uint32_t brake_duration_reverse)
 {
   if (settings == NULL) { return; }
-  settings->motor_brake_duration_reverse = motor_brake_duration_reverse;
+  settings->brake_duration_reverse = brake_duration_reverse;
 }
 
-uint32_t jrk_overridable_settings_get_motor_brake_duration_reverse(
+uint32_t jrk_overridable_settings_get_brake_duration_reverse(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_brake_duration_reverse;
+  return settings->brake_duration_reverse;
 }
 
-void jrk_overridable_settings_set_motor_coast_when_off(
+void jrk_overridable_settings_set_coast_when_off(
   jrk_overridable_settings * settings,
-  bool motor_coast_when_off)
+  bool coast_when_off)
 {
   if (settings == NULL) { return; }
-  settings->motor_coast_when_off = motor_coast_when_off;
+  settings->coast_when_off = coast_when_off;
 }
 
-bool jrk_overridable_settings_get_motor_coast_when_off(
+bool jrk_overridable_settings_get_coast_when_off(
   const jrk_overridable_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->motor_coast_when_off;
+  return settings->coast_when_off;
 }
 
 // End of auto-generated overridable settings accessors.

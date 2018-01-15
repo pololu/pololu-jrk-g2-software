@@ -3,36 +3,6 @@
 static const int left_column_width = 30;
 static auto left_column = std::setw(left_column_width);
 
-static std::string pretty_up_time(uint32_t up_time)
-{
-  std::ostringstream ss;
-  uint32_t seconds = up_time / 1000;
-  uint32_t minutes = seconds / 60;
-  uint16_t hours = minutes / 60;
-
-  ss << hours <<
-    ":" << std::setfill('0') << std::setw(2) << minutes % 60 <<
-    ":" << std::setfill('0') << std::setw(2) << seconds % 60;
-  return ss.str();
-}
-
-static std::string convert_mv_to_v_string(uint32_t mv, bool full_output)
-{
-  std::ostringstream ss;
-
-  if (full_output)
-  {
-    ss << (mv / 1000) << "." << (mv / 100 % 10) << (mv / 10 % 10) << (mv % 10);
-  }
-  else
-  {
-    uint32_t dv = (mv + 50) / 100;
-    ss << (dv / 10) << "." << (dv % 10);
-  }
-  ss << " V";
-  return ss.str();
-}
-
 static void print_errors(uint32_t errors, const char * error_set_name)
 {
   if (!errors)
@@ -82,6 +52,7 @@ static void print_pin_info(const jrk::variables & vars,
 
 void print_status(const jrk::variables & vars,
   const jrk::overridable_settings & osettings,
+  const jrk::settings & settings,
   const std::string & name,
   const std::string & serial_number,
   const std::string & firmware_version,
@@ -114,7 +85,7 @@ void print_status(const jrk::variables & vars,
     << std::endl;
 
   std::cout << left_column << "Up time: "
-    << pretty_up_time(vars.get_up_time())
+    << convert_up_time_to_string(vars.get_up_time())
     << std::endl;
 
   std::cout << std::endl;
@@ -151,8 +122,8 @@ void print_status(const jrk::variables & vars,
     << vars.get_duty_cycle()
     << std::endl;
 
-  std::cout << left_column << "Current: "
-    << vars.get_current_high_res()  // TODO: properly format this in mA or A
+  std::cout << left_column << "Current (mA): "
+    << jrk::calculate_measured_current_ma(settings, vars)
     << std::endl;
 
   std::cout << left_column << "VIN voltage: "
@@ -181,11 +152,11 @@ void print_status(const jrk::variables & vars,
 
     std::cout << left_column
       << "Reset integral when proportional term exceeds max duty cycle: "
-      << (osettings.get_pid_reset_integral() ? "Yes" : "No")
+      << (osettings.get_reset_integral() ? "Yes" : "No")
       << std::endl;
 
     std::cout << left_column << "Coast when motor is off: "
-      << (osettings.get_motor_coast_when_off() ? "Yes" : "No")
+      << (osettings.get_coast_when_off() ? "Yes" : "No")
       << std::endl;
 
     std::cout << left_column << "Proportional multiplier: "
@@ -217,54 +188,68 @@ void print_status(const jrk::variables & vars,
       << " ms" << std::endl;
 
     std::cout << left_column << "Integral limit: "
-      << osettings.get_pid_integral_limit()
+      << osettings.get_integral_limit()
       << std::endl;
 
     std::cout << left_column << "Max. duty cycle while feedback is out of range: "
-      << osettings.get_motor_max_duty_cycle_while_feedback_out_of_range()
+      << osettings.get_max_duty_cycle_while_feedback_out_of_range()
       << std::endl;
 
     std::cout << left_column << "Max. duty cycle forward: "
-      << osettings.get_motor_max_duty_cycle_forward()
+      << osettings.get_max_duty_cycle_forward()
       << std::endl;
 
     std::cout << left_column << "Max. duty cycle reverse: "
-      << osettings.get_motor_max_duty_cycle_reverse()
+      << osettings.get_max_duty_cycle_reverse()
       << std::endl;
 
     std::cout << left_column << "Max. acceleration forward: "
-      << osettings.get_motor_max_acceleration_forward()
+      << osettings.get_max_acceleration_forward()
       << std::endl;
 
     std::cout << left_column << "Max. acceleration reverse: "
-      << osettings.get_motor_max_acceleration_reverse()
+      << osettings.get_max_acceleration_reverse()
       << std::endl;
 
     std::cout << left_column << "Max. deceleration forward: "
-      << osettings.get_motor_max_deceleration_forward()
+      << osettings.get_max_deceleration_forward()
       << std::endl;
 
     std::cout << left_column << "Max. deceleration reverse: "
-      << osettings.get_motor_max_deceleration_reverse()
+      << osettings.get_max_deceleration_reverse()
       << std::endl;
 
     // TODO: fix the current readings below; they are 0 because we marked the
     // current settings as custom_eeprom.
 
-    std::cout << left_column << "Max. current forward: "
-      << (uint32_t)osettings.get_motor_max_current_forward()  // TODO: format in amps
+    // TODO: format in amps
+    std::cout << left_column << "Current limit forward (mA): "
+      << convert_current_limit_ma_to_string(
+        jrk::current_limit_code_to_ma(settings,
+          osettings.get_current_limit_code_forward()))
       << std::endl;
 
-    std::cout << left_column << "Max. current reverse: "
-      << (uint32_t)osettings.get_motor_max_current_reverse()  // TODO: format in amps
+    // TODO: format in amps
+    std::cout << left_column << "Current limit reverse (mA): "
+      << convert_current_limit_ma_to_string(
+        jrk::current_limit_code_to_ma(settings,
+          osettings.get_current_limit_code_reverse()))
+      << std::endl;
+
+    std::cout << left_column << "Current limit forward (code): "
+      << (uint32_t)osettings.get_current_limit_code_forward()
+      << std::endl;
+
+    std::cout << left_column << "Current limit reverse (code): "
+      << (uint32_t)osettings.get_current_limit_code_reverse()
       << std::endl;
 
     std::cout << left_column << "Brake duration forward: "
-      << osettings.get_motor_brake_duration_forward()
+      << osettings.get_brake_duration_forward()
       << " ms" << std::endl;
 
     std::cout << left_column << "Brake duration reverse: "
-      << osettings.get_motor_brake_duration_reverse()
+      << osettings.get_brake_duration_reverse()
       << " ms" << std::endl;
 
     std::cout << std::endl;
@@ -284,8 +269,14 @@ void print_status(const jrk::variables & vars,
       << vars.get_last_duty_cycle()
       << std::endl;
 
-    std::cout << left_column << "Max current: "
-      << vars.get_max_current()
+    std::cout << left_column << "Current limit (mA): "
+      << convert_current_limit_ma_to_string(
+         jrk::current_limit_code_to_ma(settings,
+           vars.get_current_limit_code()))
+      << std::endl;
+
+    std::cout << left_column << "Current limit (code): "
+      << "code " << vars.get_current_limit_code()
       << std::endl;
 
     std::cout << left_column << "Current chopping consecutive count: "

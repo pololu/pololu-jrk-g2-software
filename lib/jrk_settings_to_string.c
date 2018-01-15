@@ -264,21 +264,21 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t pid_integral_limit = jrk_settings_get_pid_integral_limit(settings);
-    jrk_sprintf(&str, "pid_integral_limit: %u\n", pid_integral_limit);
+    uint16_t integral_limit = jrk_settings_get_integral_limit(settings);
+    jrk_sprintf(&str, "integral_limit: %u\n", integral_limit);
   }
 
   {
-    bool pid_reset_integral = jrk_settings_get_pid_reset_integral(settings);
-    jrk_sprintf(&str, "pid_reset_integral: %s\n",
-      pid_reset_integral ? "true" : "false");
+    bool reset_integral = jrk_settings_get_reset_integral(settings);
+    jrk_sprintf(&str, "reset_integral: %s\n",
+      reset_integral ? "true" : "false");
   }
 
   {
-    uint8_t motor_pwm_frequency = jrk_settings_get_motor_pwm_frequency(settings);
+    uint8_t pwm_frequency = jrk_settings_get_pwm_frequency(settings);
     const char * value_str = "";
-    jrk_code_to_name(jrk_motor_pwm_frequency_names_short, motor_pwm_frequency, &value_str);
-    jrk_sprintf(&str, "motor_pwm_frequency: %s\n", value_str);
+    jrk_code_to_name(jrk_pwm_frequency_names_short, pwm_frequency, &value_str);
+    jrk_sprintf(&str, "pwm_frequency: %s\n", value_str);
   }
 
   {
@@ -287,8 +287,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t max_current_exceeded_threshold = jrk_settings_get_max_current_exceeded_threshold(settings);
-    jrk_sprintf(&str, "max_current_exceeded_threshold: %u\n", max_current_exceeded_threshold);
+    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
+    jrk_sprintf(&str, "overcurrent_threshold: %u\n", overcurrent_threshold);
   }
 
   {
@@ -308,64 +308,64 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t motor_max_duty_cycle_while_feedback_out_of_range = jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(settings);
-    jrk_sprintf(&str, "motor_max_duty_cycle_while_feedback_out_of_range: %u\n", motor_max_duty_cycle_while_feedback_out_of_range);
+    uint16_t max_duty_cycle_while_feedback_out_of_range = jrk_settings_get_max_duty_cycle_while_feedback_out_of_range(settings);
+    jrk_sprintf(&str, "max_duty_cycle_while_feedback_out_of_range: %u\n", max_duty_cycle_while_feedback_out_of_range);
   }
 
   {
-    uint16_t motor_max_acceleration_forward = jrk_settings_get_motor_max_acceleration_forward(settings);
-    jrk_sprintf(&str, "motor_max_acceleration_forward: %u\n", motor_max_acceleration_forward);
+    uint16_t max_acceleration_forward = jrk_settings_get_max_acceleration_forward(settings);
+    jrk_sprintf(&str, "max_acceleration_forward: %u\n", max_acceleration_forward);
   }
 
   {
-    uint16_t motor_max_acceleration_reverse = jrk_settings_get_motor_max_acceleration_reverse(settings);
-    jrk_sprintf(&str, "motor_max_acceleration_reverse: %u\n", motor_max_acceleration_reverse);
+    uint16_t max_acceleration_reverse = jrk_settings_get_max_acceleration_reverse(settings);
+    jrk_sprintf(&str, "max_acceleration_reverse: %u\n", max_acceleration_reverse);
   }
 
   {
-    uint16_t motor_max_deceleration_forward = jrk_settings_get_motor_max_deceleration_forward(settings);
-    jrk_sprintf(&str, "motor_max_deceleration_forward: %u\n", motor_max_deceleration_forward);
+    uint16_t max_deceleration_forward = jrk_settings_get_max_deceleration_forward(settings);
+    jrk_sprintf(&str, "max_deceleration_forward: %u\n", max_deceleration_forward);
   }
 
   {
-    uint16_t motor_max_deceleration_reverse = jrk_settings_get_motor_max_deceleration_reverse(settings);
-    jrk_sprintf(&str, "motor_max_deceleration_reverse: %u\n", motor_max_deceleration_reverse);
+    uint16_t max_deceleration_reverse = jrk_settings_get_max_deceleration_reverse(settings);
+    jrk_sprintf(&str, "max_deceleration_reverse: %u\n", max_deceleration_reverse);
   }
 
   {
-    uint16_t motor_max_duty_cycle_forward = jrk_settings_get_motor_max_duty_cycle_forward(settings);
-    jrk_sprintf(&str, "motor_max_duty_cycle_forward: %u\n", motor_max_duty_cycle_forward);
+    uint16_t max_duty_cycle_forward = jrk_settings_get_max_duty_cycle_forward(settings);
+    jrk_sprintf(&str, "max_duty_cycle_forward: %u\n", max_duty_cycle_forward);
   }
 
   {
-    uint16_t motor_max_duty_cycle_reverse = jrk_settings_get_motor_max_duty_cycle_reverse(settings);
-    jrk_sprintf(&str, "motor_max_duty_cycle_reverse: %u\n", motor_max_duty_cycle_reverse);
+    uint16_t max_duty_cycle_reverse = jrk_settings_get_max_duty_cycle_reverse(settings);
+    jrk_sprintf(&str, "max_duty_cycle_reverse: %u\n", max_duty_cycle_reverse);
   }
 
   {
-    uint16_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
-    jrk_sprintf(&str, "motor_max_current_forward: %u\n", motor_max_current_forward);
+    uint16_t current_limit_code_forward = jrk_settings_get_current_limit_code_forward(settings);
+    jrk_sprintf(&str, "current_limit_code_forward: %u\n", current_limit_code_forward);
   }
 
   {
-    uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
-    jrk_sprintf(&str, "motor_max_current_reverse: %u\n", motor_max_current_reverse);
+    uint16_t current_limit_code_reverse = jrk_settings_get_current_limit_code_reverse(settings);
+    jrk_sprintf(&str, "current_limit_code_reverse: %u\n", current_limit_code_reverse);
   }
 
   {
-    uint32_t motor_brake_duration_forward = jrk_settings_get_motor_brake_duration_forward(settings);
-    jrk_sprintf(&str, "motor_brake_duration_forward: %u\n", motor_brake_duration_forward);
+    uint32_t brake_duration_forward = jrk_settings_get_brake_duration_forward(settings);
+    jrk_sprintf(&str, "brake_duration_forward: %u\n", brake_duration_forward);
   }
 
   {
-    uint32_t motor_brake_duration_reverse = jrk_settings_get_motor_brake_duration_reverse(settings);
-    jrk_sprintf(&str, "motor_brake_duration_reverse: %u\n", motor_brake_duration_reverse);
+    uint32_t brake_duration_reverse = jrk_settings_get_brake_duration_reverse(settings);
+    jrk_sprintf(&str, "brake_duration_reverse: %u\n", brake_duration_reverse);
   }
 
   {
-    bool motor_coast_when_off = jrk_settings_get_motor_coast_when_off(settings);
-    jrk_sprintf(&str, "motor_coast_when_off: %s\n",
-      motor_coast_when_off ? "true" : "false");
+    bool coast_when_off = jrk_settings_get_coast_when_off(settings);
+    jrk_sprintf(&str, "coast_when_off: %s\n",
+      coast_when_off ? "true" : "false");
   }
 
   {

@@ -329,27 +329,27 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t pid_integral_limit = jrk_settings_get_pid_integral_limit(settings);
-    if (pid_integral_limit > 32767)
+    uint16_t integral_limit = jrk_settings_get_integral_limit(settings);
+    if (integral_limit > 32767)
     {
-      pid_integral_limit = 32767;
+      integral_limit = 32767;
       jrk_sprintf(warnings,
-        "Warning: The pid integral limit was too high "
-        "so it will be changed to %u.\n", pid_integral_limit);
+        "Warning: The integral limit was too high "
+        "so it will be changed to %u.\n", integral_limit);
     }
-    jrk_settings_set_pid_integral_limit(settings, pid_integral_limit);
+    jrk_settings_set_integral_limit(settings, integral_limit);
   }
 
   {
-    uint8_t motor_pwm_frequency = jrk_settings_get_motor_pwm_frequency(settings);
-    if (motor_pwm_frequency > JRK_MOTOR_PWM_FREQUENCY_5)
+    uint8_t pwm_frequency = jrk_settings_get_pwm_frequency(settings);
+    if (pwm_frequency > JRK_PWM_FREQUENCY_5)
     {
-      motor_pwm_frequency = JRK_MOTOR_PWM_FREQUENCY_20;
+      pwm_frequency = JRK_PWM_FREQUENCY_20;
       jrk_sprintf(warnings,
-        "Warning: The motor pwm frequency was invalid "
+        "Warning: The pwm frequency was invalid "
         "so it will be changed to 20 kHz.\n");
     }
-    jrk_settings_set_motor_pwm_frequency(settings, motor_pwm_frequency);
+    jrk_settings_set_pwm_frequency(settings, pwm_frequency);
   }
 
   {
@@ -358,29 +358,29 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t max_current_exceeded_threshold = jrk_settings_get_max_current_exceeded_threshold(settings);
-    if (max_current_exceeded_threshold < 1)
+    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
+    if (overcurrent_threshold < 1)
     {
-      max_current_exceeded_threshold = 1;
+      overcurrent_threshold = 1;
       jrk_sprintf(warnings,
-        "Warning: The max current exceeded threshold was too low "
-        "so it will be changed to %u.\n", max_current_exceeded_threshold);
+        "Warning: The overcurrent threshold was too low "
+        "so it will be changed to %u.\n", overcurrent_threshold);
     }
-    jrk_settings_set_max_current_exceeded_threshold(settings, max_current_exceeded_threshold);
+    jrk_settings_set_overcurrent_threshold(settings, overcurrent_threshold);
   }
 
   {
     int16_t current_offset_calibration = jrk_settings_get_current_offset_calibration(settings);
-    if (current_offset_calibration < JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION)
+    if (current_offset_calibration < -800)
     {
-      current_offset_calibration = JRK_MIN_ALLOWED_CURRENT_OFFSET_CALIBRATION;
+      current_offset_calibration = -800;
       jrk_sprintf(warnings,
         "Warning: The current offset calibration was too low "
         "so it will be changed to %d.\n", current_offset_calibration);
     }
-    if (current_offset_calibration > JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION)
+    if (current_offset_calibration > 800)
     {
-      current_offset_calibration = JRK_MAX_ALLOWED_CURRENT_OFFSET_CALIBRATION;
+      current_offset_calibration = 800;
       jrk_sprintf(warnings,
         "Warning: The current offset calibration was too high "
         "so it will be changed to %d.\n", current_offset_calibration);
@@ -390,150 +390,164 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     int16_t current_scale_calibration = jrk_settings_get_current_scale_calibration(settings);
+    if (current_scale_calibration < -1875)
+    {
+      current_scale_calibration = -1875;
+      jrk_sprintf(warnings,
+        "Warning: The current scale calibration was too low "
+        "so it will be changed to %d.\n", current_scale_calibration);
+    }
+    if (current_scale_calibration > 1875)
+    {
+      current_scale_calibration = 1875;
+      jrk_sprintf(warnings,
+        "Warning: The current scale calibration was too high "
+        "so it will be changed to %d.\n", current_scale_calibration);
+    }
     jrk_settings_set_current_scale_calibration(settings, current_scale_calibration);
   }
 
   {
-    uint16_t motor_max_duty_cycle_while_feedback_out_of_range = jrk_settings_get_motor_max_duty_cycle_while_feedback_out_of_range(settings);
-    if (motor_max_duty_cycle_while_feedback_out_of_range < 1)
+    uint16_t max_duty_cycle_while_feedback_out_of_range = jrk_settings_get_max_duty_cycle_while_feedback_out_of_range(settings);
+    if (max_duty_cycle_while_feedback_out_of_range < 1)
     {
-      motor_max_duty_cycle_while_feedback_out_of_range = 1;
+      max_duty_cycle_while_feedback_out_of_range = 1;
       jrk_sprintf(warnings,
-        "Warning: The motor max duty cycle while feedback out of range was too low "
-        "so it will be changed to %u.\n", motor_max_duty_cycle_while_feedback_out_of_range);
+        "Warning: The max duty cycle while feedback out of range was too low "
+        "so it will be changed to %u.\n", max_duty_cycle_while_feedback_out_of_range);
     }
-    if (motor_max_duty_cycle_while_feedback_out_of_range > 600)
+    if (max_duty_cycle_while_feedback_out_of_range > 600)
     {
-      motor_max_duty_cycle_while_feedback_out_of_range = 600;
+      max_duty_cycle_while_feedback_out_of_range = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max duty cycle while feedback out of range was too high "
-        "so it will be changed to %u.\n", motor_max_duty_cycle_while_feedback_out_of_range);
+        "Warning: The max duty cycle while feedback out of range was too high "
+        "so it will be changed to %u.\n", max_duty_cycle_while_feedback_out_of_range);
     }
-    jrk_settings_set_motor_max_duty_cycle_while_feedback_out_of_range(settings, motor_max_duty_cycle_while_feedback_out_of_range);
+    jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(settings, max_duty_cycle_while_feedback_out_of_range);
   }
 
   {
-    uint16_t motor_max_acceleration_forward = jrk_settings_get_motor_max_acceleration_forward(settings);
-    if (motor_max_acceleration_forward < 1)
+    uint16_t max_acceleration_forward = jrk_settings_get_max_acceleration_forward(settings);
+    if (max_acceleration_forward < 1)
     {
-      motor_max_acceleration_forward = 1;
+      max_acceleration_forward = 1;
       jrk_sprintf(warnings,
-        "Warning: The motor max acceleration forward was too low "
-        "so it will be changed to %u.\n", motor_max_acceleration_forward);
+        "Warning: The max acceleration forward was too low "
+        "so it will be changed to %u.\n", max_acceleration_forward);
     }
-    if (motor_max_acceleration_forward > 600)
+    if (max_acceleration_forward > 600)
     {
-      motor_max_acceleration_forward = 600;
+      max_acceleration_forward = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max acceleration forward was too high "
-        "so it will be changed to %u.\n", motor_max_acceleration_forward);
+        "Warning: The max acceleration forward was too high "
+        "so it will be changed to %u.\n", max_acceleration_forward);
     }
-    jrk_settings_set_motor_max_acceleration_forward(settings, motor_max_acceleration_forward);
+    jrk_settings_set_max_acceleration_forward(settings, max_acceleration_forward);
   }
 
   {
-    uint16_t motor_max_acceleration_reverse = jrk_settings_get_motor_max_acceleration_reverse(settings);
-    if (motor_max_acceleration_reverse < 1)
+    uint16_t max_acceleration_reverse = jrk_settings_get_max_acceleration_reverse(settings);
+    if (max_acceleration_reverse < 1)
     {
-      motor_max_acceleration_reverse = 1;
+      max_acceleration_reverse = 1;
       jrk_sprintf(warnings,
-        "Warning: The motor max acceleration reverse was too low "
-        "so it will be changed to %u.\n", motor_max_acceleration_reverse);
+        "Warning: The max acceleration reverse was too low "
+        "so it will be changed to %u.\n", max_acceleration_reverse);
     }
-    if (motor_max_acceleration_reverse > 600)
+    if (max_acceleration_reverse > 600)
     {
-      motor_max_acceleration_reverse = 600;
+      max_acceleration_reverse = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max acceleration reverse was too high "
-        "so it will be changed to %u.\n", motor_max_acceleration_reverse);
+        "Warning: The max acceleration reverse was too high "
+        "so it will be changed to %u.\n", max_acceleration_reverse);
     }
-    jrk_settings_set_motor_max_acceleration_reverse(settings, motor_max_acceleration_reverse);
+    jrk_settings_set_max_acceleration_reverse(settings, max_acceleration_reverse);
   }
 
   {
-    uint16_t motor_max_deceleration_forward = jrk_settings_get_motor_max_deceleration_forward(settings);
-    if (motor_max_deceleration_forward < 1)
+    uint16_t max_deceleration_forward = jrk_settings_get_max_deceleration_forward(settings);
+    if (max_deceleration_forward < 1)
     {
-      motor_max_deceleration_forward = 1;
+      max_deceleration_forward = 1;
       jrk_sprintf(warnings,
-        "Warning: The motor max deceleration forward was too low "
-        "so it will be changed to %u.\n", motor_max_deceleration_forward);
+        "Warning: The max deceleration forward was too low "
+        "so it will be changed to %u.\n", max_deceleration_forward);
     }
-    if (motor_max_deceleration_forward > 600)
+    if (max_deceleration_forward > 600)
     {
-      motor_max_deceleration_forward = 600;
+      max_deceleration_forward = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max deceleration forward was too high "
-        "so it will be changed to %u.\n", motor_max_deceleration_forward);
+        "Warning: The max deceleration forward was too high "
+        "so it will be changed to %u.\n", max_deceleration_forward);
     }
-    jrk_settings_set_motor_max_deceleration_forward(settings, motor_max_deceleration_forward);
+    jrk_settings_set_max_deceleration_forward(settings, max_deceleration_forward);
   }
 
   {
-    uint16_t motor_max_deceleration_reverse = jrk_settings_get_motor_max_deceleration_reverse(settings);
-    if (motor_max_deceleration_reverse < 1)
+    uint16_t max_deceleration_reverse = jrk_settings_get_max_deceleration_reverse(settings);
+    if (max_deceleration_reverse < 1)
     {
-      motor_max_deceleration_reverse = 1;
+      max_deceleration_reverse = 1;
       jrk_sprintf(warnings,
-        "Warning: The motor max deceleration reverse was too low "
-        "so it will be changed to %u.\n", motor_max_deceleration_reverse);
+        "Warning: The max deceleration reverse was too low "
+        "so it will be changed to %u.\n", max_deceleration_reverse);
     }
-    if (motor_max_deceleration_reverse > 600)
+    if (max_deceleration_reverse > 600)
     {
-      motor_max_deceleration_reverse = 600;
+      max_deceleration_reverse = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max deceleration reverse was too high "
-        "so it will be changed to %u.\n", motor_max_deceleration_reverse);
+        "Warning: The max deceleration reverse was too high "
+        "so it will be changed to %u.\n", max_deceleration_reverse);
     }
-    jrk_settings_set_motor_max_deceleration_reverse(settings, motor_max_deceleration_reverse);
+    jrk_settings_set_max_deceleration_reverse(settings, max_deceleration_reverse);
   }
 
   {
-    uint16_t motor_max_duty_cycle_forward = jrk_settings_get_motor_max_duty_cycle_forward(settings);
-    if (motor_max_duty_cycle_forward > 600)
+    uint16_t max_duty_cycle_forward = jrk_settings_get_max_duty_cycle_forward(settings);
+    if (max_duty_cycle_forward > 600)
     {
-      motor_max_duty_cycle_forward = 600;
+      max_duty_cycle_forward = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max duty cycle forward was too high "
-        "so it will be changed to %u.\n", motor_max_duty_cycle_forward);
+        "Warning: The max duty cycle forward was too high "
+        "so it will be changed to %u.\n", max_duty_cycle_forward);
     }
-    jrk_settings_set_motor_max_duty_cycle_forward(settings, motor_max_duty_cycle_forward);
+    jrk_settings_set_max_duty_cycle_forward(settings, max_duty_cycle_forward);
   }
 
   {
-    uint16_t motor_max_duty_cycle_reverse = jrk_settings_get_motor_max_duty_cycle_reverse(settings);
-    if (motor_max_duty_cycle_reverse > 600)
+    uint16_t max_duty_cycle_reverse = jrk_settings_get_max_duty_cycle_reverse(settings);
+    if (max_duty_cycle_reverse > 600)
     {
-      motor_max_duty_cycle_reverse = 600;
+      max_duty_cycle_reverse = 600;
       jrk_sprintf(warnings,
-        "Warning: The motor max duty cycle reverse was too high "
-        "so it will be changed to %u.\n", motor_max_duty_cycle_reverse);
+        "Warning: The max duty cycle reverse was too high "
+        "so it will be changed to %u.\n", max_duty_cycle_reverse);
     }
-    jrk_settings_set_motor_max_duty_cycle_reverse(settings, motor_max_duty_cycle_reverse);
+    jrk_settings_set_max_duty_cycle_reverse(settings, max_duty_cycle_reverse);
   }
 
   {
-    uint16_t motor_max_current_forward = jrk_settings_get_motor_max_current_forward(settings);
-    if (motor_max_current_forward > 31)
+    uint16_t current_limit_code_forward = jrk_settings_get_current_limit_code_forward(settings);
+    if (current_limit_code_forward > 95)
     {
-      motor_max_current_forward = 31;
+      current_limit_code_forward = 95;
       jrk_sprintf(warnings,
-        "Warning: The motor max current forward was too high "
-        "so it will be changed to %u.\n", motor_max_current_forward);
+        "Warning: The current limit code forward was too high "
+        "so it will be changed to %u.\n", current_limit_code_forward);
     }
-    jrk_settings_set_motor_max_current_forward(settings, motor_max_current_forward);
+    jrk_settings_set_current_limit_code_forward(settings, current_limit_code_forward);
   }
 
   {
-    uint16_t motor_max_current_reverse = jrk_settings_get_motor_max_current_reverse(settings);
-    if (motor_max_current_reverse > 31)
+    uint16_t current_limit_code_reverse = jrk_settings_get_current_limit_code_reverse(settings);
+    if (current_limit_code_reverse > 95)
     {
-      motor_max_current_reverse = 31;
+      current_limit_code_reverse = 95;
       jrk_sprintf(warnings,
-        "Warning: The motor max current reverse was too high "
-        "so it will be changed to %u.\n", motor_max_current_reverse);
+        "Warning: The current limit code reverse was too high "
+        "so it will be changed to %u.\n", current_limit_code_reverse);
     }
-    jrk_settings_set_motor_max_current_reverse(settings, motor_max_current_reverse);
+    jrk_settings_set_current_limit_code_reverse(settings, current_limit_code_reverse);
   }
 
   {
@@ -589,7 +603,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint32_t duration = jrk_settings_get_motor_brake_duration_forward(settings);
+    uint32_t duration = jrk_settings_get_brake_duration_forward(settings);
 
     // Make it be a multiple of 5, rounding up.
     duration = (duration + 4) / JRK_BRAKE_DURATION_UNITS * JRK_BRAKE_DURATION_UNITS;
@@ -602,11 +616,11 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
         "so it will be changed to %u.\n", duration);
     }
 
-    jrk_settings_set_motor_brake_duration_forward(settings, duration);
+    jrk_settings_set_brake_duration_forward(settings, duration);
   }
 
   {
-    uint32_t duration = jrk_settings_get_motor_brake_duration_reverse(settings);
+    uint32_t duration = jrk_settings_get_brake_duration_reverse(settings);
 
     // Make it be a multiple of 5, rounding up.
     duration = (duration + JRK_BRAKE_DURATION_UNITS - 1)
@@ -620,7 +634,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
         "so it will be changed to %u.\n", duration);
     }
 
-    jrk_settings_set_motor_brake_duration_reverse(settings, duration);
+    jrk_settings_set_brake_duration_reverse(settings, duration);
   }
 
   {

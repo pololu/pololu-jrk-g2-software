@@ -57,10 +57,10 @@ const jrk_name jrk_serial_mode_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_motor_pwm_frequency_names_short[] =
+const jrk_name jrk_pwm_frequency_names_short[] =
 {
-  { "20", JRK_MOTOR_PWM_FREQUENCY_20 },
-  { "5", JRK_MOTOR_PWM_FREQUENCY_5 },
+  { "20", JRK_PWM_FREQUENCY_20 },
+  { "5", JRK_PWM_FREQUENCY_5 },
   { NULL, 0 },
 };
 
@@ -84,7 +84,7 @@ const jrk_name jrk_error_names_ui[] =
   { "Input invalid", 1 << JRK_ERROR_INPUT_INVALID },
   { "Input disconnect", 1 << JRK_ERROR_INPUT_DISCONNECT },
   { "Feedback disconnect", 1 << JRK_ERROR_FEEDBACK_DISCONNECT },
-  { "Max. current exceeded", 1 << JRK_ERROR_MAXIMUM_CURRENT_EXCEEDED },
+  { "Overcurrent", 1 << JRK_ERROR_OVERCURRENT },
   { "Serial signal error", 1 << JRK_ERROR_SERIAL_SIGNAL },
   { "Serial overrun", 1 << JRK_ERROR_SERIAL_OVERRUN },
   { "Serial RX buffer full", 1 << JRK_ERROR_SERIAL_BUFFER_FULL },

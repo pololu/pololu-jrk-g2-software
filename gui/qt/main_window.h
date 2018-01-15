@@ -88,7 +88,7 @@ public:
   void set_duty_cycle_target(int16_t);
   void set_duty_cycle(int16_t);
   void set_raw_current_mv(uint16_t);
-  void set_scaled_current_mv(int32_t);
+  void set_current(int32_t);
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
 
@@ -151,27 +151,28 @@ public:
   void set_pid_exponent(int index, uint16_t value);
   void set_pid_constant(int index, double value);
   void set_pid_period(uint16_t value);
-  void set_pid_integral_limit(uint16_t value);
-  void set_pid_reset_integral(bool enabled);
+  void set_integral_limit(uint16_t value);
+  void set_reset_integral(bool enabled);
   void set_feedback_dead_zone(uint8_t value);
 
-  void set_motor_pwm_frequency(uint8_t pwm_frequency);
+  void set_pwm_frequency(uint8_t pwm_frequency);
   void set_motor_invert(bool enabled);
   void set_motor_asymmetric(bool checked);
-  void set_motor_max_duty_cycle_forward(uint16_t);
-  void set_motor_max_duty_cycle_reverse(uint16_t);
-  void set_motor_max_acceleration_forward(uint16_t);
-  void set_motor_max_acceleration_reverse(uint16_t);
-  void set_motor_max_deceleration_forward(uint16_t);
-  void set_motor_max_deceleration_reverse(uint16_t);
-  void set_motor_brake_duration_forward(uint32_t);
-  void set_motor_brake_duration_reverse(uint32_t);
-  void set_motor_max_current_forward(uint16_t);
-  void set_motor_max_current_reverse(uint16_t);
-  void set_motor_current_calibration_forward(uint16_t);
-  void set_motor_current_calibration_reverse(uint16_t);
-  void set_motor_max_duty_cycle_out_of_range(uint16_t);
-  void set_motor_coast_when_off(uint8_t value);
+  void set_max_duty_cycle_forward(uint16_t);
+  void set_max_duty_cycle_reverse(uint16_t);
+  void set_max_acceleration_forward(uint16_t);
+  void set_max_acceleration_reverse(uint16_t);
+  void set_max_deceleration_forward(uint16_t);
+  void set_max_deceleration_reverse(uint16_t);
+  void set_brake_duration_forward(uint32_t);
+  void set_brake_duration_reverse(uint32_t);
+  void set_current_limit_code_forward(uint16_t);
+  void set_current_limit_code_reverse(uint16_t);
+  void set_current_limit_meaning(const char *);
+  void set_current_offset_calibration(int16_t);
+  void set_current_scale_calibration(int16_t);
+  void set_max_duty_cycle_while_feedback_out_of_range(uint16_t);
+  void set_coast_when_off(bool value);
 
   void set_error_enable(uint16_t enable, uint16_t latch);
   void set_error_flags_halting(uint16_t error_flags_halting);
@@ -194,8 +195,6 @@ public:
   void set_restore_defaults_enabled(bool enabled);
   void set_stop_motor_enabled(bool enabled);
   void set_run_motor_enabled(bool enabled);
-
-  int32_t get_current_offset_mv();  // tmphax
 
   bool motor_asymmetric_checked();
 
@@ -269,28 +268,28 @@ private slots:
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
 
   void on_pid_period_spinbox_valueChanged(int value);
-  void on_pid_integral_limit_spinbox_valueChanged(int value);
-  void on_pid_reset_integral_checkbox_stateChanged(int state);
-  void on_pid_feedback_dead_zone_spinbox_valueChanged(int value);
+  void on_integral_limit_spinbox_valueChanged(int value);
+  void on_reset_integral_checkbox_stateChanged(int state);
+  void on_feedback_dead_zone_spinbox_valueChanged(int value);
 
-  void on_motor_pwm_frequency_combobox_currentIndexChanged(int index);
+  void on_pwm_frequency_combobox_currentIndexChanged(int index);
   void on_motor_invert_checkbox_stateChanged(int state);
-  void on_motor_detect_motor_button_clicked();
+  void on_detect_motor_button_clicked();
   void on_motor_asymmetric_checkbox_stateChanged(int state);
-  void on_motor_max_duty_cycle_forward_spinbox_valueChanged(int value);
-  void on_motor_max_duty_cycle_reverse_spinbox_valueChanged(int value);
-  void on_motor_max_acceleration_forward_spinbox_valueChanged(int value);
-  void on_motor_max_acceleration_reverse_spinbox_valueChanged(int value);
-  void on_motor_max_deceleration_forward_spinbox_valueChanged(int value);
-  void on_motor_max_deceleration_reverse_spinbox_valueChanged(int value);
-  void on_motor_brake_duration_forward_spinbox_valueChanged(int value);
-  void on_motor_brake_duration_reverse_spinbox_valueChanged(int value);
-  void on_motor_max_current_forward_spinbox_valueChanged(int value);
-  void on_motor_max_current_reverse_spinbox_valueChanged(int value);
-  void on_motor_calibration_forward_spinbox_valueChanged(int value);
-  void on_motor_calibration_reverse_spinbox_valueChanged(int value);
-  void on_motor_out_of_range_spinbox_valueChanged(int value);
-  void on_motor_coast_when_off_button_group_buttonToggled(int id, bool checked);
+  void on_max_duty_cycle_forward_spinbox_valueChanged(int value);
+  void on_max_duty_cycle_reverse_spinbox_valueChanged(int value);
+  void on_max_acceleration_forward_spinbox_valueChanged(int value);
+  void on_max_acceleration_reverse_spinbox_valueChanged(int value);
+  void on_max_deceleration_forward_spinbox_valueChanged(int value);
+  void on_max_deceleration_reverse_spinbox_valueChanged(int value);
+  void on_brake_duration_forward_spinbox_valueChanged(int value);
+  void on_brake_duration_reverse_spinbox_valueChanged(int value);
+  void on_current_limit_forward_spinbox_valueChanged(int value);
+  void on_current_limit_reverse_spinbox_valueChanged(int value);
+  void on_current_offset_calibration_spinbox_valueChanged(int value);
+  void on_current_scale_calibration_spinbox_valueChanged(int value);
+  void on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(int value);
+  void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
   void on_error_enable_group_buttonToggled(int id, int index);
   void on_errors_clear_errors_clicked();
@@ -358,8 +357,6 @@ private:
   QLabel * raw_current_value;
   QLabel * scaled_current_label;
   QLabel * scaled_current_value;
-  QLabel * current_offset_label;
-  QSpinBox * current_offset_value;
   QLabel * current_chopping_log_label;
   QLabel * current_chopping_log_value;
   QLabel * vin_voltage_label;
@@ -464,15 +461,15 @@ private:
 
 	// pid tab
 
-	QWidget *pid_page_widget;
-	QGridLayout *pid_page_layout;
-	QLabel *pid_period_label;
-	QSpinBox *pid_period_spinbox;
-	QLabel *pid_integral_limit_label;
-	QSpinBox *pid_integral_limit_spinbox;
-	QCheckBox *pid_reset_integral_checkbox;
-	QLabel *pid_feedback_dead_zone_label;
-	QSpinBox *pid_feedback_dead_zone_spinbox;
+	QWidget * pid_page_widget;
+	QGridLayout * pid_page_layout;
+	QLabel * pid_period_label;
+	QSpinBox * pid_period_spinbox;
+	QLabel * integral_limit_label;
+	QSpinBox * integral_limit_spinbox;
+	QCheckBox * reset_integral_checkbox;
+	QLabel * feedback_dead_zone_label;
+	QSpinBox * feedback_dead_zone_spinbox;
 
 	// pid tab constant controls
   std::array<pid_constant_control *, 3> pid_constant_controls;
@@ -483,44 +480,45 @@ private:
 
 	// motor tab
 
-	QWidget *motor_page_widget;
-	QGridLayout *motor_page_layout;
-  QButtonGroup *motor_coast_when_off_button_group;
-	QLabel *motor_frequency_label;
-	QComboBox *motor_pwm_frequency_combobox;
-	QCheckBox *motor_invert_checkbox;
-	QPushButton *motor_detect_motor_button;
-	QCheckBox *motor_asymmetric_checkbox;
-	QLabel *motor_forward_label;
-	QLabel *motor_reverse_label;
-	QLabel *motor_max_duty_cycle_label;
-	QSpinBox *motor_max_duty_cycle_forward_spinbox;
-	QSpinBox *motor_max_duty_cycle_reverse_spinbox;
-	QLabel *motor_max_duty_cycle_means_label;
-	QLabel *motor_max_acceleration_label;
-	QSpinBox *motor_max_acceleration_forward_spinbox;
-	QSpinBox *motor_max_acceleration_reverse_spinbox;
-	QLabel *motor_max_acceleration_means_label;
-	QLabel *motor_max_deceleration_label;
-	QSpinBox *motor_max_deceleration_forward_spinbox;
-	QSpinBox *motor_max_deceleration_reverse_spinbox;
-  QLabel *motor_max_deceleration_means_label;
-  QLabel *motor_brake_duration_label;
-  QSpinBox *motor_brake_duration_forward_spinbox;
-  QSpinBox *motor_brake_duration_reverse_spinbox;
-	QLabel *motor_max_current_label;
-	QSpinBox *motor_max_current_forward_spinbox;
-	QSpinBox *motor_max_current_reverse_spinbox;
-	QLabel *motor_max_current_means_label;
-	QLabel *motor_calibration_label;
-	QSpinBox *motor_calibration_forward_spinbox;
-	QSpinBox *motor_calibration_reverse_spinbox;
-	QLabel *motor_out_of_range_label;
-	QSpinBox *motor_out_of_range_spinbox;
-	QLabel *motor_outofrange_means_label;
-	QLabel *motor_off_label;
-	QRadioButton *motor_brake_radio;
-	QRadioButton *motor_coast_radio;
+  QWidget * motor_page_widget;
+  QGridLayout * motor_page_layout;
+  QButtonGroup * coast_when_off_button_group;
+  QLabel * pwm_frequency_label;
+  QComboBox * pwm_frequency_combobox;
+  QCheckBox * motor_invert_checkbox;
+  QPushButton * detect_motor_button;
+  QCheckBox * motor_asymmetric_checkbox;
+  QLabel * motor_forward_label;
+  QLabel * motor_reverse_label;
+  QLabel * max_duty_cycle_label;
+  QSpinBox * max_duty_cycle_forward_spinbox;
+  QSpinBox * max_duty_cycle_reverse_spinbox;
+  QLabel * max_duty_cycle_means_label;
+  QLabel * max_acceleration_label;
+  QSpinBox * max_acceleration_forward_spinbox;
+  QSpinBox * max_acceleration_reverse_spinbox;
+  QLabel * max_acceleration_means_label;
+  QLabel * max_deceleration_label;
+  QSpinBox * max_deceleration_forward_spinbox;
+  QSpinBox * max_deceleration_reverse_spinbox;
+  QLabel * max_deceleration_means_label;
+  QLabel * brake_duration_label;
+  QSpinBox * brake_duration_forward_spinbox;
+  QSpinBox * brake_duration_reverse_spinbox;
+  QLabel * current_limit_label;
+  QSpinBox * current_limit_forward_spinbox;
+  QSpinBox * current_limit_reverse_spinbox;
+  QLabel * current_limit_means_label;
+  QLabel * current_offset_calibration_label;
+  QSpinBox * current_offset_calibration_spinbox;
+  QLabel * current_scale_calibration_label;
+  QSpinBox * current_scale_calibration_spinbox;
+  QLabel * max_duty_cycle_while_feedback_out_of_range_label;
+  QSpinBox * max_duty_cycle_while_feedback_out_of_range_spinbox;
+  QLabel * max_duty_cycle_while_feedback_out_of_range_means_label;
+  QLabel * motor_off_label;
+  QRadioButton * motor_brake_radio;
+  QRadioButton * motor_coast_radio;
 
 	QWidget *errors_page_widget;
 	QGridLayout *errors_page_layout;
