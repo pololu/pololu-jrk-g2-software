@@ -11,10 +11,10 @@ class QSpinBox;
 
 class graph_widget : public QWidget
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	graph_widget(QWidget * parent = 0);
+  graph_widget(QWidget * parent = 0);
 
   struct plot
   {
@@ -67,8 +67,8 @@ private:
 
 public slots:
   void on_pause_run_button_clicked();
-	void remove_data_to_scroll();
-	void realtime_data_slot();
-	void set_line_visible();
-	void change_ranges();
+  void remove_data_to_scroll();
+  void realtime_data_slot();
+  void set_line_visible();
+  void change_ranges();
 };
