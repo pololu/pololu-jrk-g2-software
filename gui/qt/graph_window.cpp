@@ -69,6 +69,8 @@ void graph_window::receive_widget(graph_widget *widget)
 
 	for(auto plot : grabbed_widget->all_plots)
 	{
+		plot->display->setChecked(plot->default_check);
+		plot->graph->setVisible(plot->default_check);
 		plot_visible_layout->addLayout(plot->graph_data_selection_bar, Qt::AlignRight);
 	}
 
