@@ -481,7 +481,7 @@ void main_window::setup_ui()
   preview_window->custom_plot->yAxis->setTicks(false);
   for(auto plot : preview_window->all_plots)
   {
-    plot->graph->setVisible(plot->default_check);
+    plot->graph->setVisible(plot->default_visible);
   }
 
   QWidget *preview_plot = preview_window->custom_plot;

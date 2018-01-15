@@ -67,27 +67,27 @@ void graph_widget::setup_ui()
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
 
-  setup_plot(input, "Input", "#00ffff", true, 4095);
+  setup_plot(input, "Input", "#00ffff", false, 4095);
 
-  setup_plot(target, "Target", "#0000ff", true, 4095, true);
+  setup_plot(target, "Target", "#0000ff", false, 4095, true);
 
-  setup_plot(feedback, "Feedback", "#ffc0cb", true, 4095);
+  setup_plot(feedback, "Feedback", "#ffc0cb", false, 4095);
 
-  setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", true, 4095, true);
+  setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", false, 4095, true);
 
-  setup_plot(error, "Error", "#9400d3", false, 4095);
+  setup_plot(error, "Error", "#9400d3", true, 4095);
 
-  setup_plot(integral, "Integral", "#ff8c00", false, 1000);
+  setup_plot(integral, "Integral", "#ff8c00", true, 1000);
 
-  setup_plot(duty_cycle_target, "Duty cycle target", "#32cd32", false, 600);
+  setup_plot(duty_cycle_target, "Duty cycle target", "#32cd32", true, 600);
 
-  setup_plot(duty_cycle, "Duty cycle", "#006400", false, 600);
+  setup_plot(duty_cycle, "Duty cycle", "#006400", true, 600);
 
-  setup_plot(raw_current, "Raw current", "#b8860b", true, 4095);
+  setup_plot(raw_current, "Raw current", "#b8860b", false, 4095);
 
-  setup_plot(current, "Current (mA)", "#0000ff", false, 100000);
+  setup_plot(current, "Current (mA)", "#0000ff", true, 100000);
 
-  setup_plot(current_chopping_log, "Current chopping log", "#ff00ff", true, 1);
+  setup_plot(current_chopping_log, "Current chopping log", "#ff00ff", false, 1);
 
   custom_plot->xAxis->QCPAxis::setRangeReversed(true);
   custom_plot->yAxis->setRange(-100,100);
@@ -105,7 +105,7 @@ void graph_widget::setup_ui()
 }
 
 void graph_widget::setup_plot(plot& x, QString display_text, QString color,
-  bool range_label, double range, bool default_check)
+  bool signed_range, double range, bool default_visible)
 {
   x.color = color;
   x.range = new QDoubleSpinBox();
@@ -114,13 +114,13 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   x.display->setStyleSheet("border: 5px solid "+ color + ";"
     "padding: 3px;"
     "background-color: white;");
-  x.default_check = default_check;
+  x.default_visible = default_visible;
   x.range_label = new QLabel();
 
-  if (range_label)
-    x.range_label->setText("0\u2013");
-  else
+  if (signed_range)
     x.range_label->setText("\u00B1");
+  else
+    x.range_label->setText("0\u2013");
 
   x.graph_data_selection_bar = new QHBoxLayout();
   x.range_value = range;
@@ -150,7 +150,7 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   }
 
   x.display->setCheckable(true);
-  x.display->setChecked(true);
+  x.display->setChecked(default_visible);
 
   x.graph_data_selection_bar->setMargin(0);;
   x.graph_data_selection_bar->addWidget(x.display);
