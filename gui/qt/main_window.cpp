@@ -479,6 +479,10 @@ void main_window::setup_ui()
   preview_window->setObjectName(QStringLiteral("preview_window"));
   preview_window->custom_plot->xAxis->setTicks(false);
   preview_window->custom_plot->yAxis->setTicks(false);
+  for(auto plot : preview_window->all_plots)
+  {
+    plot->graph->setVisible(plot->default_check);
+  }
 
   QWidget *preview_plot = preview_window->custom_plot;
   preview_plot->setCursor(Qt::PointingHandCursor);
