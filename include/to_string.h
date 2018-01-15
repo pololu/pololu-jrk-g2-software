@@ -37,7 +37,8 @@ static std::string convert_up_time_to_hms_string(uint32_t up_time)
 static std::string convert_current_limit_ma_to_string(uint32_t ma)
 {
   std::ostringstream ss;
+  uint32_t hundredths = ((ma % 1000) + 5) / 10;
   ss << (ma / 1000) << "."
-    << std::setfill('0') << std::setw(3) << (ma % 1000) << " A";
+     << std::setfill('0') << std::setw(2) << hundredths << " A";
   return ss.str();
 }
