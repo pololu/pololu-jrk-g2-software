@@ -59,8 +59,11 @@ private:
   void setup_ui();
 
   // Used to add new plot
+  // display_text = label coupled with display checkbox
+  // range_label = true ("0-")
+  // range_label = false ("\u00B1")
   void setup_plot(plot& x, QString display_text, QString color,
-  QString range_label, double range, bool default_check = false);
+  bool range_label, double range, bool default_check = false);
 
 public slots:
 	void on_pause_run_button_clicked();
