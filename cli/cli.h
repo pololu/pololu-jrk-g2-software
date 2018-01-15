@@ -3,6 +3,7 @@
 #include <jrk.hpp>
 #include <file_util.h>
 #include <string_to_int.h>
+#include <to_string.h>
 #include "config.h"
 
 #include "arg_reader.h"

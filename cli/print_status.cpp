@@ -3,36 +3,6 @@
 static const int left_column_width = 30;
 static auto left_column = std::setw(left_column_width);
 
-static std::string pretty_up_time(uint32_t up_time)
-{
-  std::ostringstream ss;
-  uint32_t seconds = up_time / 1000;
-  uint32_t minutes = seconds / 60;
-  uint16_t hours = minutes / 60;
-
-  ss << hours <<
-    ":" << std::setfill('0') << std::setw(2) << minutes % 60 <<
-    ":" << std::setfill('0') << std::setw(2) << seconds % 60;
-  return ss.str();
-}
-
-static std::string convert_mv_to_v_string(uint32_t mv, bool full_output)
-{
-  std::ostringstream ss;
-
-  if (full_output)
-  {
-    ss << (mv / 1000) << "." << (mv / 100 % 10) << (mv / 10 % 10) << (mv % 10);
-  }
-  else
-  {
-    uint32_t dv = (mv + 50) / 100;
-    ss << (dv / 10) << "." << (dv % 10);
-  }
-  ss << " V";
-  return ss.str();
-}
-
 static void print_errors(uint32_t errors, const char * error_set_name)
 {
   if (!errors)
@@ -115,7 +85,7 @@ void print_status(const jrk::variables & vars,
     << std::endl;
 
   std::cout << left_column << "Up time: "
-    << pretty_up_time(vars.get_up_time())
+    << convert_up_time_to_string(vars.get_up_time())
     << std::endl;
 
   std::cout << std::endl;
@@ -254,14 +224,16 @@ void print_status(const jrk::variables & vars,
 
     // TODO: format in amps
     std::cout << left_column << "Current limit forward (mA): "
-      << jrk::current_limit_code_to_ma(settings,
-        osettings.get_current_limit_code_forward())
+      << convert_current_limit_ma_to_string(
+        jrk::current_limit_code_to_ma(settings,
+          osettings.get_current_limit_code_forward()))
       << std::endl;
 
     // TODO: format in amps
     std::cout << left_column << "Current limit reverse (mA): "
-      << jrk::current_limit_code_to_ma(settings,
-        osettings.get_current_limit_code_reverse())
+      << convert_current_limit_ma_to_string(
+        jrk::current_limit_code_to_ma(settings,
+          osettings.get_current_limit_code_reverse()))
       << std::endl;
 
     std::cout << left_column << "Current limit forward (code): "
@@ -297,10 +269,10 @@ void print_status(const jrk::variables & vars,
       << vars.get_last_duty_cycle()
       << std::endl;
 
-    // TODO: format in amps
     std::cout << left_column << "Current limit (mA): "
-      << jrk::current_limit_code_to_ma(settings,
-        vars.get_current_limit_code())
+      << convert_current_limit_ma_to_string(
+         jrk::current_limit_code_to_ma(settings,
+           vars.get_current_limit_code()))
       << std::endl;
 
     std::cout << left_column << "Current limit (code): "

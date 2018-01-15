@@ -157,7 +157,7 @@ void main_window::set_device_reset(const std::string & device_reset)
 void main_window::set_up_time(uint32_t up_time)
 {
   up_time_value->setText(QString::fromStdString(
-    convert_up_time_to_hms_string(up_time)));
+    convert_up_time_to_string(up_time)));
 }
 
 void main_window::set_input(uint16_t input)
