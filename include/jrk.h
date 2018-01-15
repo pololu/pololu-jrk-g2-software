@@ -2082,31 +2082,31 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 
 // Converts max current codes to milliamps for the specified product.  You can
 // use this to interpret the codes returned by
-// jrk_settings_get_motor_max_current_forward() or
-// jrk_settings_get_motor_max_current_reverse().
+// jrk_settings_get_current_limit_code_forward() or
+// jrk_settings_get_current_limit_code_reverse().
 //
 // The raw argument should be a raw current limit value.
 //
-// See also jrk_max_current_ma_to_raw().
+// See also jrk_current_limit_ma_to_raw().
 JRK_API
-uint32_t jrk_max_current_code_to_ma(const jrk_settings *, uint16_t code);
+uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 
 // Converts a max current value in milliamps into a recommended max current
 // code.  You can use this to get the raw values needed by
-// jrk_settings_set_motor_max_current_forward() or
-// jrk_settings_set_motor_max_current_reverse().
+// jrk_settings_set_current_limit_code_forward() or
+// jrk_settings_set_current_limit_code_reverse().
 //
 // Note that this function only returns codes that are in the recommended set, a
 // subset of the codes supported by the device.
 //
 // The raw argument should be a raw current limit value.
 //
-// See also jrk_max_current_code_to_ma().
+// See also jrk_current_limit_code_to_ma().
 JRK_API
-uint16_t jrk_max_current_ma_to_code(const jrk_settings *, uint32_t ma);
+uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 
 // You can use this function to step up and down through the set of recommended
-// current codes.
+// current limit codes.
 //
 // If the given code is not a recommended current code, this function first
 // converts it to a recommended current code for the given product, rounding
@@ -2125,7 +2125,7 @@ uint16_t jrk_max_current_ma_to_code(const jrk_settings *, uint32_t ma);
 // - If the user wants to increase or decrease the current to the next recommended
 //   level, you can use this function to change the current limit code.
 JRK_API
-uint16_t jrk_max_current_code_step(const jrk_settings *, uint16_t code, int32_t steps);
+uint16_t jrk_current_limit_code_step(const jrk_settings *, uint16_t code, int32_t steps);
 
 // Calculates the measured motor current, in milliamps, given a settings object
 // and a variables object read from the same device.
@@ -2141,7 +2141,7 @@ int32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variab
 
 // Calculates the voltage on the current sense line in units of mV/64.
 //
-// To get millivolts from this, divide the return value by 64.
+// To get millivolts, divide the return value by 64.
 JRK_API
 int32_t jrk_calculate_raw_current_mv64(
   const jrk_settings * settings, const jrk_variables *);

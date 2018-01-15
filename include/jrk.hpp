@@ -1751,6 +1751,18 @@ namespace jrk
     /// \endcond
   };
 
+  /// Wrapper for jrk_current_limit_code_to_ma().
+  inline uint32_t current_limit_code_to_ma(const settings & settings, uint16_t code)
+  {
+    return jrk_current_limit_code_to_ma(settings.get_pointer(), code);
+  }
+
+  /// Wrapper for jrk_current_limit_ma_to_code().
+  inline uint16_t current_limit_ma_to_code(const settings & settings, uint32_t ma)
+  {
+    return jrk_current_limit_ma_to_code(settings.get_pointer(), ma);
+  }
+
   /// Wrapper for jrk_calculate_measured_current_ma().
   inline int32_t calculate_measured_current_ma(
     const settings & settings, const variables & variables)

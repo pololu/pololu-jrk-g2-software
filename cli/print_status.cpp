@@ -252,14 +252,24 @@ void print_status(const jrk::variables & vars,
     // TODO: fix the current readings below; they are 0 because we marked the
     // current settings as custom_eeprom.
 
-     // TODO: format in amps
-    std::cout << left_column << "Current limit forward: "
-      << "code " << (uint32_t)osettings.get_current_limit_code_forward()
+    // TODO: format in amps
+    std::cout << left_column << "Current limit forward (mA): "
+      << jrk::current_limit_code_to_ma(settings,
+        osettings.get_current_limit_code_forward())
       << std::endl;
 
     // TODO: format in amps
-    std::cout << left_column << "Current limit reverse: "
-      << "code " << (uint32_t)osettings.get_current_limit_code_reverse()
+    std::cout << left_column << "Current limit reverse (mA): "
+      << jrk::current_limit_code_to_ma(settings,
+        osettings.get_current_limit_code_reverse())
+      << std::endl;
+
+    std::cout << left_column << "Current limit forward (code): "
+      << (uint32_t)osettings.get_current_limit_code_forward()
+      << std::endl;
+
+    std::cout << left_column << "Current limit reverse (code): "
+      << (uint32_t)osettings.get_current_limit_code_reverse()
       << std::endl;
 
     std::cout << left_column << "Brake duration forward: "
