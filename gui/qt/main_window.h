@@ -303,7 +303,7 @@ private:
   QWidget *central_widget;
   QGridLayout *grid_layout;
   QHBoxLayout *horizontal_layout;
-  graph_widget *preview_window;
+  graph_widget *graph;
   graph_window *altw;
   QWidget * preview_plot;
 

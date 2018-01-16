@@ -31,6 +31,25 @@ graph_widget::graph_widget(QWidget * parent)
     this, SLOT(remove_data_to_scroll()));
 }
 
+void graph_widget::set_preview_mode(bool preview_mode)
+{
+  if (preview_mode)
+  {
+    custom_plot->setMinimumSize(185, 150);
+    custom_plot->setCursor(Qt::PointingHandCursor);
+    custom_plot->setToolTip("Click on preview to view full plot");
+  }
+  else
+  {
+    custom_plot->setMinimumSize(561,460);
+    custom_plot->setCursor(Qt::ArrowCursor);
+    custom_plot->setToolTip("");
+  }
+
+  custom_plot->xAxis->setTicks(!preview_mode);
+  custom_plot->yAxis->setTicks(!preview_mode);
+}
+
 void graph_widget::setup_ui()
 // sets the gui objects in the graph window
 {
@@ -67,6 +86,17 @@ void graph_widget::setup_ui()
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
 
+  bottom_control_layout = new QHBoxLayout();
+  bottom_control_layout->addWidget(pause_run_button);
+  bottom_control_layout->addWidget(label1);
+  bottom_control_layout->addWidget(min_y);
+  bottom_control_layout->addWidget(label3);
+  bottom_control_layout->addWidget(max_y);
+  bottom_control_layout->addWidget(label2);
+  bottom_control_layout->addWidget(domain);
+
+  plot_visible_layout = new QVBoxLayout();
+
   setup_plot(input, "Input", "#00ffff", false, 4095);
 
   setup_plot(target, "Target", "#0000ff", false, 4095, true);
@@ -100,6 +130,8 @@ void graph_widget::setup_ui()
   // custom_plot->xAxis2->setTickLabelType(QCPAxis::ltNumber);
   // custom_plot->xAxis2->setAutoTickStep(true);
   // custom_plot->xAxis2->setTickStep(2);
+
+  set_line_visible();
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -156,6 +188,8 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   x.graph_data_selection_bar->addWidget(x.display);
   x.graph_data_selection_bar->addWidget(x.range_label);
   x.graph_data_selection_bar->addWidget(x.range);
+
+  plot_visible_layout->addLayout(x.graph_data_selection_bar, Qt::AlignRight);
 
   x.graph = new QCPGraph(custom_plot->xAxis2,x.axis);
 

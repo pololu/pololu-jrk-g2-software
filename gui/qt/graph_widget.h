@@ -55,6 +55,11 @@ public:
   QLabel *label3;
   double refreshTimer;
 
+  QHBoxLayout *bottom_control_layout;
+  QVBoxLayout *plot_visible_layout;
+
+  void set_preview_mode(bool preview_mode);
+
 private:
   void setup_ui();
 
@@ -63,7 +68,7 @@ private:
   // range_label = true ("0-")
   // range_label = false ("\u00B1")
   void setup_plot(plot& x, QString display_text, QString color,
-  bool signed_range, double range, bool default_visible = false);
+    bool signed_range, double range, bool default_visible = false);
 
 public slots:
   void on_pause_run_button_clicked();
