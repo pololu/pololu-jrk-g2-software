@@ -409,13 +409,13 @@ void main_window::setup_ui()
 
   stop_motor_button = new QPushButton();
   stop_motor_button->setObjectName("stop_motor_button");
-  stop_motor_button->setText(tr("&Stop Motor"));
+  stop_motor_button->setText(tr("&Stop motor"));
   stop_motor_button->setStyleSheet(
     ":enabled { background-color: red; color: white; font-weight: bold; }");
 
   run_motor_button = new QPushButton();
   run_motor_button->setObjectName("run_motor_button");
-  run_motor_button->setText(tr("&Run Motor"));
+  run_motor_button->setText(tr("&Run motor"));
   run_motor_button->setStyleSheet(
     ":enabled { background-color: green; color: white; font-weight: bold; }");
 
@@ -427,6 +427,11 @@ void main_window::setup_ui()
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
 
+  // TODO: fix this layout.  'Connected to:' should be on the left size of the
+  // window, there should be no need for such a large spacer item, and the
+  // header and the footer shouldn't be sharing a grid pattern, there is no
+  // need for there to be invisible columns that go from the top of the window to the
+  // bottom.
   grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
   grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
   grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
