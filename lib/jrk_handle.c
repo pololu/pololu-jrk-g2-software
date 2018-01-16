@@ -472,8 +472,13 @@ jrk_error * jrk_reinitialize(jrk_handle * handle)
     return jrk_error_create("Handle is null.");
   }
 
+  // In this function, we preserve errors.  If we ever want the behavior of the
+  // old jrks for some reason, make a new function called
+  // jrk_reinitialize_and_reset_errors.
+  uint16_t flags = 1 << JRK_REINITIALIZE_FLAG_PRESERVE_ERRORS;
+
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0x40, JRK_CMD_REINITIALIZE, 0, 0, NULL, 0, NULL));
+    0x40, JRK_CMD_REINITIALIZE, flags, 0, NULL, 0, NULL));
 
   if (error != NULL)
   {
