@@ -565,6 +565,8 @@ private:
   std::array<error_row, 16> error_rows;
 
   void setup_ui();
+  void setup_style_sheet();
+  void setup_menu_bar();
 
   // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified

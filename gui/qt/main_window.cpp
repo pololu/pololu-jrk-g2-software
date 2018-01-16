@@ -355,6 +355,8 @@ void main_window::setup_ui()
   setObjectName(QStringLiteral("main_window"));
   setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
+  setup_style_sheet();
+
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
 
@@ -362,6 +364,134 @@ void main_window::setup_ui()
   central_widget->setObjectName(QStringLiteral("central_widget"));
   this->setCentralWidget(central_widget);
 
+  setup_menu_bar();
+
+  header_layout = new QHBoxLayout();
+
+  device_list_label = new QLabel();
+  device_list_label->setText(tr("Connected to:"));
+
+  device_list_value = new QComboBox();
+  device_list_value->setObjectName("device_list_value");
+  device_list_value->addItem(tr("Not connected"), QString()); // null value
+
+  connection_status_value = new QLabel();
+
+  // Make the device list wide enough to display the short name and serial
+  // number of the Jrk.
+  {
+    QComboBox tmp_box;
+    tmp_box.addItem("TXXXXX: #1234567890123456");
+    device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
+  }
+
+  grid_layout = new QGridLayout();
+  grid_layout->setObjectName(QStringLiteral("grid_layout"));
+
+  horizontal_layout = new QHBoxLayout();
+  horizontal_layout->setSpacing(6);
+  horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
+
+  preview_window = new graph_widget();
+  preview_window->setObjectName(QStringLiteral("preview_window"));
+  preview_window->custom_plot->xAxis->setTicks(false);
+  preview_window->custom_plot->yAxis->setTicks(false);
+  for(auto plot : preview_window->all_plots)
+  {
+    plot->graph->setVisible(plot->default_visible);
+  }
+
+  QWidget *preview_plot = preview_window->custom_plot;
+  preview_plot->setCursor(Qt::PointingHandCursor);
+  preview_plot->setToolTip("Click on preview to view full plot");
+  preview_plot->setMinimumSize(150,150);
+
+  stop_motor = new QCheckBox(tr("Stop motor"));
+
+  tab_widget = new QTabWidget();
+  tab_widget->addTab(setup_status_tab(), tr("Status"));
+  tab_widget->addTab(setup_input_tab(), tr("Input"));
+  tab_widget->addTab(setup_feedback_tab(), tr("Feedback"));
+  tab_widget->addTab(setup_pid_tab(), tr("PID"));
+  tab_widget->addTab(setup_motor_tab(), tr("Motor"));
+  tab_widget->addTab(setup_errors_tab(), tr("Errors"));
+
+  stop_motor_button = new QPushButton();
+  stop_motor_button->setObjectName("stop_motor_button");
+  stop_motor_button->setText(tr("&Stop Motor"));
+  stop_motor_button->setStyleSheet(
+    ":enabled { background-color: red; color: white; font-weight: bold; }");
+
+  run_motor_button = new QPushButton();
+  run_motor_button->setObjectName("run_motor_button");
+  run_motor_button->setText(tr("&Run Motor"));
+  run_motor_button->setStyleSheet(
+    ":enabled { background-color: green; color: white; font-weight: bold; }");
+
+  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
+  stop_and_run_buttons->addWidget(stop_motor_button, 0, Qt::AlignLeft);
+  stop_and_run_buttons->addWidget(run_motor_button, 0, Qt::AlignLeft);
+
+  apply_settings_button = new QPushButton();
+  apply_settings_button->setObjectName("apply_settings");
+  apply_settings_button->setText(tr("&Apply settings"));
+
+  grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
+  grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
+  grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
+  grid_layout->addWidget(connection_status_value, 0, 3);
+  grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
+  grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignLeft);
+  grid_layout->addWidget(tab_widget, 1, 0, 1, 6);
+  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
+  grid_layout->addWidget(apply_settings_button, 2, 5, Qt::AlignRight);
+
+  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
+    SLOT(on_launchGraph_clicked(QMouseEvent*)));
+
+  connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
+
+  connect(stop_motor_button, SIGNAL(clicked()),
+    stop_motor_action, SLOT(trigger()));
+
+  connect(run_motor_button, SIGNAL(clicked()),
+    run_motor_action, SLOT(trigger()));
+
+  connect(apply_settings_button, SIGNAL(clicked()),
+    apply_settings_action, SLOT(trigger()));
+
+  connect(
+    preview_window->pause_run_button, &QPushButton::clicked,
+    [=](const bool& d) {
+      preview_window->pause_run_button->isChecked() ?
+      disconnect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot())) :
+      connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
+      preview_window->custom_plot->replot();
+    });
+
+  central_widget->setLayout(grid_layout);
+
+  QMetaObject::connectSlotsByName(this);
+}
+
+void main_window::setup_style_sheet()
+{
+  QString style_name = QApplication::style()->objectName();
+  QString stylesheet;
+
+  // Make buttons a little bit bigger so they're easier to click.  However, this
+  // causes problems with the native Macintosh style, making the buttons
+  // actually look narrower.
+  if (style_name != "macintosh")
+  {
+    stylesheet += "QPushButton { padding: 0.3em 1em; }\n";
+  }
+
+  setStyleSheet(stylesheet);
+}
+
+void main_window::setup_menu_bar()
+{
   menu_bar = new QMenuBar();
   this->setMenuBar(menu_bar);
 
@@ -448,116 +578,6 @@ void main_window::setup_ui()
 
   help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
-
-  header_layout = new QHBoxLayout();
-
-  device_list_label = new QLabel();
-  device_list_label->setText(tr("Connected to:"));
-
-  device_list_value = new QComboBox();
-  device_list_value->setObjectName("device_list_value");
-  device_list_value->addItem(tr("Not connected"), QString()); // null value
-
-  connection_status_value = new QLabel();
-
-  // Make the device list wide enough to display the short name and serial
-  // number of the Jrk.
-  {
-  QComboBox tmp_box;
-  tmp_box.addItem("TXXXXX: #1234567890123456");
-  device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
-  }
-
-  grid_layout = new QGridLayout();
-  grid_layout->setObjectName(QStringLiteral("grid_layout"));
-
-  horizontal_layout = new QHBoxLayout();
-  horizontal_layout->setSpacing(6);
-  horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
-
-  preview_window = new graph_widget();
-  preview_window->setObjectName(QStringLiteral("preview_window"));
-  preview_window->custom_plot->xAxis->setTicks(false);
-  preview_window->custom_plot->yAxis->setTicks(false);
-  for(auto plot : preview_window->all_plots)
-  {
-    plot->graph->setVisible(plot->default_visible);
-  }
-
-  QWidget *preview_plot = preview_window->custom_plot;
-  preview_plot->setCursor(Qt::PointingHandCursor);
-  preview_plot->setToolTip("Click on preview to view full plot");
-  preview_plot->setMinimumSize(150,150);
-
-  stop_motor = new QCheckBox(tr("Stop motor"));
-
-  tab_widget = new QTabWidget();
-  tab_widget->addTab(setup_status_tab(), tr("Status"));
-  tab_widget->addTab(setup_input_tab(), tr("Input"));
-  tab_widget->addTab(setup_feedback_tab(), tr("Feedback"));
-  tab_widget->addTab(setup_pid_tab(), tr("PID"));
-  tab_widget->addTab(setup_motor_tab(), tr("Motor"));
-  tab_widget->addTab(setup_errors_tab(), tr("Errors"));
-
-  stop_motor_button = new QPushButton();
-  stop_motor_button->setObjectName("stop_motor_button");
-  stop_motor_button->setText(tr("&Stop Motor"));
-  stop_motor_button->setFixedSize(stop_motor_button->sizeHint());
-  stop_motor_button->setStyleSheet(
-    ":enabled { background-color: red; color: white; font-weight: bold; }");
-
-  run_motor_button = new QPushButton();
-  run_motor_button->setObjectName("run_motor_button");
-  run_motor_button->setText(tr("&Run Motor"));
-  run_motor_button->setFixedSize(run_motor_button->sizeHint());
-  run_motor_button->setStyleSheet(
-    ":enabled { background-color: green; color: white; font-weight: bold; }");
-
-  apply_settings_button = new QPushButton();
-  apply_settings_button->setObjectName("apply_settings");
-  apply_settings_button->setText(tr("&Apply settings"));
-  apply_settings_button->setFixedSize(apply_settings_button->sizeHint());
-
-  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
-  stop_and_run_buttons->addWidget(stop_motor_button, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(run_motor_button, Qt::AlignLeft);
-
-  grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
-  grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
-  grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
-  grid_layout->addWidget(connection_status_value, 0, 3);
-  grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
-  grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignLeft);
-  grid_layout->addWidget(tab_widget, 1, 0, 1, 6);
-  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
-  grid_layout->addWidget(apply_settings_button, 2, 5, Qt::AlignRight);
-
-  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
-    SLOT(on_launchGraph_clicked(QMouseEvent*)));
-
-  connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
-
-  connect(stop_motor_button, SIGNAL(clicked()),
-    stop_motor_action, SLOT(trigger()));
-
-  connect(run_motor_button, SIGNAL(clicked()),
-    run_motor_action, SLOT(trigger()));
-
-  connect(apply_settings_button, SIGNAL(clicked()),
-    apply_settings_action, SLOT(trigger()));
-
-  connect(
-    preview_window->pause_run_button, &QPushButton::clicked,
-    [=](const bool& d) {
-      preview_window->pause_run_button->isChecked() ?
-      disconnect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot())) :
-      connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
-      preview_window->custom_plot->replot();
-    });
-
-  central_widget->setLayout(grid_layout);
-
-  QMetaObject::connectSlotsByName(this);
 }
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
@@ -988,7 +1008,6 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_reset_range_button = new QPushButton();
   input_reset_range_button->setObjectName("input_reset_range_button");
   input_reset_range_button->setText(tr("Reset to full range"));
-  input_reset_range_button->resize(input_reset_range_button->sizeHint().width(), input_reset_range_button->sizeHint().height());
 
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
