@@ -1332,6 +1332,12 @@ QWidget *main_window::setup_motor_tab()
   current_scale_calibration_spinbox->setObjectName("current_scale_calibration_spinbox");
   current_scale_calibration_spinbox->setRange(-1875, 1875);
 
+  current_samples_label = new QLabel(tr("Current samples:"));
+  current_samples_label->setObjectName("current_samples_label");
+
+  current_samples_combobox = setup_analog_samples_exponent_combobox();
+  current_samples_combobox->setObjectName("current_samples_combobox");
+
   motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_reverse_label,1,2,Qt::AlignLeft);
@@ -1358,6 +1364,8 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(current_offset_calibration_spinbox,7,1,Qt::AlignLeft);
   motor_controls_layout->addWidget(current_scale_calibration_label,8,0,Qt::AlignLeft);
   motor_controls_layout->addWidget(current_scale_calibration_spinbox,8,1,Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_samples_label,9,0,Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_samples_combobox,9,1,Qt::AlignLeft);
 
   max_duty_cycle_while_feedback_out_of_range_label =
     new QLabel(tr("Max. duty cycle while feedback is out of range:"));
@@ -1752,8 +1760,8 @@ void main_window::on_input_mode_combobox_currentIndexChanged(int index)
 void main_window::on_input_analog_samples_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
-  uint8_t input_analog_samples = input_analog_samples_combobox->itemData(index).toUInt();
-  controller->handle_input_analog_samples_input(input_analog_samples);
+  uint8_t exponent = input_analog_samples_combobox->itemData(index).toUInt();
+  controller->handle_input_analog_samples_exponent_input(exponent);
 }
 
 void main_window::on_input_invert_checkbox_stateChanged(int state)
@@ -1942,8 +1950,8 @@ void main_window::on_feedback_reset_range_button_clicked()
 void main_window::on_feedback_analog_samples_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
-  uint8_t feedback_analog_samples = feedback_analog_samples_combobox->itemData(index).toUInt();
-  controller->handle_feedback_analog_samples_input(feedback_analog_samples);
+  uint8_t exponent = feedback_analog_samples_combobox->itemData(index).toUInt();
+  controller->handle_feedback_analog_samples_exponent_input(exponent);
 }
 
 void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
@@ -2080,6 +2088,13 @@ void main_window::on_current_scale_calibration_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
   controller->handle_current_scale_calibration_input(value);
+}
+
+void main_window::on_current_samples_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t exponent = current_samples_combobox->itemData(index).toUInt();
+  controller->handle_current_samples_exponent_input(exponent);
 }
 
 void main_window::on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(
@@ -2570,6 +2585,11 @@ void main_window::set_current_offset_calibration(int16_t cal)
 void main_window::set_current_scale_calibration(int16_t cal)
 {
   set_spin_box(current_scale_calibration_spinbox, cal);
+}
+
+void main_window::set_current_samples_exponent(uint8_t exponent)
+{
+  set_u8_combobox(current_samples_combobox, exponent);
 }
 
 void main_window::set_max_duty_cycle_while_feedback_out_of_range(uint16_t value)

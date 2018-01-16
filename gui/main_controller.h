@@ -79,7 +79,7 @@ public:
   // [all-settings]
 
   void handle_input_mode_input(uint8_t input_mode);
-  void handle_input_analog_samples_input(uint8_t input_analog_samples);
+  void handle_input_analog_samples_exponent_input(uint8_t);
   void handle_input_detect_disconnect_input(bool detect_disconnect);
   void handle_input_serial_mode_input(uint8_t value);
   void handle_input_uart_fixed_baud_input(uint32_t value);
@@ -107,7 +107,7 @@ public:
   void handle_feedback_absolute_maximum_input(uint16_t value);
   void handle_feedback_maximum_input(uint16_t value);
   void handle_feedback_minimum_input(uint16_t value);
-  void handle_feedback_analog_samples_input(uint8_t feedback_analog_samples);
+  void handle_feedback_analog_samples_exponent_input(uint8_t);
   void handle_feedback_detect_disconnect_input(bool detect_disconnect);
 
   void handle_pid_constant_control_multiplier(int index, uint16_t multiplier);
@@ -134,6 +134,8 @@ public:
   void handle_current_limit_reverse_input(uint16_t);
   void handle_current_offset_calibration_input(int16_t);
   void handle_current_scale_calibration_input(int16_t);
+  void handle_current_samples_exponent_input(uint8_t);
+  void handle_current_analog_samples_exponent_input(uint8_t);
   void handle_max_duty_cycle_while_feedback_out_of_range_input(uint16_t);
   void handle_coast_when_off_input(bool);
 

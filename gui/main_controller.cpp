@@ -598,7 +598,6 @@ void main_controller::handle_settings_changed()
 {
   // [all-settings]
 
-
   window->set_input_mode(settings.get_input_mode());
   window->set_input_analog_samples_exponent(settings.get_input_analog_samples_exponent());
   window->set_input_detect_disconnect(settings.get_input_detect_disconnect());
@@ -679,6 +678,7 @@ void main_controller::handle_settings_changed()
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
+  window->set_current_samples_exponent(settings.get_current_samples_exponent());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
 
@@ -838,10 +838,10 @@ void main_controller::handle_input_mode_input(uint8_t input_mode)
   handle_settings_changed();
 }
 
-void main_controller::handle_input_analog_samples_input(uint8_t input_analog_samples)
+void main_controller::handle_input_analog_samples_exponent_input(uint8_t exponent)
 {
   if (!connected()) { return; }
-  settings.set_input_analog_samples_exponent(input_analog_samples);
+  settings.set_input_analog_samples_exponent(exponent);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1054,10 +1054,10 @@ void main_controller::handle_feedback_minimum_input(uint16_t value)
   handle_settings_changed();
 }
 
-void main_controller::handle_feedback_analog_samples_input(uint8_t feedback_analog_samples)
+void main_controller::handle_feedback_analog_samples_exponent_input(uint8_t exponent)
 {
   if (!connected()) { return; }
-  settings.set_feedback_analog_samples_exponent(feedback_analog_samples);
+  settings.set_feedback_analog_samples_exponent(exponent);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1290,6 +1290,14 @@ void main_controller::handle_current_scale_calibration_input(int16_t cal)
   handle_settings_changed();
 }
 
+void main_controller::handle_current_samples_exponent_input(uint8_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_current_samples_exponent(exponent);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
 void main_controller::handle_max_duty_cycle_while_feedback_out_of_range_input(
   uint16_t value)
 {
@@ -1390,6 +1398,10 @@ void main_controller::apply_settings()
       cached_settings = settings;
       settings_modified = false;  // this must be last in case exceptions are thrown
     }
+
+    // TODO: do we need to send a setTarget command now like the old jrk does?
+    // If there were no errors stopping the motor before applying settings, it
+    // sends a Set Target command afterwards.  Or just change
   }
   catch (const std::exception & e)
   {
