@@ -129,17 +129,17 @@ void print_status(const jrk::variables & vars,
       << std::endl;
   }
 
-  std::cout << left_column << "Current (mA): "
-    << jrk::calculate_measured_current_ma(settings, vars)
+  std::cout << left_column << "Current: "
+    << jrk::calculate_measured_current_ma(settings, vars) << " mA"
     << std::endl;
 
   if (full_output)
   {
-    std::cout << left_column << "Raw current (mV): "
-      << jrk::calculate_raw_current_mv64(settings, vars) / 64
+    std::cout << left_column << "Raw current: "
+      << jrk::calculate_raw_current_mv64(settings, vars) / 64 << " mV"
       << std::endl;
 
-    std::cout << left_column << "Current limit (mA): "
+    std::cout << left_column << "Current limit: "
       << convert_current_limit_ma_to_string(
          jrk::current_limit_code_to_ma(settings,
            vars.get_current_limit_code()))
@@ -260,18 +260,13 @@ void print_status(const jrk::variables & vars,
       << osettings.get_max_deceleration_reverse()
       << std::endl;
 
-    // TODO: fix the current readings below; they are 0 because we marked the
-    // current settings as custom_eeprom.
-
-    // TODO: format in amps
-    std::cout << left_column << "Current limit forward (mA): "
+    std::cout << left_column << "Current limit forward: "
       << convert_current_limit_ma_to_string(
         jrk::current_limit_code_to_ma(settings,
           osettings.get_current_limit_code_forward()))
       << std::endl;
 
-    // TODO: format in amps
-    std::cout << left_column << "Current limit reverse (mA): "
+    std::cout << left_column << "Current limit reverse: "
       << convert_current_limit_ma_to_string(
         jrk::current_limit_code_to_ma(settings,
           osettings.get_current_limit_code_reverse()))
