@@ -2607,15 +2607,8 @@ void main_window::set_coast_when_off(bool value)
   }
   else
   {
-    // The value doesn't correspond with any of the radio buttons, so clear
-    // the currently selected button, if any.
-    QAbstractButton * checked = coast_when_off_button_group->checkedButton();
-    if (checked)
-    {
-      coast_when_off_button_group->setExclusive(false);
-      checked->setChecked(false);
-      coast_when_off_button_group->setExclusive(true);
-    }
+    // This should never happen.
+    assert(0);
   }
   suppress_events = false;
 }
