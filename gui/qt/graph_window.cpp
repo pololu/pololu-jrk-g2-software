@@ -38,7 +38,10 @@ void graph_window::receive_widget(graph_widget *widget)
   grabbed_widget = widget;
   grabbed_widget->set_preview_mode(false);
 
-  central_layout->addWidget(grabbed_widget->custom_plot, 0, 0, 14, 3);
-  central_layout->addLayout(grabbed_widget->bottom_control_layout, 15, 0, Qt::AlignLeft|Qt::AlignTop);
-  central_layout->addLayout(grabbed_widget->plot_visible_layout,0,4,11,1, Qt::AlignTop|Qt::AlignLeft);
+  central_layout->addWidget(grabbed_widget->custom_plot,
+    0, 0, 14, 17);
+  central_layout->addLayout(grabbed_widget->bottom_control_layout,
+    15, 0, 1, 1, Qt::AlignLeft);
+  central_layout->addLayout(grabbed_widget->plot_visible_layout,
+    0, 18, 11, 1, Qt::AlignTop | Qt::AlignRight);
 }

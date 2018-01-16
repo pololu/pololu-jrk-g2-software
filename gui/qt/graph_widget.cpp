@@ -41,7 +41,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   }
   else
   {
-    custom_plot->setMinimumSize(561,460);
+    // custom_plot->setMinimumSize(561,460);
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
   }
@@ -60,16 +60,17 @@ void graph_widget::setup_ui()
   pause_run_button->setText(tr("&Pause"));
 
   label1 = new QLabel();
-  label1->setText(tr("Range (%):"));
+  label1->setText(tr("    Range (%):"));
 
   custom_plot = new QCustomPlot();
+  custom_plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   label2 = new QLabel();
-  label2->setText(tr("Time (s):"));
+  label2->setText(tr("    Time (s):"));
 
   label3 = new QLabel();
   label3->setAlignment(Qt::AlignCenter);
-  label3->setText(tr("-"));
+  label3->setText(tr("\u2013"));
 
   min_y = new QDoubleSpinBox();
   min_y->setRange(-100,0);
@@ -85,15 +86,16 @@ void graph_widget::setup_ui()
 
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
+  domain->setRange(0, 90);
 
   bottom_control_layout = new QHBoxLayout();
-  bottom_control_layout->addWidget(pause_run_button);
-  bottom_control_layout->addWidget(label1);
-  bottom_control_layout->addWidget(min_y);
-  bottom_control_layout->addWidget(label3);
-  bottom_control_layout->addWidget(max_y);
-  bottom_control_layout->addWidget(label2);
-  bottom_control_layout->addWidget(domain);
+  bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignLeft);
+  bottom_control_layout->addWidget(label1, 0, Qt::AlignRight);
+  bottom_control_layout->addWidget(min_y, 0);
+  bottom_control_layout->addWidget(label3, 0);
+  bottom_control_layout->addWidget(max_y, 0);
+  bottom_control_layout->addWidget(label2, 0, Qt::AlignRight);
+  bottom_control_layout->addWidget(domain, 0);
 
   plot_visible_layout = new QVBoxLayout();
 
@@ -121,9 +123,13 @@ void graph_widget::setup_ui()
 
   custom_plot->xAxis->QCPAxis::setRangeReversed(true);
   custom_plot->yAxis->setRange(-100,100);
+  custom_plot->yAxis->setAutoTickStep(false);
+  custom_plot->yAxis->setTickStep(20);
+  custom_plot->yAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setTickLabelType(QCPAxis::ltNumber);
   custom_plot->xAxis->setAutoTickStep(false);
-  custom_plot->xAxis->setTickStep(1000);
+  custom_plot->xAxis->setTickStep(domain->value() * 100);
+  custom_plot->xAxis->setTickLabelPadding(10);
 
   // this is used to see the x-axis to see accurate time.
   // custom_plot->xAxis2->setVisible(true);
@@ -150,9 +156,9 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   x.range_label = new QLabel();
 
   if (signed_range)
-    x.range_label->setText("\u00B1");
+    x.range_label->setText(" \u00B1 ");
   else
-    x.range_label->setText("0\u2013");
+    x.range_label->setText(" 0 \u2013 ");
 
   x.graph_data_selection_bar = new QHBoxLayout();
   x.range_value = range;
@@ -161,6 +167,7 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
 
   x.range->setDecimals(0);
   x.range->setSingleStep(1.0);
+  // x.range->setPrefix(x.range_label->text());
 
   x.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
 
@@ -184,12 +191,17 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   x.display->setCheckable(true);
   x.display->setChecked(default_visible);
 
-  x.graph_data_selection_bar->setMargin(0);;
-  x.graph_data_selection_bar->addWidget(x.display);
-  x.graph_data_selection_bar->addWidget(x.range_label);
-  x.graph_data_selection_bar->addWidget(x.range);
+  QHBoxLayout *range_layout = new QHBoxLayout();
+  range_layout->setMargin(0);
+  range_layout->setSpacing(0);
+  range_layout->addWidget(x.range_label, 0, Qt::AlignRight);
+  range_layout->addWidget(x.range, 0);
 
-  plot_visible_layout->addLayout(x.graph_data_selection_bar, Qt::AlignRight);
+  x.graph_data_selection_bar->setMargin(0);;
+  x.graph_data_selection_bar->addWidget(x.display, 0);
+  x.graph_data_selection_bar->addLayout(range_layout, 0);
+
+  plot_visible_layout->addLayout(x.graph_data_selection_bar);
 
   x.graph = new QCPGraph(custom_plot->xAxis2,x.axis);
 
@@ -235,6 +247,8 @@ void graph_widget::remove_data_to_scroll()
 
   custom_plot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
 
+  custom_plot->xAxis->setTickStep(domain->value() * 100);
+
   custom_plot->replot();
 }
 
@@ -246,7 +260,6 @@ void graph_widget::realtime_data_slot()
   for (auto plot : all_plots)
   {
     plot->graph->addData(key, plot->plot_value);
-    plot->graph->removeDataBefore(key - domain->value());
   }
 
   remove_data_to_scroll();

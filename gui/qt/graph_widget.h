@@ -54,6 +54,7 @@ public:
   QLabel *label2;
   QLabel *label3;
   double refreshTimer;
+  int count = 0;
 
   QHBoxLayout *bottom_control_layout;
   QVBoxLayout *plot_visible_layout;
