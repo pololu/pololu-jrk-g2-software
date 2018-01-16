@@ -1201,6 +1201,7 @@ QWidget * main_window::setup_pid_tab()
 
   integral_limit_spinbox = new QSpinBox();
   integral_limit_spinbox->setObjectName("integral_limit_spinbox");
+  integral_limit_spinbox->setRange(0, 0x7FFF);
 
   reset_integral_checkbox = new QCheckBox(
     tr("Reset integral when proportional term exceeds max duty cycle"));
@@ -1395,6 +1396,7 @@ QWidget *main_window::setup_motor_tab()
   max_duty_cycle_while_feedback_out_of_range_spinbox = new QSpinBox();
   max_duty_cycle_while_feedback_out_of_range_spinbox->setObjectName(
     "max_duty_cycle_while_feedback_out_of_range_spinbox");
+  max_duty_cycle_while_feedback_out_of_range_spinbox->setRange(1, 600);
 
   max_duty_cycle_while_feedback_out_of_range_means_label =
     new QLabel(tr("(600 means 100%)"));
