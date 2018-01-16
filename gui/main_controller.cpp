@@ -564,8 +564,6 @@ void main_controller::handle_device_changed()
   window->set_open_save_settings_enabled(connected());
   window->set_reload_settings_enabled(connected());
   window->set_restore_defaults_enabled(connected());
-  window->set_stop_motor_enabled(!connected());
-  window->set_run_motor_enabled(connected());
   window->set_tab_pages_enabled(connected());
 }
 
@@ -592,6 +590,10 @@ void main_controller::handle_variables_changed()
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_error_flags_halting(variables.get_error_flags_halting());
   window->increment_errors_occurred(variables.get_error_flags_occurred());
+
+  bool error_active = variables.get_error_flags_halting() != 0;
+  window->set_stop_motor_enabled(connected());
+  window->set_run_motor_enabled(connected() && error_active);
 }
 
 void main_controller::handle_settings_changed()
@@ -1423,9 +1425,6 @@ void main_controller::stop_motor()
   {
     show_exception(e);
   }
-
-  window->set_stop_motor_enabled(false);
-  window->set_run_motor_enabled(true);
 }
 
 void main_controller::run_motor()
@@ -1440,9 +1439,6 @@ void main_controller::run_motor()
   {
     show_exception(e);
   }
-
-  window->set_stop_motor_enabled(true);
-  window->set_run_motor_enabled(false);
 }
 
 void main_controller::set_target(uint16_t target)
