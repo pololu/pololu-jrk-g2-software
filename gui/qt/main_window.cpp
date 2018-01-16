@@ -502,14 +502,16 @@ void main_window::setup_ui()
   stop_motor_button = new QPushButton();
   stop_motor_button->setObjectName("stop_motor_button");
   stop_motor_button->setText(tr("&Stop Motor"));
-  stop_motor_button->setStyleSheet("background-color: red;");
   stop_motor_button->setFixedSize(stop_motor_button->sizeHint());
+  stop_motor_button->setStyleSheet(
+    ":enabled { background-color: red; color: white; font-weight: bold; }");
 
   run_motor_button = new QPushButton();
   run_motor_button->setObjectName("run_motor_button");
   run_motor_button->setText(tr("&Run Motor"));
   run_motor_button->setFixedSize(run_motor_button->sizeHint());
-  run_motor_button->setStyleSheet("background-color: green;");
+  run_motor_button->setStyleSheet(
+    ":enabled { background-color: green; color: white; font-weight: bold; }");
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
