@@ -115,7 +115,7 @@ void graph_widget::setup_ui()
 
   setup_plot(duty_cycle, "Duty cycle", "#006400", true, 600);
 
-  setup_plot(raw_current, "Raw current", "#b8860b", false, 4095);
+  setup_plot(raw_current, "Raw current (mV)", "#b8860b", false, 4095);
 
   setup_plot(current, "Current (mA)", "#0000ff", true, 100000);
 
