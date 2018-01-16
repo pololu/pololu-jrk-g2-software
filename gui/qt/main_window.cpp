@@ -55,10 +55,9 @@ Q_IMPORT_PLUGIN (QXcbIntegrationPlugin);
 main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
 {
+  widgetAtHome = true;
   setup_ui();
   altw = 0;
-
-  widgetAtHome = true;
 }
 
 void main_window::set_controller(main_controller * controller)
@@ -71,7 +70,7 @@ void main_window::set_update_timer_interval(uint32_t interval_ms)
   assert(update_timer);
   assert(interval_ms <= std::numeric_limits<int>::max());
   update_timer->setInterval(interval_ms);
-  preview_window->refreshTimer = static_cast<double>(interval_ms);
+  graph->refreshTimer = static_cast<double>(interval_ms);
 }
 
 void main_window::start_update_timer()
@@ -162,67 +161,67 @@ void main_window::set_up_time(uint32_t up_time)
 
 void main_window::set_input(uint16_t input)
 {
-  preview_window->input.plot_value = input;
+  graph->input.plot_value = input;
   // TODO: input_value->setText(QString::number(input));
 }
 
 void main_window::set_target(uint16_t target)
 {
-  preview_window->target.plot_value = target;
+  graph->target.plot_value = target;
   // TODO: target_value->setText(QString::number(target));
 }
 
 void main_window::set_feedback(uint16_t feedback)
 {
-  preview_window->feedback.plot_value = feedback;
+  graph->feedback.plot_value = feedback;
   // TODO: feedback_value->setText(QString::number(feedback));
 }
 
 void main_window::set_scaled_feedback(uint16_t scaled_feedback)
 {
-  preview_window->scaled_feedback.plot_value = scaled_feedback;
+  graph->scaled_feedback.plot_value = scaled_feedback;
   // TODO: scaled_feedback_value->setText(QString::number(scaled_feedback));
 }
 
 void main_window::set_error(int16_t error)
 {
-  preview_window->error.plot_value = error;
+  graph->error.plot_value = error;
   // TODO: error_value->setText(QString::number(error));
 }
 
 void main_window::set_integral(int16_t integral)
 {
-  preview_window->integral.plot_value = integral;
+  graph->integral.plot_value = integral;
   // TODO: integral_value->setText(QString::number(integral));
 }
 
 void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 {
-  preview_window->duty_cycle_target.plot_value = duty_cycle_target;
+  graph->duty_cycle_target.plot_value = duty_cycle_target;
   // TODO: duty_cycle_target_value->setText(QString::number(duty_cycle_target));
 }
 
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
-  preview_window->duty_cycle.plot_value = duty_cycle;
+  graph->duty_cycle.plot_value = duty_cycle;
   duty_cycle_value->setText(QString::number(duty_cycle));
 }
 
 void main_window::set_raw_current_mv(uint16_t current)
 {
-  preview_window->raw_current.plot_value = current;
+  graph->raw_current.plot_value = current;
   raw_current_value->setText(QString::number(current) + " mV");
 }
 
 void main_window::set_current(int32_t current)
 {
-  preview_window->current.plot_value = current;
+  graph->current.plot_value = current;
   current_value->setText(QString::number(current) + " mA");
 }
 
 void main_window::set_current_chopping_log(uint16_t log)
 {
-  preview_window->current_chopping_log.plot_value = log;
+  graph->current_chopping_log.plot_value = log;
   current_chopping_log_value->setText(QString::number(log));
 }
 
@@ -392,19 +391,11 @@ void main_window::setup_ui()
   horizontal_layout->setSpacing(6);
   horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
 
-  preview_window = new graph_widget();
-  preview_window->setObjectName(QStringLiteral("preview_window"));
-  preview_window->custom_plot->xAxis->setTicks(false);
-  preview_window->custom_plot->yAxis->setTicks(false);
-  for(auto plot : preview_window->all_plots)
-  {
-    plot->graph->setVisible(plot->default_visible);
-  }
+  graph = new graph_widget();
+  graph->setObjectName(QStringLiteral("graph"));
+  graph->set_preview_mode(true);
 
-  QWidget *preview_plot = preview_window->custom_plot;
-  preview_plot->setCursor(Qt::PointingHandCursor);
-  preview_plot->setToolTip("Click on preview to view full plot");
-  preview_plot->setMinimumSize(150,150);
+  QCustomPlot *preview_plot = graph->custom_plot;
 
   stop_motor = new QCheckBox(tr("Stop motor"));
 
@@ -449,7 +440,7 @@ void main_window::setup_ui()
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
-  connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
+  connect(update_timer, SIGNAL(timeout()), graph, SLOT(realtime_data_slot()));
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -461,12 +452,12 @@ void main_window::setup_ui()
     apply_settings_action, SLOT(trigger()));
 
   connect(
-    preview_window->pause_run_button, &QPushButton::clicked,
+    graph->pause_run_button, &QPushButton::clicked,
     [=](const bool& d) {
-      preview_window->pause_run_button->isChecked() ?
-      disconnect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot())) :
-      connect(update_timer, SIGNAL(timeout()), preview_window, SLOT(realtime_data_slot()));
-      preview_window->custom_plot->replot();
+      graph->pause_run_button->isChecked() ?
+      disconnect(update_timer, SIGNAL(timeout()), graph, SLOT(realtime_data_slot())) :
+      connect(update_timer, SIGNAL(timeout()), graph, SLOT(realtime_data_slot()));
+      graph->custom_plot->replot();
     });
 
   central_widget->setLayout(grid_layout);
@@ -582,7 +573,7 @@ void main_window::setup_menu_bar()
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
 {
-  graph_widget *red = preview_window;
+  graph_widget *red = graph;
   horizontal_layout->removeWidget(red);
   if(altw == 0)
   {
@@ -598,11 +589,7 @@ void main_window::on_launchGraph_clicked(QMouseEvent *event)
 
 void main_window::receive_widget(graph_widget *widget)
 {
-  widget->custom_plot->setMinimumSize(150,150);
-  widget->custom_plot->xAxis->setTicks(false);
-  widget->custom_plot->yAxis->setTicks(false);
-  widget->custom_plot->setCursor(Qt::PointingHandCursor);
-  widget->custom_plot->setToolTip("Click on preview to view full plot");
+  widget->set_preview_mode(true);
   grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignLeft);
   widgetAtHome = true;
 }
