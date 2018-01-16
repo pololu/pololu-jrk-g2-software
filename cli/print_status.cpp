@@ -122,9 +122,50 @@ void print_status(const jrk::variables & vars,
     << vars.get_duty_cycle()
     << std::endl;
 
+  if (full_output)
+  {
+    std::cout << left_column << "Last duty cycle: "
+      << vars.get_last_duty_cycle()
+      << std::endl;
+  }
+
   std::cout << left_column << "Current (mA): "
     << jrk::calculate_measured_current_ma(settings, vars)
     << std::endl;
+
+  if (full_output)
+  {
+    std::cout << left_column << "Raw current (mV): "
+      << jrk::calculate_raw_current_mv64(settings, vars) / 64
+      << std::endl;
+
+    std::cout << left_column << "Current limit (mA): "
+      << convert_current_limit_ma_to_string(
+         jrk::current_limit_code_to_ma(settings,
+           vars.get_current_limit_code()))
+      << std::endl;
+
+    std::cout << left_column << "Current limit (code): "
+      << vars.get_current_limit_code()
+      << std::endl;
+
+    std::cout << "Current chopping:" << std::endl;
+    std::cout << left_column << "  Consecutive count: "
+      << (uint32_t)vars.get_current_chopping_consecutive_count()
+      << std::endl;
+
+    std::cout << left_column << "  Occurrence count: "
+      << (uint32_t)vars.get_current_chopping_occurrence_count()
+      << std::endl;
+
+    std::cout << left_column << "RC pulse width: "
+      << vars.get_rc_pulse_width()
+      << std::endl;
+
+    std::cout << left_column << "Tachometer reading: "
+      << vars.get_tachometer_reading()
+      << std::endl;
+  }
 
   std::cout << left_column << "VIN voltage: "
     << convert_mv_to_v_string(vars.get_vin_voltage(), full_output)
@@ -251,41 +292,6 @@ void print_status(const jrk::variables & vars,
     std::cout << left_column << "Brake duration reverse: "
       << osettings.get_brake_duration_reverse()
       << " ms" << std::endl;
-
-    std::cout << std::endl;
-  }
-
-  if (full_output)
-  {
-    std::cout << left_column << "RC pulse width: "
-      << vars.get_rc_pulse_width()
-      << std::endl;
-
-    std::cout << left_column << "Tachometer reading: "
-      << vars.get_tachometer_reading()
-      << std::endl;
-
-    std::cout << left_column << "Last duty cycle: "
-      << vars.get_last_duty_cycle()
-      << std::endl;
-
-    std::cout << left_column << "Current limit (mA): "
-      << convert_current_limit_ma_to_string(
-         jrk::current_limit_code_to_ma(settings,
-           vars.get_current_limit_code()))
-      << std::endl;
-
-    std::cout << left_column << "Current limit (code): "
-      << "code " << vars.get_current_limit_code()
-      << std::endl;
-
-    std::cout << left_column << "Current chopping consecutive count: "
-      << (uint32_t)vars.get_current_chopping_consecutive_count()
-      << std::endl;
-
-    std::cout << left_column << "Current chopping occurrence count: "
-      << (uint32_t)vars.get_current_chopping_occurrence_count()
-      << std::endl;
 
     std::cout << std::endl;
   }
