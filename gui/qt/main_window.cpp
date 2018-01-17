@@ -2669,7 +2669,7 @@ void main_window::update_graph(uint32_t up_time)
     return;
   }
 
-  graph->key = up_time/1000;
+  graph->key = up_time;
   graph->plot_data();
 }
 

@@ -238,9 +238,9 @@ void graph_widget::remove_data_to_scroll()
 // modifies the x-axis based on the domain value
 // and removes data outside of visible range
 {
-  custom_plot->xAxis->setRange(-domain->value()*1000, 0);
+  custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
 
-  custom_plot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
+  custom_plot->xAxis2->setRange(key, domain->value() * 1000, Qt::AlignRight);
 
   custom_plot->xAxis->setTickStep(domain->value() * 100);
 
