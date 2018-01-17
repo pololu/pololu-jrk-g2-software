@@ -2669,8 +2669,8 @@ void main_window::update_graph(uint32_t up_time)
   {
     return;
   }
-  graph->key = up_time;
-  graph->realtime_data_slot();
+  graph->refreshTimer = up_time;
+  graph->plot_data();
 }
 
 void pid_constant_control::setup(QGroupBox * groupbox)

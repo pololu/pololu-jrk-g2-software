@@ -54,7 +54,6 @@ public:
   QLabel *label2;
   QLabel *label3;
   double refreshTimer;
-  int count = 0;
 
   QHBoxLayout *bottom_control_layout;
   QVBoxLayout *plot_visible_layout;
@@ -65,16 +64,13 @@ private:
   void setup_ui();
 
   // Used to add new plot
-  // display_text = label coupled with display checkbox
-  // range_label = true ("0-")
-  // range_label = false ("\u00B1")
   void setup_plot(plot& x, QString display_text, QString color,
     bool signed_range, double range, bool default_visible = false);
 
 public slots:
-  void on_pause_run_button_clicked();
-  void remove_data_to_scroll();
-  void realtime_data_slot();
-  void set_line_visible();
   void change_ranges();
+  void on_pause_run_button_clicked();
+  void set_line_visible();
+  void remove_data_to_scroll();
+  void plot_data();
 };

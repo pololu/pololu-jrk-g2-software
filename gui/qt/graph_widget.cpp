@@ -14,10 +14,6 @@
 #include <QWidget>
 
 #include <array>
-#include <ctime>
-
-#include <iostream> //tmphax
-
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -43,7 +39,6 @@ void graph_widget::set_preview_mode(bool preview_mode)
   }
   else
   {
-    // custom_plot->setMinimumSize(561,460);
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
   }
@@ -168,7 +163,6 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
 
   x.range->setDecimals(0);
   x.range->setSingleStep(1.0);
-  // x.range->setPrefix(x.range_label->text());
 
   x.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
 
@@ -253,10 +247,9 @@ void graph_widget::remove_data_to_scroll()
   custom_plot->replot();
 }
 
-// plots data on graph (TODO: better function name)
-void graph_widget::realtime_data_slot()
+void graph_widget::plot_data()
 {
-  // key += (refreshTimer/1000);
+  key += (refreshTimer/1000);
 
   for (auto plot : all_plots)
   {
