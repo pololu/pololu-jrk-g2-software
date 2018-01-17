@@ -16,6 +16,8 @@
 #include <array>
 #include <ctime>
 
+#include <iostream> //tmphax
+
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -121,7 +123,6 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping_log, "Current chopping log", "#ff00ff", false, 1);
 
-  custom_plot->xAxis->QCPAxis::setRangeReversed(true);
   custom_plot->yAxis->setRange(-100,100);
   custom_plot->yAxis->setAutoTickStep(false);
   custom_plot->yAxis->setTickStep(20);
@@ -243,7 +244,7 @@ void graph_widget::remove_data_to_scroll()
 // modifies the x-axis based on the domain value
 // and removes data outside of visible range
 {
-  custom_plot->xAxis->setRange(0, domain->value()*1000);
+  custom_plot->xAxis->setRange(-domain->value()*1000, 0);
 
   custom_plot->xAxis2->setRange(key, domain->value(), Qt::AlignRight);
 

@@ -27,14 +27,12 @@ void graph_window::closeEvent(QCloseEvent *event)
   central_layout->removeWidget(grabbed_widget);
   emit pass_widget(grabbed_widget);
   grabbed_widget = 0;
+  setWindowState(Qt::WindowNoState);
   QWidget::closeEvent(event);
 }
 
 void graph_window::receive_widget(graph_widget *widget)
 {
-  if(grabbed_widget != 0)
-    qWarning() << "You might have lost a widget just now.";
-
   grabbed_widget = widget;
   grabbed_widget->set_preview_mode(false);
 

@@ -92,8 +92,6 @@ public:
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
 
-
-
   bool suppress_events = false;
   main_controller * window_controller() const;
   main_controller * controller;

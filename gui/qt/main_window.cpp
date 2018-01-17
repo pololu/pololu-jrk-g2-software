@@ -437,7 +437,7 @@ void main_window::setup_ui()
   grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
   grid_layout->addWidget(connection_status_value, 0, 3);
   grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
-  grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignLeft);
+  grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignCenter);
   grid_layout->addWidget(tab_widget, 1, 0, 1, 6);
   grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
   grid_layout->addWidget(apply_settings_button, 2, 5, Qt::AlignRight);
@@ -595,7 +595,7 @@ void main_window::on_launchGraph_clicked(QMouseEvent *event)
 void main_window::receive_widget(graph_widget *widget)
 {
   widget->set_preview_mode(true);
-  grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignLeft);
+  grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignCenter);
   widgetAtHome = true;
 }
 
