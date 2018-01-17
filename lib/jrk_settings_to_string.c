@@ -379,6 +379,11 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
+    uint16_t error_hard = jrk_settings_get_error_hard(settings);
+    jrk_sprintf(&str, "error_hard: %u\n", error_hard);
+  }
+
+  {
     int16_t vin_calibration = jrk_settings_get_vin_calibration(settings);
     jrk_sprintf(&str, "vin_calibration: %d\n", vin_calibration);
   }

@@ -849,6 +849,20 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_error_latch(settings, error_latch);
   }
+  else if (!strcmp(key, "error_hard"))
+  {
+    int64_t error_hard;
+    if (jrk_string_to_i64(value, &error_hard))
+    {
+      return jrk_error_create("Invalid error_hard value.");
+    }
+    if (error_hard < 0 || error_hard > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The error_hard value is out of range.");
+    }
+    jrk_settings_set_error_hard(settings, error_hard);
+  }
   else if (!strcmp(key, "vin_calibration"))
   {
     int64_t vin_calibration;

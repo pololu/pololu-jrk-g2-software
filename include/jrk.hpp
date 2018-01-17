@@ -1049,6 +1049,18 @@ namespace jrk
       return jrk_settings_get_error_latch(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_error_hard().
+    void set_error_hard(uint16_t value) noexcept
+    {
+      jrk_settings_set_error_hard(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_error_hard().
+    uint16_t get_error_hard() const noexcept
+    {
+      return jrk_settings_get_error_hard(pointer);
+    }
+
     /// Wrapper for jrk_settings_set_vin_calibration().
     void set_vin_calibration(int16_t value) noexcept
     {

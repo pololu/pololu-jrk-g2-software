@@ -568,6 +568,11 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
+    uint16_t error_hard = jrk_settings_get_error_hard(settings);
+    jrk_settings_set_error_hard(settings, error_hard);
+  }
+
+  {
     int16_t vin_calibration = jrk_settings_get_vin_calibration(settings);
     if (vin_calibration < -500)
     {

@@ -67,6 +67,7 @@ struct jrk_settings
   bool coast_when_off;
   uint16_t error_enable;
   uint16_t error_latch;
+  uint16_t error_hard;
   int16_t vin_calibration;
 
   // End of auto-generated settings struct members.
@@ -943,6 +944,18 @@ uint16_t jrk_settings_get_error_latch(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->error_latch;
+}
+
+void jrk_settings_set_error_hard(jrk_settings * settings, uint16_t error_hard)
+{
+  if (settings == NULL) { return; }
+  settings->error_hard = error_hard;
+}
+
+uint16_t jrk_settings_get_error_hard(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->error_hard;
 }
 
 void jrk_settings_set_vin_calibration(jrk_settings * settings, int16_t vin_calibration)
