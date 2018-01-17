@@ -70,7 +70,6 @@ void main_window::set_update_timer_interval(uint32_t interval_ms)
   assert(update_timer);
   assert(interval_ms <= std::numeric_limits<int>::max());
   update_timer->setInterval(interval_ms);
-  graph->refreshTimer = static_cast<double>(interval_ms);
 }
 
 void main_window::start_update_timer()
@@ -2669,7 +2668,8 @@ void main_window::update_graph(uint32_t up_time)
   {
     return;
   }
-  graph->refreshTimer = up_time;
+
+  graph->key = up_time/1000;
   graph->plot_data();
 }
 

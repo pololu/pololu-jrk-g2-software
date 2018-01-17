@@ -131,7 +131,7 @@ void graph_widget::setup_ui()
   // custom_plot->xAxis2->setVisible(true);
   // custom_plot->xAxis2->setTickLabelType(QCPAxis::ltNumber);
   // custom_plot->xAxis2->setAutoTickStep(true);
-  // custom_plot->xAxis2->setTickStep(2);
+  // custom_plot->xAxis2->setTickStep(1000);
 
   set_line_visible();
 
@@ -249,8 +249,6 @@ void graph_widget::remove_data_to_scroll()
 
 void graph_widget::plot_data()
 {
-  key += (refreshTimer/1000);
-
   for (auto plot : all_plots)
   {
     plot->graph->addData(key, plot->plot_value);
