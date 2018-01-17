@@ -256,7 +256,7 @@ void graph_widget::remove_data_to_scroll()
 // plots data on graph (TODO: better function name)
 void graph_widget::realtime_data_slot()
 {
-  key += (refreshTimer/1000);
+  // key += (refreshTimer/1000);
 
   for (auto plot : all_plots)
   {

@@ -445,8 +445,6 @@ void main_window::setup_ui()
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
-  connect(update_timer, SIGNAL(timeout()), graph, SLOT(realtime_data_slot()));
-
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
 
@@ -457,11 +455,9 @@ void main_window::setup_ui()
     apply_settings_action, SLOT(trigger()));
 
   connect(
-    graph->pause_run_button, &QPushButton::clicked,
+    graph->pause_run_button, &QPushButton::toggled,
     [=](const bool& d) {
-      graph->pause_run_button->isChecked() ?
-      disconnect(update_timer, SIGNAL(timeout()), graph, SLOT(realtime_data_slot())) :
-      connect(update_timer, SIGNAL(timeout()), graph, SLOT(realtime_data_slot()));
+      graph_paused = d;
       graph->custom_plot->replot();
     });
 
@@ -2665,6 +2661,16 @@ void main_window::on_update_timer_timeout()
 bool main_window::motor_asymmetric_checked()
 {
   return motor_asymmetric_checkbox->isChecked();
+}
+
+void main_window::update_graph(uint32_t up_time)
+{
+  if (graph_paused)
+  {
+    return;
+  }
+  graph->key = up_time;
+  graph->realtime_data_slot();
 }
 
 void pid_constant_control::setup(QGroupBox * groupbox)

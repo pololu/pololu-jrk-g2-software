@@ -197,6 +197,8 @@ public:
 
   bool motor_asymmetric_checked();
 
+  void update_graph(uint32_t up_time);
+
 signals:
   void pass_widget(graph_widget *widget);
 
@@ -575,6 +577,7 @@ private:
   void set_check_box(QCheckBox * check, bool value);
 
   bool start_event_reported = false;
+  bool graph_paused = false;
 
   QString directory_hint;
 

@@ -594,6 +594,8 @@ void main_controller::handle_variables_changed()
   bool error_active = variables.get_error_flags_halting() != 0;
   window->set_stop_motor_enabled(connected());
   window->set_run_motor_enabled(connected() && error_active);
+
+  window->update_graph(variables.get_up_time());
 }
 
 void main_controller::handle_settings_changed()
