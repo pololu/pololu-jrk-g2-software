@@ -165,7 +165,6 @@ EOF
     comment:
       "This setting specifies how many analog samples to take if the input mode\n" \
       "is analog.  The number of samples will be 2^x, where x is this setting.",
-    default: 7,
   },
   {
     name: 'feedback_mode',
@@ -173,7 +172,6 @@ EOF
     default: 'JRK_FEEDBACK_MODE_ANALOG',
     english_default: 'analog',
     max: 'JRK_FEEDBACK_MODE_FREQUENCY',
-    # TODO: are FB_A and FB_T the real pin names on the silkscreen?
     comment: <<EOF
 The feedback mode setting specifies whether the jrk is using feedback from
 the output of the system, and if so defines what interface is used to
@@ -186,7 +184,7 @@ measure that feedback.
   motor full speed forward, 2048 is brake, and 1448 is full-speed reverse.
 
 - If the feedback mode is "Analog" (JRK_FEEDBACK_MODE_ANALOG), the jrk gets
-  its feedback by measuring the voltage on the FB_A pin.  A level of 0 V
+  its feedback by measuring the voltage on the FBA pin.  A level of 0 V
   corresponds to a feedback value of 0, and a level of 5 V corresponds to a
   feedback value of 4092.  The feedback scaling algorithm computes the scaled
   feedback variable, and the PID algorithm uses the scaled feedback and the
@@ -194,7 +192,7 @@ measure that feedback.
 
 - If the feedback mode is "Frequency (digital)"
   (JRK_FEEDBACK_MODE_FREQUENCY), the jrk gets it feedback by counting rising
-  edges on its FB_T pin.  When the target is greater than 2048, the feedback
+  edges on its FBT pin.  When the target is greater than 2048, the feedback
   value is 2048 plus the number of rising edges detected during the PID
   period.  Otherwise, the the feedback is 2048 minus the the number of rising
   edges detected during the PID period.
@@ -291,7 +289,6 @@ EOF
     comment:
       "This setting specifies how many analog samples to take if the feedback mode\n" \
       "is analog.  The number of samples will be 2^x, where x is this setting.",
-    default: 7,
   },
   {
     name: 'feedback_wraparound',
@@ -787,20 +784,42 @@ EOF
   {
     name: 'error_enable',
     type: :uint16_t,
-    comment:
-      "This setting is a bitmap specifying which errors are enabled.\n" \
-      "This includes errors that are enabled and latched.\n" \
-      "The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are\n" \
-      "always enabled, so the jrk ignores the bits for those errors."
+    comment: <<EOF
+This setting is a bitmap specifying which errors are enabled.
+
+This includes errors that are enabled and latched.
+
+The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
+always enabled, so the jrk ignores the bits for those errors.
+EOF
   },
   {
     name: 'error_latch',
     type: :uint16_t,
-    comment:
-      "This setting is a bitmap specifying which errors are enabled and latched.\n" \
-      "The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are\n" \
-      "always latched if they are enabled, so the jrk ignores the bits for those\n" \
-      "errors."
+    comment: <<EOF
+This setting is a bitmap specifying which errors are enabled and latched.
+
+When a latched error occurs, the jrk will not clear the corresponding error
+bit (and thus not restart the motor) until the jrk receives a command to
+clear the error bits.
+
+The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
+always latched if they are enabled, so the jrk ignores the bits for those
+errors.
+EOF
+  },
+  {
+    name: 'error_hard',
+    type: :uint16_t,
+    comment: <<EOF
+This setting is a bitmap specifying which errors are hard errors.
+
+If a hard error is enabled and it happens, the jrk will set the motor's duty
+cycle to 0 immediately without respecting deceleration limits.
+
+The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
+always hard errors, so the jrk ignores the bits for those errors.
+EOF
   },
   {
     name: 'vin_calibration',
@@ -817,4 +836,3 @@ setting, you increase or decrease the VIN voltage reading by about 1%.
 EOF
   },
 ]
-# TODO: comments for all these settings (for jrk.h)

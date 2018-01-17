@@ -465,7 +465,7 @@ uint8_t jrk_settings_get_input_analog_samples_exponent(const jrk_settings *);
 //   motor full speed forward, 2048 is brake, and 1448 is full-speed reverse.
 //
 // - If the feedback mode is "Analog" (JRK_FEEDBACK_MODE_ANALOG), the jrk gets
-//   its feedback by measuring the voltage on the FB_A pin.  A level of 0 V
+//   its feedback by measuring the voltage on the FBA pin.  A level of 0 V
 //   corresponds to a feedback value of 0, and a level of 5 V corresponds to a
 //   feedback value of 4092.  The feedback scaling algorithm computes the scaled
 //   feedback variable, and the PID algorithm uses the scaled feedback and the
@@ -473,7 +473,7 @@ uint8_t jrk_settings_get_input_analog_samples_exponent(const jrk_settings *);
 //
 // - If the feedback mode is "Frequency (digital)"
 //   (JRK_FEEDBACK_MODE_FREQUENCY), the jrk gets it feedback by counting rising
-//   edges on its FB_T pin.  When the target is greater than 2048, the feedback
+//   edges on its FBT pin.  When the target is greater than 2048, the feedback
 //   value is 2048 plus the number of rising edges detected during the PID
 //   period.  Otherwise, the the feedback is 2048 minus the the number of rising
 //   edges detected during the PID period.
@@ -1215,8 +1215,10 @@ bool jrk_settings_get_coast_when_off(const jrk_settings *);
 // Sets the error_enable setting.
 //
 // This setting is a bitmap specifying which errors are enabled.
+//
 // This includes errors that are enabled and latched.
-// The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are
+//
+// The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
 // always enabled, so the jrk ignores the bits for those errors.
 JRK_API
 void jrk_settings_set_error_enable(jrk_settings *,
@@ -1230,7 +1232,12 @@ uint16_t jrk_settings_get_error_enable(const jrk_settings *);
 // Sets the error_latch setting.
 //
 // This setting is a bitmap specifying which errors are enabled and latched.
-// The JRK_ERROR_* specifies the bits in the bitmap.  Certain errors are
+//
+// When a latched error occurs, the jrk will not clear the corresponding error
+// bit (and thus not restart the motor) until the jrk receives a command to
+// clear the error bits.
+//
+// The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
 // always latched if they are enabled, so the jrk ignores the bits for those
 // errors.
 JRK_API
@@ -1241,6 +1248,24 @@ void jrk_settings_set_error_latch(jrk_settings *,
 // jrk_settings_set_error_latch.
 JRK_API
 uint16_t jrk_settings_get_error_latch(const jrk_settings *);
+
+// Sets the error_hard setting.
+//
+// This setting is a bitmap specifying which errors are hard errors.
+//
+// If a hard error is enabled and it happens, the jrk will set the motor's duty
+// cycle to 0 immediately without respecting deceleration limits.
+//
+// The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
+// always hard errors, so the jrk ignores the bits for those errors.
+JRK_API
+void jrk_settings_set_error_hard(jrk_settings *,
+  uint16_t error_hard);
+
+// Gets the error_hard setting, which is described in
+// jrk_settings_set_error_hard.
+JRK_API
+uint16_t jrk_settings_get_error_hard(const jrk_settings *);
 
 // Sets the vin_calibration setting.
 //
