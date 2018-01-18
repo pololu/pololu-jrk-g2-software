@@ -224,8 +224,8 @@ static uint8_t jrk_get_rsense_mohm(uint32_t product)
 
 // Calculates the measured current in milliamps for a umc04a board.
 //
-// This is basically the same as the calculation that is done in the firmware to
-// produce 'current' variables (see jrk_variables_get_current()).
+// This is the same as the calculation that is done in the firmware to
+// produce 'current' variable (see jrk_variables_get_current()).
 //
 // raw_current: From jrk_variables_get_raw_current().
 // current_limit_code: The hardware current limiting configuration, from
@@ -247,24 +247,8 @@ static uint16_t jrk_calculate_measured_current_ma_umc04a(
     return 0;
   }
 
-  // Fix the calibration constants so our calculations don't overflow.
-  if (current_offset_calibration < -800)
-  {
-    current_offset_calibration = -800;
-  }
-  else if (current_offset_calibration > 800)
-  {
-    current_offset_calibration = 800;
-  }
-
-  if (current_scale_calibration < -1875)
-  {
-    current_scale_calibration = -1875;
-  }
-  else if (current_scale_calibration > 1875)
-  {
-    current_scale_calibration = 1875;
-  }
+  uint16_t offset = 800 + current_offset_calibration;
+  uint16_t scale = 1875 + current_scale_calibration;
 
   uint8_t dac_ref = current_limit_code >> 5 & 3;
 
@@ -272,7 +256,6 @@ static uint16_t jrk_calculate_measured_current_ma_umc04a(
   uint16_t current = raw_current >> ((2 - dac_ref) & 3);
 
   // Subtract the 50mV offset voltage, without making the reading negative.
-  uint16_t offset = 800 + current_offset_calibration;
   if (offset > current)
   {
     current = 0;
@@ -282,10 +265,19 @@ static uint16_t jrk_calculate_measured_current_ma_umc04a(
     current -= offset;
   }
 
-  // The product will be at most 0xFFFF*(2*1875) = 0x0EA5F15A.
-  int32_t current32 = current * (1875 + current_scale_calibration) / (duty_cycle * rsense);
+  uint16_t duty_cycle_unsigned;
+  if (duty_cycle < 0)
+  {
+    duty_cycle_unsigned = -duty_cycle;
+  }
+  else
+  {
+    duty_cycle_unsigned = duty_cycle;
+  }
 
-  if (current32 < 0) { current32 = -current32; }
+  // Divide by the duty cycle and apply scaling factors to get the current in
+  // milliamps.  The product will be at most 0xFFFF*(2*1875) = 0x0EA5F15A.
+  uint32_t current32 = current * scale / (duty_cycle_unsigned * rsense);
 
   if (current32 > 0xFFFF)
   {
@@ -361,10 +353,10 @@ uint32_t jrk_calculate_measured_current_ma(
     if (firmware_calculated_current != software_calculated_current)
     {
       // The only reason this should happen is if there is a bug in the firmware
-      // or software calculation or the current calibration factors are out of
-      // their allowed range.
-      printf("warning: current calculation mismatch: %u != %u\n",
+      // or software calculation.
+      fprintf(stderr, "warning: current calculation mismatch: %u != %u\n",
         firmware_calculated_current, software_calculated_current);
+      fflush(stderr);
     }
 #endif
 
