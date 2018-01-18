@@ -2537,7 +2537,7 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_CRC, false, true), row++, 0, 1, 8);
   layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true), row++, 0, 1, 8);
   layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true), row++, 0, 1, 8);
-  //TODO: layout->addWidget(setup_error_row(JRK_ERROR_OVERCURRENT, false, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_OVERCURRENT, false, false), row++, 0, 1, 8);
   layout->addWidget(errors_clear_errors, row, 6, 1, 1);
   layout->addWidget(errors_reset_counts, row, 7, 1, 1);
 
