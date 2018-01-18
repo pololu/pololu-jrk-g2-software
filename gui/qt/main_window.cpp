@@ -686,28 +686,25 @@ void main_window::set_error_enable(uint16_t enable, uint16_t latch)
 {
   suppress_events = true;
 
-
-  for (int i = 0; i < 13; i++)
+  for (error_row & row : error_rows)
   {
-    if (error_rows[i].always_enabled)
-    {
-      enable |= (1 << i);
-    }
-    if (error_rows[i].always_latched)
-    {
-      latch |= (1 << i);
-    }
+    if (row.stopping_value == NULL) { continue; } // TODO
 
-    if ((latch & (1 << i)) == (1 << i))
+    if ((enable >> row.error_number & 1) || row.always_enabled)
     {
-      error_rows[i].latched_radio->setChecked(true);
-    }
-    else if ((enable & (1 << i)) == (1 << i))
-    {
-      error_rows[i].enabled_radio->setChecked(true);
+      if ((latch >> row.error_number & 1) || row.always_latched)
+      {
+        row.latched_radio->setChecked(true);
+      }
+      else
+      {
+        row.enabled_radio->setChecked(true);
+      }
     }
     else
-      error_rows[i].disabled_radio->setChecked(true);
+    {
+      row.disabled_radio->setChecked(true);
+    }
   }
 
   suppress_events = false;
@@ -718,7 +715,7 @@ void main_window::set_error_flags_halting(uint16_t error_flags_halting)
   error_flags_halting_value->setText(QString::fromStdString(
     convert_error_flags_to_hex_string(error_flags_halting)));
 
-  for (int i = 0; i < 16; i++)
+  for (int i = 0; i < 16; i++) // TODO: use better loop syntax
   {
     if (error_rows[i].stopping_value == NULL) { continue; }
 
@@ -2526,23 +2523,23 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
   layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
 
-  int row_number = 0;
-
-  layout->addWidget(setup_error_row(row_number++, false, false, false, true), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, false, true, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, false, true, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, false, true, true, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, true, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, true, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, true, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
-  layout->addWidget(setup_error_row(row_number++, true, false, false, false), row_number, 0, 1, 8);
-  layout->addWidget(errors_clear_errors, 16, 6, 1, 1);
-  layout->addWidget(errors_reset_counts, 16, 7, 1, 1);
+  int row = 1;
+  layout->addWidget(setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_NO_POWER, true, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_INPUT_INVALID, true, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_INPUT_DISCONNECT, true, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_CRC, false, true), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true), row++, 0, 1, 8);
+  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true), row++, 0, 1, 8);
+  //TODO: layout->addWidget(setup_error_row(JRK_ERROR_OVERCURRENT, false, false), row++, 0, 1, 8);
+  layout->addWidget(errors_clear_errors, row, 6, 1, 1);
+  layout->addWidget(errors_reset_counts, row, 7, 1, 1);
 
   layout->setMargin(0);
 
@@ -2554,8 +2551,8 @@ QWidget *main_window::setup_errors_tab()
   return errors_page_widget;
 }
 
-QWidget * main_window::setup_error_row(int error_number, bool disabled_visible,
-   bool enabled_visible, bool always_enabled, bool always_latched)
+QWidget * main_window::setup_error_row(int error_number, bool always_enabled,
+   bool always_latched)
 {
   new_error_row = new QWidget();
 
@@ -2564,18 +2561,16 @@ QWidget * main_window::setup_error_row(int error_number, bool disabled_visible,
   row.always_enabled = always_enabled;
   row.always_latched = always_latched;
 
-  row.index = error_number;
+  row.error_number = error_number;
 
-  uint16_t error_mask = (1 << error_number);
+  uint16_t error_mask = 1 << error_number;
 
   row.errors_frame = new QWidget();
 
-  if(error_number % 2 != 0)
+  if (error_number % 2 != 0)
   {
     row.errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
   }
-
-  row.count = 0;
 
   QGridLayout * errors_central = new QGridLayout(new_error_row);
 
@@ -2615,7 +2610,7 @@ QWidget * main_window::setup_error_row(int error_number, bool disabled_visible,
     static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     [=] (int id)
     {
-      on_error_enable_group_buttonToggled(id, row.index);
+      on_error_enable_group_buttonToggled(id, row.error_number);
     });
 
   row.stopping_value = new QLabel(tr("No"));
@@ -2657,8 +2652,10 @@ QWidget * main_window::setup_error_row(int error_number, bool disabled_visible,
   errors_central->addWidget(row.stopping_value, 1, 6);
   errors_central->addWidget(row.count_value, 1, 7);
 
-  row.disabled_radio->setVisible(disabled_visible);
-  row.enabled_radio->setVisible(enabled_visible);
+  // Note: We have to do this *after* adding the radio buttons to the layout or
+  // else Qt shows lots of flickering things when the program starts.
+  row.disabled_radio->setVisible(!always_enabled);
+  row.enabled_radio->setVisible(!always_latched);
 
   errors_central->setMargin(0);
 
