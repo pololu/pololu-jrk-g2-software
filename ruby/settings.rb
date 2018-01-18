@@ -770,6 +770,34 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
+    name: 'max_current_forward',
+    type: :uint16_t,
+    default: 0,
+    overridable: true,
+    comment: <<EOF
+This is the maximum current while driving forward.  If the current exceeds
+this value, the jrk will trigger a "Max. current exceeded" error.
+
+A value of 0 means no limit.
+
+For the umc04a jrks, the units of this setting are in milliamps.
+EOF
+  },
+  {
+    name: 'max_current_reverse',
+    type: :uint16_t,
+    default: 0,
+    overridable: true,
+    comment: <<EOF
+This is the maximum current while driving in reverse.  If the current exceeds
+this value, the jrk will trigger a "Max. current exceeded" error.
+
+A value of 0 means no limit.
+
+For the umc04a jrks, the units of this setting are in milliamps.
+EOF
+  },
+  {
     name: 'coast_when_off',
     type: :bool,
     overridable: true,

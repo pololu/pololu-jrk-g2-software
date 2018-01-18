@@ -558,6 +558,16 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
+    uint16_t max_current_forward = jrk_settings_get_max_current_forward(settings);
+    jrk_settings_set_max_current_forward(settings, max_current_forward);
+  }
+
+  {
+    uint16_t max_current_reverse = jrk_settings_get_max_current_reverse(settings);
+    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+  }
+
+  {
     uint16_t error_enable = jrk_settings_get_error_enable(settings);
     jrk_settings_set_error_enable(settings, error_enable);
   }

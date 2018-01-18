@@ -277,6 +277,16 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
+    uint16_t max_current_forward = read_uint16_t(buf + JRK_SETTING_MAX_CURRENT_FORWARD);
+    jrk_settings_set_max_current_forward(settings, max_current_forward);
+  }
+
+  {
+    uint16_t max_current_reverse = read_uint16_t(buf + JRK_SETTING_MAX_CURRENT_REVERSE);
+    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+  }
+
+  {
     bool coast_when_off = buf[JRK_SETTING_OPTIONS_BYTE3] >> JRK_OPTIONS_BYTE3_COAST_WHEN_OFF & 1;
     jrk_settings_set_coast_when_off(settings, coast_when_off);
   }

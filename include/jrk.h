@@ -1197,6 +1197,40 @@ void jrk_settings_set_brake_duration_reverse(jrk_settings *,
 JRK_API
 uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 
+// Sets the max_current_forward setting.
+//
+// This is the maximum current while driving forward.  If the current exceeds
+// this value, the jrk will trigger a "Max. current exceeded" error.
+//
+// A value of 0 means no limit.
+//
+// For the umc04a jrks, the units of this setting are in milliamps.
+JRK_API
+void jrk_settings_set_max_current_forward(jrk_settings *,
+  uint16_t max_current_forward);
+
+// Gets the max_current_forward setting, which is described in
+// jrk_settings_set_max_current_forward.
+JRK_API
+uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
+
+// Sets the max_current_reverse setting.
+//
+// This is the maximum current while driving in reverse.  If the current exceeds
+// this value, the jrk will trigger a "Max. current exceeded" error.
+//
+// A value of 0 means no limit.
+//
+// For the umc04a jrks, the units of this setting are in milliamps.
+JRK_API
+void jrk_settings_set_max_current_reverse(jrk_settings *,
+  uint16_t max_current_reverse);
+
+// Gets the max_current_reverse setting, which is described in
+// jrk_settings_set_max_current_reverse.
+JRK_API
+uint16_t jrk_settings_get_max_current_reverse(const jrk_settings *);
+
 // Sets the coast_when_off setting.
 //
 // By default, the jrk drives both motor outputs low when the motor is
@@ -1652,6 +1686,36 @@ void jrk_overridable_settings_set_brake_duration_reverse(jrk_overridable_setting
 // See jrk_settings_set_brake_duration_reverse() for more info.
 JRK_API
 uint32_t jrk_overridable_settings_get_brake_duration_reverse(const jrk_overridable_settings *);
+
+// Sets the max_current_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_max_current_forward(jrk_overridable_settings *,
+  uint16_t max_current_forward);
+
+// Gets the max_current_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_forward() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_max_current_forward(const jrk_overridable_settings *);
+
+// Sets the max_current_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_max_current_reverse(jrk_overridable_settings *,
+  uint16_t max_current_reverse);
+
+// Gets the max_current_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_reverse() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_max_current_reverse(const jrk_overridable_settings *);
 
 // Sets the coast_when_off setting
 // in a jrk_overridable_settings object.

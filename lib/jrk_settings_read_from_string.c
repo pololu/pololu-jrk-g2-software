@@ -811,6 +811,34 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_brake_duration_reverse(settings, brake_duration_reverse);
   }
+  else if (!strcmp(key, "max_current_forward"))
+  {
+    int64_t max_current_forward;
+    if (jrk_string_to_i64(value, &max_current_forward))
+    {
+      return jrk_error_create("Invalid max_current_forward value.");
+    }
+    if (max_current_forward < 0 || max_current_forward > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The max_current_forward value is out of range.");
+    }
+    jrk_settings_set_max_current_forward(settings, max_current_forward);
+  }
+  else if (!strcmp(key, "max_current_reverse"))
+  {
+    int64_t max_current_reverse;
+    if (jrk_string_to_i64(value, &max_current_reverse))
+    {
+      return jrk_error_create("Invalid max_current_reverse value.");
+    }
+    if (max_current_reverse < 0 || max_current_reverse > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The max_current_reverse value is out of range.");
+    }
+    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+  }
   else if (!strcmp(key, "coast_when_off"))
   {
     uint32_t coast_when_off;
