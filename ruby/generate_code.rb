@@ -79,6 +79,8 @@ class IndentedStream
 end
 
 def autogenerate_file_fragments_core(file, &proc)
+  return if file.to_s.start_with?('#')
+
   new_file = ''
 
   line_enum = file.each_line
@@ -100,7 +102,7 @@ def autogenerate_file_fragments_core(file, &proc)
       md = line.match(/\s*\/\/ End of auto-generated (.+)\./)
       next if !md
       if md[1] != fragment_name
-        raise "Mismatching ending line: expected #{fragment_name}, got #{md[1]}."
+        raise "Mismatching ending line in #{file.to_s}: expected #{fragment_name}, got #{md[1]}."
       end
       break line
     end

@@ -1437,10 +1437,10 @@ namespace jrk
       return jrk_variables_get_duty_cycle(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_current().
-    uint8_t get_current() const noexcept
+    /// Wrapper for jrk_variables_get_current_low_res().
+    uint8_t get_current_low_res() const noexcept
     {
-      return jrk_variables_get_current(pointer);
+      return jrk_variables_get_current_low_res(pointer);
     }
 
     /// Wrapper for jrk_variables_get_pid_period_exceeded().
@@ -1473,6 +1473,12 @@ namespace jrk
       return jrk_variables_get_vin_voltage(pointer);
     }
 
+    /// Wrapper for jrk_variables_get_current().
+    uint16_t get_current() const noexcept
+    {
+      return jrk_variables_get_current(pointer);
+    }
+
     /// Wrapper for jrk_variables_get_device_reset().
     uint8_t get_device_reset() const noexcept
     {
@@ -1497,10 +1503,10 @@ namespace jrk
       return jrk_variables_get_tachometer_reading(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_current_high_res().
-    uint16_t get_current_high_res() const noexcept
+    /// Wrapper for jrk_variables_get_raw_current().
+    uint16_t get_raw_current() const noexcept
     {
-      return jrk_variables_get_current_high_res(pointer);
+      return jrk_variables_get_raw_current(pointer);
     }
 
     /// Wrapper for jrk_variables_get_current_limit_code().
