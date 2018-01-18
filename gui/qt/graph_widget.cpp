@@ -114,7 +114,7 @@ void graph_widget::setup_ui()
 
   setup_plot(raw_current, "Raw current (mV)", "#b8860b", false, 4095);
 
-  setup_plot(current, "Current (mA)", "#0000ff", true, 100000);
+  setup_plot(current, "Current (mA)", "#0000ff", false, 100000);
 
   setup_plot(current_chopping_log, "Current chopping log", "#ff00ff", false, 1);
 
