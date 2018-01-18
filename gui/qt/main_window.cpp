@@ -2554,77 +2554,77 @@ QWidget *main_window::setup_errors_tab()
   return errors_page_widget;
 }
 
-QWidget * main_window::setup_error_row(int row_number, bool disabled_visible,
+QWidget * main_window::setup_error_row(int error_number, bool disabled_visible,
    bool enabled_visible, bool always_enabled, bool always_latched)
 {
   new_error_row = new QWidget();
 
-  uint16_t error_name = 0;
+  error_row & row = error_rows[error_number];
 
-  error_rows[row_number].always_enabled = always_enabled;
-  error_rows[row_number].always_latched = always_latched;
+  row.always_enabled = always_enabled;
+  row.always_latched = always_latched;
 
-  error_rows[row_number].index = row_number;
+  row.index = error_number;
 
-  error_name |= (1 << row_number);
+  uint16_t error_mask = (1 << error_number);
 
-  error_rows[row_number].errors_frame = new QWidget();
+  row.errors_frame = new QWidget();
 
-  if(row_number % 2 != 0)
+  if(error_number % 2 != 0)
   {
-    error_rows[row_number].errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+    row.errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
   }
 
-  error_rows[row_number].count = 0;
+  row.count = 0;
 
   QGridLayout * errors_central = new QGridLayout(new_error_row);
 
-  error_rows[row_number].bit_mask_label = new QLabel();
-  error_rows[row_number].bit_mask_label->setObjectName("bit_mask_label");
-  error_rows[row_number].bit_mask_label->setAlignment(Qt::AlignCenter);
-  error_rows[row_number].bit_mask_label->setText(QString::fromStdString(convert_error_flags_to_hex_string(error_name)));
+  row.bit_mask_label = new QLabel();
+  row.bit_mask_label->setObjectName("bit_mask_label");
+  row.bit_mask_label->setAlignment(Qt::AlignCenter);
+  row.bit_mask_label->setText(QString::fromStdString(convert_error_flags_to_hex_string(error_mask)));
 
-  error_rows[row_number].error_label = new QLabel();
-  error_rows[row_number].error_label->setObjectName("error_label");
-  error_rows[row_number].error_label->setAlignment(Qt::AlignLeft);
-  error_rows[row_number].error_label->setText(QString::fromStdString(jrk_look_up_error_name_ui(error_name)));
+  row.error_label = new QLabel();
+  row.error_label->setObjectName("error_label");
+  row.error_label->setAlignment(Qt::AlignLeft);
+  row.error_label->setText(jrk_look_up_error_name_ui(error_mask));
 
-  error_rows[row_number].disabled_radio = new QRadioButton(("Disabled"));
-  error_rows[row_number].disabled_radio->setObjectName("disabled_radio");
-  QSizePolicy p = error_rows[row_number].disabled_radio->sizePolicy();
+  row.disabled_radio = new QRadioButton(tr("Disabled"));
+  row.disabled_radio->setObjectName("disabled_radio");
+  QSizePolicy p = row.disabled_radio->sizePolicy();
   p.setRetainSizeWhenHidden(true);
-  error_rows[row_number].disabled_radio->setSizePolicy(p);
+  row.disabled_radio->setSizePolicy(p);
 
-  error_rows[row_number].enabled_radio = new QRadioButton(("Enabled"));
-  error_rows[row_number].enabled_radio->setObjectName("enabled_radio");
-  QSizePolicy q = error_rows[row_number].enabled_radio->sizePolicy();
+  row.enabled_radio = new QRadioButton(tr("Enabled"));
+  row.enabled_radio->setObjectName("enabled_radio");
+  QSizePolicy q = row.enabled_radio->sizePolicy();
   q.setRetainSizeWhenHidden(true);
-  error_rows[row_number].enabled_radio->setSizePolicy(p);
+  row.enabled_radio->setSizePolicy(p);
 
-  error_rows[row_number].latched_radio = new QRadioButton(("Enabled and latched"));
-  error_rows[row_number].latched_radio->setObjectName("latched_radio");
+  row.latched_radio = new QRadioButton(tr("Enabled and latched"));
+  row.latched_radio->setObjectName("latched_radio");
 
-  error_rows[row_number].error_enable_group = new QButtonGroup(this);
-  error_rows[row_number].error_enable_group->setObjectName(QStringLiteral("error_enable_group"));
-  error_rows[row_number].error_enable_group->setExclusive(true);
-  error_rows[row_number].error_enable_group->addButton(error_rows[row_number].disabled_radio, 0);
-  error_rows[row_number].error_enable_group->addButton(error_rows[row_number].enabled_radio, 1);
-  error_rows[row_number].error_enable_group->addButton(error_rows[row_number].latched_radio, 2);
+  row.error_enable_group = new QButtonGroup();
+  row.error_enable_group->setObjectName("error_enable_group");
+  row.error_enable_group->setExclusive(true);
+  row.error_enable_group->addButton(row.disabled_radio, 0);
+  row.error_enable_group->addButton(row.enabled_radio, 1);
+  row.error_enable_group->addButton(row.latched_radio, 2);
 
-  connect(error_rows[row_number].error_enable_group,
+  connect(row.error_enable_group,
     static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     [=] (int id)
     {
-      on_error_enable_group_buttonToggled(id, error_rows[row_number].index);
+      on_error_enable_group_buttonToggled(id, row.index);
     });
 
-  error_rows[row_number].stopping_value = new QLabel(("No"));
-  error_rows[row_number].stopping_value->setObjectName("stopping_value");
-  error_rows[row_number].stopping_value->setAlignment(Qt::AlignCenter);
+  row.stopping_value = new QLabel(tr("No"));
+  row.stopping_value->setObjectName("stopping_value");
+  row.stopping_value->setAlignment(Qt::AlignCenter);
 
-  error_rows[row_number].count_value = new QLabel(("-"));
-  error_rows[row_number].count_value->setObjectName("count_value");
-  error_rows[row_number].count_value->setAlignment(Qt::AlignCenter);
+  row.count_value = new QLabel("-");
+  row.count_value->setObjectName("count_value");
+  row.count_value->setAlignment(Qt::AlignCenter);
 
   // Set the size of the labels and buttons for the errors tab in
   // a way that can change from OS to OS.
@@ -2639,26 +2639,26 @@ QWidget * main_window::setup_error_row(int row_number, bool disabled_visible,
     tmp_label2.setText("xxxxxxxxxxx");
     QLabel tmp_label3;
     tmp_label3.setText("xxxxxxxxxxxxxxx");
-    error_rows[row_number].bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
-    error_rows[row_number].error_label->setFixedWidth(tmp_label.sizeHint().width());
-    error_rows[row_number].disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    error_rows[row_number].enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    error_rows[row_number].latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    error_rows[row_number].stopping_value->setFixedWidth(tmp_label3.sizeHint().width());
-    error_rows[row_number].count_value->setFixedWidth(tmp_label3.sizeHint().width());
+    row.bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
+    row.error_label->setFixedWidth(tmp_label.sizeHint().width());
+    row.disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
+    row.enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
+    row.latched_radio->setFixedWidth(tmp_button.sizeHint().width());
+    row.stopping_value->setFixedWidth(tmp_label3.sizeHint().width());
+    row.count_value->setFixedWidth(tmp_label3.sizeHint().width());
   }
 
-  errors_central->addWidget(error_rows[row_number].errors_frame,0,0,3,8);
-  errors_central->addWidget(error_rows[row_number].bit_mask_label,1,1);
-  errors_central->addWidget(error_rows[row_number].error_label,1,2);
-  errors_central->addWidget(error_rows[row_number].disabled_radio,1,3);
-  errors_central->addWidget(error_rows[row_number].enabled_radio,1,4);
-  errors_central->addWidget(error_rows[row_number].latched_radio,1,5);
-  errors_central->addWidget(error_rows[row_number].stopping_value,1,6);
-  errors_central->addWidget(error_rows[row_number].count_value,1,7);
+  errors_central->addWidget(row.errors_frame, 0, 0, 3, 8);
+  errors_central->addWidget(row.bit_mask_label, 1, 1);
+  errors_central->addWidget(row.error_label, 1, 2);
+  errors_central->addWidget(row.disabled_radio, 1, 3);
+  errors_central->addWidget(row.enabled_radio, 1, 4);
+  errors_central->addWidget(row.latched_radio, 1, 5);
+  errors_central->addWidget(row.stopping_value, 1, 6);
+  errors_central->addWidget(row.count_value, 1, 7);
 
-  error_rows[row_number].disabled_radio->setVisible(disabled_visible);
-  error_rows[row_number].enabled_radio->setVisible(enabled_visible);
+  row.disabled_radio->setVisible(disabled_visible);
+  row.enabled_radio->setVisible(enabled_visible);
 
   errors_central->setMargin(0);
 
