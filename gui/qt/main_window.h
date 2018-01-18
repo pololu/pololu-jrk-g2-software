@@ -199,6 +199,8 @@ public:
 
   void update_graph(uint32_t up_time);
 
+  void clear_graph();
+
 signals:
   void pass_widget(graph_widget *widget);
 

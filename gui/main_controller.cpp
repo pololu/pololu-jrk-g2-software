@@ -560,6 +560,7 @@ void main_controller::handle_device_changed()
     // }
   }
 
+  window->clear_graph();
   window->set_disconnect_enabled(connected());
   window->set_open_save_settings_enabled(connected());
   window->set_reload_settings_enabled(connected());

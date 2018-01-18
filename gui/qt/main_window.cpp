@@ -2673,6 +2673,11 @@ void main_window::update_graph(uint32_t up_time)
   graph->plot_data();
 }
 
+void main_window::clear_graph()
+{
+  graph->key = 0;
+}
+
 void pid_constant_control::setup(QGroupBox * groupbox)
 {
   QFont font;

@@ -249,6 +249,8 @@ void graph_widget::remove_data_to_scroll()
 
 void graph_widget::plot_data()
 {
+  if (key == 0)
+    return;
   for (auto plot : all_plots)
   {
     plot->graph->addData(key, plot->plot_value);
