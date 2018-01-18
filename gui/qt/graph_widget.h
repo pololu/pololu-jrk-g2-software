@@ -57,6 +57,8 @@ public:
   QHBoxLayout *bottom_control_layout;
   QVBoxLayout *plot_visible_layout;
 
+  bool graph_paused = false;
+
   void set_preview_mode(bool preview_mode);
 
 private:

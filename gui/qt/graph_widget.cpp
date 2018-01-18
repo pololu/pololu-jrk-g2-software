@@ -222,6 +222,7 @@ void graph_widget::change_ranges()
 void graph_widget::on_pause_run_button_clicked()
 {
   pause_run_button->setText(pause_run_button->isChecked() ? "R&un" : "&Pause");
+  graph_paused = pause_run_button->isChecked();
   custom_plot->replot();
 }
 
@@ -251,6 +252,10 @@ void graph_widget::plot_data()
 {
   if (key == 0)
     return;
+
+  if (graph_paused)
+    return;
+
   for (auto plot : all_plots)
   {
     plot->graph->addData(key, plot->plot_value);

@@ -453,13 +453,6 @@ void main_window::setup_ui()
   connect(apply_settings_button, SIGNAL(clicked()),
     apply_settings_action, SLOT(trigger()));
 
-  connect(
-    graph->pause_run_button, &QPushButton::toggled,
-    [=](const bool& d) {
-      graph_paused = d;
-      graph->custom_plot->replot();
-    });
-
   central_widget->setLayout(grid_layout);
 
   QMetaObject::connectSlotsByName(this);
@@ -2664,11 +2657,6 @@ bool main_window::motor_asymmetric_checked()
 
 void main_window::update_graph(uint32_t up_time)
 {
-  if (graph_paused)
-  {
-    return;
-  }
-
   graph->key = up_time;
   graph->plot_data();
 }
