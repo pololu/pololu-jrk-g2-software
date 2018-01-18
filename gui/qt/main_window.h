@@ -92,9 +92,7 @@ public:
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
 
-  bool suppress_events = false;
-  main_controller * window_controller() const;
-  main_controller * controller;
+
   void set_device_list_contents(std::vector<jrk::device> const & device_list);
   void set_device_list_selected(jrk::device const & device);
 
@@ -181,12 +179,6 @@ public:
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
 
-  void set_current_velocity(int32_t current_velocity);
-
-  void set_current_position(int32_t current_position);
-
-  void set_target_none();
-
   void set_tab_pages_enabled(bool enabled);
   void set_open_save_settings_enabled(bool enabled);
   void set_disconnect_enabled(bool enabled);
@@ -199,7 +191,20 @@ public:
 
   void update_graph(uint32_t up_time);
 
-  void clear_graph();
+  void reset_graph();
+
+  bool suppress_events = false;
+  main_controller * window_controller() const;
+  main_controller * controller;
+
+private:
+  // Helper method for setting the index of a combo box, given the desired
+  // uint8_t item value. Sets index of -1 for no selection if the specified
+  // value is not found.
+  void set_u8_combobox(QComboBox * combo, uint8_t value);
+  void set_spin_box(QSpinBox * box, int value);
+  void set_double_spin_box(QDoubleSpinBox * spin, double value);
+  void set_check_box(QCheckBox * check, bool value);
 
 signals:
   void pass_widget(graph_widget *widget);
@@ -226,8 +231,8 @@ private slots:
   void on_apply_settings_action_triggered();
   void on_upgrade_firmware_action_triggered();
   void upgrade_firmware_complete();
-  void on_stop_motor_action_triggered();
   void on_run_motor_action_triggered();
+  void on_stop_motor_action_triggered();
   void on_set_target_button_clicked();
   void on_manual_target_scroll_bar_valueChanged(int value);
   void on_open_settings_action_triggered();
@@ -300,13 +305,38 @@ private slots:
   void on_errors_reset_counts_clicked();
 
 private:
+  void setup_ui();
+  void setup_style_sheet();
+  void setup_menu_bar();
+
+  QWidget * setup_status_tab();
+  QWidget * setup_variables_box();
+  QWidget * setup_manual_target_box();
+
+  QWidget * setup_input_tab();
+  QWidget * setup_input_analog_groupbox();
+  QWidget * setup_input_serial_groupbox();
+  QWidget * setup_input_scaling_groupbox();
+
+  QWidget * setup_feedback_tab();
+  QWidget * setup_feedback_scaling_groupbox();
+  QWidget * setup_feedback_analog_groupbox();
+
+  QWidget * setup_pid_tab();
+
+  QWidget * setup_motor_tab();
+
+  QWidget * setup_errors_tab();
+  QWidget * setup_error_row(int row_number, bool disabled_visible,
+   bool enabled_visible, bool always_enabled, bool always_latched);
+
   QTimer *update_timer = NULL;
 
   QWidget *central_widget;
   QGridLayout *grid_layout;
   QHBoxLayout *horizontal_layout;
   graph_widget *graph;
-  graph_window *altw;
+  graph_window *popout_graph_window;
   QWidget * preview_plot;
 
   QMenuBar * menu_bar;
@@ -526,6 +556,8 @@ private:
   QRadioButton * motor_brake_radio;
   QRadioButton * motor_coast_radio;
 
+  // errors tab
+
   QWidget *errors_page_widget;
   QGridLayout *errors_page_layout;
   QLabel *errors_bit_mask_label;
@@ -535,48 +567,14 @@ private:
   QLabel *errors_occurence_count_label;
   QPushButton *errors_clear_errors;
   QPushButton *errors_reset_counts;
+  QWidget * new_error_row;
+  std::array<error_row, 16> error_rows;
 
   QHBoxLayout * footer_layout;
   QPushButton * stop_motor_button;
   QPushButton * run_motor_button;
   QPushButton * apply_settings_button;
 
-  QAction *sepAct;
-  bool widgetAtHome;
-
-  QWidget * setup_status_tab();
-  QWidget * setup_variables_box();
-  QWidget * setup_manual_target_box();
-
-  QWidget * setup_input_tab();
-  QWidget * setup_input_analog_groupbox();
-  QWidget * setup_input_serial_groupbox();
-  QWidget * setup_input_scaling_groupbox();
-
-  QWidget * setup_feedback_tab();
-  QWidget * setup_feedback_scaling_groupbox();
-  QWidget * setup_feedback_analog_groupbox();
-
-  QWidget * setup_pid_tab();
-
-  QWidget * setup_motor_tab();
-  QWidget * setup_errors_tab();
-  QWidget * setup_error_row(int row_number, bool disabled_visible,
-   bool enabled_visible, bool always_enabled, bool always_latched);
-  QWidget * new_error_row;
-  std::array<error_row, 16> error_rows;
-
-  void setup_ui();
-  void setup_style_sheet();
-  void setup_menu_bar();
-
-  // Helper method for setting the index of a combo box, given the desired
-  // uint8_t item value. Sets index of -1 for no selection if the specified
-  // value is not found.
-  void set_u8_combobox(QComboBox * combo, uint8_t value);
-  void set_spin_box(QSpinBox * box, int value);
-  void set_double_spin_box(QDoubleSpinBox * spin, double value);
-  void set_check_box(QCheckBox * check, bool value);
 
   bool start_event_reported = false;
 

@@ -55,9 +55,8 @@ Q_IMPORT_PLUGIN (QXcbIntegrationPlugin);
 main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
 {
-  widgetAtHome = true;
   setup_ui();
-  altw = 0;
+  popout_graph_window = 0;
 }
 
 void main_window::set_controller(main_controller * controller)
@@ -230,6 +229,490 @@ void main_window::set_vin_voltage(uint16_t vin_voltage)
     convert_mv_to_v_string(vin_voltage)));
 }
 
+void main_window::set_device_list_contents(const std::vector<jrk::device> & device_list)
+{
+  suppress_events = true;
+  device_list_value->clear();
+  device_list_value->addItem(tr("Not connected"), QString()); // null value
+  for (const jrk::device & device : device_list)
+  {
+    device_list_value->addItem(
+      QString::fromStdString(
+        std::string(jrk_look_up_product_name_short(device.get_product())) +
+        " #" + device.get_serial_number()),
+      QString::fromStdString(device.get_os_id()));
+  }
+  suppress_events = false;
+}
+
+void main_window::set_device_list_selected(const jrk::device & device)
+{
+  // TODO: show an error if we couldn't find the specified device
+  // (findData returned -1)?
+  suppress_events = true;
+  int index = 0;
+  if (device)
+  {
+    index = device_list_value->findData(QString::fromStdString(device.get_os_id()));
+  }
+  device_list_value->setCurrentIndex(index);
+  suppress_events = false;
+}
+
+void main_window::set_connection_status(std::string const & status, bool error)
+{
+  if (error)
+  {
+    connection_status_value->setStyleSheet("color: red;");
+  }
+  else
+  {
+    connection_status_value->setStyleSheet("");
+  }
+  connection_status_value->setText(QString::fromStdString(status));
+}
+
+void main_window::set_manual_target_enabled(bool enabled)
+{
+  // TODO: manual_target_widget->setEnabled(enabled);
+}
+
+void main_window::set_apply_settings_enabled(bool enabled)
+{
+  apply_settings_button->setEnabled(enabled);
+  apply_settings_action->setEnabled(enabled);
+}
+
+void main_window::set_vin_calibration(int16_t vin_calibration)
+{
+  // TODO: set_spin_box(vin_calibration_value, vin_calibration);
+}
+
+void main_window::set_never_sleep(bool never_sleep)
+{
+  set_check_box(input_never_sleep_checkbox, never_sleep);
+}
+
+void main_window::set_input_mode(uint8_t input_mode)
+{
+  set_u8_combobox(input_mode_combobox, input_mode);
+  switch (input_mode)
+  {
+    case 0:
+      input_analog_groupbox->setEnabled(false);
+      input_serial_groupbox->setEnabled(true);
+      input_scaling_groupbox->setEnabled(false);
+      break;
+    case 1:
+      input_analog_groupbox->setEnabled(true);
+      input_serial_groupbox->setEnabled(true);
+      input_scaling_groupbox->setEnabled(true);
+      break;
+    case 2:
+      input_analog_groupbox->setEnabled(false);
+      input_serial_groupbox->setEnabled(true);
+      input_scaling_groupbox->setEnabled(true);
+      break;
+    default:
+      return;
+  }
+}
+
+void main_window::set_input_invert(bool input_invert)
+{
+  set_check_box(input_invert_checkbox, input_invert);
+}
+
+void main_window::set_input_analog_samples_exponent(uint8_t input_analog_samples)
+{
+  set_u8_combobox(input_analog_samples_combobox, input_analog_samples);
+}
+
+void main_window::set_input_detect_disconnect(bool input_detect_disconnect)
+{
+  set_check_box(input_detect_disconnect_checkbox, input_detect_disconnect);
+}
+
+void main_window::set_input_serial_mode(uint8_t value)
+{
+  suppress_events = true;
+  QAbstractButton * radio = input_serial_mode_button_group->button(value);
+  if (radio)
+  {
+    radio->setChecked(true);
+  }
+  else
+  {
+    // The value doesn't correspond with any of the radio buttons, so clear
+    // the currently selected button, if any.
+    QAbstractButton * checked = input_serial_mode_button_group->checkedButton();
+    if (checked)
+    {
+      input_serial_mode_button_group->setExclusive(false);
+      checked->setChecked(false);
+      input_serial_mode_button_group->setExclusive(true);
+    }
+  }
+  suppress_events = false;
+}
+
+void main_window::set_input_baud_rate(uint32_t value)
+{
+  set_spin_box(input_uart_fixed_baud_spinbox, value);
+}
+
+void main_window::set_input_enable_crc(bool enabled)
+{
+  set_check_box(input_enable_crc_checkbox, enabled);
+}
+
+void main_window::set_input_device_number(uint16_t value)
+{
+  set_spin_box(input_device_spinbox, value);
+}
+
+void main_window::set_input_enable_device_number(bool enabled)
+{
+  set_check_box(input_device_number_checkbox, enabled);
+}
+
+void main_window::set_input_serial_timeout(uint16_t value)
+{
+  set_double_spin_box(input_timeout_spinbox, value);
+}
+
+void main_window::set_input_compact_protocol(bool enabled)
+{
+  set_check_box(input_disable_compact_protocol_checkbox, enabled);
+}
+
+void main_window::set_input_never_sleep(bool enabled)
+{
+  set_check_box(input_never_sleep_checkbox, enabled);
+}
+
+void main_window::set_input_absolute_minimum(uint16_t input_absolute_minimum)
+{
+  set_spin_box(input_absolute_minimum_spinbox, input_absolute_minimum);
+}
+
+void main_window::set_input_absolute_maximum(uint16_t input_absolute_maximum)
+{
+  set_spin_box(input_absolute_maximum_spinbox, input_absolute_maximum);
+}
+
+void main_window::set_input_minimum(uint16_t input_minimum)
+{
+  set_spin_box(input_minimum_spinbox, input_minimum);
+}
+
+void main_window::set_input_maximum(uint16_t input_maximum)
+{
+  set_spin_box(input_maximum_spinbox, input_maximum);
+}
+
+void main_window::set_input_neutral_minimum(uint16_t input_neutral_minimum)
+{
+  set_spin_box(input_neutral_minimum_spinbox, input_neutral_minimum);
+}
+
+void main_window::set_input_neutral_maximum(uint16_t input_neutral_maximum)
+{
+  set_spin_box(input_neutral_maximum_spinbox, input_neutral_maximum);
+}
+
+void main_window::set_input_output_minimum(uint16_t input_output_minimum)
+{
+  set_spin_box(input_output_minimum_spinbox, input_output_minimum);
+}
+
+void main_window::set_input_output_neutral(uint16_t input_output_neutral)
+{
+  set_spin_box(input_output_neutral_spinbox, input_output_neutral);
+}
+
+void main_window::set_input_output_maximum(uint16_t input_output_maximum)
+{
+  set_spin_box(input_output_maximum_spinbox, input_output_maximum);
+}
+
+void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
+{
+  set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
+}
+
+static bool ordered(QList<int> p)
+{
+  for (int i = 0; i < p.size()-1; i++)
+  {
+    if (p[i] > p[i + 1])
+      return false;
+  }
+  return true;
+}
+
+void main_window::set_input_scaling_order_warning_label()
+{
+  bool enabled =
+  !ordered({input_absolute_minimum_spinbox->value(), input_minimum_spinbox->value(),
+    input_neutral_minimum_spinbox->value(), input_neutral_maximum_spinbox->value(),
+    input_maximum_spinbox->value(), input_absolute_maximum_spinbox->value()});
+  input_scaling_order_warning_label->setVisible(enabled);
+}
+
+void main_window::set_feedback_mode(uint8_t feedback_mode)
+{
+  set_u8_combobox(feedback_mode_combobox, feedback_mode);
+  switch (feedback_mode)
+  {
+    case 0:
+      feedback_analog_groupbox->setEnabled(false);
+      feedback_scaling_groupbox->setEnabled(false);
+      break;
+    case 1:
+      feedback_analog_groupbox->setEnabled(true);
+      feedback_scaling_groupbox->setEnabled(true);
+      break;
+    case 2:
+      feedback_analog_groupbox->setEnabled(false);
+      feedback_scaling_groupbox->setEnabled(true);
+      break;
+    default:
+      return;
+  }
+}
+
+void main_window::set_feedback_invert(bool feedback_invert)
+{
+  set_check_box(feedback_invert_checkbox, feedback_invert);
+}
+
+void main_window::set_feedback_absolute_minimum(uint16_t value)
+{
+  set_spin_box(feedback_absolute_minimum_spinbox, value);
+}
+
+void main_window::set_feedback_absolute_maximum(uint16_t value)
+{
+  set_spin_box(feedback_absolute_maximum_spinbox, value);
+}
+
+void main_window::set_feedback_minimum(uint16_t value)
+{
+  set_spin_box(feedback_minimum_spinbox, value);
+}
+
+void main_window::set_feedback_maximum(uint16_t value)
+{
+  set_spin_box(feedback_maximum_spinbox, value);
+}
+
+void main_window::set_feedback_scaling_order_warning_label()
+{
+  bool enabled =
+  !ordered({feedback_absolute_minimum_spinbox->value(), feedback_minimum_spinbox->value(),
+    feedback_maximum_spinbox->value(), feedback_absolute_maximum_spinbox->value()});
+  feedback_scaling_order_warning_label->setVisible(enabled);
+}
+
+void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_samples)
+{
+  set_u8_combobox(feedback_analog_samples_combobox, feedback_analog_samples);
+}
+
+void main_window::set_feedback_detect_disconnect(bool feedback_detect_disconnect)
+{
+  set_check_box(feedback_detect_disconnect_checkbox, feedback_detect_disconnect);
+}
+
+void main_window::set_pid_multiplier(int index, uint16_t value)
+{
+  QSpinBox *spin = pid_constant_controls[index]->pid_multiplier_spinbox;
+  set_spin_box(spin, value);
+}
+
+void main_window::set_pid_exponent(int index, uint16_t value)
+{
+  QSpinBox *spin = pid_constant_controls[index]->pid_exponent_spinbox;
+  set_spin_box(spin, value);
+}
+
+void main_window::set_pid_constant(int index, double value)
+{
+  suppress_events = true;
+  QLineEdit *spin = pid_constant_controls[index]->pid_constant_lineedit;
+
+  if (value < 0.0001 && value != 0)
+  {
+    spin->setText(QString::number(value, 'f', 7));
+  }
+  else
+    spin->setText(QString::number(value, 'f', 5));
+  suppress_events = false;
+}
+
+void main_window::set_pid_period(uint16_t value)
+{
+  set_spin_box(pid_period_spinbox, value);
+}
+
+void main_window::set_integral_limit(uint16_t value)
+{
+  set_spin_box(integral_limit_spinbox, value);
+}
+
+void main_window::set_reset_integral(bool enabled)
+{
+  set_check_box(reset_integral_checkbox, enabled);
+}
+
+void main_window::set_feedback_dead_zone(uint8_t value)
+{
+  set_spin_box(feedback_dead_zone_spinbox, value);
+}
+
+void main_window::set_pwm_frequency(uint8_t pwm_frequency)
+{
+  set_u8_combobox(pwm_frequency_combobox, pwm_frequency);
+}
+
+void main_window::set_motor_invert(bool enabled)
+{
+  set_check_box(motor_invert_checkbox, enabled);
+}
+
+void main_window::set_motor_asymmetric(bool checked)
+{
+  set_check_box(motor_asymmetric_checkbox, checked);
+  max_duty_cycle_reverse_spinbox->setEnabled(checked);
+  max_acceleration_reverse_spinbox->setEnabled(checked);
+  max_deceleration_reverse_spinbox->setEnabled(checked);
+  brake_duration_reverse_spinbox->setEnabled(checked);
+  current_limit_reverse_spinbox->setEnabled(checked);
+}
+
+void main_window::set_max_duty_cycle_forward(uint16_t duty_cycle)
+{
+  set_spin_box(max_duty_cycle_forward_spinbox, duty_cycle);
+}
+
+void main_window::set_max_duty_cycle_reverse(uint16_t duty_cycle)
+{
+  set_spin_box(max_duty_cycle_reverse_spinbox, duty_cycle);
+}
+
+void main_window::set_max_acceleration_forward(uint16_t acceleration)
+{
+  set_spin_box(max_acceleration_forward_spinbox, acceleration);
+}
+
+void main_window::set_max_acceleration_reverse(uint16_t acceleration)
+{
+  set_spin_box(max_acceleration_reverse_spinbox, acceleration);
+}
+
+void main_window::set_max_deceleration_forward(uint16_t acceleration)
+{
+  set_spin_box(max_deceleration_forward_spinbox, acceleration);
+}
+
+void main_window::set_max_deceleration_reverse(uint16_t acceleration)
+{
+  set_spin_box(max_deceleration_reverse_spinbox, acceleration);
+}
+
+void main_window::set_brake_duration_forward(uint32_t brake_duration)
+{
+  set_spin_box(brake_duration_forward_spinbox, brake_duration);
+}
+
+void main_window::set_brake_duration_reverse(uint32_t brake_duration)
+{
+  set_spin_box(brake_duration_reverse_spinbox, brake_duration);
+}
+
+void main_window::set_current_limit_code_forward(uint16_t current)
+{
+  set_spin_box(current_limit_forward_spinbox, current);
+}
+
+void main_window::set_current_limit_code_reverse(uint16_t current)
+{
+  set_spin_box(current_limit_reverse_spinbox, current);
+}
+
+void main_window::set_current_limit_meaning(const char * str)
+{
+  current_limit_means_label->setText(str);
+}
+
+void main_window::set_current_offset_calibration(int16_t cal)
+{
+  set_spin_box(current_offset_calibration_spinbox, cal);
+}
+
+void main_window::set_current_scale_calibration(int16_t cal)
+{
+  set_spin_box(current_scale_calibration_spinbox, cal);
+}
+
+void main_window::set_current_samples_exponent(uint8_t exponent)
+{
+  set_u8_combobox(current_samples_combobox, exponent);
+}
+
+void main_window::set_max_duty_cycle_while_feedback_out_of_range(uint16_t value)
+{
+  set_spin_box(max_duty_cycle_while_feedback_out_of_range_spinbox, value);
+}
+
+void main_window::set_coast_when_off(bool value)
+{
+  suppress_events = true;
+  QAbstractButton * radio = coast_when_off_button_group->button(value);
+  if (radio)
+  {
+    radio->setChecked(true);
+  }
+  else
+  {
+    // This should never happen.
+    assert(0);
+  }
+  suppress_events = false;
+}
+
+void main_window::set_error_enable(uint16_t enable, uint16_t latch)
+{
+  suppress_events = true;
+
+
+  for (int i = 0; i < 13; i++)
+  {
+    if (error_rows[i].always_enabled)
+    {
+      enable |= (1 << i);
+    }
+    if (error_rows[i].always_latched)
+    {
+      latch |= (1 << i);
+    }
+
+    if ((latch & (1 << i)) == (1 << i))
+    {
+      error_rows[i].latched_radio->setChecked(true);
+    }
+    else if ((enable & (1 << i)) == (1 << i))
+    {
+      error_rows[i].enabled_radio->setChecked(true);
+    }
+    else
+      error_rows[i].disabled_radio->setChecked(true);
+  }
+
+  suppress_events = false;
+}
+
 void main_window::set_error_flags_halting(uint16_t error_flags_halting)
 {
   error_flags_halting_value->setText(QString::fromStdString(
@@ -289,63 +772,652 @@ void main_window::reset_error_counts()
   }
 }
 
-void main_window::set_device_list_contents(const std::vector<jrk::device> & device_list)
+void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
+{
+  set_spin_box(input_uart_fixed_baud_spinbox, serial_baud_rate);
+}
+
+void main_window::set_serial_device_number(uint8_t serial_device_number)
+{
+  set_spin_box(input_device_spinbox, serial_device_number);
+}
+
+void main_window::set_tab_pages_enabled(bool enabled)
+{
+  for (int i = 0; i < tab_widget->count(); i++)
+  {
+    tab_widget->widget(i)->setEnabled(enabled);
+  }
+}
+
+void main_window::set_restore_defaults_enabled(bool enabled)
+{
+  restore_defaults_action->setEnabled(enabled);
+}
+
+void main_window::set_reload_settings_enabled(bool enabled)
+{
+  reload_settings_action->setEnabled(enabled);
+}
+
+void main_window::set_open_save_settings_enabled(bool enabled)
+{
+  open_settings_action->setEnabled(enabled);
+  save_settings_action->setEnabled(enabled);
+}
+
+void main_window::set_disconnect_enabled(bool enabled)
+{
+  disconnect_action->setEnabled(enabled);
+}
+
+void main_window::set_stop_motor_enabled(bool enabled)
+{
+  stop_motor_action->setEnabled(enabled);
+  stop_motor_button->setEnabled(enabled);
+}
+
+void main_window::set_run_motor_enabled(bool enabled)
+{
+  run_motor_action->setEnabled(enabled);
+  run_motor_button->setEnabled(enabled);
+}
+
+bool main_window::motor_asymmetric_checked()
+{
+  return motor_asymmetric_checkbox->isChecked();
+}
+
+void main_window::update_graph(uint32_t up_time)
+{
+  graph->key = up_time;
+  graph->plot_data();
+}
+
+void main_window::reset_graph()
+{
+  graph->key = 0;
+}
+
+void main_window::set_u8_combobox(QComboBox * combo, uint8_t value)
 {
   suppress_events = true;
-  device_list_value->clear();
-  device_list_value->addItem(tr("Not connected"), QString()); // null value
-  for (const jrk::device & device : device_list)
-  {
-    device_list_value->addItem(
-      QString::fromStdString(
-        std::string(jrk_look_up_product_name_short(device.get_product())) +
-        " #" + device.get_serial_number()),
-      QString::fromStdString(device.get_os_id()));
-  }
+  combo->setCurrentIndex(combo->findData(value));
   suppress_events = false;
 }
 
-void main_window::set_device_list_selected(const jrk::device & device)
+void main_window::set_spin_box(QSpinBox * spin, int value)
 {
-  // TODO: show an error if we couldn't find the specified device
-  // (findData returned -1)?
-  suppress_events = true;
-  int index = 0;
-  if (device)
+  // Only set the QSpinBox's value if the new value is numerically different.
+  // This prevents, for example, a value of "0000" from being changed to "0"
+  // while you're trying to change "10000" to "20000".
+  if (spin->value() != value)
   {
-    index = device_list_value->findData(QString::fromStdString(device.get_os_id()));
+    suppress_events = true;
+    spin->setValue(value);
+    suppress_events = false;
   }
-  device_list_value->setCurrentIndex(index);
+}
+
+void main_window::set_double_spin_box(QDoubleSpinBox * spin, double value)
+{
+  // Only set the QSpinBox's value if the new value is numerically different.
+  // This prevents, for example, a value of "0000" from being changed to "0"
+  // while you're trying to change "10000" to "20000".
+  if (spin->value() != value)
+  {
+    suppress_events = true;
+    spin->setValue(value);
+    suppress_events = false;
+  }
+}
+
+void main_window::set_check_box(QCheckBox * check, bool value)
+{
+  suppress_events = true;
+  check->setChecked(value);
   suppress_events = false;
 }
 
-void main_window::set_connection_status(std::string const & status, bool error)
+void main_window::showEvent(QShowEvent * event)
 {
-  if (error)
+  if (!start_event_reported)
   {
-    connection_status_value->setStyleSheet("color: red;");
+    start_event_reported = true;
+    controller->start();
+  }
+}
+
+void main_window::closeEvent(QCloseEvent * event)
+{
+  if (!controller->exit())
+  {
+    // User canceled exit when prompted about settings that have not been applied.
+    event->ignore();
   }
   else
+    qApp->quit();
+}
+
+void main_window::on_update_timer_timeout()
+{
+  controller->update();
+}
+
+void main_window::receive_widget(graph_widget *widget)
+{
+  widget->set_preview_mode(true);
+  grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignCenter);
+}
+
+void main_window::on_launchGraph_clicked(QMouseEvent *event)
+{
+  graph_widget *red = graph;
+  horizontal_layout->removeWidget(red);
+  if(popout_graph_window == 0)
   {
-    connection_status_value->setStyleSheet("");
+    popout_graph_window = new graph_window(this);
+    connect(popout_graph_window, SIGNAL(pass_widget(graph_widget*)), this,
+    SLOT(receive_widget(graph_widget*)));
   }
-  connection_status_value->setText(QString::fromStdString(status));
+
+  popout_graph_window->receive_widget(red);
+  popout_graph_window->show();
 }
 
-void main_window::set_manual_target_enabled(bool enabled)
+void main_window::on_device_name_value_linkActivated()
 {
-  // TODO: manual_target_widget->setEnabled(enabled);
+  on_documentation_action_triggered();
 }
 
-void main_window::set_apply_settings_enabled(bool enabled)
+void main_window::on_documentation_action_triggered()
 {
-  apply_settings_button->setEnabled(enabled);
-  apply_settings_action->setEnabled(enabled);
+  QDesktopServices::openUrl(QUrl(DOCUMENTATION_URL));
 }
 
-void main_window::set_vin_calibration(int16_t vin_calibration)
+void main_window::on_about_action_triggered()
 {
-  // TODO: set_spin_box(vin_calibration_value, vin_calibration);
+  QMessageBox::about(this, tr("About") + " " + windowTitle(),
+    QString("<h2>") + windowTitle() + "</h2>" +
+    tr("<h4>Version %1</h4>"
+      "<h4>Copyright &copy; %2 Pololu Corporation</h4>"
+      "<p>See LICENSE.html for copyright and license information.</p>"
+      "<p><a href=\"%3\">Online documentation</a></p>")
+    .arg(SOFTWARE_VERSION_STRING, SOFTWARE_YEAR, DOCUMENTATION_URL));
+}
+
+void main_window::on_device_list_value_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+
+  QString id = device_list_value->itemData(index).toString();
+  controller->connect_device_with_os_id(id.toStdString());
+}
+
+void main_window::on_apply_settings_action_triggered()
+{
+  controller->apply_settings();
+}
+
+void main_window::on_upgrade_firmware_action_triggered()
+{
+  controller->upgrade_firmware();
+}
+
+void main_window::upgrade_firmware_complete()
+{
+  controller->upgrade_firmware_complete();
+}
+
+void main_window::on_run_motor_action_triggered()
+{
+  controller->run_motor();
+}
+
+void main_window::on_stop_motor_action_triggered()
+{
+  controller->stop_motor();
+
+  // TODO: this logic should be in controller, and depend on cached settings
+  // feedback mode.
+  manual_target_scroll_bar->setValue(2048);
+  manual_target_entry_value->setValue(2048);
+}
+
+void main_window::on_set_target_button_clicked()
+{
+  // TODO: this logic should be in controller?
+  suppress_events = true;
+  manual_target_scroll_bar->setValue(manual_target_entry_value->value());
+  suppress_events = false;
+
+  controller->set_target(manual_target_entry_value->value());
+}
+
+void main_window::on_manual_target_scroll_bar_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  manual_target_entry_value->setValue(value);
+  on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
+}
+
+void main_window::on_open_settings_action_triggered()
+{
+  QString filename = QFileDialog::getOpenFileName(this,
+    tr("Open Settings File"), directory_hint + "/jrk_settings.txt",
+    tr("Text files (*.txt)"));
+
+  if (!filename.isNull())
+  {
+    directory_hint = QFileInfo(filename).canonicalPath();
+    controller->open_settings_from_file(filename.toStdString());
+  }
+}
+
+void main_window::on_save_settings_action_triggered()
+{
+  QString filename = QFileDialog::getSaveFileName(this,
+    tr("Save Settings File"), directory_hint + "/jrk_settings.txt",
+    tr("Text files (*.txt)"));
+
+  if (!filename.isNull())
+  {
+    directory_hint = QFileInfo(filename).canonicalPath();
+    controller->save_settings_to_file(filename.toStdString());
+  }
+}
+
+void main_window::on_disconnect_action_triggered()
+{
+  controller->disconnect_device();
+}
+
+void main_window::on_reload_settings_action_triggered()
+{
+  controller->reload_settings();
+}
+
+void main_window::on_restore_defaults_action_triggered()
+{
+  controller->restore_default_settings();
+}
+
+void main_window::on_input_mode_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t input_mode = input_mode_combobox->itemData(index).toUInt();
+  controller->handle_input_mode_input(input_mode);
+}
+
+void main_window::on_input_analog_samples_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t exponent = input_analog_samples_combobox->itemData(index).toUInt();
+  controller->handle_input_analog_samples_exponent_input(exponent);
+}
+
+void main_window::on_input_invert_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_invert_input(state == Qt::Checked);
+}
+
+void main_window::on_input_detect_disconnect_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_detect_disconnect_input(state == Qt::Checked);
+}
+
+void main_window::on_input_serial_mode_button_group_buttonToggled(int id, bool checked)
+{
+  if (suppress_events) { return; }
+  if (checked) { controller->handle_input_serial_mode_input(id); }
+}
+
+void main_window::on_input_uart_fixed_baud_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_uart_fixed_baud_input(value);
+}
+
+void main_window::on_input_enable_crc_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_enable_crc_input(state == Qt::Checked);
+}
+
+void main_window::on_input_device_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_device_input(value);
+}
+
+void main_window::on_input_device_number_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_device_number_input(state == Qt::Checked);
+}
+
+void main_window::on_input_timeout_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_timeout_input(value);
+}
+
+void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_disable_compact_protocol_input(state == Qt::Checked);
+}
+
+void main_window::on_input_never_sleep_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_never_sleep_input(state == Qt::Checked);
+}
+
+void main_window::on_input_absolute_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_absolute_minimum_input(value);
+}
+
+void main_window::on_input_absolute_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_absolute_maximum_input(value);
+}
+
+void main_window::on_input_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_minimum_input(value);
+}
+
+void main_window::on_input_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_maximum_input(value);
+}
+
+void main_window::on_input_neutral_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_neutral_minimum_input(value);
+}
+
+void main_window::on_input_neutral_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_input_neutral_maximum_input(value);
+}
+
+void main_window::on_input_output_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_output_minimum_input(value);
+}
+
+void main_window::on_input_output_neutral_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_output_neutral_input(value);
+}
+
+void main_window::on_input_output_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_output_maximum_input(value);
+}
+
+void main_window::on_input_scaling_degree_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t input_scaling_degree = input_scaling_degree_combobox->itemData(index).toUInt();
+  controller->handle_input_scaling_degree_input(input_scaling_degree);
+}
+
+void main_window::on_input_reset_range_button_clicked()
+{
+  if (suppress_events) { return; }
+  controller->handle_input_absolute_minimum_input(0);
+  controller->handle_input_absolute_maximum_input(4095);
+  controller->handle_input_minimum_input(0);
+  controller->handle_input_maximum_input(4095);
+  controller->handle_input_neutral_minimum_input(2048);
+  controller->handle_input_neutral_maximum_input(2048);
+  controller->handle_output_minimum_input(0);
+  controller->handle_output_neutral_input(2048);
+  controller->handle_output_maximum_input(4095);
+  controller->handle_input_invert_input(false);
+  input_scaling_order_warning_label->setVisible(false);
+}
+
+void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t feedback_mode = feedback_mode_combobox->itemData(index).toUInt();
+  controller->handle_feedback_mode_input(feedback_mode);
+}
+
+void main_window::on_feedback_invert_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_invert_input(state == Qt::Checked);
+}
+
+void main_window::on_feedback_absolute_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_absolute_minimum_input(value);
+}
+
+void main_window::on_feedback_absolute_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_absolute_maximum_input(value);
+}
+
+void main_window::on_feedback_maximum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_maximum_input(value);
+}
+
+void main_window::on_feedback_minimum_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_minimum_input(value);
+}
+
+void main_window::on_feedback_reset_range_button_clicked()
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_absolute_maximum_input(4095);
+  controller->handle_feedback_maximum_input(4095);
+  controller->handle_feedback_minimum_input(0);
+  controller->handle_feedback_absolute_minimum_input(0);
+}
+
+void main_window::on_feedback_analog_samples_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t exponent = feedback_analog_samples_combobox->itemData(index).toUInt();
+  controller->handle_feedback_analog_samples_exponent_input(exponent);
+}
+
+void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_detect_disconnect_input(state == Qt::Checked);
+}
+
+void main_window::on_pid_period_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_period_input(value);
+}
+
+void main_window::on_integral_limit_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_integral_limit_input(value);
+}
+
+void main_window::on_reset_integral_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_reset_integral_input(state == Qt::Checked);
+}
+
+void main_window::on_feedback_dead_zone_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_dead_zone_input(value);
+}
+
+void main_window::on_pwm_frequency_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t pwm_frequency = pwm_frequency_combobox->itemData(index).toUInt();
+  controller->handle_pwm_frequency_input(pwm_frequency);
+}
+
+void main_window::on_motor_invert_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_invert_input(state == Qt::Checked);
+}
+
+void main_window::on_detect_motor_button_clicked()
+{
+  if (suppress_events) { return; }
+  QMessageBox mbox(QMessageBox::Question, "Detect motor direction confirmation",
+    "Really detect motor direction?  This will drive the motor!\n"
+    "Feedback must be configured and tested before proceeding.\n"
+    "It is also recommended that you set Max. duty cycle, Max. current,\n"
+    "and enable the \"Max. current exceeded\" error for this test.", QMessageBox::Ok | QMessageBox::Cancel, this);
+  int button = mbox.exec();
+  if (!(button == QMessageBox::Ok))
+    return;
+  else
+    controller->handle_motor_detect_direction_button_clicked();
+}
+
+void main_window::on_motor_asymmetric_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_motor_asymmetric_input(state == Qt::Checked);
+}
+
+void main_window::on_max_duty_cycle_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_duty_cycle_forward_input(value);
+}
+
+void main_window::on_max_duty_cycle_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_duty_cycle_reverse_input(value);
+}
+
+void main_window::on_max_acceleration_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_acceleration_forward_input(value);
+}
+
+void main_window::on_max_acceleration_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_acceleration_reverse_input(value);
+}
+
+void main_window::on_max_deceleration_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_deceleration_forward_input(value);
+}
+
+void main_window::on_max_deceleration_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_deceleration_reverse_input(value);
+}
+
+void main_window::on_brake_duration_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_brake_duration_forward_input(value);
+}
+
+void main_window::on_brake_duration_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_brake_duration_reverse_input(value);
+}
+
+void main_window::on_current_limit_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_current_limit_forward_input(value);
+}
+
+void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_current_limit_reverse_input(value);
+}
+
+void main_window::on_current_offset_calibration_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_current_offset_calibration_input(value);
+}
+
+void main_window::on_current_scale_calibration_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_current_scale_calibration_input(value);
+}
+
+void main_window::on_current_samples_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t exponent = current_samples_combobox->itemData(index).toUInt();
+  controller->handle_current_samples_exponent_input(exponent);
+}
+
+void main_window::on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(
+  int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_duty_cycle_while_feedback_out_of_range_input(value);
+}
+
+void main_window::on_coast_when_off_button_group_buttonToggled(int id, bool checked)
+{
+  if (suppress_events) { return; }
+  if (checked) { controller->handle_coast_when_off_input(id); }
+}
+
+void main_window::on_error_enable_group_buttonToggled(int id, int index)
+{
+  if (suppress_events) { return; }
+  controller->handle_error_enable_input(index, id);
+}
+
+void main_window::on_errors_clear_errors_clicked()
+{
+  if (suppress_events) { return; }
+  controller->handle_clear_errors_input();
+}
+
+void main_window::on_errors_reset_counts_clicked()
+{
+  if (suppress_events) { return; }
+  reset_error_counts();
 }
 
 void main_window::setup_ui()
@@ -562,29 +1634,6 @@ void main_window::setup_menu_bar()
 
   help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
-}
-
-void main_window::on_launchGraph_clicked(QMouseEvent *event)
-{
-  graph_widget *red = graph;
-  horizontal_layout->removeWidget(red);
-  if(altw == 0)
-  {
-    altw = new graph_window(this);
-    connect(altw, SIGNAL(pass_widget(graph_widget*)), this,
-    SLOT(receive_widget(graph_widget*)));
-  }
-
-  altw->receive_widget(red);
-  altw->show();
-  widgetAtHome = false;
-}
-
-void main_window::receive_widget(graph_widget *widget)
-{
-  widget->set_preview_mode(true);
-  grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignCenter);
-  widgetAtHome = true;
 }
 
 static void setup_read_only_text_field(QGridLayout * layout,
@@ -1614,1058 +2663,6 @@ QWidget * main_window::setup_error_row(int row_number, bool disabled_visible,
   errors_central->setMargin(0);
 
   return new_error_row;
-}
-
-void main_window::showEvent(QShowEvent * event)
-{
-  if (!start_event_reported)
-  {
-    start_event_reported = true;
-    controller->start();
-  }
-}
-
-void main_window::closeEvent(QCloseEvent * event)
-{
-  if (!controller->exit())
-  {
-    // User canceled exit when prompted about settings that have not been applied.
-    event->ignore();
-  }
-  else
-    qApp->quit();
-}
-
-void main_window::on_device_name_value_linkActivated()
-{
-  on_documentation_action_triggered();
-}
-
-void main_window::on_documentation_action_triggered()
-{
-  QDesktopServices::openUrl(QUrl(DOCUMENTATION_URL));
-}
-
-void main_window::on_about_action_triggered()
-{
-  QMessageBox::about(this, tr("About") + " " + windowTitle(),
-    QString("<h2>") + windowTitle() + "</h2>" +
-    tr("<h4>Version %1</h4>"
-      "<h4>Copyright &copy; %2 Pololu Corporation</h4>"
-      "<p>See LICENSE.html for copyright and license information.</p>"
-      "<p><a href=\"%3\">Online documentation</a></p>")
-    .arg(SOFTWARE_VERSION_STRING, SOFTWARE_YEAR, DOCUMENTATION_URL));
-}
-
-void main_window::on_device_list_value_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-
-  QString id = device_list_value->itemData(index).toString();
-  controller->connect_device_with_os_id(id.toStdString());
-}
-
-void main_window::on_apply_settings_action_triggered()
-{
-  controller->apply_settings();
-}
-
-void main_window::on_upgrade_firmware_action_triggered()
-{
-  controller->upgrade_firmware();
-}
-
-void main_window::upgrade_firmware_complete()
-{
-  controller->upgrade_firmware_complete();
-}
-
-void main_window::on_run_motor_action_triggered()
-{
-  controller->run_motor();
-}
-
-void main_window::on_stop_motor_action_triggered()
-{
-  controller->stop_motor();
-
-  // TODO: this logic should be in controller, and depend on cached settings
-  // feedback mode.
-  manual_target_scroll_bar->setValue(2048);
-  manual_target_entry_value->setValue(2048);
-}
-
-void main_window::on_set_target_button_clicked()
-{
-  // TODO: this logic should be in controller?
-  suppress_events = true;
-  manual_target_scroll_bar->setValue(manual_target_entry_value->value());
-  suppress_events = false;
-
-  controller->set_target(manual_target_entry_value->value());
-}
-
-void main_window::on_manual_target_scroll_bar_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  manual_target_entry_value->setValue(value);
-  on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
-}
-
-void main_window::on_open_settings_action_triggered()
-{
-  QString filename = QFileDialog::getOpenFileName(this,
-    tr("Open Settings File"), directory_hint + "/jrk_settings.txt",
-    tr("Text files (*.txt)"));
-
-  if (!filename.isNull())
-  {
-    directory_hint = QFileInfo(filename).canonicalPath();
-    controller->open_settings_from_file(filename.toStdString());
-  }
-}
-
-void main_window::on_save_settings_action_triggered()
-{
-  QString filename = QFileDialog::getSaveFileName(this,
-    tr("Save Settings File"), directory_hint + "/jrk_settings.txt",
-    tr("Text files (*.txt)"));
-
-  if (!filename.isNull())
-  {
-    directory_hint = QFileInfo(filename).canonicalPath();
-    controller->save_settings_to_file(filename.toStdString());
-  }
-}
-
-void main_window::on_disconnect_action_triggered()
-{
-  controller->disconnect_device();
-}
-
-void main_window::on_reload_settings_action_triggered()
-{
-  controller->reload_settings();
-}
-
-void main_window::on_restore_defaults_action_triggered()
-{
-  controller->restore_default_settings();
-}
-
-void main_window::on_input_mode_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t input_mode = input_mode_combobox->itemData(index).toUInt();
-  controller->handle_input_mode_input(input_mode);
-}
-
-void main_window::on_input_analog_samples_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t exponent = input_analog_samples_combobox->itemData(index).toUInt();
-  controller->handle_input_analog_samples_exponent_input(exponent);
-}
-
-void main_window::on_input_invert_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_invert_input(state == Qt::Checked);
-}
-
-void main_window::on_input_detect_disconnect_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_detect_disconnect_input(state == Qt::Checked);
-}
-
-void main_window::on_input_serial_mode_button_group_buttonToggled(int id, bool checked)
-{
-  if (suppress_events) { return; }
-  if (checked) { controller->handle_input_serial_mode_input(id); }
-}
-
-void main_window::on_input_uart_fixed_baud_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_uart_fixed_baud_input(value);
-}
-
-void main_window::on_input_enable_crc_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_enable_crc_input(state == Qt::Checked);
-}
-
-void main_window::on_input_device_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_device_input(value);
-}
-
-void main_window::on_input_device_number_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_device_number_input(state == Qt::Checked);
-}
-
-void main_window::on_input_timeout_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_timeout_input(value);
-}
-
-void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_disable_compact_protocol_input(state == Qt::Checked);
-}
-
-void main_window::on_input_never_sleep_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_never_sleep_input(state == Qt::Checked);
-}
-
-void main_window::on_input_absolute_minimum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_absolute_minimum_input(value);
-}
-
-void main_window::on_input_absolute_maximum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_absolute_maximum_input(value);
-}
-
-void main_window::on_input_minimum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_minimum_input(value);
-}
-
-void main_window::on_input_maximum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_maximum_input(value);
-}
-
-void main_window::on_input_neutral_minimum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_neutral_minimum_input(value);
-}
-
-void main_window::on_input_neutral_maximum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_neutral_maximum_input(value);
-}
-
-void main_window::on_input_output_minimum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_output_minimum_input(value);
-}
-
-void main_window::on_input_output_neutral_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_output_neutral_input(value);
-}
-
-void main_window::on_input_output_maximum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_output_maximum_input(value);
-}
-
-void main_window::on_input_scaling_degree_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t input_scaling_degree = input_scaling_degree_combobox->itemData(index).toUInt();
-  controller->handle_input_scaling_degree_input(input_scaling_degree);
-}
-
-void main_window::on_input_reset_range_button_clicked()
-{
-  if (suppress_events) { return; }
-  controller->handle_input_absolute_minimum_input(0);
-  controller->handle_input_absolute_maximum_input(4095);
-  controller->handle_input_minimum_input(0);
-  controller->handle_input_maximum_input(4095);
-  controller->handle_input_neutral_minimum_input(2048);
-  controller->handle_input_neutral_maximum_input(2048);
-  controller->handle_output_minimum_input(0);
-  controller->handle_output_neutral_input(2048);
-  controller->handle_output_maximum_input(4095);
-  controller->handle_input_invert_input(false);
-  input_scaling_order_warning_label->setVisible(false);
-}
-
-void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t feedback_mode = feedback_mode_combobox->itemData(index).toUInt();
-  controller->handle_feedback_mode_input(feedback_mode);
-}
-
-void main_window::on_feedback_invert_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_invert_input(state == Qt::Checked);
-}
-
-void main_window::on_feedback_absolute_minimum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_absolute_minimum_input(value);
-}
-
-void main_window::on_feedback_absolute_maximum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_absolute_maximum_input(value);
-}
-
-void main_window::on_feedback_maximum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_maximum_input(value);
-}
-
-void main_window::on_feedback_minimum_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_minimum_input(value);
-}
-
-void main_window::on_feedback_reset_range_button_clicked()
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_absolute_maximum_input(4095);
-  controller->handle_feedback_maximum_input(4095);
-  controller->handle_feedback_minimum_input(0);
-  controller->handle_feedback_absolute_minimum_input(0);
-}
-
-void main_window::on_feedback_analog_samples_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t exponent = feedback_analog_samples_combobox->itemData(index).toUInt();
-  controller->handle_feedback_analog_samples_exponent_input(exponent);
-}
-
-void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_detect_disconnect_input(state == Qt::Checked);
-}
-
-void main_window::on_pid_period_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_pid_period_input(value);
-}
-
-void main_window::on_integral_limit_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_integral_limit_input(value);
-}
-
-void main_window::on_reset_integral_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_reset_integral_input(state == Qt::Checked);
-}
-
-void main_window::on_feedback_dead_zone_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_feedback_dead_zone_input(value);
-}
-
-void main_window::on_pwm_frequency_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t pwm_frequency = pwm_frequency_combobox->itemData(index).toUInt();
-  controller->handle_pwm_frequency_input(pwm_frequency);
-}
-
-void main_window::on_motor_invert_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_motor_invert_input(state == Qt::Checked);
-}
-
-void main_window::on_detect_motor_button_clicked()
-{
-  if (suppress_events) { return; }
-  QMessageBox mbox(QMessageBox::Question, "Detect motor direction confirmation",
-    "Really detect motor direction?  This will drive the motor!\n"
-    "Feedback must be configured and tested before proceeding.\n"
-    "It is also recommended that you set Max. duty cycle, Max. current,\n"
-    "and enable the \"Max. current exceeded\" error for this test.", QMessageBox::Ok | QMessageBox::Cancel, this);
-  int button = mbox.exec();
-  if (!(button == QMessageBox::Ok))
-    return;
-  else
-    controller->handle_motor_detect_direction_button_clicked();
-}
-
-void main_window::on_motor_asymmetric_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_motor_asymmetric_input(state == Qt::Checked);
-}
-
-void main_window::on_max_duty_cycle_forward_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_duty_cycle_forward_input(value);
-}
-
-void main_window::on_max_duty_cycle_reverse_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_duty_cycle_reverse_input(value);
-}
-
-void main_window::on_max_acceleration_forward_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_acceleration_forward_input(value);
-}
-
-void main_window::on_max_acceleration_reverse_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_acceleration_reverse_input(value);
-}
-
-void main_window::on_max_deceleration_forward_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_deceleration_forward_input(value);
-}
-
-void main_window::on_max_deceleration_reverse_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_deceleration_reverse_input(value);
-}
-
-void main_window::on_brake_duration_forward_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_brake_duration_forward_input(value);
-}
-
-void main_window::on_brake_duration_reverse_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_brake_duration_reverse_input(value);
-}
-
-void main_window::on_current_limit_forward_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_current_limit_forward_input(value);
-}
-
-void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_current_limit_reverse_input(value);
-}
-
-void main_window::on_current_offset_calibration_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_current_offset_calibration_input(value);
-}
-
-void main_window::on_current_scale_calibration_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_current_scale_calibration_input(value);
-}
-
-void main_window::on_current_samples_combobox_currentIndexChanged(int index)
-{
-  if (suppress_events) { return; }
-  uint8_t exponent = current_samples_combobox->itemData(index).toUInt();
-  controller->handle_current_samples_exponent_input(exponent);
-}
-
-void main_window::on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(
-  int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_max_duty_cycle_while_feedback_out_of_range_input(value);
-}
-
-void main_window::on_coast_when_off_button_group_buttonToggled(int id, bool checked)
-{
-  if (suppress_events) { return; }
-  if (checked) { controller->handle_coast_when_off_input(id); }
-}
-
-void main_window::on_error_enable_group_buttonToggled(int id, int index)
-{
-  if (suppress_events) { return; }
-  controller->handle_error_enable_input(index, id);
-}
-
-void main_window::on_errors_clear_errors_clicked()
-{
-  if (suppress_events) { return; }
-  controller->handle_clear_errors_input();
-}
-
-void main_window::on_errors_reset_counts_clicked()
-{
-  if (suppress_events) { return; }
-  reset_error_counts();
-}
-
-void main_window::set_u8_combobox(QComboBox * combo, uint8_t value)
-{
-  suppress_events = true;
-  combo->setCurrentIndex(combo->findData(value));
-  suppress_events = false;
-}
-
-void main_window::set_spin_box(QSpinBox * spin, int value)
-{
-  // Only set the QSpinBox's value if the new value is numerically different.
-  // This prevents, for example, a value of "0000" from being changed to "0"
-  // while you're trying to change "10000" to "20000".
-  if (spin->value() != value)
-  {
-    suppress_events = true;
-    spin->setValue(value);
-    suppress_events = false;
-  }
-}
-
-void main_window::set_double_spin_box(QDoubleSpinBox * spin, double value)
-{
-  // Only set the QSpinBox's value if the new value is numerically different.
-  // This prevents, for example, a value of "0000" from being changed to "0"
-  // while you're trying to change "10000" to "20000".
-  if (spin->value() != value)
-  {
-    suppress_events = true;
-    spin->setValue(value);
-    suppress_events = false;
-  }
-}
-
-void main_window::set_check_box(QCheckBox * check, bool value)
-{
-  suppress_events = true;
-  check->setChecked(value);
-  suppress_events = false;
-}
-
-static bool ordered(QList<int> p)
-{
-  for (int i = 0; i < p.size()-1; i++)
-  {
-    if (p[i] > p[i + 1])
-      return false;
-  }
-  return true;
-}
-
-void main_window::set_tab_pages_enabled(bool enabled)
-{
-  for (int i = 0; i < tab_widget->count(); i++)
-  {
-    tab_widget->widget(i)->setEnabled(enabled);
-  }
-}
-
-void main_window::set_restore_defaults_enabled(bool enabled)
-{
-  restore_defaults_action->setEnabled(enabled);
-}
-
-void main_window::set_reload_settings_enabled(bool enabled)
-{
-  reload_settings_action->setEnabled(enabled);
-}
-
-void main_window::set_open_save_settings_enabled(bool enabled)
-{
-  open_settings_action->setEnabled(enabled);
-  save_settings_action->setEnabled(enabled);
-}
-
-void main_window::set_disconnect_enabled(bool enabled)
-{
-  disconnect_action->setEnabled(enabled);
-}
-
-void main_window::set_stop_motor_enabled(bool enabled)
-{
-  stop_motor_action->setEnabled(enabled);
-  stop_motor_button->setEnabled(enabled);
-}
-
-void main_window::set_run_motor_enabled(bool enabled)
-{
-  run_motor_action->setEnabled(enabled);
-  run_motor_button->setEnabled(enabled);
-}
-
-void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
-{
-  set_spin_box(input_uart_fixed_baud_spinbox, serial_baud_rate);
-}
-
-void main_window::set_serial_device_number(uint8_t serial_device_number)
-{
-  set_spin_box(input_device_spinbox, serial_device_number);
-}
-
-void main_window::set_never_sleep(bool never_sleep)
-{
-  set_check_box(input_never_sleep_checkbox, never_sleep);
-}
-
-void main_window::set_input_mode(uint8_t input_mode)
-{
-  set_u8_combobox(input_mode_combobox, input_mode);
-  switch (input_mode)
-  {
-    case 0:
-      input_analog_groupbox->setEnabled(false);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(false);
-      break;
-    case 1:
-      input_analog_groupbox->setEnabled(true);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(true);
-      break;
-    case 2:
-      input_analog_groupbox->setEnabled(false);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(true);
-      break;
-    default:
-      return;
-  }
-}
-
-void main_window::set_input_analog_samples_exponent(uint8_t input_analog_samples)
-{
-  set_u8_combobox(input_analog_samples_combobox, input_analog_samples);
-}
-
-void main_window::set_input_invert(bool input_invert)
-{
-  set_check_box(input_invert_checkbox, input_invert);
-}
-
-void main_window::set_input_detect_disconnect(bool input_detect_disconnect)
-{
-  set_check_box(input_detect_disconnect_checkbox, input_detect_disconnect);
-}
-
-void main_window::set_input_serial_mode(uint8_t value)
-{
-  suppress_events = true;
-  QAbstractButton * radio = input_serial_mode_button_group->button(value);
-  if (radio)
-  {
-    radio->setChecked(true);
-  }
-  else
-  {
-    // The value doesn't correspond with any of the radio buttons, so clear
-    // the currently selected button, if any.
-    QAbstractButton * checked = input_serial_mode_button_group->checkedButton();
-    if (checked)
-    {
-      input_serial_mode_button_group->setExclusive(false);
-      checked->setChecked(false);
-      input_serial_mode_button_group->setExclusive(true);
-    }
-  }
-  suppress_events = false;
-}
-
-void main_window::set_input_baud_rate(uint32_t value)
-{
-  set_spin_box(input_uart_fixed_baud_spinbox, value);
-}
-
-void main_window::set_input_enable_crc(bool enabled)
-{
-  set_check_box(input_enable_crc_checkbox, enabled);
-}
-
-void main_window::set_input_device_number(uint16_t value)
-{
-  set_spin_box(input_device_spinbox, value);
-}
-
-void main_window::set_input_enable_device_number(bool enabled)
-{
-  set_check_box(input_device_number_checkbox, enabled);
-}
-
-void main_window::set_input_serial_timeout(uint16_t value)
-{
-  set_double_spin_box(input_timeout_spinbox, value);
-}
-
-void main_window::set_input_compact_protocol(bool enabled)
-{
-  set_check_box(input_disable_compact_protocol_checkbox, enabled);
-}
-
-void main_window::set_input_never_sleep(bool enabled)
-{
-  set_check_box(input_never_sleep_checkbox, enabled);
-}
-
-void main_window::set_input_absolute_minimum(uint16_t input_absolute_minimum)
-{
-  set_spin_box(input_absolute_minimum_spinbox, input_absolute_minimum);
-}
-
-void main_window::set_input_absolute_maximum(uint16_t input_absolute_maximum)
-{
-  set_spin_box(input_absolute_maximum_spinbox, input_absolute_maximum);
-}
-
-void main_window::set_input_minimum(uint16_t input_minimum)
-{
-  set_spin_box(input_minimum_spinbox, input_minimum);
-}
-
-void main_window::set_input_maximum(uint16_t input_maximum)
-{
-  set_spin_box(input_maximum_spinbox, input_maximum);
-}
-
-void main_window::set_input_neutral_minimum(uint16_t input_neutral_minimum)
-{
-  set_spin_box(input_neutral_minimum_spinbox, input_neutral_minimum);
-}
-
-void main_window::set_input_neutral_maximum(uint16_t input_neutral_maximum)
-{
-  set_spin_box(input_neutral_maximum_spinbox, input_neutral_maximum);
-}
-
-void main_window::set_input_output_minimum(uint16_t input_output_minimum)
-{
-  set_spin_box(input_output_minimum_spinbox, input_output_minimum);
-}
-
-void main_window::set_input_output_neutral(uint16_t input_output_neutral)
-{
-  set_spin_box(input_output_neutral_spinbox, input_output_neutral);
-}
-
-void main_window::set_input_output_maximum(uint16_t input_output_maximum)
-{
-  set_spin_box(input_output_maximum_spinbox, input_output_maximum);
-}
-
-void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
-{
-  set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
-}
-
-void main_window::set_input_scaling_order_warning_label()
-{
-  bool enabled =
-  !ordered({input_absolute_minimum_spinbox->value(), input_minimum_spinbox->value(),
-    input_neutral_minimum_spinbox->value(), input_neutral_maximum_spinbox->value(),
-    input_maximum_spinbox->value(), input_absolute_maximum_spinbox->value()});
-  input_scaling_order_warning_label->setVisible(enabled);
-}
-
-void main_window::set_feedback_mode(uint8_t feedback_mode)
-{
-  set_u8_combobox(feedback_mode_combobox, feedback_mode);
-  switch (feedback_mode)
-  {
-    case 0:
-      feedback_analog_groupbox->setEnabled(false);
-      feedback_scaling_groupbox->setEnabled(false);
-      break;
-    case 1:
-      feedback_analog_groupbox->setEnabled(true);
-      feedback_scaling_groupbox->setEnabled(true);
-      break;
-    case 2:
-      feedback_analog_groupbox->setEnabled(false);
-      feedback_scaling_groupbox->setEnabled(true);
-      break;
-    default:
-      return;
-  }
-}
-
-void main_window::set_feedback_invert(bool feedback_invert)
-{
-  set_check_box(feedback_invert_checkbox, feedback_invert);
-}
-
-void main_window::set_feedback_absolute_minimum(uint16_t value)
-{
-  set_spin_box(feedback_absolute_minimum_spinbox, value);
-}
-
-void main_window::set_feedback_absolute_maximum(uint16_t value)
-{
-  set_spin_box(feedback_absolute_maximum_spinbox, value);
-}
-
-void main_window::set_feedback_minimum(uint16_t value)
-{
-  set_spin_box(feedback_minimum_spinbox, value);
-}
-
-void main_window::set_feedback_maximum(uint16_t value)
-{
-  set_spin_box(feedback_maximum_spinbox, value);
-}
-
-void main_window::set_feedback_scaling_order_warning_label()
-{
-  bool enabled =
-  !ordered({feedback_absolute_minimum_spinbox->value(), feedback_minimum_spinbox->value(),
-    feedback_maximum_spinbox->value(), feedback_absolute_maximum_spinbox->value()});
-  feedback_scaling_order_warning_label->setVisible(enabled);
-}
-
-void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_samples)
-{
-  set_u8_combobox(feedback_analog_samples_combobox, feedback_analog_samples);
-}
-
-void main_window::set_feedback_detect_disconnect(bool feedback_detect_disconnect)
-{
-  set_check_box(feedback_detect_disconnect_checkbox, feedback_detect_disconnect);
-}
-
-void main_window::set_pid_multiplier(int index, uint16_t value)
-{
-  QSpinBox *spin = pid_constant_controls[index]->pid_multiplier_spinbox;
-  set_spin_box(spin, value);
-}
-
-void main_window::set_pid_exponent(int index, uint16_t value)
-{
-  QSpinBox *spin = pid_constant_controls[index]->pid_exponent_spinbox;
-  set_spin_box(spin, value);
-}
-
-void main_window::set_pid_constant(int index, double value)
-{
-  suppress_events = true;
-  QLineEdit *spin = pid_constant_controls[index]->pid_constant_lineedit;
-
-  if (value < 0.0001 && value != 0)
-  {
-    spin->setText(QString::number(value, 'f', 7));
-  }
-  else
-    spin->setText(QString::number(value, 'f', 5));
-  suppress_events = false;
-}
-
-void main_window::set_pid_period(uint16_t value)
-{
-  set_spin_box(pid_period_spinbox, value);
-}
-
-void main_window::set_integral_limit(uint16_t value)
-{
-  set_spin_box(integral_limit_spinbox, value);
-}
-
-void main_window::set_reset_integral(bool enabled)
-{
-  set_check_box(reset_integral_checkbox, enabled);
-}
-
-void main_window::set_feedback_dead_zone(uint8_t value)
-{
-  set_spin_box(feedback_dead_zone_spinbox, value);
-}
-
-void main_window::set_pwm_frequency(uint8_t pwm_frequency)
-{
-  set_u8_combobox(pwm_frequency_combobox, pwm_frequency);
-}
-
-void main_window::set_motor_invert(bool enabled)
-{
-  set_check_box(motor_invert_checkbox, enabled);
-}
-
-void main_window::set_motor_asymmetric(bool checked)
-{
-  set_check_box(motor_asymmetric_checkbox, checked);
-  max_duty_cycle_reverse_spinbox->setEnabled(checked);
-  max_acceleration_reverse_spinbox->setEnabled(checked);
-  max_deceleration_reverse_spinbox->setEnabled(checked);
-  brake_duration_reverse_spinbox->setEnabled(checked);
-  current_limit_reverse_spinbox->setEnabled(checked);
-}
-
-void main_window::set_max_duty_cycle_forward(uint16_t duty_cycle)
-{
-  set_spin_box(max_duty_cycle_forward_spinbox, duty_cycle);
-}
-
-void main_window::set_max_duty_cycle_reverse(uint16_t duty_cycle)
-{
-  set_spin_box(max_duty_cycle_reverse_spinbox, duty_cycle);
-}
-
-void main_window::set_max_acceleration_forward(uint16_t acceleration)
-{
-  set_spin_box(max_acceleration_forward_spinbox, acceleration);
-}
-
-void main_window::set_max_acceleration_reverse(uint16_t acceleration)
-{
-  set_spin_box(max_acceleration_reverse_spinbox, acceleration);
-}
-
-void main_window::set_max_deceleration_forward(uint16_t acceleration)
-{
-  set_spin_box(max_deceleration_forward_spinbox, acceleration);
-}
-
-void main_window::set_max_deceleration_reverse(uint16_t acceleration)
-{
-  set_spin_box(max_deceleration_reverse_spinbox, acceleration);
-}
-
-void main_window::set_brake_duration_forward(uint32_t brake_duration)
-{
-  set_spin_box(brake_duration_forward_spinbox, brake_duration);
-}
-
-void main_window::set_brake_duration_reverse(uint32_t brake_duration)
-{
-  set_spin_box(brake_duration_reverse_spinbox, brake_duration);
-}
-
-void main_window::set_current_limit_code_forward(uint16_t current)
-{
-  set_spin_box(current_limit_forward_spinbox, current);
-}
-
-void main_window::set_current_limit_code_reverse(uint16_t current)
-{
-  set_spin_box(current_limit_reverse_spinbox, current);
-}
-
-void main_window::set_current_limit_meaning(const char * str)
-{
-  current_limit_means_label->setText(str);
-}
-
-void main_window::set_current_offset_calibration(int16_t cal)
-{
-  set_spin_box(current_offset_calibration_spinbox, cal);
-}
-
-void main_window::set_current_scale_calibration(int16_t cal)
-{
-  set_spin_box(current_scale_calibration_spinbox, cal);
-}
-
-void main_window::set_current_samples_exponent(uint8_t exponent)
-{
-  set_u8_combobox(current_samples_combobox, exponent);
-}
-
-void main_window::set_max_duty_cycle_while_feedback_out_of_range(uint16_t value)
-{
-  set_spin_box(max_duty_cycle_while_feedback_out_of_range_spinbox, value);
-}
-
-void main_window::set_coast_when_off(bool value)
-{
-  suppress_events = true;
-  QAbstractButton * radio = coast_when_off_button_group->button(value);
-  if (radio)
-  {
-    radio->setChecked(true);
-  }
-  else
-  {
-    // This should never happen.
-    assert(0);
-  }
-  suppress_events = false;
-}
-
-void main_window::set_error_enable(uint16_t enable, uint16_t latch)
-{
-  suppress_events = true;
-
-
-  for (int i = 0; i < 13; i++)
-  {
-    if (error_rows[i].always_enabled)
-    {
-      enable |= (1 << i);
-    }
-    if (error_rows[i].always_latched)
-    {
-      latch |= (1 << i);
-    }
-
-    if ((latch & (1 << i)) == (1 << i))
-    {
-      error_rows[i].latched_radio->setChecked(true);
-    }
-    else if ((enable & (1 << i)) == (1 << i))
-    {
-      error_rows[i].enabled_radio->setChecked(true);
-    }
-    else
-      error_rows[i].disabled_radio->setChecked(true);
-  }
-
-  suppress_events = false;
-}
-
-void main_window::on_update_timer_timeout()
-{
-  controller->update();
-}
-
-bool main_window::motor_asymmetric_checked()
-{
-  return motor_asymmetric_checkbox->isChecked();
-}
-
-void main_window::update_graph(uint32_t up_time)
-{
-  graph->key = up_time;
-  graph->plot_data();
-}
-
-void main_window::clear_graph()
-{
-  graph->key = 0;
 }
 
 void pid_constant_control::setup(QGroupBox * groupbox)
