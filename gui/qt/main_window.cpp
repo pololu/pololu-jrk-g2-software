@@ -672,6 +672,11 @@ void main_window::set_current_samples_exponent(uint8_t exponent)
   set_u8_combobox(current_samples_combobox, exponent);
 }
 
+void main_window::set_overcurrent_threshold(uint8_t threshold)
+{
+  set_spin_box(overcurrent_threshold_spinbox, threshold);
+}
+
 void main_window::set_max_duty_cycle_while_feedback_out_of_range(uint16_t value)
 {
   set_spin_box(max_duty_cycle_while_feedback_out_of_range_spinbox, value);
@@ -1397,6 +1402,12 @@ void main_window::on_current_samples_combobox_currentIndexChanged(int index)
   if (suppress_events) { return; }
   uint8_t exponent = current_samples_combobox->itemData(index).toUInt();
   controller->handle_current_samples_exponent_input(exponent);
+}
+
+void main_window::on_overcurrent_threshold_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_overcurrent_threshold_input(value);
 }
 
 void main_window::on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(
@@ -2413,6 +2424,13 @@ QWidget *main_window::setup_motor_tab()
   current_samples_combobox = setup_analog_samples_exponent_combobox();
   current_samples_combobox->setObjectName("current_samples_combobox");
 
+  overcurrent_threshold_label = new QLabel(tr("Overcurrent threshold:"));
+  overcurrent_threshold_label->setObjectName("overcurrent_threshold_label");
+
+  overcurrent_threshold_spinbox = new QSpinBox();
+  overcurrent_threshold_spinbox->setObjectName("overcurrent_threshold_spinbox");
+  overcurrent_threshold_spinbox->setRange(1, 255);
+
   int row = 0;
   motor_controls_layout->addWidget(motor_asymmetric_checkbox, row, 2, Qt::AlignLeft);
   motor_controls_layout->addWidget(motor_forward_label, ++row, 1, Qt::AlignLeft);
@@ -2446,6 +2464,8 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(current_scale_calibration_spinbox, row, 1, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_samples_label, ++row, 0, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_samples_combobox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(overcurrent_threshold_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(overcurrent_threshold_spinbox, row, 1, Qt::AlignLeft);
 
   max_duty_cycle_while_feedback_out_of_range_label =
     new QLabel(tr("Max. duty cycle while feedback is out of range:"));

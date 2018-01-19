@@ -170,6 +170,7 @@ public:
   void set_current_offset_calibration(int16_t);
   void set_current_scale_calibration(int16_t);
   void set_current_samples_exponent(uint8_t);
+  void set_overcurrent_threshold(uint8_t);
   void set_max_duty_cycle_while_feedback_out_of_range(uint16_t);
   void set_coast_when_off(bool value);
 
@@ -301,6 +302,7 @@ private slots:
   void on_current_offset_calibration_spinbox_valueChanged(int value);
   void on_current_scale_calibration_spinbox_valueChanged(int value);
   void on_current_samples_combobox_currentIndexChanged(int value);
+  void on_overcurrent_threshold_spinbox_valueChanged(int value);
   void on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(int value);
   void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
@@ -557,6 +559,8 @@ private:
   QSpinBox * current_scale_calibration_spinbox;
   QLabel * current_samples_label;
   QComboBox * current_samples_combobox;
+  QLabel * overcurrent_threshold_label;
+  QSpinBox * overcurrent_threshold_spinbox;
   QLabel * max_duty_cycle_while_feedback_out_of_range_label;
   QSpinBox * max_duty_cycle_while_feedback_out_of_range_spinbox;
   QLabel * max_duty_cycle_while_feedback_out_of_range_means_label;

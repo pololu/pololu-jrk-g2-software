@@ -137,6 +137,7 @@ public:
   void handle_current_offset_calibration_input(int16_t);
   void handle_current_scale_calibration_input(int16_t);
   void handle_current_samples_exponent_input(uint8_t);
+  void handle_overcurrent_threshold_input(uint8_t);
   void handle_current_analog_samples_exponent_input(uint8_t);
   void handle_max_duty_cycle_while_feedback_out_of_range_input(uint16_t);
   void handle_coast_when_off_input(bool);
