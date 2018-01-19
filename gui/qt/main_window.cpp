@@ -1688,10 +1688,9 @@ QWidget * main_window::setup_status_tab()
 {
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
-  layout->addWidget(setup_variables_box(), 0, 0, 1, 1);
-  layout->addWidget(setup_preview_plot(), 0, 1, 1, 1);
+  layout->addWidget(setup_variables_box(), 0, 0);
+  layout->addWidget(setup_preview_plot(), 0, 1);
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 2);
 
   layout->setRowStretch(2, 1);
@@ -1728,7 +1727,6 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
@@ -1884,7 +1882,7 @@ QWidget * main_window::setup_input_tab()
   layout->addLayout(input_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_input_analog_groupbox(), 1, 0);
   layout->addWidget(setup_input_serial_groupbox(), 2, 0);
-  layout->addWidget(setup_input_scaling_groupbox(), 0, 1, 3, 1, Qt::AlignTop);
+  layout->addWidget(setup_input_scaling_groupbox(), 1, 1, 2, 1, Qt::AlignTop);
 
   input_page_widget->setLayout(layout);
 
@@ -2246,7 +2244,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox, 5, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_learn_button, 0, 3, Qt::AlignRight);
   feedback_scaling_layout->addWidget(feedback_reset_range_button, 1, 3, Qt::AlignRight);
-  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,2,2,4,2, Qt::AlignCenter);
+  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label, 2, 2, 4, 2, Qt::AlignCenter);
 
   feedback_scaling_groupbox->setLayout(feedback_scaling_layout);
 
@@ -2641,7 +2639,6 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_setting_label, 0, 2, 1, 3);
   layout->addWidget(errors_stopping_motor_label, 0, 5);
   layout->addWidget(errors_occurrence_count_label, 0, 6);
-  layout->setColumnStretch(7, 1);
 
   // Note: We have to do this before calling setup_error_row or else Qt shows
   // small spurious windows before the main window opens.
@@ -2830,7 +2827,6 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
   group_box_layout->addWidget(pid_equal_label,2,7,1,2);
   group_box_layout->addWidget(pid_constant_lineedit,1,9,3,1,Qt::AlignCenter);
-  group_box_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   groupbox->setLayout(group_box_layout);
 
