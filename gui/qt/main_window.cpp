@@ -2458,6 +2458,8 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1, Qt::AlignLeft);
   motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2, Qt::AlignLeft);
   motor_controls_layout->addWidget(max_current_means_label, row, 3, Qt::AlignLeft);
+  motor_controls_layout->addItem(
+    new QSpacerItem(1, fontMetrics().height()), ++row, 0, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_offset_calibration_label, ++row, 0, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_offset_calibration_spinbox, row, 1, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_scale_calibration_label, ++row, 0, Qt::AlignLeft);
