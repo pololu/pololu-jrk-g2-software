@@ -2170,8 +2170,8 @@ QWidget * main_window::setup_feedback_tab()
   QGridLayout *layout = feedback_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
-  layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0, Qt::AlignLeft);
-  layout->addWidget(setup_feedback_analog_groupbox(), 2, 0,Qt::AlignLeft);
+  layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
+  layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2265,10 +2265,13 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");
 
+  QHBoxLayout * analog_samples = new QHBoxLayout();
+  analog_samples->addWidget(feedback_analog_samples_label, 0, Qt::AlignLeft);
+  analog_samples->addWidget(feedback_analog_samples_combobox, 0, Qt::AlignLeft);
+
   QGridLayout *feedback_analog_layout = new QGridLayout();
-  feedback_analog_layout->addWidget(feedback_analog_samples_label,0,0);
-  feedback_analog_layout->addWidget(feedback_analog_samples_combobox,0,1,Qt::AlignLeft);
-  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox,1,0,1,2);
+  feedback_analog_layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
+  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
   feedback_analog_groupbox->setLayout(feedback_analog_layout);
 
