@@ -363,6 +363,16 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
+    uint16_t max_current_forward = jrk_settings_get_max_current_forward(settings);
+    jrk_sprintf(&str, "max_current_forward: %u\n", max_current_forward);
+  }
+
+  {
+    uint16_t max_current_reverse = jrk_settings_get_max_current_reverse(settings);
+    jrk_sprintf(&str, "max_current_reverse: %u\n", max_current_reverse);
+  }
+
+  {
     bool coast_when_off = jrk_settings_get_coast_when_off(settings);
     jrk_sprintf(&str, "coast_when_off: %s\n",
       coast_when_off ? "true" : "false");

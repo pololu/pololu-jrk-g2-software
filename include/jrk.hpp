@@ -1013,6 +1013,30 @@ namespace jrk
       return jrk_settings_get_brake_duration_reverse(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_max_current_forward().
+    void set_max_current_forward(uint16_t value) noexcept
+    {
+      jrk_settings_set_max_current_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_max_current_forward().
+    uint16_t get_max_current_forward() const noexcept
+    {
+      return jrk_settings_get_max_current_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_max_current_reverse().
+    void set_max_current_reverse(uint16_t value) noexcept
+    {
+      jrk_settings_set_max_current_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_max_current_reverse().
+    uint16_t get_max_current_reverse() const noexcept
+    {
+      return jrk_settings_get_max_current_reverse(pointer);
+    }
+
     /// Wrapper for jrk_settings_set_coast_when_off().
     void set_coast_when_off(bool value) noexcept
     {
@@ -1367,6 +1391,30 @@ namespace jrk
       return jrk_overridable_settings_get_brake_duration_reverse(pointer);
     }
 
+    /// Wrapper for jrk_overridable_settings_set_max_current_forward().
+    void set_max_current_forward(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_max_current_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_max_current_forward().
+    uint16_t get_max_current_forward() const noexcept
+    {
+      return jrk_overridable_settings_get_max_current_forward(pointer);
+    }
+
+    /// Wrapper for jrk_overridable_settings_set_max_current_reverse().
+    void set_max_current_reverse(uint16_t value) noexcept
+    {
+      jrk_overridable_settings_set_max_current_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_overridable_settings_get_max_current_reverse().
+    uint16_t get_max_current_reverse() const noexcept
+    {
+      return jrk_overridable_settings_get_max_current_reverse(pointer);
+    }
+
     /// Wrapper for jrk_overridable_settings_set_coast_when_off().
     void set_coast_when_off(bool value) noexcept
     {
@@ -1437,10 +1485,10 @@ namespace jrk
       return jrk_variables_get_duty_cycle(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_current().
-    uint8_t get_current() const noexcept
+    /// Wrapper for jrk_variables_get_current_low_res().
+    uint8_t get_current_low_res() const noexcept
     {
-      return jrk_variables_get_current(pointer);
+      return jrk_variables_get_current_low_res(pointer);
     }
 
     /// Wrapper for jrk_variables_get_pid_period_exceeded().
@@ -1473,6 +1521,12 @@ namespace jrk
       return jrk_variables_get_vin_voltage(pointer);
     }
 
+    /// Wrapper for jrk_variables_get_current().
+    uint16_t get_current() const noexcept
+    {
+      return jrk_variables_get_current(pointer);
+    }
+
     /// Wrapper for jrk_variables_get_device_reset().
     uint8_t get_device_reset() const noexcept
     {
@@ -1497,10 +1551,10 @@ namespace jrk
       return jrk_variables_get_tachometer_reading(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_current_high_res().
-    uint16_t get_current_high_res() const noexcept
+    /// Wrapper for jrk_variables_get_raw_current().
+    uint16_t get_raw_current() const noexcept
     {
-      return jrk_variables_get_current_high_res(pointer);
+      return jrk_variables_get_raw_current(pointer);
     }
 
     /// Wrapper for jrk_variables_get_current_limit_code().

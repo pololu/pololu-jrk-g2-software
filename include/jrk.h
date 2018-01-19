@@ -1197,6 +1197,40 @@ void jrk_settings_set_brake_duration_reverse(jrk_settings *,
 JRK_API
 uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 
+// Sets the max_current_forward setting.
+//
+// This is the maximum current while driving forward.  If the current exceeds
+// this value, the jrk will trigger a "Max. current exceeded" error.
+//
+// A value of 0 means no limit.
+//
+// For the umc04a jrks, the units of this setting are in milliamps.
+JRK_API
+void jrk_settings_set_max_current_forward(jrk_settings *,
+  uint16_t max_current_forward);
+
+// Gets the max_current_forward setting, which is described in
+// jrk_settings_set_max_current_forward.
+JRK_API
+uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
+
+// Sets the max_current_reverse setting.
+//
+// This is the maximum current while driving in reverse.  If the current exceeds
+// this value, the jrk will trigger a "Max. current exceeded" error.
+//
+// A value of 0 means no limit.
+//
+// For the umc04a jrks, the units of this setting are in milliamps.
+JRK_API
+void jrk_settings_set_max_current_reverse(jrk_settings *,
+  uint16_t max_current_reverse);
+
+// Gets the max_current_reverse setting, which is described in
+// jrk_settings_set_max_current_reverse.
+JRK_API
+uint16_t jrk_settings_get_max_current_reverse(const jrk_settings *);
+
 // Sets the coast_when_off setting.
 //
 // By default, the jrk drives both motor outputs low when the motor is
@@ -1653,6 +1687,36 @@ void jrk_overridable_settings_set_brake_duration_reverse(jrk_overridable_setting
 JRK_API
 uint32_t jrk_overridable_settings_get_brake_duration_reverse(const jrk_overridable_settings *);
 
+// Sets the max_current_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_forward() for more info.
+JRK_API
+void jrk_overridable_settings_set_max_current_forward(jrk_overridable_settings *,
+  uint16_t max_current_forward);
+
+// Gets the max_current_forward setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_forward() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_max_current_forward(const jrk_overridable_settings *);
+
+// Sets the max_current_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_reverse() for more info.
+JRK_API
+void jrk_overridable_settings_set_max_current_reverse(jrk_overridable_settings *,
+  uint16_t max_current_reverse);
+
+// Gets the max_current_reverse setting
+// in a jrk_overridable_settings object.
+//
+// See jrk_settings_set_max_current_reverse() for more info.
+JRK_API
+uint16_t jrk_overridable_settings_get_max_current_reverse(const jrk_overridable_settings *);
+
 // Sets the coast_when_off setting
 // in a jrk_overridable_settings object.
 //
@@ -1718,13 +1782,15 @@ int16_t jrk_variables_get_duty_cycle_target(const jrk_variables *);
 JRK_API
 int16_t jrk_variables_get_duty_cycle(const jrk_variables *);
 
-// Gets the current variable.
+// Gets the current_low_res variable.
 //
-// This is the most-significant 8 bits of the current_high_res variable.
+// This is the most-significant 8 bits of the 'current' variable returned
+// jrk_variables_get_current().
 //
-// See the jrk_variables_get_current_high_res().
+// For most applications it is better to use jrk_calculate_measured_current_ma()
+// because it will always return the current in units of milliamps.
 JRK_API
-uint8_t jrk_variables_get_current(const jrk_variables *);
+uint8_t jrk_variables_get_current_low_res(const jrk_variables *);
 
 // Gets the pid_period_exceeded variable.
 JRK_API
@@ -1746,6 +1812,19 @@ uint16_t jrk_variables_get_error_flags_occurred(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_vin_voltage(const jrk_variables *);
 
+// Gets the current variable.
+//
+// This is the measured current as calculated by the firmware.
+//
+// For the umc04a jrk models, this is in units of milliamps.
+//
+// For most applications it is better to use jrk_calculate_measured_current_ma()
+// because it will always return the current in units of milliamps.  This
+// function might return different units when used on different models of jrks
+// in the future.
+JRK_API
+uint16_t jrk_variables_get_current(const jrk_variables *);
+
 // Gets the device_reset variable.
 JRK_API
 uint8_t jrk_variables_get_device_reset(const jrk_variables *);
@@ -1762,14 +1841,11 @@ uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
 
-// Gets the current_high_res variable.
+// Gets the raw_current variable.
 //
-// This is a 16-bit current reading.
-//
-// The conversion of this number to milliamps depends on several factors: see
-// jrk_calculate_measured_current_ma().
+// This is an analog voltage reading from the motor driver's current sense pin.
 JRK_API
-uint16_t jrk_variables_get_current_high_res(const jrk_variables *);
+uint16_t jrk_variables_get_raw_current(const jrk_variables *);
 
 // Gets the current_limit_code variable.
 JRK_API
@@ -2130,23 +2206,21 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 JRK_API
 uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 
-// Calculates the measured motor current, in milliamps, given a settings object
-// and a variables object read from the same device.
+// Calculates or retrieves the measured motor current, in milliamps, given a
+// settings object and a variables object read from the same device.
 //
-// The function returns the measured current, in milliamps.  The sign of the
-// current indicates its direction, and generally corresponds to the sign of the
-// duty cycle (negative for reverse, positive for forward).
+// The function returns the measured current, in milliamps.
 //
-// Note: If current chopping happened during the PID period, the value returned
-// here will not be trustable.
+// Note for umc04a jrk models: If current chopping happened during the PID
+// period, the value returned here will not be trustable.
 JRK_API
-int32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
+uint32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
 
 // Calculates the voltage on the current sense line in units of mV/64.
 //
 // To get millivolts, divide the return value by 64.
 JRK_API
-int32_t jrk_calculate_raw_current_mv64(
+uint32_t jrk_calculate_raw_current_mv64(
   const jrk_settings * settings, const jrk_variables *);
 
 

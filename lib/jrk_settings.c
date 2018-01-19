@@ -64,6 +64,8 @@ struct jrk_settings
   uint16_t current_limit_code_reverse;
   uint32_t brake_duration_forward;
   uint32_t brake_duration_reverse;
+  uint16_t max_current_forward;
+  uint16_t max_current_reverse;
   bool coast_when_off;
   uint16_t error_enable;
   uint16_t error_latch;
@@ -908,6 +910,30 @@ uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->brake_duration_reverse;
+}
+
+void jrk_settings_set_max_current_forward(jrk_settings * settings, uint16_t max_current_forward)
+{
+  if (settings == NULL) { return; }
+  settings->max_current_forward = max_current_forward;
+}
+
+uint16_t jrk_settings_get_max_current_forward(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->max_current_forward;
+}
+
+void jrk_settings_set_max_current_reverse(jrk_settings * settings, uint16_t max_current_reverse)
+{
+  if (settings == NULL) { return; }
+  settings->max_current_reverse = max_current_reverse;
+}
+
+uint16_t jrk_settings_get_max_current_reverse(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->max_current_reverse;
 }
 
 void jrk_settings_set_coast_when_off(jrk_settings * settings, bool coast_when_off)

@@ -224,15 +224,17 @@ static uint8_t jrk_get_rsense_mohm(uint32_t product)
 
 // Calculates the measured current in milliamps for a umc04a board.
 //
-// current_reading: Raw current reading from the device,
-//   from jrk_variables_get_curent_high_res().
+// This is the same as the calculation that is done in the firmware to
+// produce 'current' variable (see jrk_variables_get_current()).
+//
+// raw_current: From jrk_variables_get_raw_current().
 // current_limit_code: The hardware current limiting configuration, from
 //   from jrk_variables_get_max_current().
 // rsense: Sense resistor resistance, in units of mohms.
 // current_offset_calibration: from jrk_settings_get_current_offset_calibration()
 // current_scale_calibration: from jrk_settings_get_current_scale_calibration()
-static int32_t jrk_calculate_measured_current_ma_umc04a(
-  uint16_t current_reading,
+static uint16_t jrk_calculate_measured_current_ma_umc04a(
+  uint16_t raw_current,
   uint16_t current_limit_code,
   int16_t duty_cycle,
   uint8_t rsense,
@@ -245,32 +247,15 @@ static int32_t jrk_calculate_measured_current_ma_umc04a(
     return 0;
   }
 
-  // Fix the calibration constants so our calculations don't overflow.
-  if (current_offset_calibration < -800)
-  {
-    current_offset_calibration = -800;
-  }
-  else if (current_offset_calibration > 800)
-  {
-    current_offset_calibration = 800;
-  }
-
-  if (current_scale_calibration < -1875)
-  {
-    current_scale_calibration = -1875;
-  }
-  else if (current_scale_calibration > 1875)
-  {
-    current_scale_calibration = 1875;
-  }
+  uint16_t offset = 800 + current_offset_calibration;
+  uint16_t scale = 1875 + current_scale_calibration;
 
   uint8_t dac_ref = current_limit_code >> 5 & 3;
 
   // Convert the reading on the current sense line to units of mV/16.
-  uint16_t current = current_reading >> ((2 - dac_ref) & 3);
+  uint16_t current = raw_current >> ((2 - dac_ref) & 3);
 
   // Subtract the 50mV offset voltage, without making the reading negative.
-  uint16_t offset = 800 + current_offset_calibration;
   if (offset > current)
   {
     current = 0;
@@ -280,8 +265,28 @@ static int32_t jrk_calculate_measured_current_ma_umc04a(
     current -= offset;
   }
 
-  // The product will be at most 0xFFFF*(2*1875) = 0x0EA5F15A.
-  return current * (1875 + current_scale_calibration) / (duty_cycle * rsense);
+  uint16_t duty_cycle_unsigned;
+  if (duty_cycle < 0)
+  {
+    duty_cycle_unsigned = -duty_cycle;
+  }
+  else
+  {
+    duty_cycle_unsigned = duty_cycle;
+  }
+
+  // Divide by the duty cycle and apply scaling factors to get the current in
+  // milliamps.  The product will be at most 0xFFFF*(2*1875) = 0x0EA5F15A.
+  uint32_t current32 = current * scale / (duty_cycle_unsigned * rsense);
+
+  if (current32 > 0xFFFF)
+  {
+    return 0xFFFF;
+  }
+  else
+  {
+    return current32;
+  }
 }
 
 uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t code)
@@ -324,7 +329,7 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma
   return 0;
 }
 
-int32_t jrk_calculate_measured_current_ma(
+uint32_t jrk_calculate_measured_current_ma(
   const jrk_settings * settings, const jrk_variables * vars)
 {
   uint32_t product = jrk_settings_get_product(settings);
@@ -332,20 +337,36 @@ int32_t jrk_calculate_measured_current_ma(
 
   if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V)
   {
-    return jrk_calculate_measured_current_ma_umc04a(
-      jrk_variables_get_current_high_res(vars),
-      jrk_variables_get_current_limit_code(vars),
-      jrk_variables_get_last_duty_cycle(vars),
-      jrk_get_rsense_mohm(product),
-      jrk_settings_get_current_offset_calibration(settings),
-      jrk_settings_get_current_scale_calibration(settings)
-    );
+    uint16_t firmware_calculated_current = jrk_variables_get_current(vars);
+
+#ifndef NDEBUG
+    uint16_t software_calculated_current =
+      jrk_calculate_measured_current_ma_umc04a(
+        jrk_variables_get_raw_current(vars),
+        jrk_variables_get_current_limit_code(vars),
+        jrk_variables_get_last_duty_cycle(vars),
+        jrk_get_rsense_mohm(product),
+        jrk_settings_get_current_offset_calibration(settings),
+        jrk_settings_get_current_scale_calibration(settings)
+      );
+
+    if (firmware_calculated_current != software_calculated_current)
+    {
+      // The only reason this should happen is if there is a bug in the firmware
+      // or software calculation.
+      fprintf(stderr, "warning: current calculation mismatch: %u != %u\n",
+        firmware_calculated_current, software_calculated_current);
+      fflush(stderr);
+    }
+#endif
+
+    return firmware_calculated_current;
   }
 
   return 0;
 }
 
-int32_t jrk_calculate_raw_current_mv64(
+uint32_t jrk_calculate_raw_current_mv64(
   const jrk_settings * settings, const jrk_variables * vars)
 {
   uint32_t product = jrk_settings_get_product(settings);
@@ -353,7 +374,7 @@ int32_t jrk_calculate_raw_current_mv64(
 
   if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V)
   {
-    uint16_t current = jrk_variables_get_current_high_res(vars);
+    uint16_t current = jrk_variables_get_raw_current(vars);
     uint8_t dac_ref = jrk_variables_get_current_limit_code(vars) >> 5 & 3;
     return current << dac_ref;
   }

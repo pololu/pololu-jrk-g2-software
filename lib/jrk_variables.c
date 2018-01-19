@@ -14,17 +14,18 @@ struct jrk_variables {
   int16_t integral;
   int16_t duty_cycle_target;
   int16_t duty_cycle;
-  uint8_t current;
+  uint8_t current_low_res;
   bool pid_period_exceeded;
   uint16_t pid_period_count;
   uint16_t error_flags_halting;
   uint16_t error_flags_occurred;
   uint16_t vin_voltage;
+  uint16_t current;
   uint8_t device_reset;
   uint32_t up_time;
   uint16_t rc_pulse_width;
   uint16_t tachometer_reading;
-  uint16_t current_high_res;
+  uint16_t raw_current;
   uint16_t current_limit_code;
   int16_t last_duty_cycle;
   uint8_t current_chopping_consecutive_count;
@@ -126,17 +127,18 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->integral = read_int16_t(buf + JRK_VAR_INTEGRAL);
   vars->duty_cycle_target = read_int16_t(buf + JRK_VAR_DUTY_CYCLE_TARGET);
   vars->duty_cycle = read_int16_t(buf + JRK_VAR_DUTY_CYCLE);
-  vars->current = buf[JRK_VAR_CURRENT];
+  vars->current_low_res = buf[JRK_VAR_CURRENT_LOW_RES];
   vars->pid_period_exceeded = buf[JRK_VAR_PID_PERIOD_EXCEEDED] & 1;
   vars->pid_period_count = read_uint16_t(buf + JRK_VAR_PID_PERIOD_COUNT);
   vars->error_flags_halting = read_uint16_t(buf + JRK_VAR_ERROR_FLAGS_HALTING);
   vars->error_flags_occurred = read_uint16_t(buf + JRK_VAR_ERROR_FLAGS_OCCURRED);
   vars->vin_voltage = read_uint16_t(buf + JRK_VAR_VIN_VOLTAGE);
+  vars->current = read_uint16_t(buf + JRK_VAR_CURRENT);
   vars->device_reset = buf[JRK_VAR_DEVICE_RESET];
   vars->up_time = read_uint32_t(buf + JRK_VAR_UP_TIME);
   vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
   vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
-  vars->current_high_res = read_uint16_t(buf + JRK_VAR_CURRENT_HIGH_RES);
+  vars->raw_current = read_uint16_t(buf + JRK_VAR_RAW_CURRENT);
   vars->current_limit_code = read_uint16_t(buf + JRK_VAR_CURRENT_LIMIT_CODE);
   vars->last_duty_cycle = read_int16_t(buf + JRK_VAR_LAST_DUTY_CYCLE);
   vars->current_chopping_consecutive_count = buf[JRK_VAR_CURRENT_CHOPPING_CONSECUTIVE_COUNT];
@@ -294,10 +296,10 @@ int16_t jrk_variables_get_duty_cycle(const jrk_variables * vars)
   return vars->duty_cycle;
 }
 
-uint8_t jrk_variables_get_current(const jrk_variables * vars)
+uint8_t jrk_variables_get_current_low_res(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
-  return vars->current;
+  return vars->current_low_res;
 }
 
 bool jrk_variables_get_pid_period_exceeded(const jrk_variables * vars)
@@ -330,6 +332,12 @@ uint16_t jrk_variables_get_vin_voltage(const jrk_variables * vars)
   return vars->vin_voltage;
 }
 
+uint16_t jrk_variables_get_current(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->current;
+}
+
 uint8_t jrk_variables_get_device_reset(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
@@ -354,10 +362,10 @@ uint16_t jrk_variables_get_tachometer_reading(const jrk_variables * vars)
   return vars->tachometer_reading;
 }
 
-uint16_t jrk_variables_get_current_high_res(const jrk_variables * vars)
+uint16_t jrk_variables_get_raw_current(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
-  return vars->current_high_res;
+  return vars->raw_current;
 }
 
 uint16_t jrk_variables_get_current_limit_code(const jrk_variables * vars)

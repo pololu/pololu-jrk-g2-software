@@ -33,19 +33,19 @@ class main_controller;
 
 struct error_row
 {
-  unsigned int count;
+  unsigned int count = 0;
   QLabel *bit_mask_label = NULL;
   QLabel *error_label = NULL;
-  QRadioButton *disabled_radio;
-  QRadioButton *enabled_radio;
-  QRadioButton *latched_radio;
+  QRadioButton * disabled_radio = NULL;
+  QRadioButton * enabled_radio = NULL;
+  QRadioButton * latched_radio = NULL;
   QLabel *stopping_value = NULL;
   QLabel *count_value = NULL;
-  QWidget *errors_frame;
-  QButtonGroup *error_enable_group;
+  QWidget * errors_frame = NULL;
+  QButtonGroup * error_enable_group = NULL;
   bool always_enabled = false;
   bool always_latched = false;
-  int index = 0;
+  int error_number = 0;
 };
 
 class main_window : public QMainWindow
@@ -327,8 +327,8 @@ private:
   QWidget * setup_motor_tab();
 
   QWidget * setup_errors_tab();
-  QWidget * setup_error_row(int row_number, bool disabled_visible,
-   bool enabled_visible, bool always_enabled, bool always_latched);
+  QWidget * setup_error_row(int row_number, bool always_enabled,
+    bool always_latched);
 
   QTimer *update_timer = NULL;
 
@@ -568,7 +568,7 @@ private:
   QPushButton *errors_clear_errors;
   QPushButton *errors_reset_counts;
   QWidget * new_error_row;
-  std::array<error_row, 16> error_rows;
+  QList<error_row> error_rows;
 
   QHBoxLayout * footer_layout;
   QPushButton * stop_motor_button;
