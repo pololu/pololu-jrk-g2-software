@@ -25,32 +25,33 @@ class QMenu;
 class QRadioButton;
 class QScrollBar;
 class QShowEvent;
+class QSpacerItem;
 class QSpinBox;
 
 class pid_constant_control;
 class pid_constant_validator;
 class main_controller;
 
-struct error_row
-{
-  unsigned int count = 0;
-  QLabel *bit_mask_label = NULL;
-  QLabel *error_label = NULL;
-  QRadioButton * disabled_radio = NULL;
-  QRadioButton * enabled_radio = NULL;
-  QRadioButton * latched_radio = NULL;
-  QLabel *stopping_value = NULL;
-  QLabel *count_value = NULL;
-  QWidget * errors_frame = NULL;
-  QButtonGroup * error_enable_group = NULL;
-  bool always_enabled = false;
-  bool always_latched = false;
-  int error_number = 0;
-};
-
 class main_window : public QMainWindow
 {
   Q_OBJECT
+
+  struct error_row
+  {
+    unsigned int count = 0;
+    QLabel * bit_mask_label = NULL;
+    QLabel * error_label = NULL;
+    QRadioButton * disabled_radio = NULL;
+    QRadioButton * enabled_radio = NULL;
+    QRadioButton * latched_radio = NULL;
+    QLabel * stopping_value = NULL;
+    QLabel * count_value = NULL;
+    QWidget * frame = NULL;
+    QButtonGroup * error_enable_group = NULL;
+    bool always_enabled = false;
+    bool always_latched = false;
+    int error_number = 0;
+  };
 
 public:
   main_window(QWidget * parent = 0);
@@ -165,9 +166,12 @@ public:
   void set_current_limit_code_forward(uint16_t);
   void set_current_limit_code_reverse(uint16_t);
   void set_current_limit_meaning(const char *);
+  void set_max_current_forward(uint16_t);
+  void set_max_current_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
   void set_current_scale_calibration(int16_t);
   void set_current_samples_exponent(uint8_t);
+  void set_overcurrent_threshold(uint8_t);
   void set_max_duty_cycle_while_feedback_out_of_range(uint16_t);
   void set_coast_when_off(bool value);
 
@@ -294,9 +298,12 @@ private slots:
   void on_brake_duration_reverse_spinbox_valueChanged(int value);
   void on_current_limit_forward_spinbox_valueChanged(int value);
   void on_current_limit_reverse_spinbox_valueChanged(int value);
+  void on_max_current_forward_spinbox_valueChanged(int value);
+  void on_max_current_reverse_spinbox_valueChanged(int value);
   void on_current_offset_calibration_spinbox_valueChanged(int value);
   void on_current_scale_calibration_spinbox_valueChanged(int value);
   void on_current_samples_combobox_currentIndexChanged(int value);
+  void on_overcurrent_threshold_spinbox_valueChanged(int value);
   void on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(int value);
   void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
@@ -308,6 +315,8 @@ private:
   void setup_ui();
   void setup_style_sheet();
   void setup_menu_bar();
+
+  QSpacerItem * setup_vertical_spacer();
 
   QWidget * setup_status_tab();
   QWidget * setup_preview_plot();
@@ -328,8 +337,8 @@ private:
   QWidget * setup_motor_tab();
 
   QWidget * setup_errors_tab();
-  QWidget * setup_error_row(int row_number, bool always_enabled,
-    bool always_latched);
+  void setup_error_row(int error_number,
+    bool always_enabled, bool always_latched);
 
   QTimer *update_timer = NULL;
 
@@ -544,12 +553,18 @@ private:
   QSpinBox * current_limit_forward_spinbox;
   QSpinBox * current_limit_reverse_spinbox;
   QLabel * current_limit_means_label;
+  QLabel * max_current_label;
+  QSpinBox * max_current_forward_spinbox;
+  QSpinBox * max_current_reverse_spinbox;
+  QLabel * max_current_means_label;
   QLabel * current_offset_calibration_label;
   QSpinBox * current_offset_calibration_spinbox;
   QLabel * current_scale_calibration_label;
   QSpinBox * current_scale_calibration_spinbox;
   QLabel * current_samples_label;
   QComboBox * current_samples_combobox;
+  QLabel * overcurrent_threshold_label;
+  QSpinBox * overcurrent_threshold_spinbox;
   QLabel * max_duty_cycle_while_feedback_out_of_range_label;
   QSpinBox * max_duty_cycle_while_feedback_out_of_range_spinbox;
   QLabel * max_duty_cycle_while_feedback_out_of_range_means_label;
@@ -559,15 +574,15 @@ private:
 
   // errors tab
 
-  QWidget *errors_page_widget;
-  QGridLayout *errors_page_layout;
-  QLabel *errors_bit_mask_label;
-  QLabel *errors_error_label;
-  QLabel *errors_setting_label;
-  QLabel *errors_stopping_motor_label;
-  QLabel *errors_occurence_count_label;
-  QPushButton *errors_clear_errors;
-  QPushButton *errors_reset_counts;
+  QWidget * errors_page_widget;
+  QGridLayout * errors_page_layout;
+  QLabel * errors_bit_mask_label;
+  QLabel * errors_error_label;
+  QLabel * errors_setting_label;
+  QLabel * errors_stopping_motor_label;
+  QLabel * errors_occurrence_count_label;
+  QPushButton * errors_clear_errors;
+  QPushButton * errors_reset_counts;
   QWidget * new_error_row;
   QList<error_row> error_rows;
 

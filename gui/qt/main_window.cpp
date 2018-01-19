@@ -589,6 +589,7 @@ void main_window::set_motor_asymmetric(bool checked)
   max_deceleration_reverse_spinbox->setEnabled(checked);
   brake_duration_reverse_spinbox->setEnabled(checked);
   current_limit_reverse_spinbox->setEnabled(checked);
+  max_current_reverse_spinbox->setEnabled(checked);
 }
 
 void main_window::set_max_duty_cycle_forward(uint16_t duty_cycle)
@@ -646,6 +647,16 @@ void main_window::set_current_limit_meaning(const char * str)
   current_limit_means_label->setText(str);
 }
 
+void main_window::set_max_current_forward(uint16_t current)
+{
+  set_spin_box(max_current_forward_spinbox, current);
+}
+
+void main_window::set_max_current_reverse(uint16_t current)
+{
+  set_spin_box(max_current_reverse_spinbox, current);
+}
+
 void main_window::set_current_offset_calibration(int16_t cal)
 {
   set_spin_box(current_offset_calibration_spinbox, cal);
@@ -659,6 +670,11 @@ void main_window::set_current_scale_calibration(int16_t cal)
 void main_window::set_current_samples_exponent(uint8_t exponent)
 {
   set_u8_combobox(current_samples_combobox, exponent);
+}
+
+void main_window::set_overcurrent_threshold(uint8_t threshold)
+{
+  set_spin_box(overcurrent_threshold_spinbox, threshold);
 }
 
 void main_window::set_max_duty_cycle_while_feedback_out_of_range(uint16_t value)
@@ -1358,6 +1374,17 @@ void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_current_limit_reverse_input(value);
 }
 
+void main_window::on_max_current_forward_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_current_forward_input(value);
+}
+
+void main_window::on_max_current_reverse_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_max_current_reverse_input(value);
+}
 void main_window::on_current_offset_calibration_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1375,6 +1402,12 @@ void main_window::on_current_samples_combobox_currentIndexChanged(int index)
   if (suppress_events) { return; }
   uint8_t exponent = current_samples_combobox->itemData(index).toUInt();
   controller->handle_current_samples_exponent_input(exponent);
+}
+
+void main_window::on_overcurrent_threshold_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_overcurrent_threshold_input(value);
 }
 
 void main_window::on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(
@@ -1410,7 +1443,7 @@ void main_window::on_errors_reset_counts_clicked()
 
 void main_window::setup_ui()
 {
-  setObjectName(QStringLiteral("main_window"));
+  setObjectName("main_window");
   setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
   setup_style_sheet();
@@ -1419,7 +1452,7 @@ void main_window::setup_ui()
   update_timer->setObjectName("update_timer");
 
   central_widget = new QWidget();
-  central_widget->setObjectName(QStringLiteral("central_widget"));
+  central_widget->setObjectName("central_widget");
   this->setCentralWidget(central_widget);
 
   setup_menu_bar();
@@ -1444,7 +1477,7 @@ void main_window::setup_ui()
   }
 
   grid_layout = new QGridLayout();
-  grid_layout->setObjectName(QStringLiteral("grid_layout"));
+  grid_layout->setObjectName("grid_layout");
 
   stop_motor = new QCheckBox(tr("Stop motor"));
 
@@ -1483,7 +1516,6 @@ void main_window::setup_ui()
   // bottom.
   grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
   grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
-  grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
   grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
   grid_layout->addWidget(connection_status_value, 1, 0, 1, 2, Qt::AlignCenter | Qt::AlignTop);
   grid_layout->addWidget(tab_widget, 2, 0, 1, 6);
@@ -1609,6 +1641,11 @@ void main_window::setup_menu_bar()
 
   help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
+}
+
+QSpacerItem * main_window::setup_vertical_spacer()
+{
+  return new QSpacerItem(1, fontMetrics().height());
 }
 
 static void setup_read_only_text_field(QGridLayout * layout,
@@ -1928,13 +1965,13 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_serial_layout->addWidget(input_usb_dual_port_radio, 0, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_usb_chained_radio, 1, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(uart_fixed_baud, 2, 0, Qt::AlignLeft);
-  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 3, 0);
+  input_serial_layout->addItem(setup_vertical_spacer(), 3, 0);
   input_serial_layout->addWidget(input_enable_crc_checkbox, 4, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(device_layout, 5, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_device_number_checkbox, 6, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(timeout_layout, 7, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 8, 0, Qt::AlignLeft);
-  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 9, 0);
+  input_serial_layout->addItem(setup_vertical_spacer(), 9, 0);
   input_serial_layout->addWidget(input_never_sleep_checkbox, 10, 0, Qt::AlignLeft);
 
   input_serial_groupbox->setLayout(input_serial_layout);
@@ -2041,7 +2078,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
-  input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
+  input_scaling_order_warning_label->setStyleSheet("color: red;");
 
   QGridLayout *input_scaling_layout = new QGridLayout();
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
@@ -2062,10 +2099,9 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_layout->addWidget(input_output_minimum_spinbox, 6, 2, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_absolute_min_label, 7, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_absolute_minimum_spinbox, 7, 1, Qt::AlignLeft);
-  input_scaling_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 8, 0);
+  input_scaling_layout->addItem(setup_vertical_spacer(), 8, 0);
   input_scaling_layout->addWidget(input_degree_label, 9, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_scaling_degree_combobox, 9, 1, 1, 2, Qt::AlignLeft);
-  input_scaling_layout->addItem(new QSpacerItem(input_scaling_degree_combobox->sizeHint().width(), 0), 0, 3);
   input_scaling_layout->addWidget(input_learn_button, 0, 4, Qt::AlignRight);
   input_scaling_layout->addWidget(input_reset_range_button, 1, 4, Qt::AlignRight);
   input_scaling_layout->addWidget(input_scaling_order_warning_label, 2, 3, 7, 2, Qt::AlignCenter);
@@ -2131,7 +2167,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order"));
   feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_warning_label");
-  feedback_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
+  feedback_scaling_order_warning_label->setStyleSheet("color: red;");
   feedback_scaling_order_warning_label->setSizePolicy(p);
 
   feedback_absolute_maximum_spinbox = new QSpinBox();
@@ -2353,20 +2389,35 @@ QWidget *main_window::setup_motor_tab()
   brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  // TODO: show in amps instead of showing the code
+  // TODO: let people enter current limits in A instead of with codes
   current_limit_label = new QLabel(tr("Current limit code:"));
   current_limit_label->setObjectName("current_limit_label");
 
   current_limit_forward_spinbox = new QSpinBox();
   current_limit_forward_spinbox->setObjectName("current_limit_forward_spinbox");
-  current_limit_forward_spinbox->setRange(0, 95);  // TODO: macro would be nice
+  current_limit_forward_spinbox->setRange(0, 95);
 
   current_limit_reverse_spinbox = new QSpinBox();
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
-  current_limit_reverse_spinbox->setRange(0, 95);  // TODO: macro would be nice
+  current_limit_reverse_spinbox->setRange(0, 95);
 
   current_limit_means_label = new QLabel(tr("(0 to 95)"));
   current_limit_means_label->setObjectName("current_limit_means_label");
+
+  // TODO: let people enter max currents in A instead of mA
+  max_current_label = new QLabel(tr("Max current (mA):"));
+  max_current_label->setObjectName("max_current_label");
+
+  max_current_forward_spinbox = new QSpinBox();
+  max_current_forward_spinbox->setObjectName("max_current_forward_spinbox");
+  max_current_forward_spinbox->setRange(0, 65535);
+
+  max_current_reverse_spinbox = new QSpinBox();
+  max_current_reverse_spinbox->setObjectName("max_current_reverse_spinbox");
+  max_current_reverse_spinbox->setRange(0, 65535);
+
+  max_current_means_label = new QLabel(tr("(0 means no limit)"));
+  max_current_means_label->setObjectName("max_current_means_label");
 
   current_offset_calibration_label = new QLabel(tr("Current offset calibration:"));
   current_offset_calibration_label->setObjectName("current_offset_calibration_label");
@@ -2388,34 +2439,49 @@ QWidget *main_window::setup_motor_tab()
   current_samples_combobox = setup_analog_samples_exponent_combobox();
   current_samples_combobox->setObjectName("current_samples_combobox");
 
-  motor_controls_layout->addWidget(motor_asymmetric_checkbox,0,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_forward_label,1,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_reverse_label,1,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_label,2,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_forward_spinbox, 2, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_reverse_spinbox,2,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_means_label,2,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_label,3,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_forward_spinbox,3,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_reverse_spinbox,3,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_means_label,3,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_label,4,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_forward_spinbox,4,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_reverse_spinbox,4,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_means_label,4,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(brake_duration_label,5,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(brake_duration_forward_spinbox,5,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(brake_duration_reverse_spinbox,5,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_label,6,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_forward_spinbox,6,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_reverse_spinbox,6,2,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_means_label,6,3,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_offset_calibration_label,7,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_offset_calibration_spinbox,7,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_scale_calibration_label,8,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_scale_calibration_spinbox,8,1,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_samples_label,9,0,Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_samples_combobox,9,1,Qt::AlignLeft);
+  overcurrent_threshold_label = new QLabel(tr("Overcurrent threshold:"));
+  overcurrent_threshold_label->setObjectName("overcurrent_threshold_label");
+
+  overcurrent_threshold_spinbox = new QSpinBox();
+  overcurrent_threshold_spinbox->setObjectName("overcurrent_threshold_spinbox");
+  overcurrent_threshold_spinbox->setRange(1, 255);
+
+  int row = 0;
+  motor_controls_layout->addWidget(motor_asymmetric_checkbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_forward_label, ++row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_reverse_label, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_duty_cycle_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_duty_cycle_forward_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_duty_cycle_reverse_spinbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_duty_cycle_means_label, row, 3, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_acceleration_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_acceleration_forward_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_acceleration_reverse_spinbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_acceleration_means_label, row, 3, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_deceleration_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_deceleration_forward_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_deceleration_reverse_spinbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_deceleration_means_label, row, 3, Qt::AlignLeft);
+  motor_controls_layout->addWidget(brake_duration_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(brake_duration_forward_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(brake_duration_reverse_spinbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_limit_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_limit_means_label, row, 3, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_current_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2, Qt::AlignLeft);
+  motor_controls_layout->addWidget(max_current_means_label, row, 3, Qt::AlignLeft);
+  motor_controls_layout->addItem(setup_vertical_spacer(), ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_offset_calibration_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_offset_calibration_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_scale_calibration_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_scale_calibration_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_samples_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(current_samples_combobox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(overcurrent_threshold_label, ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addWidget(overcurrent_threshold_spinbox, row, 1, Qt::AlignLeft);
 
   max_duty_cycle_while_feedback_out_of_range_label =
     new QLabel(tr("Max. duty cycle while feedback is out of range:"));
@@ -2487,29 +2553,38 @@ QWidget *main_window::setup_errors_tab()
 
   QFont font;
   font.setBold(true);
-  font.setWeight(75);
 
-  errors_bit_mask_label = new QLabel(tr(" Bit mask\n"));
+  // Note: We are setting a bunch of hardcoded margins/spacings here.
+  // It would probably be better to calculate that somehow.
+
+  errors_bit_mask_label = new QLabel(tr("Bit mask"));
   errors_bit_mask_label->setObjectName("errors_bit_mask_label");
   errors_bit_mask_label->setFont(font);
+  errors_bit_mask_label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  errors_bit_mask_label->setContentsMargins(5, 0, 5, 0);
 
-  errors_error_label = new QLabel(tr("Error\n"));
+  errors_error_label = new QLabel(tr("Error"));
   errors_error_label->setObjectName("errors_error_label");
   errors_error_label->setFont(font);
+  errors_error_label->setAlignment(Qt::AlignCenter);
+  errors_error_label->setContentsMargins(5, 0, 5, 0);
 
-  errors_setting_label = new QLabel(tr("Setting\n"));
+  errors_setting_label = new QLabel(tr("Setting"));
   errors_setting_label->setObjectName("errors_setting_label");
   errors_setting_label->setFont(font);
+  errors_setting_label->setAlignment(Qt::AlignCenter);
 
-  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?\n"));
+  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
   errors_stopping_motor_label->setFont(font);
+  errors_stopping_motor_label->setContentsMargins(5, 0, 5, 0);
 
-  errors_occurence_count_label = new QLabel(tr("Occurence\ncount\n"));
-  errors_occurence_count_label->setObjectName("errors_occurence_count_label");
-  errors_occurence_count_label->setAlignment(Qt::AlignCenter);
-  errors_occurence_count_label->setFont(font);
+  errors_occurrence_count_label = new QLabel(tr("Occurrence\ncount"));
+  errors_occurrence_count_label->setObjectName("errors_occurrence_count_label");
+  errors_occurrence_count_label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  errors_occurrence_count_label->setFont(font);
+  errors_occurrence_count_label->setContentsMargins(5, 0, 5, 0);
 
   errors_clear_errors = new QPushButton(tr("&Clear errors"));
   errors_clear_errors->setObjectName("errors_clear_errors");
@@ -2517,99 +2592,101 @@ QWidget *main_window::setup_errors_tab()
   errors_reset_counts = new QPushButton(tr("Reset c&ounts"));
   errors_reset_counts->setObjectName("errors_reset_counts");
 
-  QGridLayout *layout = errors_page_layout = new QGridLayout();
+  QGridLayout * layout = errors_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setVerticalSpacing(0);
-  layout->addWidget(errors_bit_mask_label,0,0,Qt::AlignLeft);
-  layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
-  layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
-  layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
-  layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
+  layout->setVerticalSpacing(2);
+  layout->addWidget(errors_bit_mask_label, 0, 0);
+  layout->addWidget(errors_error_label, 0, 1);
+  layout->addWidget(errors_setting_label, 0, 2, 1, 3);
+  layout->addWidget(errors_stopping_motor_label, 0, 5);
+  layout->addWidget(errors_occurrence_count_label, 0, 6);
+  layout->setColumnStretch(7, 1);
 
-  int row = 1;
-  layout->addWidget(setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_NO_POWER, true, false), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_INPUT_INVALID, true, false), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_INPUT_DISCONNECT, true, false), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_CRC, false, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true), row++, 0, 1, 8);
-  layout->addWidget(setup_error_row(JRK_ERROR_OVERCURRENT, false, false), row++, 0, 1, 8);
-  layout->addWidget(errors_clear_errors, row, 6, 1, 1);
-  layout->addWidget(errors_reset_counts, row, 7, 1, 1);
+  // Note: We have to do this before calling setup_error_row or else Qt shows
+  // small spurious windows before the main window opens.
+  errors_page_widget->setLayout(layout);
 
-  layout->setMargin(0);
+  setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true);
+  setup_error_row(JRK_ERROR_NO_POWER, true, false);
+  setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false);
+  setup_error_row(JRK_ERROR_INPUT_INVALID, true, false);
+  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, true, false);
+  setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false);
+  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false);
+  setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true);
+  setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true);
+  setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true);
+  setup_error_row(JRK_ERROR_SERIAL_CRC, false, true);
+  setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true);
+  setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true);
+  setup_error_row(JRK_ERROR_OVERCURRENT, false, false);
 
-  QHBoxLayout *page_layout = new QHBoxLayout();
-  page_layout->setSizeConstraint(QLayout::SetFixedSize);
-  page_layout->addLayout(layout,Qt::AlignCenter);
-  errors_page_widget->setLayout(page_layout);
+  int last_row = layout->rowCount();
+  layout->addWidget(errors_clear_errors, last_row, 5, 1, 1, Qt::AlignCenter);
+  layout->addWidget(errors_reset_counts, last_row, 6, 1, 1, Qt::AlignLeft);
+
+  layout->setRowStretch(last_row + 1, 1);
 
   return errors_page_widget;
 }
 
-QWidget * main_window::setup_error_row(int error_number, bool always_enabled,
-   bool always_latched)
+static void copy_margins(QWidget * dest, const QWidget * src)
 {
-  new_error_row = new QWidget();
+  int left, top, right, bottom;
+  src->getContentsMargins(&left, &top, &right, &bottom);
+  dest->setContentsMargins(left, top, right, bottom);
+}
 
+void main_window::setup_error_row(int error_number,
+  bool always_enabled, bool always_latched)
+{
   error_rows.append(error_row());
   error_row & row = error_rows.last();
 
+  row.error_number = error_number;
   row.always_enabled = always_enabled;
   row.always_latched = always_latched;
 
-  row.error_number = error_number;
-
   uint16_t error_mask = 1 << error_number;
 
-  row.errors_frame = new QWidget();
+  // The frame widget is necessary for setting the background color of the row.
+  row.frame = new QWidget();
 
-  if (error_number % 2 != 0)
+  if (error_number % 2)
   {
-    row.errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+    row.frame->setStyleSheet("background-color: rgb(230,229,229);");
   }
-
-  QGridLayout * errors_central = new QGridLayout(new_error_row);
 
   row.bit_mask_label = new QLabel();
   row.bit_mask_label->setObjectName("bit_mask_label");
-  row.bit_mask_label->setAlignment(Qt::AlignCenter);
-  row.bit_mask_label->setText(QString::fromStdString(convert_error_flags_to_hex_string(error_mask)));
+  row.bit_mask_label->setAlignment(Qt::AlignLeft);
+  row.bit_mask_label->setText(QString::fromStdString(
+    convert_error_flags_to_hex_string(error_mask)));
+  copy_margins(row.bit_mask_label, errors_bit_mask_label);
 
   row.error_label = new QLabel();
   row.error_label->setObjectName("error_label");
   row.error_label->setAlignment(Qt::AlignLeft);
   row.error_label->setText(jrk_look_up_error_name_ui(error_mask));
+  copy_margins(row.error_label, errors_error_label);
 
   row.disabled_radio = new QRadioButton(tr("Disabled"));
   row.disabled_radio->setObjectName("disabled_radio");
-  QSizePolicy p = row.disabled_radio->sizePolicy();
-  p.setRetainSizeWhenHidden(true);
-  row.disabled_radio->setSizePolicy(p);
 
   row.enabled_radio = new QRadioButton(tr("Enabled"));
   row.enabled_radio->setObjectName("enabled_radio");
-  QSizePolicy q = row.enabled_radio->sizePolicy();
-  q.setRetainSizeWhenHidden(true);
-  row.enabled_radio->setSizePolicy(p);
 
   row.latched_radio = new QRadioButton(tr("Enabled and latched"));
   row.latched_radio->setObjectName("latched_radio");
 
-  row.error_enable_group = new QButtonGroup();
+  row.error_enable_group = new QButtonGroup(this);
   row.error_enable_group->setObjectName("error_enable_group");
   row.error_enable_group->setExclusive(true);
   row.error_enable_group->addButton(row.disabled_radio, 0);
   row.error_enable_group->addButton(row.enabled_radio, 1);
   row.error_enable_group->addButton(row.latched_radio, 2);
 
+  // TODO: cleaner syntax for this?
   connect(row.error_enable_group,
     static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     [=] (int id)
@@ -2620,64 +2697,38 @@ QWidget * main_window::setup_error_row(int error_number, bool always_enabled,
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
   row.stopping_value->setAlignment(Qt::AlignCenter);
+  copy_margins(row.stopping_value, errors_stopping_motor_label);
 
   row.count_value = new QLabel("-");
   row.count_value->setObjectName("count_value");
-  row.count_value->setAlignment(Qt::AlignCenter);
+  row.count_value->setAlignment(Qt::AlignLeft);
+  copy_margins(row.count_value, errors_occurrence_count_label);
 
-  // Set the size of the labels and buttons for the errors tab in
-  // a way that can change from OS to OS.
-  {
-    QRadioButton tmp_button;
-    tmp_button.setText("xxxxxxxxxxxxxxxxxx");
-    QRadioButton tmp_button_2;
-    tmp_button_2.setText("xxxxxxxxx");
-    QLabel tmp_label;
-    tmp_label.setText("xxxxxxxxxxxxxxxxxxxxxxxx");
-    QLabel tmp_label2;
-    tmp_label2.setText("xxxxxxxxxxx");
-    QLabel tmp_label3;
-    tmp_label3.setText("xxxxxxxxxxxxxxx");
-    row.bit_mask_label->setFixedWidth(tmp_label2.sizeHint().width());
-    row.error_label->setFixedWidth(tmp_label.sizeHint().width());
-    row.disabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    row.enabled_radio->setFixedWidth(tmp_button_2.sizeHint().width());
-    row.latched_radio->setFixedWidth(tmp_button.sizeHint().width());
-    row.stopping_value->setFixedWidth(tmp_label3.sizeHint().width());
-    row.count_value->setFixedWidth(tmp_label3.sizeHint().width());
-  }
+  int r = errors_page_layout->rowCount();
+  errors_page_layout->addWidget(row.frame, r, 0, 3, 8);
+  errors_page_layout->addWidget(row.bit_mask_label, r + 1, 0);
+  errors_page_layout->addWidget(row.error_label, r + 1, 1);
+  errors_page_layout->addWidget(row.disabled_radio, r + 1, 2);
+  errors_page_layout->addWidget(row.enabled_radio, r + 1, 3);
+  errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
+  errors_page_layout->addWidget(row.stopping_value, r + 1, 5);
+  errors_page_layout->addWidget(row.count_value, r + 1, 6);
 
-  errors_central->addWidget(row.errors_frame, 0, 0, 3, 8);
-  errors_central->addWidget(row.bit_mask_label, 1, 1);
-  errors_central->addWidget(row.error_label, 1, 2);
-  errors_central->addWidget(row.disabled_radio, 1, 3);
-  errors_central->addWidget(row.enabled_radio, 1, 4);
-  errors_central->addWidget(row.latched_radio, 1, 5);
-  errors_central->addWidget(row.stopping_value, 1, 6);
-  errors_central->addWidget(row.count_value, 1, 7);
-
-  // Note: We have to do this *after* adding the radio buttons to the layout or
-  // else Qt shows lots of flickering things when the program starts.
+  // Note: We have to do this after adding the radio buttons to the layout or
+  // else Qt shows small spurious windows before the main window opens.
   row.disabled_radio->setVisible(!always_enabled);
   row.enabled_radio->setVisible(!always_latched);
-
-  errors_central->setMargin(0);
-
-  return new_error_row;
 }
 
 void pid_constant_control::setup(QGroupBox * groupbox)
 {
   QFont font;
-  font.setFamily(QStringLiteral("MS Shell Dlg 2"));
   font.setPointSize(16);
   font.setBold(true);
-  font.setWeight(75);
 
   QFont font1;
   font1.setPointSize(12);
   font1.setBold(true);
-  font1.setWeight(75);
 
   pid_base_label = new QLabel();
   pid_base_label->setObjectName("pid_base_label");
@@ -2687,7 +2738,7 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_base_label->setText(tr("2"));
 
   pid_control_frame = new QFrame();
-  pid_control_frame->setObjectName(QStringLiteral("pid_control_frame"));
+  pid_control_frame->setObjectName("pid_control_frame");
   pid_control_frame->setFrameShadow(QFrame::Plain);
   pid_control_frame->setLineWidth(4);
   pid_control_frame->setFrameShape(QFrame::HLine);

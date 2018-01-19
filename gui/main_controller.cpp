@@ -578,8 +578,13 @@ void main_controller::handle_variables_changed()
   window->set_duty_cycle_target(variables.get_duty_cycle_target());
   window->set_duty_cycle(variables.get_duty_cycle());
 
-  window->set_current(jrk::calculate_measured_current_ma(settings, variables));
-  window->set_raw_current_mv(jrk::calculate_raw_current_mv64(settings, variables) / 64);
+  // Note: The cached_settings we have here might not correspond to the
+  // variables we have fetched if the settings were just applied, so this
+  // calculation might be off at that time, but it's not a big deal.
+  window->set_current(
+    jrk::calculate_measured_current_ma(cached_settings, variables));
+  window->set_raw_current_mv(
+    jrk::calculate_raw_current_mv64(cached_settings, variables) / 64);
 
   // TODO: rename 'Current chopping log' in the window
   window->set_current_chopping_log(
@@ -655,12 +660,14 @@ void main_controller::handle_settings_changed()
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
   window->set_brake_duration_reverse(settings.get_brake_duration_reverse());
   window->set_current_limit_code_reverse(settings.get_current_limit_code_reverse());
+  window->set_max_current_reverse(settings.get_max_current_reverse());
 
   window->set_max_duty_cycle_forward(settings.get_max_duty_cycle_forward());
   window->set_max_acceleration_forward(settings.get_max_acceleration_forward());
   window->set_max_deceleration_forward(settings.get_max_deceleration_forward());
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_current_limit_code_forward(settings.get_current_limit_code_forward());
+  window->set_max_current_forward(settings.get_max_current_forward());
 
   {
     std::ostringstream meaning;
@@ -682,6 +689,7 @@ void main_controller::handle_settings_changed()
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
   window->set_current_samples_exponent(settings.get_current_samples_exponent());
+  window->set_overcurrent_threshold(settings.get_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
 
@@ -832,7 +840,9 @@ void main_controller::recalculate_motor_asymmetric()
     (settings.get_brake_duration_forward() !=
       settings.get_brake_duration_reverse()) ||
     (settings.get_current_limit_code_forward() !=
-      settings.get_current_limit_code_reverse());
+      settings.get_current_limit_code_reverse()) ||
+    (settings.get_max_current_forward() !=
+      settings.get_max_current_reverse());
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -1183,6 +1193,7 @@ void main_controller::handle_motor_asymmetric_input(bool asymmetric)
     settings.set_max_deceleration_reverse(settings.get_max_deceleration_forward());
     settings.set_brake_duration_reverse(settings.get_brake_duration_forward());
     settings.set_current_limit_code_reverse(settings.get_current_limit_code_forward());
+    settings.set_max_current_reverse(settings.get_max_current_forward());
   }
 
   settings_modified = true;
@@ -1194,7 +1205,9 @@ void main_controller::handle_max_duty_cycle_forward_input(uint16_t duty_cycle)
   if (!connected()) { return; }
   settings.set_max_duty_cycle_forward(duty_cycle);
   if (!motor_asymmetric)
+  {
     settings.set_max_duty_cycle_reverse(duty_cycle);
+  }
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1212,7 +1225,9 @@ void main_controller::handle_max_acceleration_forward_input(uint16_t acceleratio
   if (!connected()) { return; }
   settings.set_max_acceleration_forward(acceleration);
   if (!motor_asymmetric)
+  {
     settings.set_max_acceleration_reverse(acceleration);
+  }
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1230,7 +1245,9 @@ void main_controller::handle_max_deceleration_forward_input(uint16_t deceleratio
   if (!connected()) { return; }
   settings.set_max_deceleration_forward(deceleration);
   if (!motor_asymmetric)
+  {
     settings.set_max_deceleration_reverse(deceleration);
+  }
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1248,7 +1265,9 @@ void main_controller::handle_brake_duration_forward_input(uint32_t deceleration)
   if (!connected()) { return; }
   settings.set_brake_duration_forward(deceleration);
   if (!motor_asymmetric)
+  {
     settings.set_brake_duration_reverse(deceleration);
+  }
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1266,7 +1285,9 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
   if (!connected()) { return; }
   settings.set_current_limit_code_forward(current);
   if (!motor_asymmetric)
+  {
     settings.set_current_limit_code_reverse(current);
+  }
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1275,6 +1296,26 @@ void main_controller::handle_current_limit_reverse_input(uint16_t current)
 {
   if (!connected()) { return; }
   settings.set_current_limit_code_reverse(current);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_max_current_forward_input(uint16_t current)
+{
+  if (!connected()) { return; }
+  settings.set_max_current_forward(current);
+  if (!motor_asymmetric)
+  {
+    settings.set_max_current_reverse(current);
+  }
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_max_current_reverse_input(uint16_t current)
+{
+  if (!connected()) { return; }
+  settings.set_max_current_reverse(current);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1299,6 +1340,14 @@ void main_controller::handle_current_samples_exponent_input(uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_current_samples_exponent(exponent);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_overcurrent_threshold_input(uint8_t threshold)
+{
+  if (!connected()) { return; }
+  settings.set_overcurrent_threshold(threshold);
   settings_modified = true;
   handle_settings_changed();
 }
