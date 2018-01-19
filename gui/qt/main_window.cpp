@@ -1411,7 +1411,7 @@ void main_window::on_errors_reset_counts_clicked()
 
 void main_window::setup_ui()
 {
-  setObjectName(QStringLiteral("main_window"));
+  setObjectName("main_window");
   setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
   setup_style_sheet();
@@ -1420,7 +1420,7 @@ void main_window::setup_ui()
   update_timer->setObjectName("update_timer");
 
   central_widget = new QWidget();
-  central_widget->setObjectName(QStringLiteral("central_widget"));
+  central_widget->setObjectName("central_widget");
   this->setCentralWidget(central_widget);
 
   setup_menu_bar();
@@ -1445,14 +1445,14 @@ void main_window::setup_ui()
   }
 
   grid_layout = new QGridLayout();
-  grid_layout->setObjectName(QStringLiteral("grid_layout"));
+  grid_layout->setObjectName("grid_layout");
 
   horizontal_layout = new QHBoxLayout();
   horizontal_layout->setSpacing(6);
-  horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
+  horizontal_layout->setObjectName("horizontal_layout");
 
   graph = new graph_widget();
-  graph->setObjectName(QStringLiteral("graph"));
+  graph->setObjectName("graph");
   graph->set_preview_mode(true);
 
   QCustomPlot *preview_plot = graph->custom_plot;
@@ -2030,7 +2030,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
-  input_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
+  input_scaling_order_warning_label->setStyleSheet("color: red;");
 
   QGridLayout *input_scaling_layout = new QGridLayout();
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
@@ -2120,7 +2120,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order"));
   feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_warning_label");
-  feedback_scaling_order_warning_label->setStyleSheet(QStringLiteral("color:red"));
+  feedback_scaling_order_warning_label->setStyleSheet("color: red;");
   feedback_scaling_order_warning_label->setSizePolicy(p);
 
   feedback_absolute_maximum_spinbox = new QSpinBox();
@@ -2562,7 +2562,7 @@ QWidget * main_window::setup_error_row(int error_number, bool always_enabled,
 
   if (error_number % 2 != 0)
   {
-    row.errors_frame->setStyleSheet(QStringLiteral("background-color:rgb(230,229,229)"));
+    row.errors_frame->setStyleSheet("background-color: rgb(230,229,229);");
   }
 
   QGridLayout * errors_central = new QGridLayout(new_error_row);
@@ -2658,7 +2658,6 @@ QWidget * main_window::setup_error_row(int error_number, bool always_enabled,
 void pid_constant_control::setup(QGroupBox * groupbox)
 {
   QFont font;
-  font.setFamily(QStringLiteral("MS Shell Dlg 2"));
   font.setPointSize(16);
   font.setBold(true);
   font.setWeight(75);
@@ -2676,7 +2675,7 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_base_label->setText(tr("2"));
 
   pid_control_frame = new QFrame();
-  pid_control_frame->setObjectName(QStringLiteral("pid_control_frame"));
+  pid_control_frame->setObjectName("pid_control_frame");
   pid_control_frame->setFrameShadow(QFrame::Plain);
   pid_control_frame->setLineWidth(4);
   pid_control_frame->setFrameShape(QFrame::HLine);
