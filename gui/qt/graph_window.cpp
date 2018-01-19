@@ -40,9 +40,12 @@ void graph_window::receive_widget(graph_widget *widget)
   grabbed_widget->set_preview_mode(false);
 
   central_layout->addWidget(grabbed_widget->custom_plot,
-    0, 0, 14, 17);
+    0, 0, 2, 2);
   central_layout->addLayout(grabbed_widget->bottom_control_layout,
-    15, 0, 1, 1, Qt::AlignLeft);
+    2, 0, Qt::AlignLeft);
   central_layout->addLayout(grabbed_widget->plot_visible_layout,
-    0, 18, 11, 1, Qt::AlignTop | Qt::AlignRight);
+    0, 2, Qt::AlignTop);
+
+   central_layout->setColumnStretch(1, 3);
+   central_layout->setRowStretch(1, 3);
 }
