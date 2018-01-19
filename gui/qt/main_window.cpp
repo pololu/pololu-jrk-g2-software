@@ -1479,8 +1479,6 @@ void main_window::setup_ui()
   grid_layout = new QGridLayout();
   grid_layout->setObjectName("grid_layout");
 
-  stop_motor = new QCheckBox(tr("Stop motor"));
-
   tab_widget = new QTabWidget();
   tab_widget->addTab(setup_status_tab(), tr("Status"));
   tab_widget->addTab(setup_input_tab(), tr("Input"));

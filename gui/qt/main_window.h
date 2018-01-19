@@ -370,7 +370,6 @@ private:
   QLabel * device_list_label;
   QComboBox * device_list_value;
   QLabel * connection_status_value;
-  QCheckBox *stop_motor;
 
   QTabWidget *tab_widget;
 
