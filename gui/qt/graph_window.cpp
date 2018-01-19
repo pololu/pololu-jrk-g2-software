@@ -10,10 +10,9 @@ graph_window::graph_window(QWidget *parent)
 
 void graph_window::setup_ui()
 {
-  setObjectName(QStringLiteral("graph_window"));
+  setObjectName("graph_window");
 
-  setWindowTitle(tr("graph_window",
-    "Pololu Jrk G2 Configuration Utility - Plots of Variables vs. Time"));
+  setWindowTitle(tr("Pololu Jrk G2 Configuration Utility - Plots of Variables vs. Time"));
 
   central_layout = new QGridLayout();
 
@@ -27,13 +26,16 @@ void graph_window::closeEvent(QCloseEvent *event)
   central_layout->removeWidget(grabbed_widget);
   emit pass_widget(grabbed_widget);
   grabbed_widget = 0;
+
+  // Reverts graph_window state to normal to fix Qt bug when window is
+  // maximized, closed, and then reopened.
   setWindowState(Qt::WindowNoState);
+
   QWidget::closeEvent(event);
 }
 
 void graph_window::receive_widget(graph_widget *widget)
 {
-
   grabbed_widget = widget;
   grabbed_widget->set_preview_mode(false);
 

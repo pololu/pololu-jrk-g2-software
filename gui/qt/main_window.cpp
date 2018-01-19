@@ -35,6 +35,7 @@
 #include <QUrl>
 #include <QVBoxLayout>
 #include <QString>
+#include <QFontMetrics>
 
 #include <cassert>
 #include <cmath>
@@ -1675,7 +1676,7 @@ QWidget * main_window::setup_status_tab()
 {
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
-  // layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   layout->addWidget(setup_variables_box(), 0, 0, 1, 1);
   layout->addWidget(setup_preview_plot(), 0, 1, 1, 1);
@@ -2274,9 +2275,9 @@ QWidget * main_window::setup_pid_tab()
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
 
   QGridLayout *group_box_row = new QGridLayout();
-  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0, Qt::AlignLeft);
-  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1, Qt::AlignLeft);
-  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2, Qt::AlignLeft);
+  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0);
+  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1);
+  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2);
 
   QHBoxLayout *period_row_layout = new QHBoxLayout();
   period_row_layout->addWidget(pid_period_label);
@@ -2292,11 +2293,11 @@ QWidget * main_window::setup_pid_tab()
 
   QGridLayout *layout = pid_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(group_box_row,0,0);
-  layout->addLayout(period_row_layout,1,0,1,1,Qt::AlignLeft);
-  layout->addLayout(integral_row_layout,2,0,1,1,Qt::AlignLeft);
-  layout->addWidget(reset_integral_checkbox,3,0,1,2,Qt::AlignLeft);
-  layout->addLayout(deadzone_row_layout,4,0,1,1,Qt::AlignLeft);
+  layout->addLayout(group_box_row, 0, 0, 1, 3);
+  layout->addLayout(period_row_layout, 1, 0, 1, 1, Qt::AlignLeft);
+  layout->addLayout(integral_row_layout, 2, 0, 1, 1, Qt::AlignLeft);
+  layout->addWidget(reset_integral_checkbox, 3, 0, 1, 1, Qt::AlignLeft);
+  layout->addLayout(deadzone_row_layout, 4, 0, 1, 1, Qt::AlignLeft);
 
   pid_page_widget->setLayout(layout);
   return pid_page_widget;
@@ -2764,11 +2765,8 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_constant_lineedit = new QLineEdit();
   pid_constant_lineedit->setObjectName("pid_constant_lineedit");
 
-  {
-    QLineEdit tmp_line;
-    tmp_line.setText("0.0000000");
-    pid_constant_lineedit->setFixedWidth(tmp_line.sizeHint().width());
-  }
+  QFontMetrics metrics(QApplication::font());
+  pid_constant_lineedit->setFixedWidth(metrics.width("0000.00000000"));
 
   pid_constant_validator *constant_validator =
     new pid_constant_validator(0, 1023, 7, pid_constant_lineedit);
