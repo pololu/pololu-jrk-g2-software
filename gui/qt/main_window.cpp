@@ -901,7 +901,7 @@ void main_window::on_update_timer_timeout()
 void main_window::receive_widget(graph_widget *widget)
 {
   widget->set_preview_mode(true);
-  horizontal_layout->addWidget(widget->custom_plot, 0, Qt::AlignCenter);
+  horizontal_layout->addWidget(widget->custom_plot, 0);
 }
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
@@ -1674,9 +1674,11 @@ QWidget * main_window::setup_status_tab()
 
   layout->addWidget(setup_variables_box(), 0, 0);
   layout->addWidget(setup_preview_plot(), 0, 1);
-  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 2);
+  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
+  layout->setColumnStretch(1, 3);
+  layout->setColumnStretch(2, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
@@ -1692,9 +1694,7 @@ QWidget * main_window::setup_preview_plot()
   QWidget *preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();
-  horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
-
-  horizontal_layout->addWidget(preview_plot, 0, Qt::AlignCenter);
+  horizontal_layout->addWidget(preview_plot, 0);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
@@ -1710,6 +1710,7 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
