@@ -580,8 +580,13 @@ void main_controller::handle_variables_changed()
   window->set_duty_cycle_target(variables.get_duty_cycle_target());
   window->set_duty_cycle(variables.get_duty_cycle());
 
-  window->set_current(jrk::calculate_measured_current_ma(settings, variables));
-  window->set_raw_current_mv(jrk::calculate_raw_current_mv64(settings, variables) / 64);
+  // Note: The cached_settings we have here might not correspond to the
+  // variables we have fetched if the settings were just applied, so this
+  // calculation might be off at that time, but it's not a big deal.
+  window->set_current(
+    jrk::calculate_measured_current_ma(cached_settings, variables));
+  window->set_raw_current_mv(
+    jrk::calculate_raw_current_mv64(cached_settings, variables) / 64);
 
   // TODO: rename 'Current chopping log' in the window
   window->set_current_chopping_log(
