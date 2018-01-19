@@ -161,43 +161,43 @@ void main_window::set_up_time(uint32_t up_time)
 void main_window::set_input(uint16_t input)
 {
   graph->input.plot_value = input;
-  // TODO: input_value->setText(QString::number(input));
+  input_value->setText(QString::number(input));
 }
 
 void main_window::set_target(uint16_t target)
 {
   graph->target.plot_value = target;
-  // TODO: target_value->setText(QString::number(target));
+  target_value->setText(QString::number(target));
 }
 
 void main_window::set_feedback(uint16_t feedback)
 {
   graph->feedback.plot_value = feedback;
-  // TODO: feedback_value->setText(QString::number(feedback));
+  feedback_value->setText(QString::number(feedback));
 }
 
 void main_window::set_scaled_feedback(uint16_t scaled_feedback)
 {
   graph->scaled_feedback.plot_value = scaled_feedback;
-  // TODO: scaled_feedback_value->setText(QString::number(scaled_feedback));
+  scaled_feedback_value->setText(QString::number(scaled_feedback));
 }
 
 void main_window::set_error(int16_t error)
 {
   graph->error.plot_value = error;
-  // TODO: error_value->setText(QString::number(error));
+  error_value->setText(QString::number(error));
 }
 
 void main_window::set_integral(int16_t integral)
 {
   graph->integral.plot_value = integral;
-  // TODO: integral_value->setText(QString::number(integral));
+  integral_value->setText(QString::number(integral));
 }
 
 void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 {
   graph->duty_cycle_target.plot_value = duty_cycle_target;
-  // TODO: duty_cycle_target_value->setText(QString::number(duty_cycle_target));
+  duty_cycle_target_value->setText(QString::number(duty_cycle_target));
 }
 
 void main_window::set_duty_cycle(int16_t duty_cycle)
@@ -218,16 +218,30 @@ void main_window::set_current(int32_t current)
   current_value->setText(QString::number(current) + " mA");
 }
 
-void main_window::set_current_chopping_log(uint16_t log)
+void main_window::set_current_chopping_now(bool chopping)
 {
-  graph->current_chopping_log.plot_value = log;
-  current_chopping_log_value->setText(QString::number(log));
+  graph->current_chopping.plot_value = chopping;
+}
+
+void main_window::set_current_chopping_count(uint32_t count)
+{
+  current_chopping_count_value->setText(QString::number(count));
 }
 
 void main_window::set_vin_voltage(uint16_t vin_voltage)
 {
   vin_voltage_value->setText(QString::fromStdString(
     convert_mv_to_v_string(vin_voltage)));
+}
+
+void main_window::set_pid_period_count(uint16_t count)
+{
+  pid_period_count_value->setText(QString::number(count));
+}
+
+void main_window::set_pid_period_exceeded(bool exceeded)
+{
+  pid_period_exceeded_value->setText(exceeded ? "Yes" : "No");
 }
 
 void main_window::set_device_list_contents(const std::vector<jrk::device> & device_list)
@@ -305,26 +319,7 @@ void main_window::set_never_sleep(bool never_sleep)
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
-  switch (input_mode)
-  {
-    case 0:
-      input_analog_groupbox->setEnabled(false);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(false);
-      break;
-    case 1:
-      input_analog_groupbox->setEnabled(true);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(true);
-      break;
-    case 2:
-      input_analog_groupbox->setEnabled(false);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(true);
-      break;
-    default:
-      return;
-  }
+  input_scaling_groupbox->setEnabled(input_mode != JRK_INPUT_MODE_SERIAL);
 }
 
 void main_window::set_input_invert(bool input_invert)
@@ -472,23 +467,9 @@ void main_window::set_input_scaling_order_warning_label()
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
-  switch (feedback_mode)
-  {
-    case 0:
-      feedback_analog_groupbox->setEnabled(false);
-      feedback_scaling_groupbox->setEnabled(false);
-      break;
-    case 1:
-      feedback_analog_groupbox->setEnabled(true);
-      feedback_scaling_groupbox->setEnabled(true);
-      break;
-    case 2:
-      feedback_analog_groupbox->setEnabled(false);
-      feedback_scaling_groupbox->setEnabled(true);
-      break;
-    default:
-      return;
-  }
+
+  feedback_scaling_groupbox->setEnabled(
+    feedback_mode != JRK_FEEDBACK_MODE_NONE);
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
@@ -1678,10 +1659,9 @@ QWidget * main_window::setup_status_tab()
 {
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
-  layout->addWidget(setup_variables_box(), 0, 0, 1, 1);
-  layout->addWidget(setup_preview_plot(), 0, 1, 1, 1);
+  layout->addWidget(setup_variables_box(), 0, 0);
+  layout->addWidget(setup_preview_plot(), 0, 1);
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 2);
 
   layout->setRowStretch(2, 1);
@@ -1718,7 +1698,6 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
@@ -1751,6 +1730,29 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++, &up_time_label, &up_time_value);
   up_time_label->setText(tr("Up time:"));
 
+  setup_read_only_text_field(layout, row++, &input_label, &input_value);
+  input_label->setText(tr("Input:"));
+
+  setup_read_only_text_field(layout, row++, &target_label, &target_value);
+  target_label->setText(tr("Target:"));
+
+  setup_read_only_text_field(layout, row++, &feedback_label, &feedback_value);
+  feedback_label->setText(tr("Feedback:"));
+
+  setup_read_only_text_field(layout, row++, &scaled_feedback_label,
+    &scaled_feedback_value);
+  scaled_feedback_label->setText(tr("Scaled feedback:"));
+
+  setup_read_only_text_field(layout, row++, &error_label, &error_value);
+  error_label->setText(tr("Error:"));
+
+  setup_read_only_text_field(layout, row++, &integral_label, &integral_value);
+  integral_label->setText(tr("Integral:"));
+
+  setup_read_only_text_field(layout, row++, &duty_cycle_target_label,
+    &duty_cycle_target_value);
+  duty_cycle_target_label->setText(tr("Duty cycle target:"));
+
   setup_read_only_text_field(layout, row++, &duty_cycle_label, &duty_cycle_value);
   duty_cycle_label->setText(tr("Duty cycle:"));
 
@@ -1762,13 +1764,23 @@ QWidget * main_window::setup_variables_box()
     &current_value);
   current_label->setText(tr("Current:"));
 
-  setup_read_only_text_field(layout, row++,
-    &current_chopping_log_label, &current_chopping_log_value);
-  current_chopping_log_label->setText(tr("Current chopping log:"));
+  // TODO: what kind of current chopping thing do we want to show here?
+  // it's not really a log any more
+  setup_read_only_text_field(layout, row++, &current_chopping_count_label,
+    &current_chopping_count_value);
+  current_chopping_count_label->setText(tr("Current chopping count:"));
 
-  setup_read_only_text_field(layout, row++,
-    &vin_voltage_label, &vin_voltage_value);
+  setup_read_only_text_field(layout, row++, &vin_voltage_label,
+    &vin_voltage_value);
   vin_voltage_label->setText(tr("VIN voltage:"));
+
+  setup_read_only_text_field(layout, row++, &pid_period_count_label,
+    &pid_period_count_value);
+  pid_period_count_label->setText(tr("PID period count:"));
+
+  setup_read_only_text_field(layout, row++, &pid_period_exceeded_label,
+    &pid_period_exceeded_value);
+  pid_period_exceeded_label->setText(tr("PID period exceeded:"));
 
   setup_read_only_text_field(layout, row++,
     &error_flags_halting_label, &error_flags_halting_value);
@@ -1841,7 +1853,7 @@ QWidget * main_window::setup_input_tab()
   layout->addLayout(input_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_input_analog_groupbox(), 1, 0);
   layout->addWidget(setup_input_serial_groupbox(), 2, 0);
-  layout->addWidget(setup_input_scaling_groupbox(), 0, 1, 3, 1, Qt::AlignTop);
+  layout->addWidget(setup_input_scaling_groupbox(), 1, 1, 2, 1, Qt::AlignTop);
 
   input_page_widget->setLayout(layout);
 
@@ -2129,8 +2141,8 @@ QWidget * main_window::setup_feedback_tab()
   QGridLayout *layout = feedback_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
-  layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0, Qt::AlignLeft);
-  layout->addWidget(setup_feedback_analog_groupbox(), 2, 0,Qt::AlignLeft);
+  layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
+  layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2203,7 +2215,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox, 5, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_learn_button, 0, 3, Qt::AlignRight);
   feedback_scaling_layout->addWidget(feedback_reset_range_button, 1, 3, Qt::AlignRight);
-  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label,2,2,4,2, Qt::AlignCenter);
+  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label, 2, 2, 4, 2, Qt::AlignCenter);
 
   feedback_scaling_groupbox->setLayout(feedback_scaling_layout);
 
@@ -2224,10 +2236,13 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
   feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");
 
+  QHBoxLayout * analog_samples = new QHBoxLayout();
+  analog_samples->addWidget(feedback_analog_samples_label, 0, Qt::AlignLeft);
+  analog_samples->addWidget(feedback_analog_samples_combobox, 0, Qt::AlignLeft);
+
   QGridLayout *feedback_analog_layout = new QGridLayout();
-  feedback_analog_layout->addWidget(feedback_analog_samples_label,0,0);
-  feedback_analog_layout->addWidget(feedback_analog_samples_combobox,0,1,Qt::AlignLeft);
-  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox,1,0,1,2);
+  feedback_analog_layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
+  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
   feedback_analog_groupbox->setLayout(feedback_analog_layout);
 
@@ -2598,7 +2613,6 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_setting_label, 0, 2, 1, 3);
   layout->addWidget(errors_stopping_motor_label, 0, 5);
   layout->addWidget(errors_occurrence_count_label, 0, 6);
-  layout->setColumnStretch(7, 1);
 
   // Note: We have to do this before calling setup_error_row or else Qt shows
   // small spurious windows before the main window opens.
@@ -2787,7 +2801,6 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
   group_box_layout->addWidget(pid_equal_label,2,7,1,2);
   group_box_layout->addWidget(pid_constant_lineedit,1,9,3,1,Qt::AlignCenter);
-  group_box_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   groupbox->setLayout(group_box_layout);
 

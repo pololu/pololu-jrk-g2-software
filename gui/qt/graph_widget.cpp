@@ -126,7 +126,7 @@ void graph_widget::setup_ui()
 
   setup_plot(current, "Current (mA)", "#b8860b", false, 100000);
 
-  setup_plot(current_chopping_log, "Current chopping log", "#ff00ff", false, 1);
+  setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
   custom_plot->yAxis->setRange(-100,100);
   custom_plot->yAxis->setAutoTickStep(false);

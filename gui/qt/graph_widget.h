@@ -43,7 +43,7 @@ public:
   plot duty_cycle;
   plot raw_current;
   plot current;
-  plot current_chopping_log;
+  plot current_chopping;
 
   QCustomPlot *custom_plot;
 
