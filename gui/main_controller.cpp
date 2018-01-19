@@ -144,6 +144,8 @@ void main_controller::connect_device(jrk::device const & device)
   variables.pointer_reset();
   current_chopping_count = 0;
 
+  window->reset_graph();  // TODO: make this work
+
   // TODO: what about clearing the error counts in the window?  Does that
   // happen somehow?  Should we manage those counts here in the controller?
 
@@ -710,18 +712,19 @@ void main_controller::handle_settings_loaded()
 {
   recalculate_motor_asymmetric();
 
-  recompute_constant(0, settings.get_proportional_multiplier(), settings.get_proportional_exponent());
-  recompute_constant(1, settings.get_integral_multiplier(), settings.get_integral_exponent());
-  recompute_constant(2, settings.get_derivative_multiplier(), settings.get_derivative_exponent());
+  window->set_manual_target_enabled(
+    settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
 
-  window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
-
-  window->reset_graph(); // Clears graph plots.
+  recompute_constant(0, settings.get_proportional_multiplier(),
+    settings.get_proportional_exponent());
+  recompute_constant(1, settings.get_integral_multiplier(),
+    settings.get_integral_exponent());
+  recompute_constant(2, settings.get_derivative_multiplier(),
+    settings.get_derivative_exponent());
 
   cached_settings = settings;
 
   settings_modified = false;
-  handle_settings_changed();
 }
 
 // Note: Really this function should just update the model and not the window,
@@ -1471,8 +1474,8 @@ void main_controller::apply_settings()
   {
     show_exception(e);
   }
-  handle_settings_changed();
   handle_settings_loaded();
+  handle_settings_changed();
 }
 
 void main_controller::stop_motor()
