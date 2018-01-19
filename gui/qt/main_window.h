@@ -165,6 +165,8 @@ public:
   void set_current_limit_code_forward(uint16_t);
   void set_current_limit_code_reverse(uint16_t);
   void set_current_limit_meaning(const char *);
+  void set_max_current_forward(uint16_t);
+  void set_max_current_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
   void set_current_scale_calibration(int16_t);
   void set_current_samples_exponent(uint8_t);
@@ -294,6 +296,8 @@ private slots:
   void on_brake_duration_reverse_spinbox_valueChanged(int value);
   void on_current_limit_forward_spinbox_valueChanged(int value);
   void on_current_limit_reverse_spinbox_valueChanged(int value);
+  void on_max_current_forward_spinbox_valueChanged(int value);
+  void on_max_current_reverse_spinbox_valueChanged(int value);
   void on_current_offset_calibration_spinbox_valueChanged(int value);
   void on_current_scale_calibration_spinbox_valueChanged(int value);
   void on_current_samples_combobox_currentIndexChanged(int value);
@@ -543,6 +547,10 @@ private:
   QSpinBox * current_limit_forward_spinbox;
   QSpinBox * current_limit_reverse_spinbox;
   QLabel * current_limit_means_label;
+  QLabel * max_current_label;
+  QSpinBox * max_current_forward_spinbox;
+  QSpinBox * max_current_reverse_spinbox;
+  QLabel * max_current_means_label;
   QLabel * current_offset_calibration_label;
   QSpinBox * current_offset_calibration_spinbox;
   QLabel * current_scale_calibration_label;
