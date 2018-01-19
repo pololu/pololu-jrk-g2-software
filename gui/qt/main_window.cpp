@@ -688,8 +688,6 @@ void main_window::set_error_enable(uint16_t enable, uint16_t latch)
 
   for (error_row & row : error_rows)
   {
-    if (row.stopping_value == NULL) { continue; } // TODO
-
     if ((enable >> row.error_number & 1) || row.always_enabled)
     {
       if ((latch >> row.error_number & 1) || row.always_latched)
@@ -715,30 +713,28 @@ void main_window::set_error_flags_halting(uint16_t error_flags_halting)
   error_flags_halting_value->setText(QString::fromStdString(
     convert_error_flags_to_hex_string(error_flags_halting)));
 
-  for (int i = 0; i < 16; i++) // TODO: use better loop syntax
+  for (error_row & row : error_rows)
   {
-    if (error_rows[i].stopping_value == NULL) { continue; }
-
     // setStyleSheet() is expensive, so only call it if something actually
     // changed. Check if there's currently a stylesheet applied and decide
     // whether we need to do anything based on that.
-    bool styled = !error_rows[i].stopping_value->styleSheet().isEmpty();
+    bool styled = !row.stopping_value->styleSheet().isEmpty();
 
-    if (error_flags_halting & (1 << i))
+    if (error_flags_halting >> row.error_number & 1)
     {
-      error_rows[i].stopping_value->setText(tr("Yes"));
+      row.stopping_value->setText(tr("Yes"));
       if (!styled)
       {
-        error_rows[i].stopping_value->setStyleSheet(
+        row.stopping_value->setStyleSheet(
           ":enabled { background-color: red; color: white; }");
       }
     }
     else
     {
-      error_rows[i].stopping_value->setText(tr("No"));
+      row.stopping_value->setText(tr("No"));
       if (styled)
       {
-        error_rows[i].stopping_value->setStyleSheet("");
+        row.stopping_value->setStyleSheet("");
       }
     }
   }
@@ -746,26 +742,22 @@ void main_window::set_error_flags_halting(uint16_t error_flags_halting)
 
 void main_window::increment_errors_occurred(uint16_t errors_occurred)
 {
-  for (int i = 0; i < 16; i++)
+  for (error_row & row : error_rows)
   {
-    if (error_rows[i].count_value == NULL) { continue; }
-
-    if (errors_occurred & (1 << i))
+    if (errors_occurred >> row.error_number & 1)
     {
-      error_rows[i].count++;
-      error_rows[i].count_value->setText(QString::number(error_rows[i].count));
+      row.count++;
+      row.count_value->setText(QString::number(row.count));
     }
   }
 }
 
 void main_window::reset_error_counts()
 {
-  for (int i = 0; i < 16; i++)
+  for (error_row & row : error_rows)
   {
-    if (error_rows[i].count_value == NULL) { continue; }
-
-    error_rows[i].count = 0;
-    error_rows[i].count_value->setText(tr("-"));
+    row.count = 0;
+    row.count_value->setText("-");
   }
 }
 
@@ -2556,7 +2548,8 @@ QWidget * main_window::setup_error_row(int error_number, bool always_enabled,
 {
   new_error_row = new QWidget();
 
-  error_row & row = error_rows[error_number];
+  error_rows.append(error_row());
+  error_row & row = error_rows.last();
 
   row.always_enabled = always_enabled;
   row.always_latched = always_latched;

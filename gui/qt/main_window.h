@@ -568,7 +568,7 @@ private:
   QPushButton *errors_clear_errors;
   QPushButton *errors_reset_counts;
   QWidget * new_error_row;
-  std::array<error_row, 16> error_rows;
+  QList<error_row> error_rows;
 
   QHBoxLayout * footer_layout;
   QPushButton * stop_motor_button;
