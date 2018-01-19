@@ -2517,19 +2517,16 @@ QWidget *main_window::setup_errors_tab()
   QGridLayout * layout = errors_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->setVerticalSpacing(2);
-  layout->setMargin(0);
   layout->addWidget(errors_bit_mask_label, 0, 0);
   layout->addWidget(errors_error_label, 0, 1);
   layout->addWidget(errors_setting_label, 0, 2, 1, 3);
   layout->addWidget(errors_stopping_motor_label, 0, 5);
   layout->addWidget(errors_occurrence_count_label, 0, 6);
+  layout->setColumnStretch(7, 1);
 
   // Note: We have to do this before calling setup_error_row or else Qt shows
   // small spurious windows before the main window opens.
-  QHBoxLayout * page_layout = new QHBoxLayout();
-  page_layout->setSizeConstraint(QLayout::SetFixedSize);
-  page_layout->addLayout(layout, Qt::AlignCenter);
-  errors_page_widget->setLayout(page_layout);
+  errors_page_widget->setLayout(layout);
 
   setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true);
   setup_error_row(JRK_ERROR_NO_POWER, true, false);
@@ -2549,6 +2546,8 @@ QWidget *main_window::setup_errors_tab()
   int last_row = layout->rowCount();
   layout->addWidget(errors_clear_errors, last_row, 5, 1, 1, Qt::AlignCenter);
   layout->addWidget(errors_reset_counts, last_row, 6, 1, 1, Qt::AlignLeft);
+
+  layout->setRowStretch(last_row + 1, 1);
 
   return errors_page_widget;
 }
