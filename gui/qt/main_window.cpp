@@ -2494,10 +2494,10 @@ QWidget *main_window::setup_errors_tab()
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
   errors_stopping_motor_label->setFont(font);
 
-  errors_occurence_count_label = new QLabel(tr("Occurence\ncount\n"));
-  errors_occurence_count_label->setObjectName("errors_occurence_count_label");
-  errors_occurence_count_label->setAlignment(Qt::AlignCenter);
-  errors_occurence_count_label->setFont(font);
+  errors_occurrence_count_label = new QLabel(tr("Occurrence\ncount\n"));
+  errors_occurrence_count_label->setObjectName("errors_occurrence_count_label");
+  errors_occurrence_count_label->setAlignment(Qt::AlignCenter);
+  errors_occurrence_count_label->setFont(font);
 
   errors_clear_errors = new QPushButton(tr("&Clear errors"));
   errors_clear_errors->setObjectName("errors_clear_errors");
@@ -2512,7 +2512,7 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_error_label,0,1,Qt::AlignCenter);
   layout->addWidget(errors_setting_label,0,2,1,3,Qt::AlignCenter);
   layout->addWidget(errors_stopping_motor_label,0,5,1,2,Qt::AlignRight);
-  layout->addWidget(errors_occurence_count_label,0,7,Qt::AlignLeft);
+  layout->addWidget(errors_occurrence_count_label,0,7,Qt::AlignLeft);
 
   int row = 1;
   layout->addWidget(setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true), row++, 0, 1, 8);

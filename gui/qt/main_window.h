@@ -564,7 +564,7 @@ private:
   QLabel *errors_error_label;
   QLabel *errors_setting_label;
   QLabel *errors_stopping_motor_label;
-  QLabel *errors_occurence_count_label;
+  QLabel *errors_occurrence_count_label;
   QPushButton *errors_clear_errors;
   QPushButton *errors_reset_counts;
   QWidget * new_error_row;
