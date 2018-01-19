@@ -1477,6 +1477,8 @@ void main_controller::stop_motor()
   {
     show_exception(e);
   }
+
+  window->set_manual_target_inputs(2048);
 }
 
 void main_controller::run_motor()
