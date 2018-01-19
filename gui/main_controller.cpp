@@ -1519,7 +1519,6 @@ void main_controller::set_target(uint16_t target)
   }
 }
 
-// TODO: make menu item or something for calling this
 void main_controller::clear_current_chopping_count()
 {
   current_chopping_count = 0;

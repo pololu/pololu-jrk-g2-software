@@ -973,6 +973,11 @@ void main_window::on_stop_motor_action_triggered()
   controller->stop_motor();
 }
 
+void main_window::on_clear_current_chopping_count_action_triggered()
+{
+  controller->clear_current_chopping_count();
+}
+
 void main_window::on_set_target_button_clicked()
 {
   controller->set_target(manual_target_entry_value->value());
@@ -1569,11 +1574,17 @@ void main_window::setup_menu_bar()
 
   stop_motor_action = new QAction(this);
   stop_motor_action->setObjectName("stop_motor_action");
-  stop_motor_action->setText(tr("Stop motor")); // TODO: shortcut key with &
+  stop_motor_action->setText(tr("&Stop motor"));
 
   run_motor_action = new QAction(this);
   run_motor_action->setObjectName("run_motor_action");
-  run_motor_action->setText(tr("Run motor")); // TODO: shortcut key with &
+  run_motor_action->setText(tr("Run &motor"));
+
+  clear_current_chopping_count_action = new QAction(this);
+  clear_current_chopping_count_action->setObjectName(
+    "clear_current_chopping_count_action");
+  clear_current_chopping_count_action->setText(
+    tr("&Clear current chopping count"));
 
   reload_settings_action = new QAction(this);
   reload_settings_action->setObjectName("reload_settings_action");
@@ -1611,6 +1622,7 @@ void main_window::setup_menu_bar()
   device_menu->addSeparator();
   device_menu->addAction(stop_motor_action);
   device_menu->addAction(run_motor_action);
+  device_menu->addAction(clear_current_chopping_count_action);
   device_menu->addSeparator();
   device_menu->addAction(reload_settings_action);
   device_menu->addAction(restore_defaults_action);

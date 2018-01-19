@@ -240,6 +240,7 @@ private slots:
   void upgrade_firmware_complete();
   void on_run_motor_action_triggered();
   void on_stop_motor_action_triggered();
+  void on_clear_current_chopping_count_action_triggered();
   void on_set_target_button_clicked();
   void on_manual_target_scroll_bar_valueChanged(int value);
   void on_open_settings_action_triggered();
@@ -358,9 +359,10 @@ private:
   QAction * save_settings_action;
   QAction * exit_action;
   QMenu * device_menu;
+  QAction * disconnect_action;
   QAction * stop_motor_action;
   QAction * run_motor_action;
-  QAction * disconnect_action;
+  QAction * clear_current_chopping_count_action;
   QAction * reload_settings_action;
   QAction * restore_defaults_action;
   QAction * apply_settings_action;
