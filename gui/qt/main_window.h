@@ -92,7 +92,8 @@ public:
   void set_current(int32_t);
   void set_current_chopping_log(uint16_t);
   void set_vin_voltage(uint16_t);
-
+  void set_pid_period_count(uint16_t);
+  void set_pid_period_exceeded(bool);
 
   void set_device_list_contents(std::vector<jrk::device> const & device_list);
   void set_device_list_selected(jrk::device const & device);
@@ -393,6 +394,20 @@ private:
   QLabel * device_reset_value;
   QLabel * up_time_label;
   QLabel * up_time_value;
+  QLabel * input_label;
+  QLabel * input_value;
+  QLabel * target_label;
+  QLabel * target_value;
+  QLabel * feedback_label;
+  QLabel * feedback_value;
+  QLabel * scaled_feedback_label;
+  QLabel * scaled_feedback_value;
+  QLabel * error_label;
+  QLabel * error_value;
+  QLabel * integral_label;
+  QLabel * integral_value;
+  QLabel * duty_cycle_target_label;
+  QLabel * duty_cycle_target_value;
   QLabel * duty_cycle_label;
   QLabel * duty_cycle_value;
   QLabel * current_label;
@@ -405,6 +420,10 @@ private:
   QLabel * current_chopping_log_value;
   QLabel * vin_voltage_label;
   QLabel * vin_voltage_value;
+  QLabel * pid_period_count_label;
+  QLabel * pid_period_count_value;
+  QLabel * pid_period_exceeded_label;
+  QLabel * pid_period_exceeded_value;
   QLabel * error_flags_halting_label;
   QLabel * error_flags_halting_value;
 

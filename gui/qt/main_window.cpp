@@ -160,43 +160,43 @@ void main_window::set_up_time(uint32_t up_time)
 void main_window::set_input(uint16_t input)
 {
   graph->input.plot_value = input;
-  // TODO: input_value->setText(QString::number(input));
+  input_value->setText(QString::number(input));
 }
 
 void main_window::set_target(uint16_t target)
 {
   graph->target.plot_value = target;
-  // TODO: target_value->setText(QString::number(target));
+  target_value->setText(QString::number(target));
 }
 
 void main_window::set_feedback(uint16_t feedback)
 {
   graph->feedback.plot_value = feedback;
-  // TODO: feedback_value->setText(QString::number(feedback));
+  feedback_value->setText(QString::number(feedback));
 }
 
 void main_window::set_scaled_feedback(uint16_t scaled_feedback)
 {
   graph->scaled_feedback.plot_value = scaled_feedback;
-  // TODO: scaled_feedback_value->setText(QString::number(scaled_feedback));
+  scaled_feedback_value->setText(QString::number(scaled_feedback));
 }
 
 void main_window::set_error(int16_t error)
 {
   graph->error.plot_value = error;
-  // TODO: error_value->setText(QString::number(error));
+  error_value->setText(QString::number(error));
 }
 
 void main_window::set_integral(int16_t integral)
 {
   graph->integral.plot_value = integral;
-  // TODO: integral_value->setText(QString::number(integral));
+  integral_value->setText(QString::number(integral));
 }
 
 void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 {
   graph->duty_cycle_target.plot_value = duty_cycle_target;
-  // TODO: duty_cycle_target_value->setText(QString::number(duty_cycle_target));
+  duty_cycle_target_value->setText(QString::number(duty_cycle_target));
 }
 
 void main_window::set_duty_cycle(int16_t duty_cycle)
@@ -227,6 +227,16 @@ void main_window::set_vin_voltage(uint16_t vin_voltage)
 {
   vin_voltage_value->setText(QString::fromStdString(
     convert_mv_to_v_string(vin_voltage)));
+}
+
+void main_window::set_pid_period_count(uint16_t count)
+{
+  pid_period_count_value->setText(QString::number(count));
+}
+
+void main_window::set_pid_period_exceeded(bool exceeded)
+{
+  pid_period_exceeded_value->setText(exceeded ? "Yes" : "No");
 }
 
 void main_window::set_device_list_contents(const std::vector<jrk::device> & device_list)
@@ -1750,6 +1760,29 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++, &up_time_label, &up_time_value);
   up_time_label->setText(tr("Up time:"));
 
+  setup_read_only_text_field(layout, row++, &input_label, &input_value);
+  input_label->setText(tr("Input:"));
+
+  setup_read_only_text_field(layout, row++, &target_label, &target_value);
+  target_label->setText(tr("Target:"));
+
+  setup_read_only_text_field(layout, row++, &feedback_label, &feedback_value);
+  feedback_label->setText(tr("Feedback:"));
+
+  setup_read_only_text_field(layout, row++, &scaled_feedback_label,
+    &scaled_feedback_value);
+  scaled_feedback_label->setText(tr("Scaled feedback:"));
+
+  setup_read_only_text_field(layout, row++, &error_label, &error_value);
+  error_label->setText(tr("Error:"));
+
+  setup_read_only_text_field(layout, row++, &integral_label, &integral_value);
+  integral_label->setText(tr("Integral:"));
+
+  setup_read_only_text_field(layout, row++, &duty_cycle_target_label,
+    &duty_cycle_target_value);
+  duty_cycle_target_label->setText(tr("Duty cycle target:"));
+
   setup_read_only_text_field(layout, row++, &duty_cycle_label, &duty_cycle_value);
   duty_cycle_label->setText(tr("Duty cycle:"));
 
@@ -1761,13 +1794,23 @@ QWidget * main_window::setup_variables_box()
     &current_value);
   current_label->setText(tr("Current:"));
 
-  setup_read_only_text_field(layout, row++,
-    &current_chopping_log_label, &current_chopping_log_value);
+  // TODO: what kind of current chopping thing do we want to show here?
+  // it's not really a log any more
+  setup_read_only_text_field(layout, row++, &current_chopping_log_label,
+    &current_chopping_log_value);
   current_chopping_log_label->setText(tr("Current chopping log:"));
 
-  setup_read_only_text_field(layout, row++,
-    &vin_voltage_label, &vin_voltage_value);
+  setup_read_only_text_field(layout, row++, &vin_voltage_label,
+    &vin_voltage_value);
   vin_voltage_label->setText(tr("VIN voltage:"));
+
+  setup_read_only_text_field(layout, row++, &pid_period_count_label,
+    &pid_period_count_value);
+  pid_period_count_label->setText(tr("PID period count:"));
+
+  setup_read_only_text_field(layout, row++, &pid_period_exceeded_label,
+    &pid_period_exceeded_value);
+  pid_period_exceeded_label->setText(tr("PID period exceeded:"));
 
   setup_read_only_text_field(layout, row++,
     &error_flags_halting_label, &error_flags_halting_value);

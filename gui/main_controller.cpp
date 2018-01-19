@@ -140,6 +140,8 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
+  // TODO: load or clear the variables object here
+
   handle_model_changed();
 }
 
@@ -591,6 +593,9 @@ void main_controller::handle_variables_changed()
     variables.get_current_chopping_occurrence_count() ? 1 : 0);
 
   window->set_vin_voltage(variables.get_vin_voltage());
+  window->set_pid_period_count(variables.get_pid_period_count());
+  window->set_pid_period_exceeded(variables.get_pid_period_exceeded());
+
   window->set_error_flags_halting(variables.get_error_flags_halting());
   window->increment_errors_occurred(variables.get_error_flags_occurred());
 
