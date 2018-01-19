@@ -535,8 +535,8 @@ void main_controller::handle_device_changed()
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
     // TODO:
-    // window->set_connection_status("", false);
-    // window->reset_error_counts();
+    window->set_connection_status("", false);
+    window->reset_error_counts();
   }
   else
   {
@@ -550,17 +550,16 @@ void main_controller::handle_device_changed()
     window->set_ttl_port(na);
 
     // TODO:
-    // if (connection_error)
-    // {
-    //   window->set_connection_status(connection_error_message, true);
-    // }
-    // else
-    // {
-    //   window->set_connection_status("", false);
-    // }
+    if (connection_error)
+    {
+      window->set_connection_status(connection_error_message, true);
+    }
+    else
+    {
+      window->set_connection_status("", false);
+    }
   }
 
-  window->reset_graph();
   window->set_disconnect_enabled(connected());
   window->set_open_save_settings_enabled(connected());
   window->set_reload_settings_enabled(connected());
@@ -596,7 +595,8 @@ void main_controller::handle_variables_changed()
   window->set_stop_motor_enabled(connected());
   window->set_run_motor_enabled(connected() && error_active);
 
-  window->update_graph(variables.get_up_time());
+  if (connected() && variables)
+    window->update_graph(variables.get_up_time());
 }
 
 void main_controller::handle_settings_changed()
@@ -699,6 +699,8 @@ void main_controller::handle_settings_loaded()
   recompute_constant(2, settings.get_derivative_multiplier(), settings.get_derivative_exponent());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+
+  window->reset_graph(); // Clears graph plots.
 
   cached_settings = settings;
 
