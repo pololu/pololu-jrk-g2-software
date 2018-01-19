@@ -911,7 +911,7 @@ void main_window::on_update_timer_timeout()
 void main_window::receive_widget(graph_widget *widget)
 {
   widget->set_preview_mode(true);
-  grid_layout->addWidget(widget->custom_plot, 0, 5, Qt::AlignCenter);
+  horizontal_layout->addWidget(widget->custom_plot, 0, Qt::AlignCenter);
 }
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
@@ -1481,18 +1481,6 @@ void main_window::setup_ui()
   grid_layout = new QGridLayout();
   grid_layout->setObjectName("grid_layout");
 
-  horizontal_layout = new QHBoxLayout();
-  horizontal_layout->setSpacing(6);
-  horizontal_layout->setObjectName("horizontal_layout");
-
-  graph = new graph_widget();
-  graph->setObjectName("graph");
-  graph->set_preview_mode(true);
-
-  QCustomPlot *preview_plot = graph->custom_plot;
-
-  stop_motor = new QCheckBox(tr("Stop motor"));
-
   tab_widget = new QTabWidget();
   tab_widget->addTab(setup_status_tab(), tr("Status"));
   tab_widget->addTab(setup_input_tab(), tr("Input"));
@@ -1521,22 +1509,16 @@ void main_window::setup_ui()
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
 
-  // TODO: fix this layout.  'Connected to:' should be on the left size of the
-  // window, there should be no need for such a large spacer item, and the
-  // header and the footer shouldn't be sharing a grid pattern, there is no
-  // need for there to be invisible columns that go from the top of the window to the
-  // bottom.
-  grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
-  grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
-  grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
-  grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignCenter);
-  grid_layout->addWidget(connection_status_value, 1, 0, 1, 2, Qt::AlignCenter | Qt::AlignTop);
-  grid_layout->addWidget(tab_widget, 2, 0, 1, 6);
-  grid_layout->addLayout(stop_and_run_buttons, 3, 0, 1, 3, Qt::AlignLeft);
-  grid_layout->addWidget(apply_settings_button, 3, 5, Qt::AlignRight);
+  QHBoxLayout *header_layout = new QHBoxLayout();
+  header_layout->addWidget(device_list_label, 0);
+  header_layout->addWidget(device_list_value, 0);
+  header_layout->addWidget(connection_status_value, 0);
 
-  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
-    SLOT(on_launchGraph_clicked(QMouseEvent*)));
+  grid_layout->addLayout(header_layout, 0, 0, 1, 0, Qt::AlignLeft);
+  grid_layout->addWidget(tab_widget, 1, 0, 1, 5);
+  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
+  grid_layout->addWidget(apply_settings_button, 2, 4, Qt::AlignRight);
+
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -1695,14 +1677,38 @@ QWidget * main_window::setup_status_tab()
 {
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
+  // layout->setSizeConstraint(QLayout::SetFixedSize);
 
   layout->addWidget(setup_variables_box(), 0, 0, 1, 1);
-  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 1);
+  layout->addWidget(setup_preview_plot(), 0, 1, 1, 1);
+  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 2);
 
   layout->setRowStretch(2, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
+}
+
+QWidget * main_window::setup_preview_plot()
+{
+  QWidget * preview_widget = new QWidget();
+  graph = new graph_widget();
+  graph->setObjectName(QStringLiteral("graph"));
+  graph->set_preview_mode(true);
+
+  QWidget *preview_plot = graph->custom_plot;
+
+  horizontal_layout = new QHBoxLayout();
+  horizontal_layout->setObjectName(QStringLiteral("horizontal_layout"));
+
+  horizontal_layout->addWidget(preview_plot, 0, Qt::AlignCenter);
+
+  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
+    SLOT(on_launchGraph_clicked(QMouseEvent*)));
+
+  preview_widget->setLayout(horizontal_layout);
+
+  return preview_widget;
 }
 
 QWidget * main_window::setup_variables_box()
@@ -1711,6 +1717,7 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 

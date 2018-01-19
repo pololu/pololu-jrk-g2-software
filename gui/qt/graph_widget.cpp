@@ -1,21 +1,4 @@
 #include "graph_widget.h"
-#include "main_window.h"
-#include "qcustomplot.h"
-
-#include <QApplication>
-#include <QCheckBox>
-#include <QCloseEvent>
-#include <QDoubleSpinBox>
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QVector>
-#include <QWidget>
-
-#include <array>
-
-#include <iostream> //tmphax
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -31,11 +14,11 @@ graph_widget::graph_widget(QWidget * parent)
     this, SLOT(remove_data_to_scroll()));
 }
 
+// Changes options for the custom_plot when in preview mode.
 void graph_widget::set_preview_mode(bool preview_mode)
 {
   if (preview_mode)
   {
-    custom_plot->setMinimumSize(185, 150);
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click on preview to view full plot");
   }
@@ -47,6 +30,8 @@ void graph_widget::set_preview_mode(bool preview_mode)
 
   custom_plot->xAxis->setTicks(!preview_mode);
   custom_plot->yAxis->setTicks(!preview_mode);
+  custom_plot->xAxis2->setVisible(preview_mode);
+  custom_plot->yAxis2->setVisible(preview_mode);
 }
 
 void graph_widget::clear_graphs()
@@ -84,6 +69,7 @@ void graph_widget::setup_ui()
   label1->setText(tr("    Range (%):"));
 
   custom_plot = new QCustomPlot();
+  custom_plot->setMinimumSize(385, 350);
   custom_plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   label2 = new QLabel();
@@ -151,8 +137,12 @@ void graph_widget::setup_ui()
   custom_plot->xAxis->setTickStep(domain->value() * 100);
   custom_plot->xAxis->setTickLabelPadding(10);
 
+  // Give the ability to use the axes as a border of plot without the ticks.
+  custom_plot->xAxis2->setTicks(false);
+  custom_plot->yAxis2->setTicks(false);
+
   // this is used to see the x-axis to see accurate time.
-  // custom_plot->xAxis2->setVisible(true);
+  // custom_plot->xAxis2->setTicks(true);
   // custom_plot->xAxis2->setTickLabelType(QCPAxis::ltNumber);
   // custom_plot->xAxis2->setAutoTickStep(true);
   // custom_plot->xAxis2->setTickStep(1000);

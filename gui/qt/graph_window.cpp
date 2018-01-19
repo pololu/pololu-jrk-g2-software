@@ -12,8 +12,8 @@ void graph_window::setup_ui()
 {
   setObjectName(QStringLiteral("graph_window"));
 
-  setWindowTitle(QApplication::translate("graph_window",
-    "Pololu Jrk G2 Configuration Utility - Plots of Variables vs. Time", Q_NULLPTR));
+  setWindowTitle(tr("graph_window",
+    "Pololu Jrk G2 Configuration Utility - Plots of Variables vs. Time"));
 
   central_layout = new QGridLayout();
 

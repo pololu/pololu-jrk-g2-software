@@ -319,6 +319,7 @@ private:
   QSpacerItem * setup_vertical_spacer();
 
   QWidget * setup_status_tab();
+  QWidget * setup_preview_plot();
   QWidget * setup_variables_box();
   QWidget * setup_manual_target_box();
 
@@ -369,7 +370,6 @@ private:
   QLabel * device_list_label;
   QComboBox * device_list_value;
   QLabel * connection_status_value;
-  QCheckBox *stop_motor;
 
   QTabWidget *tab_widget;
 

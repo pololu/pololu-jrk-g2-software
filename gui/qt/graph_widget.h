@@ -1,13 +1,16 @@
 #pragma once
 
 #include "qcustomplot.h"
-#include <QHBoxLayout>
 
-class QCheckBox;
-class QDoubleSpinBox;
-class QLabel;
-class QPushButton;
-class QSpinBox;
+#include <QCheckBox>
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QGridLayout>
 
 class graph_widget : public QWidget
 {
