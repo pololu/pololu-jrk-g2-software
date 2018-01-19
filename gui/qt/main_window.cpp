@@ -2476,30 +2476,37 @@ QWidget *main_window::setup_errors_tab()
   QFont font;
   font.setBold(true);
 
+  // Note: We are setting a bunch of hardcoded margins/spacings here.
+  // It would probably be better to calculate that somehow.
+
   errors_bit_mask_label = new QLabel(tr("Bit mask"));
   errors_bit_mask_label->setObjectName("errors_bit_mask_label");
   errors_bit_mask_label->setFont(font);
   errors_bit_mask_label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  errors_bit_mask_label->setContentsMargins(5, 0, 5, 0);
 
   errors_error_label = new QLabel(tr("Error"));
   errors_error_label->setObjectName("errors_error_label");
   errors_error_label->setFont(font);
   errors_error_label->setAlignment(Qt::AlignCenter);
+  errors_error_label->setContentsMargins(5, 0, 5, 0);
 
   errors_setting_label = new QLabel(tr("Setting"));
   errors_setting_label->setObjectName("errors_setting_label");
   errors_setting_label->setFont(font);
   errors_setting_label->setAlignment(Qt::AlignCenter);
 
-  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?\n"));
+  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
   errors_stopping_motor_label->setFont(font);
+  errors_stopping_motor_label->setContentsMargins(5, 0, 5, 0);
 
-  errors_occurrence_count_label = new QLabel(tr("Occurrence\ncount\n"));
+  errors_occurrence_count_label = new QLabel(tr("Occurrence\ncount"));
   errors_occurrence_count_label->setObjectName("errors_occurrence_count_label");
-  errors_occurrence_count_label->setAlignment(Qt::AlignLeft);
+  errors_occurrence_count_label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   errors_occurrence_count_label->setFont(font);
+  errors_occurrence_count_label->setContentsMargins(5, 0, 5, 0);
 
   errors_clear_errors = new QPushButton(tr("&Clear errors"));
   errors_clear_errors->setObjectName("errors_clear_errors");
@@ -2509,7 +2516,8 @@ QWidget *main_window::setup_errors_tab()
 
   QGridLayout * layout = errors_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->setVerticalSpacing(0);
+  layout->setVerticalSpacing(2);
+  layout->setMargin(0);
   layout->addWidget(errors_bit_mask_label, 0, 0);
   layout->addWidget(errors_error_label, 0, 1);
   layout->addWidget(errors_setting_label, 0, 2, 1, 3);
@@ -2539,12 +2547,17 @@ QWidget *main_window::setup_errors_tab()
   setup_error_row(JRK_ERROR_OVERCURRENT, false, false);
 
   int last_row = layout->rowCount();
-  layout->addWidget(errors_clear_errors, last_row, 5, 1, 1, Qt::AlignLeft);
+  layout->addWidget(errors_clear_errors, last_row, 5, 1, 1, Qt::AlignCenter);
   layout->addWidget(errors_reset_counts, last_row, 6, 1, 1, Qt::AlignLeft);
 
-  layout->setMargin(0);
-
   return errors_page_widget;
+}
+
+static void copy_margins(QWidget * dest, const QWidget * src)
+{
+  int left, top, right, bottom;
+  src->getContentsMargins(&left, &top, &right, &bottom);
+  dest->setContentsMargins(left, top, right, bottom);
 }
 
 void main_window::setup_error_row(int error_number,
@@ -2562,7 +2575,7 @@ void main_window::setup_error_row(int error_number,
   // The frame widget is necessary for setting the background color of the row.
   row.frame = new QWidget();
 
-  if (error_number % 2 != 0)
+  if (error_number % 2)
   {
     row.frame->setStyleSheet("background-color: rgb(230,229,229);");
   }
@@ -2570,12 +2583,15 @@ void main_window::setup_error_row(int error_number,
   row.bit_mask_label = new QLabel();
   row.bit_mask_label->setObjectName("bit_mask_label");
   row.bit_mask_label->setAlignment(Qt::AlignLeft);
-  row.bit_mask_label->setText(QString::fromStdString(convert_error_flags_to_hex_string(error_mask)));
+  row.bit_mask_label->setText(QString::fromStdString(
+    convert_error_flags_to_hex_string(error_mask)));
+  copy_margins(row.bit_mask_label, errors_bit_mask_label);
 
   row.error_label = new QLabel();
   row.error_label->setObjectName("error_label");
   row.error_label->setAlignment(Qt::AlignLeft);
   row.error_label->setText(jrk_look_up_error_name_ui(error_mask));
+  copy_margins(row.error_label, errors_error_label);
 
   row.disabled_radio = new QRadioButton(tr("Disabled"));
   row.disabled_radio->setObjectName("disabled_radio");
@@ -2586,7 +2602,7 @@ void main_window::setup_error_row(int error_number,
   row.latched_radio = new QRadioButton(tr("Enabled and latched"));
   row.latched_radio->setObjectName("latched_radio");
 
-  row.error_enable_group = new QButtonGroup();
+  row.error_enable_group = new QButtonGroup(this);
   row.error_enable_group->setObjectName("error_enable_group");
   row.error_enable_group->setExclusive(true);
   row.error_enable_group->addButton(row.disabled_radio, 0);
@@ -2604,10 +2620,12 @@ void main_window::setup_error_row(int error_number,
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
   row.stopping_value->setAlignment(Qt::AlignCenter);
+  copy_margins(row.stopping_value, errors_stopping_motor_label);
 
   row.count_value = new QLabel("-");
   row.count_value->setObjectName("count_value");
   row.count_value->setAlignment(Qt::AlignLeft);
+  copy_margins(row.count_value, errors_occurrence_count_label);
 
   int r = errors_page_layout->rowCount();
   errors_page_layout->addWidget(row.frame, r, 0, 3, 8);
