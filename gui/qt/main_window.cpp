@@ -984,8 +984,10 @@ void main_window::on_stop_motor_action_triggered()
 
   // TODO: this logic should be in controller, and depend on cached settings
   // feedback mode.
+  suppress_events = true;
   manual_target_scroll_bar->setValue(2048);
   manual_target_entry_value->setValue(2048);
+  suppress_events = false;
 }
 
 void main_window::on_set_target_button_clicked()
