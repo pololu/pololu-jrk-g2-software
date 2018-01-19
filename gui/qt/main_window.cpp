@@ -275,7 +275,15 @@ void main_window::set_connection_status(std::string const & status, bool error)
 
 void main_window::set_manual_target_enabled(bool enabled)
 {
-  // TODO: manual_target_widget->setEnabled(enabled);
+  manual_target_box->setEnabled(enabled);
+}
+
+void main_window::set_manual_target_inputs(uint16_t target)
+{
+  suppress_events = true;
+  manual_target_scroll_bar->setValue(target);
+  manual_target_entry_value->setValue(target);
+  suppress_events = false;
 }
 
 void main_window::set_apply_settings_enabled(bool enabled)
@@ -982,21 +990,15 @@ void main_window::on_run_motor_action_triggered()
 void main_window::on_stop_motor_action_triggered()
 {
   controller->stop_motor();
-
-  // TODO: this logic should be in controller, and depend on cached settings
-  // feedback mode.
-  manual_target_scroll_bar->setValue(2048);
-  manual_target_entry_value->setValue(2048);
 }
 
 void main_window::on_set_target_button_clicked()
 {
-  // TODO: this logic should be in controller?
+  controller->set_target(manual_target_entry_value->value());
+
   suppress_events = true;
   manual_target_scroll_bar->setValue(manual_target_entry_value->value());
   suppress_events = false;
-
-  controller->set_target(manual_target_entry_value->value());
 }
 
 void main_window::on_manual_target_scroll_bar_valueChanged(int value)

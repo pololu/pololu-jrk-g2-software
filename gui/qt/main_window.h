@@ -101,6 +101,7 @@ public:
   void set_connection_status(std::string const & status, bool error);
 
   void set_manual_target_enabled(bool enabled);
+  void set_manual_target_inputs(uint16_t target);
 
   // Controls whether the apply settings action/button is enabled or
   // disabled.

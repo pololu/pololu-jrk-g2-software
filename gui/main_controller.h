@@ -76,7 +76,6 @@ public:
   void save_settings_to_file(std::string filename);
 
   // These are called when the user changes a setting.
-  // [all-settings]
 
   void handle_input_mode_input(uint8_t input_mode);
   void handle_input_analog_samples_exponent_input(uint8_t);
