@@ -1526,7 +1526,6 @@ void main_window::setup_ui()
   // bottom.
   grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
   grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
-  grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
   grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
   grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignCenter);
   grid_layout->addWidget(connection_status_value, 1, 0, 1, 2, Qt::AlignCenter | Qt::AlignTop);
@@ -1655,6 +1654,11 @@ void main_window::setup_menu_bar()
 
   help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
+}
+
+QSpacerItem * main_window::setup_vertical_spacer()
+{
+  return new QSpacerItem(1, fontMetrics().height());
 }
 
 static void setup_read_only_text_field(QGridLayout * layout,
@@ -1949,13 +1953,13 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_serial_layout->addWidget(input_usb_dual_port_radio, 0, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_usb_chained_radio, 1, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(uart_fixed_baud, 2, 0, Qt::AlignLeft);
-  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 3, 0);
+  input_serial_layout->addItem(setup_vertical_spacer(), 3, 0);
   input_serial_layout->addWidget(input_enable_crc_checkbox, 4, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(device_layout, 5, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_device_number_checkbox, 6, 0, Qt::AlignLeft);
   input_serial_layout->addLayout(timeout_layout, 7, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 8, 0, Qt::AlignLeft);
-  input_serial_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 9, 0);
+  input_serial_layout->addItem(setup_vertical_spacer(), 9, 0);
   input_serial_layout->addWidget(input_never_sleep_checkbox, 10, 0, Qt::AlignLeft);
 
   input_serial_groupbox->setLayout(input_serial_layout);
@@ -2083,10 +2087,9 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_layout->addWidget(input_output_minimum_spinbox, 6, 2, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_absolute_min_label, 7, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_absolute_minimum_spinbox, 7, 1, Qt::AlignLeft);
-  input_scaling_layout->addItem(new QSpacerItem(1, fontMetrics().height()), 8, 0);
+  input_scaling_layout->addItem(setup_vertical_spacer(), 8, 0);
   input_scaling_layout->addWidget(input_degree_label, 9, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_scaling_degree_combobox, 9, 1, 1, 2, Qt::AlignLeft);
-  input_scaling_layout->addItem(new QSpacerItem(input_scaling_degree_combobox->sizeHint().width(), 0), 0, 3);
   input_scaling_layout->addWidget(input_learn_button, 0, 4, Qt::AlignRight);
   input_scaling_layout->addWidget(input_reset_range_button, 1, 4, Qt::AlignRight);
   input_scaling_layout->addWidget(input_scaling_order_warning_label, 2, 3, 7, 2, Qt::AlignCenter);
@@ -2458,8 +2461,7 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1, Qt::AlignLeft);
   motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2, Qt::AlignLeft);
   motor_controls_layout->addWidget(max_current_means_label, row, 3, Qt::AlignLeft);
-  motor_controls_layout->addItem(
-    new QSpacerItem(1, fontMetrics().height()), ++row, 0, Qt::AlignLeft);
+  motor_controls_layout->addItem(setup_vertical_spacer(), ++row, 0, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_offset_calibration_label, ++row, 0, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_offset_calibration_spinbox, row, 1, Qt::AlignLeft);
   motor_controls_layout->addWidget(current_scale_calibration_label, ++row, 0, Qt::AlignLeft);
