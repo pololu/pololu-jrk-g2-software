@@ -316,7 +316,7 @@ private:
   void setup_style_sheet();
   void setup_menu_bar();
 
-  QSpacerItem * new_vertical_spacer();
+  QSpacerItem * setup_vertical_spacer();
 
   QWidget * setup_status_tab();
   QWidget * setup_variables_box();
