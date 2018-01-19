@@ -33,6 +33,7 @@ void graph_window::closeEvent(QCloseEvent *event)
 
 void graph_window::receive_widget(graph_widget *widget)
 {
+
   grabbed_widget = widget;
   grabbed_widget->set_preview_mode(false);
 

@@ -819,13 +819,12 @@ bool main_window::motor_asymmetric_checked()
 
 void main_window::update_graph(uint32_t up_time)
 {
-  graph->key = up_time;
-  graph->plot_data();
+  graph->plot_data(up_time);
 }
 
 void main_window::reset_graph()
 {
-  graph->key = 0;
+  graph->clear_graphs();
 }
 
 void main_window::set_u8_combobox(QComboBox * combo, uint8_t value)
@@ -1495,12 +1494,12 @@ void main_window::setup_ui()
   grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
   grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
   grid_layout->addItem(new QSpacerItem(device_list_value->sizeHint().width(), 0), 0, 2);
-  grid_layout->addWidget(connection_status_value, 0, 3);
   grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
   grid_layout->addWidget(preview_plot, 0, 5, Qt::AlignCenter);
-  grid_layout->addWidget(tab_widget, 1, 0, 1, 6);
-  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
-  grid_layout->addWidget(apply_settings_button, 2, 5, Qt::AlignRight);
+  grid_layout->addWidget(connection_status_value, 1, 0, 1, 2, Qt::AlignCenter | Qt::AlignTop);
+  grid_layout->addWidget(tab_widget, 2, 0, 1, 6);
+  grid_layout->addLayout(stop_and_run_buttons, 3, 0, 1, 3, Qt::AlignLeft);
+  grid_layout->addWidget(apply_settings_button, 3, 5, Qt::AlignRight);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));

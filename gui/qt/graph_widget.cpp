@@ -15,6 +15,8 @@
 
 #include <array>
 
+#include <iostream> //tmphax
+
 graph_widget::graph_widget(QWidget * parent)
 {
   setup_ui();
@@ -45,6 +47,28 @@ void graph_widget::set_preview_mode(bool preview_mode)
 
   custom_plot->xAxis->setTicks(!preview_mode);
   custom_plot->yAxis->setTicks(!preview_mode);
+}
+
+void graph_widget::clear_graphs()
+{
+  for (int i = 0; i < custom_plot->graphCount(); ++i)
+  {
+    custom_plot->graph(i)->data()->clear();
+    custom_plot->replot();
+  }
+}
+
+void graph_widget::plot_data(uint32_t time)
+{
+  if (graph_paused)
+    return;
+
+  for (auto plot : all_plots)
+  {
+    plot->graph->addData(time, plot->plot_value);
+  }
+
+  remove_data_to_scroll(time);
 }
 
 void graph_widget::setup_ui()
@@ -85,6 +109,8 @@ void graph_widget::setup_ui()
   domain->setValue(10); // initialized the graph to show 10 seconds of data
   domain->setRange(0, 90);
 
+  plot_visible_layout = new QGridLayout();
+
   bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignLeft);
   bottom_control_layout->addWidget(label1, 0, Qt::AlignRight);
@@ -93,8 +119,6 @@ void graph_widget::setup_ui()
   bottom_control_layout->addWidget(max_y, 0);
   bottom_control_layout->addWidget(label2, 0, Qt::AlignRight);
   bottom_control_layout->addWidget(domain, 0);
-
-  plot_visible_layout = new QVBoxLayout();
 
   setup_plot(input, "Input", "#00ffff", false, 4095);
 
@@ -142,70 +166,64 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   bool signed_range, double range, bool default_visible)
 {
   x.color = color;
+
+  x.range_value = range;
+
   x.range = new QDoubleSpinBox();
+  x.range->setDecimals(0);
+  x.range->setSingleStep(1.0);
+  x.range->setRange(0, x.range_value);
+  x.range->setValue(x.range_value);
+
   x.display = new QCheckBox();
   x.display->setText(display_text);
   x.display->setStyleSheet("border: 5px solid "+ color + ";"
     "padding: 3px;"
     "background-color: white;");
-  x.default_visible = default_visible;
-  x.range_label = new QLabel();
-
-  if (signed_range)
-    x.range_label->setText(" \u00B1 ");
-  else
-    x.range_label->setText(" 0 \u2013 ");
-
-  x.graph_data_selection_bar = new QHBoxLayout();
-  x.range_value = range;
-
-  all_plots.append(&x);
-
-  x.range->setDecimals(0);
-  x.range->setSingleStep(1.0);
-
-  x.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
-
-  x.axis->setVisible(false);
-
-  x.axis->setRange(-x.range_value, x.range_value);
-
-  x.range->setRange(0, x.range_value);
-  x.range->setValue(x.range_value);
-  // Set the size of the labels and buttons for the errors tab in
-  // a way that can change from OS to OS.
-  {
-    QLabel tmp_label2;
-    tmp_label2.setText("xxxxxxxxxxxxx");
-    QLabel tmp_label3;
-    tmp_label3.setText("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-    x.range->setFixedWidth(tmp_label2.sizeHint().width());
-    x.display->setFixedWidth(tmp_label3.sizeHint().width());
-  }
-
   x.display->setCheckable(true);
   x.display->setChecked(default_visible);
 
-  QHBoxLayout *range_layout = new QHBoxLayout();
-  range_layout->setMargin(0);
-  range_layout->setSpacing(0);
-  range_layout->addWidget(x.range_label, 0, Qt::AlignRight);
-  range_layout->addWidget(x.range, 0);
+  x.default_visible = default_visible;
 
-  x.graph_data_selection_bar->setMargin(0);;
-  x.graph_data_selection_bar->addWidget(x.display, 0);
-  x.graph_data_selection_bar->addLayout(range_layout, 0);
+  x.range_label = new QLabel();
 
-  plot_visible_layout->addLayout(x.graph_data_selection_bar);
+  if (signed_range)
+    x.range_label->setText("   \u00B1");
+  else
+    x.range_label->setText(" 0 \u2013");
+
+  x.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+  x.axis->setVisible(false);
+  x.axis->setRange(-x.range_value, x.range_value);
+
+  plot_visible_layout->addWidget(x.display, row, 0);
+  plot_visible_layout->addWidget(x.range_label, row, 1);
+  plot_visible_layout->addWidget(x.range, row, 2);
 
   x.graph = new QCPGraph(custom_plot->xAxis2,x.axis);
-
   x.graph->setPen(QPen(x.color));
 
   connect(x.range, SIGNAL(valueChanged(double)),
     this, SLOT(change_ranges()));
 
   connect(x.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+
+  all_plots.append(&x);
+
+  row++;
+}
+
+// modifies the x-axis based on the domain value
+// and removes data outside of visible range
+void graph_widget::remove_data_to_scroll(uint32_t time)
+{
+  custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
+
+  custom_plot->xAxis2->setRange(time, domain->value() * 1000, Qt::AlignRight);
+
+  custom_plot->xAxis->setTickStep(domain->value() * 100);
+
+  custom_plot->replot();
 }
 
 void graph_widget::change_ranges()
@@ -233,33 +251,4 @@ void graph_widget::set_line_visible()
     plot->graph->setVisible(plot->display->isChecked());
     custom_plot->replot();
   }
-}
-
-void graph_widget::remove_data_to_scroll()
-// modifies the x-axis based on the domain value
-// and removes data outside of visible range
-{
-  custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
-
-  custom_plot->xAxis2->setRange(key, domain->value() * 1000, Qt::AlignRight);
-
-  custom_plot->xAxis->setTickStep(domain->value() * 100);
-
-  custom_plot->replot();
-}
-
-void graph_widget::plot_data()
-{
-  if (key == 0)
-    return;
-
-  if (graph_paused)
-    return;
-
-  for (auto plot : all_plots)
-  {
-    plot->graph->addData(key, plot->plot_value);
-  }
-
-  remove_data_to_scroll();
 }
