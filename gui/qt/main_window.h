@@ -310,6 +310,7 @@ private:
   void setup_menu_bar();
 
   QWidget * setup_status_tab();
+  QWidget * setup_preview_plot();
   QWidget * setup_variables_box();
   QWidget * setup_manual_target_box();
 

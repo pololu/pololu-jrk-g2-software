@@ -534,7 +534,6 @@ void main_controller::handle_device_changed()
     window->set_device_reset(
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
-    // TODO:
     window->set_connection_status("", false);
     window->reset_error_counts();
   }
@@ -549,7 +548,6 @@ void main_controller::handle_device_changed()
     window->set_cmd_port(na);
     window->set_ttl_port(na);
 
-    // TODO:
     if (connection_error)
     {
       window->set_connection_status(connection_error_message, true);
