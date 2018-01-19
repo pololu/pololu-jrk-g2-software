@@ -31,26 +31,26 @@ class pid_constant_control;
 class pid_constant_validator;
 class main_controller;
 
-struct error_row
-{
-  unsigned int count = 0;
-  QLabel *bit_mask_label = NULL;
-  QLabel *error_label = NULL;
-  QRadioButton * disabled_radio = NULL;
-  QRadioButton * enabled_radio = NULL;
-  QRadioButton * latched_radio = NULL;
-  QLabel *stopping_value = NULL;
-  QLabel *count_value = NULL;
-  QWidget * errors_frame = NULL;
-  QButtonGroup * error_enable_group = NULL;
-  bool always_enabled = false;
-  bool always_latched = false;
-  int error_number = 0;
-};
-
 class main_window : public QMainWindow
 {
   Q_OBJECT
+
+  struct error_row
+  {
+    unsigned int count = 0;
+    QLabel * bit_mask_label = NULL;
+    QLabel * error_label = NULL;
+    QRadioButton * disabled_radio = NULL;
+    QRadioButton * enabled_radio = NULL;
+    QRadioButton * latched_radio = NULL;
+    QLabel * stopping_value = NULL;
+    QLabel * count_value = NULL;
+    QWidget * frame = NULL;
+    QButtonGroup * error_enable_group = NULL;
+    bool always_enabled = false;
+    bool always_latched = false;
+    int error_number = 0;
+  };
 
 public:
   main_window(QWidget * parent = 0);
@@ -327,8 +327,8 @@ private:
   QWidget * setup_motor_tab();
 
   QWidget * setup_errors_tab();
-  QWidget * setup_error_row(int row_number, bool always_enabled,
-    bool always_latched);
+  void setup_error_row(int error_number,
+    bool always_enabled, bool always_latched);
 
   QTimer *update_timer = NULL;
 
@@ -558,15 +558,15 @@ private:
 
   // errors tab
 
-  QWidget *errors_page_widget;
-  QGridLayout *errors_page_layout;
-  QLabel *errors_bit_mask_label;
-  QLabel *errors_error_label;
-  QLabel *errors_setting_label;
-  QLabel *errors_stopping_motor_label;
-  QLabel *errors_occurrence_count_label;
-  QPushButton *errors_clear_errors;
-  QPushButton *errors_reset_counts;
+  QWidget * errors_page_widget;
+  QGridLayout * errors_page_layout;
+  QLabel * errors_bit_mask_label;
+  QLabel * errors_error_label;
+  QLabel * errors_setting_label;
+  QLabel * errors_stopping_motor_label;
+  QLabel * errors_occurrence_count_label;
+  QPushButton * errors_clear_errors;
+  QPushButton * errors_reset_counts;
   QWidget * new_error_row;
   QList<error_row> error_rows;
 
