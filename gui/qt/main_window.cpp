@@ -1509,18 +1509,15 @@ void main_window::setup_ui()
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
 
-  // TODO: fix this layout.  'Connected to:' should be on the left size of the
-  // window, there should be no need for such a large spacer item, and the
-  // header and the footer shouldn't be sharing a grid pattern, there is no
-  // need for there to be invisible columns that go from the top of the window to the
-  // bottom.
-  grid_layout->addWidget(device_list_label, 0, 0, Qt::AlignRight);
-  grid_layout->addWidget(device_list_value, 0, 1, Qt::AlignLeft);
-  grid_layout->addWidget(stop_motor, 0, 4, Qt::AlignRight);
-  grid_layout->addWidget(connection_status_value, 1, 0, 1, 2, Qt::AlignCenter | Qt::AlignTop);
-  grid_layout->addWidget(tab_widget, 2, 0, 1, 6);
-  grid_layout->addLayout(stop_and_run_buttons, 3, 0, 1, 3, Qt::AlignLeft);
-  grid_layout->addWidget(apply_settings_button, 3, 5, Qt::AlignRight);
+  QHBoxLayout *header_layout = new QHBoxLayout();
+  header_layout->addWidget(device_list_label, 0);
+  header_layout->addWidget(device_list_value, 0);
+  header_layout->addWidget(connection_status_value, 0);
+
+  grid_layout->addLayout(header_layout, 0, 0, 1, 0, Qt::AlignLeft);
+  grid_layout->addWidget(tab_widget, 1, 0, 1, 5);
+  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
+  grid_layout->addWidget(apply_settings_button, 2, 4, Qt::AlignRight);
 
 
   connect(stop_motor_button, SIGNAL(clicked()),
@@ -1684,7 +1681,7 @@ QWidget * main_window::setup_status_tab()
 
   layout->addWidget(setup_variables_box(), 0, 0, 1, 1);
   layout->addWidget(setup_preview_plot(), 0, 1, 1, 1);
-  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
+  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 2);
 
   layout->setRowStretch(2, 1);
 
