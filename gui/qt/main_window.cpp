@@ -315,26 +315,7 @@ void main_window::set_never_sleep(bool never_sleep)
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
-  switch (input_mode)
-  {
-    case 0:
-      input_analog_groupbox->setEnabled(false);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(false);
-      break;
-    case 1:
-      input_analog_groupbox->setEnabled(true);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(true);
-      break;
-    case 2:
-      input_analog_groupbox->setEnabled(false);
-      input_serial_groupbox->setEnabled(true);
-      input_scaling_groupbox->setEnabled(true);
-      break;
-    default:
-      return;
-  }
+  input_scaling_groupbox->setEnabled(input_mode != JRK_INPUT_MODE_SERIAL);
 }
 
 void main_window::set_input_invert(bool input_invert)
@@ -482,23 +463,9 @@ void main_window::set_input_scaling_order_warning_label()
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
-  switch (feedback_mode)
-  {
-    case 0:
-      feedback_analog_groupbox->setEnabled(false);
-      feedback_scaling_groupbox->setEnabled(false);
-      break;
-    case 1:
-      feedback_analog_groupbox->setEnabled(true);
-      feedback_scaling_groupbox->setEnabled(true);
-      break;
-    case 2:
-      feedback_analog_groupbox->setEnabled(false);
-      feedback_scaling_groupbox->setEnabled(true);
-      break;
-    default:
-      return;
-  }
+
+  feedback_scaling_groupbox->setEnabled(
+    feedback_mode != JRK_FEEDBACK_MODE_NONE);
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
