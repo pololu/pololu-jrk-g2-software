@@ -604,8 +604,6 @@ void main_controller::handle_variables_changed()
 
 void main_controller::handle_settings_changed()
 {
-  // [all-settings]
-
   window->set_input_mode(settings.get_input_mode());
   window->set_input_analog_samples_exponent(settings.get_input_analog_samples_exponent());
   window->set_input_detect_disconnect(settings.get_input_detect_disconnect());
