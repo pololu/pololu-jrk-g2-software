@@ -90,7 +90,8 @@ public:
   void set_duty_cycle(int16_t);
   void set_raw_current_mv(uint16_t);
   void set_current(int32_t);
-  void set_current_chopping_log(uint16_t);
+  void set_current_chopping_now(bool);
+  void set_current_chopping_count(uint32_t);
   void set_vin_voltage(uint16_t);
   void set_pid_period_count(uint16_t);
   void set_pid_period_exceeded(bool);
@@ -416,8 +417,8 @@ private:
   QLabel * raw_current_value;
   QLabel * scaled_current_label;
   QLabel * scaled_current_value;
-  QLabel * current_chopping_log_label;
-  QLabel * current_chopping_log_value;
+  QLabel * current_chopping_count_label;
+  QLabel * current_chopping_count_value;
   QLabel * vin_voltage_label;
   QLabel * vin_voltage_value;
   QLabel * pid_period_count_label;

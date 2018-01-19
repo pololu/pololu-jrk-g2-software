@@ -140,7 +140,12 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
-  // TODO: load or clear the variables object here
+  // Clear the variables read from the device because they don't apply anymore.
+  variables.pointer_reset();
+  current_chopping_count = 0;
+
+  // TODO: what about clearing the error counts in the window?  Does that
+  // happen somehow?  Should we manage those counts here in the controller?
 
   handle_model_changed();
 }
@@ -588,9 +593,11 @@ void main_controller::handle_variables_changed()
   window->set_raw_current_mv(
     jrk::calculate_raw_current_mv64(cached_settings, variables) / 64);
 
-  // TODO: rename 'Current chopping log' in the window
-  window->set_current_chopping_log(
-    variables.get_current_chopping_occurrence_count() ? 1 : 0);
+  // Tell the window if current chopping is happening now.
+  window->set_current_chopping_now(variables.get_current_chopping_occurrence_count() > 0);
+
+  // Give it the running tally of current chopping events.
+  window->set_current_chopping_count(current_chopping_count);
 
   window->set_vin_voltage(variables.get_vin_voltage());
   window->set_pid_period_count(variables.get_pid_period_count());
@@ -1512,6 +1519,13 @@ void main_controller::set_target(uint16_t target)
   }
 }
 
+// TODO: make menu item or something for calling this
+void main_controller::clear_current_chopping_count()
+{
+  current_chopping_count = 0;
+  handle_variables_changed();
+}
+
 void main_controller::open_settings_from_file(std::string filename)
 {
   if (!connected()) { return; }
@@ -1588,5 +1602,20 @@ void main_controller::reload_variables()
   {
     variables_update_failed = true;
     throw;
+  }
+
+  // Update the running total of current chopping occurrences.
+  // We store the total in a uint32_t but still let's not let it exceed INT_MAX
+  // because there is no need to.
+  {
+    uint8_t new_counts = variables.get_current_chopping_occurrence_count();
+    if (current_chopping_count < INT_MAX - new_counts)
+    {
+      current_chopping_count += new_counts;
+    }
+    else
+    {
+      current_chopping_count = INT_MAX;
+    }
   }
 }

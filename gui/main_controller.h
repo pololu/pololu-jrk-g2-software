@@ -71,6 +71,7 @@ public:
   void stop_motor();
   void run_motor();
   void set_target(uint16_t);
+  void clear_current_chopping_count();
 
   void open_settings_from_file(std::string filename);
   void save_settings_to_file(std::string filename);
@@ -201,6 +202,9 @@ private:
 
   // Holds the variables/status of the device.
   jrk::variables variables;
+
+  // Running sum of variables.get_current_chopping_occurrence_count().
+  uint32_t current_chopping_count = 0;
 
   // True if the last attempt to update the variables failed (typically due
   // to a USB error).

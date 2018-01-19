@@ -218,10 +218,14 @@ void main_window::set_current(int32_t current)
   current_value->setText(QString::number(current) + " mA");
 }
 
-void main_window::set_current_chopping_log(uint16_t log)
+void main_window::set_current_chopping_now(bool chopping)
 {
-  graph->current_chopping_log.plot_value = log;
-  current_chopping_log_value->setText(QString::number(log));
+  graph->current_chopping.plot_value = chopping;
+}
+
+void main_window::set_current_chopping_count(uint32_t count)
+{
+  current_chopping_count_value->setText(QString::number(count));
 }
 
 void main_window::set_vin_voltage(uint16_t vin_voltage)
@@ -1762,9 +1766,9 @@ QWidget * main_window::setup_variables_box()
 
   // TODO: what kind of current chopping thing do we want to show here?
   // it's not really a log any more
-  setup_read_only_text_field(layout, row++, &current_chopping_log_label,
-    &current_chopping_log_value);
-  current_chopping_log_label->setText(tr("Current chopping log:"));
+  setup_read_only_text_field(layout, row++, &current_chopping_count_label,
+    &current_chopping_count_value);
+  current_chopping_count_label->setText(tr("Current chopping count:"));
 
   setup_read_only_text_field(layout, row++, &vin_voltage_label,
     &vin_voltage_value);
