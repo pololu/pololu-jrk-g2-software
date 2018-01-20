@@ -146,8 +146,7 @@ void main_controller::connect_device(jrk::device const & device)
 
   window->reset_graph();  // TODO: make this work
 
-  // TODO: what about clearing the error counts in the window?  Does that
-  // happen somehow?  Should we manage those counts here in the controller?
+  window->reset_error_counts();
 
   handle_model_changed();
 }
@@ -544,7 +543,6 @@ void main_controller::handle_device_changed()
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
     window->set_connection_status("", false);
-    window->reset_error_counts();
   }
   else
   {
@@ -1482,10 +1480,6 @@ void main_controller::apply_settings()
       cached_settings = settings;
       settings_modified = false;  // this must be last in case exceptions are thrown
     }
-
-    // TODO: do we need to send a setTarget command now like the old jrk does?
-    // If there were no errors stopping the motor before applying settings, it
-    // sends a Set Target command afterwards.  Or just change
   }
   catch (const std::exception & e)
   {
