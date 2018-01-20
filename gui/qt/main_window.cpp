@@ -1461,7 +1461,7 @@ void main_window::setup_ui()
   // number of the Jrk.
   {
     QComboBox tmp_box;
-    tmp_box.addItem("TXXXXX: #1234567890123456");
+    tmp_box.addItem("99v99 #1234567890123456");
     device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
@@ -1710,7 +1710,6 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
@@ -1739,6 +1738,11 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++,
     &device_reset_label, &device_reset_value);
   device_reset_label->setText(tr("Last reset:"));
+
+  {
+    QLabel tmp(tr("Software reset (bootloader)"));
+    device_reset_value->setMinimumWidth(tmp.sizeHint().width());
+  }
 
   setup_read_only_text_field(layout, row++, &up_time_label, &up_time_value);
   up_time_label->setText(tr("Up time:"));
