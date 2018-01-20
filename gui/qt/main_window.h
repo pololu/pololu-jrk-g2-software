@@ -245,7 +245,9 @@ private slots:
   void on_stop_motor_action_triggered();
   void on_clear_current_chopping_count_action_triggered();
   void on_set_target_button_clicked();
+  void on_auto_set_target_check_stateChanged(int state);
   void on_manual_target_scroll_bar_valueChanged(int value);
+  void on_manual_target_entry_value_valueChanged(int value);
   void on_manual_target_return_key_shortcut_activated();
   void on_open_settings_action_triggered();
   void on_save_settings_action_triggered();
@@ -441,6 +443,7 @@ private:
   QLabel * manual_target_max_label;
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
+  QCheckBox * auto_set_target_check;
   QShortcut * manual_target_return_key_shortcut;
   QShortcut * manual_target_enter_key_shortcut;
 

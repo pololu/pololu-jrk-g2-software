@@ -1006,17 +1006,36 @@ void main_window::on_clear_current_chopping_count_action_triggered()
 void main_window::on_set_target_button_clicked()
 {
   controller->set_target(manual_target_entry_value->value());
+}
 
-  suppress_events = true;
-  manual_target_scroll_bar->setValue(manual_target_entry_value->value());
-  suppress_events = false;
+void main_window::on_auto_set_target_check_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+
+  if (state == Qt::Checked)
+  {
+    on_set_target_button_clicked();
+  }
 }
 
 void main_window::on_manual_target_scroll_bar_valueChanged(int value)
 {
   if (suppress_events) { return; }
   manual_target_entry_value->setValue(value);
-  on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
+}
+
+void main_window::on_manual_target_entry_value_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+
+  suppress_events = true;
+  manual_target_scroll_bar->setValue(value);
+  suppress_events = false;
+
+  if (auto_set_target_check->isChecked())
+  {
+    on_set_target_button_clicked();
+  }
 }
 
 void main_window::on_manual_target_return_key_shortcut_activated()
@@ -1881,6 +1900,11 @@ QWidget * main_window::setup_manual_target_box()
   set_target_button->setObjectName("set_target_button");
   set_target_button->setText(tr("Set &target"));
 
+  auto_set_target_check = new QCheckBox();
+  auto_set_target_check->setObjectName("auto_set_target_check");
+  auto_set_target_check->setChecked(true);
+  auto_set_target_check->setText(tr("Set target when slider or entry box are changed"));
+
   QHBoxLayout * spinbox_and_button = new QHBoxLayout();
   spinbox_and_button->addWidget(manual_target_entry_value, 0);
   spinbox_and_button->addWidget(set_target_button, 0);
@@ -1889,6 +1913,10 @@ QWidget * main_window::setup_manual_target_box()
   layout->addWidget(manual_target_min_label, 1, 0);
   layout->addLayout(spinbox_and_button, 1, 2);
   layout->addWidget(manual_target_max_label, 1, 4);
+
+  // Align the checkbox to the left so that clicking far to the right of it
+  // doesn't weirdly make it get the focus.
+  layout->addWidget(auto_set_target_check, 2, 0, 1, 5, Qt::AlignLeft);
 
   layout->setRowStretch(2, 1);
   layout->setColumnStretch(1, 1);
