@@ -2037,10 +2037,10 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
   input_serial_groupbox->setObjectName("input_serial_groupbox");
 
-  input_usb_dual_port_radio = new QRadioButton(tr("USB Dual Port"));
+  input_usb_dual_port_radio = new QRadioButton(tr("USB dual port"));
   input_usb_dual_port_radio->setObjectName("input_usb_dual_port_radio");
 
-  input_usb_chained_radio = new QRadioButton(tr("USB Chained"));
+  input_usb_chained_radio = new QRadioButton(tr("USB chained"));
   input_usb_chained_radio->setObjectName("input_usb_chained_radio");
 
   input_uart_fixed_baud_radio = new QRadioButton(tr("UART, fixed baud rate: "));
@@ -2117,7 +2117,7 @@ QWidget * main_window::setup_input_serial_groupbox()
 
 QWidget * main_window::setup_input_scaling_groupbox()
 {
-  input_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Pulse Width mode only)"));
+  input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and pulse width mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
@@ -2280,7 +2280,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Tachometer mode only)"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and tachometer mode only)"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
