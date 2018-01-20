@@ -723,6 +723,15 @@ void main_controller::handle_settings_loaded()
   window->set_manual_target_enabled(
     settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
 
+  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
+  {
+    window->set_manual_target_range(1448, 2648);
+  }
+  else
+  {
+    window->set_manual_target_range(0, 4095);
+  }
+
   recompute_constant(0, settings.get_proportional_multiplier(),
     settings.get_proportional_exponent());
   recompute_constant(1, settings.get_integral_multiplier(),

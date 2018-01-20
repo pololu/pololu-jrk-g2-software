@@ -104,6 +104,7 @@ public:
   void set_connection_status(std::string const & status, bool error);
 
   void set_manual_target_enabled(bool enabled);
+  void set_manual_target_range(uint16_t min, uint16_t max);
   void set_manual_target_inputs(uint16_t target);
 
   // Controls whether the apply settings action/button is enabled or
@@ -382,7 +383,6 @@ private:
   // status tab
 
   QWidget * status_page_widget;
-  QGroupBox * manual_target_box;
   QGroupBox * variables_box;
   QLabel * device_name_label;
   QLabel * device_name_value;
@@ -433,9 +433,12 @@ private:
 
   // Manually set target box
 
+  QGroupBox * manual_target_box;
+  QScrollBar * manual_target_scroll_bar;
+  QLabel * manual_target_min_label;
+  QLabel * manual_target_max_label;
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
-  QScrollBar * manual_target_scroll_bar;
 
   // input tab
 
