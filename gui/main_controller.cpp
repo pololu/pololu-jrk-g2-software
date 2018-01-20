@@ -656,6 +656,8 @@ void main_controller::handle_settings_changed()
   window->set_feedback_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
+  window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());
+  window->set_feedback_wraparound(settings.get_feedback_wraparound());
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
@@ -1105,10 +1107,18 @@ void main_controller::handle_feedback_analog_samples_exponent_input(uint8_t expo
   handle_settings_changed();
 }
 
-void main_controller::handle_feedback_detect_disconnect_input(bool detect_disconnect)
+void main_controller::handle_feedback_detect_disconnect_input(bool value)
 {
   if (!connected()) { return; }
-  settings.set_feedback_detect_disconnect(detect_disconnect);
+  settings.set_feedback_detect_disconnect(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_wraparound_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_wraparound(value);
   settings_modified = true;
   handle_settings_changed();
 }

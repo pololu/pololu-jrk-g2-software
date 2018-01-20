@@ -535,9 +535,14 @@ void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_s
   set_u8_combobox(feedback_analog_samples_combobox, feedback_analog_samples);
 }
 
-void main_window::set_feedback_detect_disconnect(bool feedback_detect_disconnect)
+void main_window::set_feedback_detect_disconnect(bool value)
 {
-  set_check_box(feedback_detect_disconnect_checkbox, feedback_detect_disconnect);
+  set_check_box(feedback_detect_disconnect_checkbox, value);
+}
+
+void main_window::set_feedback_wraparound(bool value)
+{
+  set_check_box(feedback_wraparound_checkbox, value);
 }
 
 void main_window::set_pid_multiplier(int index, uint16_t value)
@@ -1305,6 +1310,12 @@ void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
 {
   if (suppress_events) { return; }
   controller->handle_feedback_detect_disconnect_input(state == Qt::Checked);
+}
+
+void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_wraparound_input(state == Qt::Checked);
 }
 
 void main_window::on_pid_period_spinbox_valueChanged(int value)
@@ -2258,6 +2269,7 @@ QWidget * main_window::setup_feedback_tab()
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
+  layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2348,20 +2360,42 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_analog_samples_combobox = setup_analog_samples_exponent_combobox();
   feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
 
-  feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
-  feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");
+  feedback_detect_disconnect_checkbox =
+    new QCheckBox(tr("Detect disconnect with power pin"));
+  feedback_detect_disconnect_checkbox->setObjectName(
+    "feedback_detect_disconnect_checkbox");
 
   QHBoxLayout * analog_samples = new QHBoxLayout();
   analog_samples->addWidget(feedback_analog_samples_label, 0, Qt::AlignLeft);
   analog_samples->addWidget(feedback_analog_samples_combobox, 0, Qt::AlignLeft);
 
-  QGridLayout *feedback_analog_layout = new QGridLayout();
-  feedback_analog_layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
-  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
+  QGridLayout * layout = new QGridLayout();
+  layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
+  layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
-  feedback_analog_groupbox->setLayout(feedback_analog_layout);
+  feedback_analog_groupbox->setLayout(layout);
 
   return feedback_analog_groupbox;
+}
+
+QWidget * main_window::setup_feedback_options_groupbox()
+{
+  feedback_options_groupbox = new QGroupBox();
+  feedback_options_groupbox->setObjectName("feedback_options_groupbox");
+  feedback_options_groupbox->setTitle(tr("Feedback options"));
+
+  feedback_wraparound_checkbox = new QCheckBox(tr("Wraparound"));
+  feedback_wraparound_checkbox->setObjectName("feedback_wraparound_checkbox");
+  feedback_wraparound_checkbox->setToolTip(
+    "A scaled feedback value of 0 is considered to be adjacent to 4095.  "
+    "Suitable for systems that rotate over a full circle.");
+
+  QGridLayout * layout = new QGridLayout();
+  layout->addWidget(feedback_wraparound_checkbox, 0, 0, Qt::AlignLeft);
+
+  feedback_options_groupbox->setLayout(layout);
+
+  return feedback_options_groupbox;
 }
 
 QWidget * main_window::setup_pid_tab()

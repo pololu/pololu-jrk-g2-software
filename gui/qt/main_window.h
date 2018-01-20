@@ -148,7 +148,8 @@ public:
   void set_feedback_maximum(uint16_t value);
   void set_feedback_scaling_order_warning_label();
   void set_feedback_analog_samples_exponent(uint8_t value);
-  void set_feedback_detect_disconnect(bool feedback_detect_disconnect);
+  void set_feedback_detect_disconnect(bool value);
+  void set_feedback_wraparound(bool value);
 
   void set_pid_multiplier(int index, uint16_t value);
   void set_pid_exponent(int index, uint16_t value);
@@ -288,6 +289,7 @@ private slots:
   void on_feedback_reset_range_button_clicked();
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
+  void on_feedback_wraparound_checkbox_stateChanged(int state);
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
@@ -341,6 +343,7 @@ private:
   QWidget * setup_feedback_tab();
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
+  QWidget * setup_feedback_options_groupbox();
 
   QWidget * setup_pid_tab();
 
@@ -531,10 +534,15 @@ private:
 
   // feedback tab "Analog to digital conversion" groupbox
 
-  QGroupBox *feedback_analog_groupbox;
-  QLabel *feedback_analog_samples_label;
-  QComboBox *feedback_analog_samples_combobox;
-  QCheckBox *feedback_detect_disconnect_checkbox;
+  QGroupBox * feedback_analog_groupbox;
+  QLabel * feedback_analog_samples_label;
+  QComboBox * feedback_analog_samples_combobox;
+  QCheckBox * feedback_detect_disconnect_checkbox;
+
+  // feedback tab "Feedback options" groupbox
+
+  QGroupBox * feedback_options_groupbox;
+  QCheckBox * feedback_wraparound_checkbox;
 
   // pid tab
 
