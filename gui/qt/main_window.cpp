@@ -182,6 +182,21 @@ void main_window::set_scaled_feedback(uint16_t scaled_feedback)
   scaled_feedback_value->setText(QString::number(scaled_feedback));
 }
 
+void main_window::set_feedback_not_applicable()
+{
+  graph->feedback.plot_value = 0;
+  feedback_value->setText(tr("N/A"));
+
+  graph->scaled_feedback.plot_value = 0;
+  scaled_feedback_value->setText(tr("N/A"));
+
+  graph->error.plot_value = 0;
+  error_value->setText("N/A");
+
+  graph->integral.plot_value = 0;
+  integral_value->setText("N/A");
+}
+
 void main_window::set_error(int16_t error)
 {
   graph->error.plot_value = error;

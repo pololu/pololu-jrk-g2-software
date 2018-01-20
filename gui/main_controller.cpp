@@ -580,10 +580,18 @@ void main_controller::handle_variables_changed()
 
   window->set_input(variables.get_input());
   window->set_target(variables.get_target());
-  window->set_feedback(variables.get_feedback());
-  window->set_scaled_feedback(variables.get_scaled_feedback());
-  window->set_error(variables.get_error());
-  window->set_integral(variables.get_integral());
+
+  if (cached_settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
+  {
+    window->set_feedback_not_applicable();
+  }
+  else
+  {
+    window->set_feedback(variables.get_feedback());
+    window->set_scaled_feedback(variables.get_scaled_feedback());
+    window->set_error(variables.get_error());
+    window->set_integral(variables.get_integral());
+  }
   window->set_duty_cycle_target(variables.get_duty_cycle_target());
   window->set_duty_cycle(variables.get_duty_cycle());
 

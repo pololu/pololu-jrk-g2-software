@@ -84,6 +84,7 @@ public:
   void set_target(uint16_t);
   void set_feedback(uint16_t);
   void set_scaled_feedback(uint16_t);
+  void set_feedback_not_applicable();
   void set_error(int16_t);
   void set_integral(int16_t);
   void set_duty_cycle_target(int16_t);
