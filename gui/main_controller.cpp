@@ -1508,6 +1508,12 @@ void main_controller::stop_motor()
     show_exception(e);
   }
 
+  // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
+  // speed, starting at a speed of zero, in feedback mode none.  In the other
+  // feedback modes, these controls are disabled.
+  //
+  // If the user want to go back to the speed they were previously using, they
+  // can just press 'Run motor' instead of messing with the scroll bar.
   window->set_manual_target_inputs(2048);
 }
 
