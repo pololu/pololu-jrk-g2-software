@@ -1677,8 +1677,6 @@ QWidget * main_window::setup_status_tab()
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
-  layout->setColumnStretch(1, 3);
-  layout->setColumnStretch(2, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
@@ -1687,6 +1685,7 @@ QWidget * main_window::setup_status_tab()
 QWidget * main_window::setup_preview_plot()
 {
   QWidget * preview_widget = new QWidget();
+
   graph = new graph_widget();
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
@@ -1694,12 +1693,15 @@ QWidget * main_window::setup_preview_plot()
   QWidget *preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();
-  horizontal_layout->addWidget(preview_plot, 0);
+  horizontal_layout->setMargin(1);
+  horizontal_layout->addWidget(preview_plot, 1);
+  horizontal_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
   preview_widget->setLayout(horizontal_layout);
+  preview_widget->setStyleSheet("border: 1px solid black");
 
   return preview_widget;
 }
