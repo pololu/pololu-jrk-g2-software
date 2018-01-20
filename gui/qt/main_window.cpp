@@ -182,6 +182,21 @@ void main_window::set_scaled_feedback(uint16_t scaled_feedback)
   scaled_feedback_value->setText(QString::number(scaled_feedback));
 }
 
+void main_window::set_feedback_not_applicable()
+{
+  graph->feedback.plot_value = 0;
+  feedback_value->setText(tr("N/A"));
+
+  graph->scaled_feedback.plot_value = 0;
+  scaled_feedback_value->setText(tr("N/A"));
+
+  graph->error.plot_value = 0;
+  error_value->setText("N/A");
+
+  graph->integral.plot_value = 0;
+  integral_value->setText("N/A");
+}
+
 void main_window::set_error(int16_t error)
 {
   graph->error.plot_value = error;
@@ -290,6 +305,16 @@ void main_window::set_connection_status(std::string const & status, bool error)
 void main_window::set_manual_target_enabled(bool enabled)
 {
   manual_target_box->setEnabled(enabled);
+}
+
+void main_window::set_manual_target_range(uint16_t min, uint16_t max)
+{
+  suppress_events = true;
+  manual_target_min_label->setText(QString::number(min));
+  manual_target_max_label->setText(QString::number(max));
+  manual_target_scroll_bar->setRange(min, max);
+  manual_target_entry_value->setRange(min, max);
+  suppress_events = false;
 }
 
 void main_window::set_manual_target_inputs(uint16_t target)
@@ -1461,7 +1486,7 @@ void main_window::setup_ui()
   // number of the Jrk.
   {
     QComboBox tmp_box;
-    tmp_box.addItem("TXXXXX: #1234567890123456");
+    tmp_box.addItem("99v99 #1234567890123456");
     device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
@@ -1712,7 +1737,6 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
@@ -1741,6 +1765,11 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++,
     &device_reset_label, &device_reset_value);
   device_reset_label->setText(tr("Last reset:"));
+
+  {
+    QLabel tmp(tr("Software reset (bootloader)"));
+    device_reset_value->setMinimumWidth(tmp.sizeHint().width());
+  }
 
   setup_read_only_text_field(layout, row++, &up_time_label, &up_time_value);
   up_time_label->setText(tr("Up time:"));
@@ -1813,6 +1842,15 @@ QWidget * main_window::setup_manual_target_box()
   manual_target_box->setTitle(tr("Manually set target (Serial mode only)"));
   QGridLayout * layout = new QGridLayout();
 
+  manual_target_scroll_bar = new QScrollBar(Qt::Horizontal);
+  manual_target_scroll_bar->setObjectName("manual_target_scroll_bar");
+  manual_target_scroll_bar->setRange(0, 4095);
+  manual_target_scroll_bar->setValue(2048);
+
+  manual_target_min_label = new QLabel("0");
+
+  manual_target_max_label = new QLabel("4095");
+
   manual_target_entry_value = new QSpinBox();
   manual_target_entry_value->setObjectName("manual_target_entry_value");
   // Don't emit valueChanged events while user is typing (e.g. if the user
@@ -1824,23 +1862,18 @@ QWidget * main_window::setup_manual_target_box()
   set_target_button->setObjectName("set_target_button");
   set_target_button->setText(tr("Set &target"));
 
-  manual_target_scroll_bar = new QScrollBar(Qt::Horizontal);
-  manual_target_scroll_bar->setObjectName("manual_target_scroll_bar");
+  QHBoxLayout * spinbox_and_button = new QHBoxLayout();
+  spinbox_and_button->addWidget(manual_target_entry_value, 0);
+  spinbox_and_button->addWidget(set_target_button, 0);
 
-  // TODO: scroll bar range should be based on the feedback mode in the cached
-  // settings, and set with a function named set_manual_target_range that is
-  // called from the controller, instead of just hardcoded here
-  manual_target_scroll_bar->setMinimum(2048 - 600 - 20);
-  manual_target_scroll_bar->setMaximum(2048 + 600 + 20);
+  layout->addWidget(manual_target_scroll_bar, 0, 0, 1, 5);
+  layout->addWidget(manual_target_min_label, 1, 0);
+  layout->addLayout(spinbox_and_button, 1, 2);
+  layout->addWidget(manual_target_max_label, 1, 4);
 
-  manual_target_scroll_bar->setValue(2048);
-
-  layout->addWidget(manual_target_entry_value, 0, 0);
-  layout->addWidget(set_target_button, 0, 1);
-  layout->addWidget(manual_target_scroll_bar, 0, 2);
-
-  layout->setRowStretch(1, 1);
-  layout->setColumnStretch(2, 1);
+  layout->setRowStretch(2, 1);
+  layout->setColumnStretch(1, 1);
+  layout->setColumnStretch(3, 1);
 
   manual_target_box->setLayout(layout);
   return manual_target_box;
