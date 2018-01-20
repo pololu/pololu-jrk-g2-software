@@ -24,6 +24,7 @@ class QLineEdit;
 class QMenu;
 class QRadioButton;
 class QScrollBar;
+class QShortcut;
 class QShowEvent;
 class QSpacerItem;
 class QSpinBox;
@@ -245,6 +246,7 @@ private slots:
   void on_clear_current_chopping_count_action_triggered();
   void on_set_target_button_clicked();
   void on_manual_target_scroll_bar_valueChanged(int value);
+  void on_manual_target_return_key_shortcut_activated();
   void on_open_settings_action_triggered();
   void on_save_settings_action_triggered();
   void on_disconnect_action_triggered();
@@ -439,6 +441,8 @@ private:
   QLabel * manual_target_max_label;
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
+  QShortcut * manual_target_return_key_shortcut;
+  QShortcut * manual_target_enter_key_shortcut;
 
   // input tab
 

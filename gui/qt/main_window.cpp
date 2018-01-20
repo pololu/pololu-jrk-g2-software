@@ -1019,6 +1019,24 @@ void main_window::on_manual_target_scroll_bar_valueChanged(int value)
   on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
 }
 
+void main_window::on_manual_target_return_key_shortcut_activated()
+{
+  if (manual_target_scroll_bar->hasFocus())
+  {
+    // Enter was pressed on the scroll bar.
+    on_set_target_button_clicked();
+  }
+  else if (manual_target_entry_value->hasFocus())
+  {
+    // Enter was pressed on the target entry box.
+    suppress_events = true;
+    manual_target_entry_value->interpretText();
+    manual_target_entry_value->selectAll();
+    suppress_events = false;
+    on_set_target_button_clicked();
+  }
+}
+
 void main_window::on_open_settings_action_triggered()
 {
   QString filename = QFileDialog::getOpenFileName(this,
@@ -1844,6 +1862,9 @@ QWidget * main_window::setup_manual_target_box()
   manual_target_scroll_bar->setObjectName("manual_target_scroll_bar");
   manual_target_scroll_bar->setRange(0, 4095);
   manual_target_scroll_bar->setValue(2048);
+  // Let the scroll bar be focused when people click on it, so they can
+  // then press enter to set the target.
+  manual_target_scroll_bar->setFocusPolicy(Qt::ClickFocus);
 
   manual_target_min_label = new QLabel("0");
 
@@ -1872,6 +1893,22 @@ QWidget * main_window::setup_manual_target_box()
   layout->setRowStretch(2, 1);
   layout->setColumnStretch(1, 1);
   layout->setColumnStretch(3, 1);
+
+  // Add shortcuts so we can take actions when enter/return is pressed.
+  {
+    manual_target_return_key_shortcut = new QShortcut(manual_target_box);
+    manual_target_return_key_shortcut->setObjectName("manual_target_return_key_shortcut");
+    manual_target_return_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    manual_target_return_key_shortcut->setKey(Qt::Key_Return);
+    manual_target_enter_key_shortcut = new QShortcut(manual_target_box);
+    manual_target_enter_key_shortcut->setObjectName("manual_target_enter_key_shortcut");
+    manual_target_enter_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    manual_target_enter_key_shortcut->setKey(Qt::Key_Enter);
+
+    // Handle both shortcuts with one slot.
+    connect(manual_target_enter_key_shortcut, SIGNAL(activated()), this,
+      SLOT(on_manual_target_return_key_shortcut_activated()));
+  }
 
   manual_target_box->setLayout(layout);
   return manual_target_box;
