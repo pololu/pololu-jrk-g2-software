@@ -1499,6 +1499,8 @@ void main_window::setup_ui()
 
   setup_style_sheet();
 
+  directory_hint = QDir::homePath();
+
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
 
