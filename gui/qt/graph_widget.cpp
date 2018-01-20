@@ -19,19 +19,22 @@ void graph_widget::set_preview_mode(bool preview_mode)
 {
   if (preview_mode)
   {
+    custom_plot->setMinimumSize(450, 450);
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click on preview to view full plot");
+    custom_plot->axisRect()->setAutoMargins(QCP::msNone);
+    custom_plot->axisRect()->setMargins(QMargins(0,0,0,0));
   }
   else
   {
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
+    custom_plot->axisRect()->setAutoMargins(QCP::msAll);
   }
 
   custom_plot->xAxis->setTicks(!preview_mode);
   custom_plot->yAxis->setTicks(!preview_mode);
-  custom_plot->xAxis2->setVisible(preview_mode);
-  custom_plot->yAxis2->setVisible(preview_mode);
+
 }
 
 void graph_widget::clear_graphs()
@@ -135,9 +138,8 @@ void graph_widget::setup_ui()
   custom_plot->xAxis->setTickStep(domain->value() * 100);
   custom_plot->xAxis->setTickLabelPadding(10);
 
-  // Give the ability to use the axes as a border of plot without the ticks.
-  custom_plot->xAxis2->setTicks(false);
-  custom_plot->yAxis2->setTicks(false);
+  custom_plot->xAxis2->setVisible(false);
+  custom_plot->yAxis2->setVisible(false);
 
   // this is used to see the x-axis to see accurate time.
   // custom_plot->xAxis2->setTicks(true);
