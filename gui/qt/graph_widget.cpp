@@ -156,53 +156,53 @@ void graph_widget::setup_ui()
   QMetaObject::connectSlotsByName(this);
 }
 
-void graph_widget::setup_plot(plot& x, QString display_text, QString color,
+void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   bool signed_range, double range, bool default_visible)
 {
-  x.color = color;
+  plot.color = color;
 
-  x.range_value = range;
+  plot.range_value = range;
 
-  x.range = new QDoubleSpinBox();
-  x.range->setDecimals(0);
-  x.range->setSingleStep(1.0);
-  x.range->setRange(0, x.range_value);
-  x.range->setValue(x.range_value);
+  plot.range = new QDoubleSpinBox();
+  plot.range->setDecimals(0);
+  plot.range->setSingleStep(1.0);
+  plot.range->setRange(0, plot.range_value);
+  plot.range->setValue(plot.range_value);
 
-  x.display = new QCheckBox();
-  x.display->setText(display_text);
-  x.display->setStyleSheet("border: 5px solid "+ color + ";"
+  plot.display = new QCheckBox();
+  plot.display->setText(display_text);
+  plot.display->setStyleSheet("border: 5px solid "+ color + ";"
     "padding: 3px;"
     "background-color: white;");
-  x.display->setCheckable(true);
-  x.display->setChecked(default_visible);
+  plot.display->setCheckable(true);
+  plot.display->setChecked(default_visible);
 
-  x.default_visible = default_visible;
+  plot.default_visible = default_visible;
 
-  x.range_label = new QLabel();
+  plot.range_label = new QLabel();
 
   if (signed_range)
-    x.range_label->setText("   \u00B1");
+    plot.range_label->setText("   \u00B1");
   else
-    x.range_label->setText(" 0 \u2013");
+    plot.range_label->setText(" 0 \u2013");
 
-  x.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
-  x.axis->setVisible(false);
-  x.axis->setRange(-x.range_value, x.range_value);
+  plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
+  plot.axis->setVisible(false);
+  plot.axis->setRange(-plot.range_value, plot.range_value);
 
-  plot_visible_layout->addWidget(x.display, row, 0);
-  plot_visible_layout->addWidget(x.range_label, row, 1);
-  plot_visible_layout->addWidget(x.range, row, 2);
+  plot_visible_layout->addWidget(plot.display, row, 0);
+  plot_visible_layout->addWidget(plot.range_label, row, 1);
+  plot_visible_layout->addWidget(plot.range, row, 2);
 
-  x.graph = custom_plot->addGraph(custom_plot->xAxis2, x.axis);
-  x.graph->setPen(QPen(x.color));
+  plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
+  plot.graph->setPen(QPen(plot.color));
 
-  connect(x.range, SIGNAL(valueChanged(double)),
+  connect(plot.range, SIGNAL(valueChanged(double)),
     this, SLOT(change_ranges()));
 
-  connect(x.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
+  connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
-  all_plots.append(&x);
+  all_plots.append(&plot);
 
   row++;
 }
