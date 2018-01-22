@@ -42,10 +42,11 @@ void graph_widget::set_preview_mode(bool preview_mode)
 
 void graph_widget::clear_graphs()
 {
-  for (int i = 0; i < custom_plot->graphCount(); ++i)
+  for (auto plot : all_plots)
   {
-    custom_plot->graph(i)->clearData();
+    plot->graph->clearData();
   }
+
   custom_plot->replot();
 }
 
