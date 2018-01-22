@@ -23,18 +23,21 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click on preview to view full plot");
     custom_plot->axisRect()->setAutoMargins(QCP::msNone);
-    custom_plot->axisRect()->setMargins(QMargins(0,0,0,0));
+    custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
+    custom_plot->xAxis->setBasePen(QColor(Qt::white));
+    custom_plot->yAxis->setBasePen(QColor(Qt::white));
   }
   else
   {
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
     custom_plot->axisRect()->setAutoMargins(QCP::msAll);
+    custom_plot->xAxis->setBasePen(QColor(Qt::black));
+    custom_plot->yAxis->setBasePen(QColor(Qt::black));
   }
 
   custom_plot->xAxis->setTicks(!preview_mode);
   custom_plot->yAxis->setTicks(!preview_mode);
-
 }
 
 void graph_widget::clear_graphs()

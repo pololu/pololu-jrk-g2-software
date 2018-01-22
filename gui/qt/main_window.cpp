@@ -1737,6 +1737,7 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
+  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
