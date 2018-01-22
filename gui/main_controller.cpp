@@ -144,7 +144,7 @@ void main_controller::connect_device(jrk::device const & device)
   variables.pointer_reset();
   current_chopping_count = 0;
 
-  window->reset_graph();  // TODO: make this work
+  window->reset_graph();
 
   window->reset_error_counts();
 

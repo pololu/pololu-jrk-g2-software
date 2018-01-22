@@ -44,9 +44,9 @@ void graph_widget::clear_graphs()
 {
   for (int i = 0; i < custom_plot->graphCount(); ++i)
   {
-    custom_plot->graph(i)->data()->clear();
-    custom_plot->replot();
+    custom_plot->graph(i)->clearData();
   }
+  custom_plot->replot();
 }
 
 void graph_widget::plot_data(uint32_t time)
@@ -193,7 +193,7 @@ void graph_widget::setup_plot(plot& x, QString display_text, QString color,
   plot_visible_layout->addWidget(x.range_label, row, 1);
   plot_visible_layout->addWidget(x.range, row, 2);
 
-  x.graph = new QCPGraph(custom_plot->xAxis2,x.axis);
+  x.graph = custom_plot->addGraph(custom_plot->xAxis2, x.axis);
   x.graph->setPen(QPen(x.color));
 
   connect(x.range, SIGNAL(valueChanged(double)),
