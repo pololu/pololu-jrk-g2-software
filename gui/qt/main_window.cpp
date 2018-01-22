@@ -535,9 +535,14 @@ void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_s
   set_u8_combobox(feedback_analog_samples_combobox, feedback_analog_samples);
 }
 
-void main_window::set_feedback_detect_disconnect(bool feedback_detect_disconnect)
+void main_window::set_feedback_detect_disconnect(bool value)
 {
-  set_check_box(feedback_detect_disconnect_checkbox, feedback_detect_disconnect);
+  set_check_box(feedback_detect_disconnect_checkbox, value);
+}
+
+void main_window::set_feedback_wraparound(bool value)
+{
+  set_check_box(feedback_wraparound_checkbox, value);
 }
 
 void main_window::set_pid_multiplier(int index, uint16_t value)
@@ -1006,17 +1011,54 @@ void main_window::on_clear_current_chopping_count_action_triggered()
 void main_window::on_set_target_button_clicked()
 {
   controller->set_target(manual_target_entry_value->value());
+}
 
-  suppress_events = true;
-  manual_target_scroll_bar->setValue(manual_target_entry_value->value());
-  suppress_events = false;
+void main_window::on_auto_set_target_check_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+
+  if (state == Qt::Checked)
+  {
+    on_set_target_button_clicked();
+  }
 }
 
 void main_window::on_manual_target_scroll_bar_valueChanged(int value)
 {
   if (suppress_events) { return; }
   manual_target_entry_value->setValue(value);
-  on_set_target_button_clicked();  // TODO: remove when we have the auto checkbox
+}
+
+void main_window::on_manual_target_entry_value_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+
+  suppress_events = true;
+  manual_target_scroll_bar->setValue(value);
+  suppress_events = false;
+
+  if (auto_set_target_check->isChecked())
+  {
+    on_set_target_button_clicked();
+  }
+}
+
+void main_window::on_manual_target_return_key_shortcut_activated()
+{
+  if (manual_target_scroll_bar->hasFocus())
+  {
+    // Enter was pressed on the scroll bar.
+    on_set_target_button_clicked();
+  }
+  else if (manual_target_entry_value->hasFocus())
+  {
+    // Enter was pressed on the target entry box.
+    suppress_events = true;
+    manual_target_entry_value->interpretText();
+    manual_target_entry_value->selectAll();
+    suppress_events = false;
+    on_set_target_button_clicked();
+  }
 }
 
 void main_window::on_open_settings_action_triggered()
@@ -1270,6 +1312,12 @@ void main_window::on_feedback_detect_disconnect_checkbox_stateChanged(int state)
   controller->handle_feedback_detect_disconnect_input(state == Qt::Checked);
 }
 
+void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_feedback_wraparound_input(state == Qt::Checked);
+}
+
 void main_window::on_pid_period_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1461,6 +1509,8 @@ void main_window::setup_ui()
   setWindowTitle("Pololu Jrk G2 Configuration Utility");
 
   setup_style_sheet();
+
+  directory_hint = QDir::homePath();
 
   update_timer = new QTimer(this);
   update_timer->setObjectName("update_timer");
@@ -1847,6 +1897,9 @@ QWidget * main_window::setup_manual_target_box()
   manual_target_scroll_bar->setObjectName("manual_target_scroll_bar");
   manual_target_scroll_bar->setRange(0, 4095);
   manual_target_scroll_bar->setValue(2048);
+  // Let the scroll bar be focused when people click on it, so they can
+  // then press enter to set the target.
+  manual_target_scroll_bar->setFocusPolicy(Qt::ClickFocus);
 
   manual_target_min_label = new QLabel("0");
 
@@ -1863,6 +1916,11 @@ QWidget * main_window::setup_manual_target_box()
   set_target_button->setObjectName("set_target_button");
   set_target_button->setText(tr("Set &target"));
 
+  auto_set_target_check = new QCheckBox();
+  auto_set_target_check->setObjectName("auto_set_target_check");
+  auto_set_target_check->setChecked(true);
+  auto_set_target_check->setText(tr("Set target when slider or entry box are changed"));
+
   QHBoxLayout * spinbox_and_button = new QHBoxLayout();
   spinbox_and_button->addWidget(manual_target_entry_value, 0);
   spinbox_and_button->addWidget(set_target_button, 0);
@@ -1872,9 +1930,29 @@ QWidget * main_window::setup_manual_target_box()
   layout->addLayout(spinbox_and_button, 1, 2);
   layout->addWidget(manual_target_max_label, 1, 4);
 
+  // Align the checkbox to the left so that clicking far to the right of it
+  // doesn't weirdly make it get the focus.
+  layout->addWidget(auto_set_target_check, 2, 0, 1, 5, Qt::AlignLeft);
+
   layout->setRowStretch(2, 1);
   layout->setColumnStretch(1, 1);
   layout->setColumnStretch(3, 1);
+
+  // Add shortcuts so we can take actions when enter/return is pressed.
+  {
+    manual_target_return_key_shortcut = new QShortcut(manual_target_box);
+    manual_target_return_key_shortcut->setObjectName("manual_target_return_key_shortcut");
+    manual_target_return_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    manual_target_return_key_shortcut->setKey(Qt::Key_Return);
+    manual_target_enter_key_shortcut = new QShortcut(manual_target_box);
+    manual_target_enter_key_shortcut->setObjectName("manual_target_enter_key_shortcut");
+    manual_target_enter_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    manual_target_enter_key_shortcut->setKey(Qt::Key_Enter);
+
+    // Handle both shortcuts with one slot.
+    connect(manual_target_enter_key_shortcut, SIGNAL(activated()), this,
+      SLOT(on_manual_target_return_key_shortcut_activated()));
+  }
 
   manual_target_box->setLayout(layout);
   return manual_target_box;
@@ -1960,10 +2038,10 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
   input_serial_groupbox->setObjectName("input_serial_groupbox");
 
-  input_usb_dual_port_radio = new QRadioButton(tr("USB Dual Port"));
+  input_usb_dual_port_radio = new QRadioButton(tr("USB dual port"));
   input_usb_dual_port_radio->setObjectName("input_usb_dual_port_radio");
 
-  input_usb_chained_radio = new QRadioButton(tr("USB Chained"));
+  input_usb_chained_radio = new QRadioButton(tr("USB chained"));
   input_usb_chained_radio->setObjectName("input_usb_chained_radio");
 
   input_uart_fixed_baud_radio = new QRadioButton(tr("UART, fixed baud rate: "));
@@ -2040,7 +2118,7 @@ QWidget * main_window::setup_input_serial_groupbox()
 
 QWidget * main_window::setup_input_scaling_groupbox()
 {
-  input_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Pulse Width mode only)"));
+  input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and pulse width mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
@@ -2192,6 +2270,7 @@ QWidget * main_window::setup_feedback_tab()
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
+  layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2202,7 +2281,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QSizePolicy p = this->sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (Analog and Tachometer mode only)"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and tachometer mode only)"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
@@ -2282,20 +2361,42 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_analog_samples_combobox = setup_analog_samples_exponent_combobox();
   feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
 
-  feedback_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
-  feedback_detect_disconnect_checkbox->setObjectName("feedback_detect_disconnect_checkbox");
+  feedback_detect_disconnect_checkbox =
+    new QCheckBox(tr("Detect disconnect with power pin"));
+  feedback_detect_disconnect_checkbox->setObjectName(
+    "feedback_detect_disconnect_checkbox");
 
   QHBoxLayout * analog_samples = new QHBoxLayout();
   analog_samples->addWidget(feedback_analog_samples_label, 0, Qt::AlignLeft);
   analog_samples->addWidget(feedback_analog_samples_combobox, 0, Qt::AlignLeft);
 
-  QGridLayout *feedback_analog_layout = new QGridLayout();
-  feedback_analog_layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
-  feedback_analog_layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
+  QGridLayout * layout = new QGridLayout();
+  layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
+  layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
-  feedback_analog_groupbox->setLayout(feedback_analog_layout);
+  feedback_analog_groupbox->setLayout(layout);
 
   return feedback_analog_groupbox;
+}
+
+QWidget * main_window::setup_feedback_options_groupbox()
+{
+  feedback_options_groupbox = new QGroupBox();
+  feedback_options_groupbox->setObjectName("feedback_options_groupbox");
+  feedback_options_groupbox->setTitle(tr("Feedback options"));
+
+  feedback_wraparound_checkbox = new QCheckBox(tr("Wraparound"));
+  feedback_wraparound_checkbox->setObjectName("feedback_wraparound_checkbox");
+  feedback_wraparound_checkbox->setToolTip(
+    "A scaled feedback value of 0 is considered to be adjacent to 4095.  "
+    "Suitable for systems that rotate over a full circle.");
+
+  QGridLayout * layout = new QGridLayout();
+  layout->addWidget(feedback_wraparound_checkbox, 0, 0, Qt::AlignLeft);
+
+  feedback_options_groupbox->setLayout(layout);
+
+  return feedback_options_groupbox;
 }
 
 QWidget * main_window::setup_pid_tab()

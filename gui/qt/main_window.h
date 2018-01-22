@@ -24,6 +24,7 @@ class QLineEdit;
 class QMenu;
 class QRadioButton;
 class QScrollBar;
+class QShortcut;
 class QShowEvent;
 class QSpacerItem;
 class QSpinBox;
@@ -147,7 +148,8 @@ public:
   void set_feedback_maximum(uint16_t value);
   void set_feedback_scaling_order_warning_label();
   void set_feedback_analog_samples_exponent(uint8_t value);
-  void set_feedback_detect_disconnect(bool feedback_detect_disconnect);
+  void set_feedback_detect_disconnect(bool value);
+  void set_feedback_wraparound(bool value);
 
   void set_pid_multiplier(int index, uint16_t value);
   void set_pid_exponent(int index, uint16_t value);
@@ -244,7 +246,10 @@ private slots:
   void on_stop_motor_action_triggered();
   void on_clear_current_chopping_count_action_triggered();
   void on_set_target_button_clicked();
+  void on_auto_set_target_check_stateChanged(int state);
   void on_manual_target_scroll_bar_valueChanged(int value);
+  void on_manual_target_entry_value_valueChanged(int value);
+  void on_manual_target_return_key_shortcut_activated();
   void on_open_settings_action_triggered();
   void on_save_settings_action_triggered();
   void on_disconnect_action_triggered();
@@ -284,6 +289,7 @@ private slots:
   void on_feedback_reset_range_button_clicked();
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
+  void on_feedback_wraparound_checkbox_stateChanged(int state);
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
@@ -337,6 +343,7 @@ private:
   QWidget * setup_feedback_tab();
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
+  QWidget * setup_feedback_options_groupbox();
 
   QWidget * setup_pid_tab();
 
@@ -439,6 +446,9 @@ private:
   QLabel * manual_target_max_label;
   QSpinBox * manual_target_entry_value;
   QPushButton * set_target_button;
+  QCheckBox * auto_set_target_check;
+  QShortcut * manual_target_return_key_shortcut;
+  QShortcut * manual_target_enter_key_shortcut;
 
   // input tab
 
@@ -524,10 +534,15 @@ private:
 
   // feedback tab "Analog to digital conversion" groupbox
 
-  QGroupBox *feedback_analog_groupbox;
-  QLabel *feedback_analog_samples_label;
-  QComboBox *feedback_analog_samples_combobox;
-  QCheckBox *feedback_detect_disconnect_checkbox;
+  QGroupBox * feedback_analog_groupbox;
+  QLabel * feedback_analog_samples_label;
+  QComboBox * feedback_analog_samples_combobox;
+  QCheckBox * feedback_detect_disconnect_checkbox;
+
+  // feedback tab "Feedback options" groupbox
+
+  QGroupBox * feedback_options_groupbox;
+  QCheckBox * feedback_wraparound_checkbox;
 
   // pid tab
 

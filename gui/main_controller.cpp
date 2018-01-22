@@ -146,8 +146,7 @@ void main_controller::connect_device(jrk::device const & device)
 
   window->reset_graph();  // TODO: make this work
 
-  // TODO: what about clearing the error counts in the window?  Does that
-  // happen somehow?  Should we manage those counts here in the controller?
+  window->reset_error_counts();
 
   handle_model_changed();
 }
@@ -544,7 +543,6 @@ void main_controller::handle_device_changed()
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
     window->set_connection_status("", false);
-    window->reset_error_counts();
   }
   else
   {
@@ -658,6 +656,8 @@ void main_controller::handle_settings_changed()
   window->set_feedback_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
+  window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());
+  window->set_feedback_wraparound(settings.get_feedback_wraparound());
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
@@ -1107,10 +1107,18 @@ void main_controller::handle_feedback_analog_samples_exponent_input(uint8_t expo
   handle_settings_changed();
 }
 
-void main_controller::handle_feedback_detect_disconnect_input(bool detect_disconnect)
+void main_controller::handle_feedback_detect_disconnect_input(bool value)
 {
   if (!connected()) { return; }
-  settings.set_feedback_detect_disconnect(detect_disconnect);
+  settings.set_feedback_detect_disconnect(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_feedback_wraparound_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_feedback_wraparound(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1482,10 +1490,6 @@ void main_controller::apply_settings()
       cached_settings = settings;
       settings_modified = false;  // this must be last in case exceptions are thrown
     }
-
-    // TODO: do we need to send a setTarget command now like the old jrk does?
-    // If there were no errors stopping the motor before applying settings, it
-    // sends a Set Target command afterwards.  Or just change
   }
   catch (const std::exception & e)
   {
@@ -1508,6 +1512,12 @@ void main_controller::stop_motor()
     show_exception(e);
   }
 
+  // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
+  // speed, starting at a speed of zero, in feedback mode none.  In the other
+  // feedback modes, these controls are disabled.
+  //
+  // If the user want to go back to the speed they were previously using, they
+  // can just press 'Run motor' instead of messing with the scroll bar.
   window->set_manual_target_inputs(2048);
 }
 
