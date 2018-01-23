@@ -931,6 +931,7 @@ void main_window::on_update_timer_timeout()
 void main_window::receive_widget(graph_widget *widget)
 {
   widget->set_preview_mode(true);
+
   horizontal_layout->addWidget(widget->custom_plot, 0);
 }
 
@@ -1747,11 +1748,13 @@ QWidget * main_window::setup_status_tab()
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
 
-  layout->addWidget(setup_variables_box(), 0, 0);
-  layout->addWidget(setup_preview_plot(), 0, 1);
-  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
+  layout->addWidget(setup_variables_box(), 0, 0, 2, 1);
+  layout->addWidget(setup_preview_plot(), 0, 1, 2, 1, Qt::AlignCenter);
+  layout->addWidget(setup_manual_target_box(), 2, 0, 1, 3);
 
-  layout->setRowStretch(2, 1);
+  layout->setRowStretch(3, 1);
+  layout->setColumnStretch(1, 1);
+  layout->setColumnStretch(2, 0);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
@@ -1759,26 +1762,28 @@ QWidget * main_window::setup_status_tab()
 
 QWidget * main_window::setup_preview_plot()
 {
-  QWidget * preview_widget = new QWidget();
+  QWidget * preview_widget = new QWidget(this);
 
   graph = new graph_widget();
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
 
-  QWidget *preview_plot = graph->custom_plot;
+  QFrame *preview_frame = new QFrame(preview_widget);
+  preview_frame->setStyleSheet("border: 1px solid black");
+
+  QWidget *preview_plot = new QWidget(preview_frame);
+  preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();
   horizontal_layout->setMargin(1);
   horizontal_layout->addWidget(preview_plot, 1);
-  horizontal_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));
 
-  preview_widget->setLayout(horizontal_layout);
-  preview_widget->setStyleSheet("border: 1px solid black");
+  preview_frame->setLayout(horizontal_layout);
 
-  return preview_widget;
+  return preview_frame;
 }
 
 QWidget * main_window::setup_variables_box()
@@ -1787,7 +1792,6 @@ QWidget * main_window::setup_variables_box()
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
   QGridLayout * layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
 
   int row = 0;
 
