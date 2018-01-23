@@ -1764,13 +1764,11 @@ QWidget * main_window::setup_status_tab()
 
 QWidget * main_window::setup_preview_plot()
 {
-  QWidget * preview_widget = new QWidget(this);
-
   graph = new graph_widget();
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
 
-  preview_frame = new QFrame(preview_widget);
+  preview_frame = new QFrame();
   preview_frame->setStyleSheet("border: 1px solid black");
 
   preview_plot = new QWidget(preview_frame);
