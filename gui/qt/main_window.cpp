@@ -933,12 +933,14 @@ void main_window::receive_widget(graph_widget *widget)
   widget->set_preview_mode(true);
 
   horizontal_layout->addWidget(widget->custom_plot, 0);
+  preview_frame->setStyleSheet("border: 1px solid black");
 }
 
 void main_window::on_launchGraph_clicked(QMouseEvent *event)
 {
   graph_widget *red = graph;
   horizontal_layout->removeWidget(red);
+  preview_frame->setStyleSheet("border: 1px solid white");
   if(popout_graph_window == 0)
   {
     popout_graph_window = new graph_window(this);
@@ -1768,10 +1770,10 @@ QWidget * main_window::setup_preview_plot()
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
 
-  QFrame *preview_frame = new QFrame(preview_widget);
+  preview_frame = new QFrame(preview_widget);
   preview_frame->setStyleSheet("border: 1px solid black");
 
-  QWidget *preview_plot = new QWidget(preview_frame);
+  preview_plot = new QWidget(preview_frame);
   preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();

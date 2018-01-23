@@ -19,7 +19,6 @@ void graph_widget::set_preview_mode(bool preview_mode)
 {
   if (preview_mode)
   {
-    custom_plot->setMinimumSize(450, 450);
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click on preview to view full plot");
     custom_plot->axisRect()->setAutoMargins(QCP::msNone);
@@ -76,6 +75,7 @@ void graph_widget::setup_ui()
   label1->setText(tr("    Range (%):"));
 
   custom_plot = new QCustomPlot();
+  custom_plot->setMinimumSize(450, 450);
 
   label2 = new QLabel();
   label2->setText(tr("    Time (s):"));

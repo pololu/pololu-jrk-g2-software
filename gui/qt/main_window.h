@@ -361,6 +361,7 @@ private:
   graph_widget *graph;
   graph_window *popout_graph_window;
   QWidget * preview_plot;
+  QFrame * preview_frame;
 
   QMenuBar * menu_bar;
   QMenu * file_menu;
