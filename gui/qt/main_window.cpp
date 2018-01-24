@@ -1245,7 +1245,6 @@ void main_window::on_input_scaling_degree_combobox_currentIndexChanged(int index
 
 void main_window::on_input_reset_range_button_clicked()
 {
-  if (suppress_events) { return; }
   controller->handle_input_absolute_minimum_input(0);
   controller->handle_input_absolute_maximum_input(4095);
   controller->handle_input_minimum_input(0);
@@ -1256,7 +1255,11 @@ void main_window::on_input_reset_range_button_clicked()
   controller->handle_output_neutral_input(2048);
   controller->handle_output_maximum_input(4095);
   controller->handle_input_invert_input(false);
-  input_scaling_order_warning_label->setVisible(false);
+}
+
+void main_window::on_input_learn_button_clicked()
+{
+  // TODO
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
@@ -1298,7 +1301,6 @@ void main_window::on_feedback_minimum_spinbox_valueChanged(int value)
 
 void main_window::on_feedback_reset_range_button_clicked()
 {
-  if (suppress_events) { return; }
   controller->handle_feedback_absolute_maximum_input(4095);
   controller->handle_feedback_maximum_input(4095);
   controller->handle_feedback_minimum_input(0);
@@ -1363,17 +1365,17 @@ void main_window::on_motor_invert_checkbox_stateChanged(int state)
 
 void main_window::on_detect_motor_button_clicked()
 {
-  if (suppress_events) { return; }
   QMessageBox mbox(QMessageBox::Question, "Detect motor direction confirmation",
     "Really detect motor direction?  This will drive the motor!\n"
     "Feedback must be configured and tested before proceeding.\n"
     "It is also recommended that you set Max. duty cycle, Max. current,\n"
-    "and enable the \"Max. current exceeded\" error for this test.", QMessageBox::Ok | QMessageBox::Cancel, this);
+    "and enable the \"Max. current exceeded\" error for this test.",
+    QMessageBox::Ok | QMessageBox::Cancel, this);
   int button = mbox.exec();
-  if (!(button == QMessageBox::Ok))
-    return;
-  else
+  if (button == QMessageBox::Ok)
+  {
     controller->handle_motor_detect_direction_button_clicked();
+  }
 }
 
 void main_window::on_motor_asymmetric_checkbox_stateChanged(int state)
