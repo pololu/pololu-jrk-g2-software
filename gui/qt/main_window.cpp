@@ -2217,10 +2217,15 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_reset_range_button->setObjectName("input_reset_range_button");
   input_reset_range_button->setText(tr("Reset to full range"));
 
+  // used so layout does not change when item is hidden
+  QSizePolicy p = this->sizePolicy();
+  p.setRetainSizeWhenHidden(true);
+
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
   input_scaling_order_warning_label->setStyleSheet("color: red;");
+  input_scaling_order_warning_label->setSizePolicy(p);
 
   QGridLayout *input_scaling_layout = new QGridLayout();
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
