@@ -65,6 +65,8 @@ private:
 
   void remove_data_to_scroll(uint32_t time);
 
+  void setup_select_all_checkbox();
+
   QWidget *central_widget;
   QPushButton *pause_run_button;
   QDoubleSpinBox *min_y;
@@ -73,13 +75,15 @@ private:
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
+  QCheckBox *select_all_none;
 
   uint32_t key; // used to store local copy of time value
 
-  int row = 0;
+  int row = 1;
 
 private slots:
   void change_ranges();
   void on_pause_run_button_clicked();
   void set_line_visible();
+  void on_select_all_none_stateChanged(int state);
 };

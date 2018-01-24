@@ -935,14 +935,16 @@ void main_window::on_update_timer_timeout()
 
 void main_window::receive_widget(graph_widget *widget)
 {
+  graph_action->setEnabled(true);
   widget->set_preview_mode(true);
 
-  horizontal_layout->addWidget(widget->custom_plot, 0);
+  horizontal_layout->addWidget(widget->custom_plot);
   preview_frame->setStyleSheet("border: 1px solid black");
 }
 
-void main_window::on_launchGraph_clicked(QMouseEvent *event)
+void main_window::on_launchGraph_clicked()
 {
+  graph_action->setEnabled(false);
   graph_widget *red = graph;
   horizontal_layout->removeWidget(red);
   preview_frame->setStyleSheet("border: 1px solid white");
@@ -1647,6 +1649,9 @@ void main_window::setup_menu_bar()
   device_menu = menu_bar->addMenu("");
   device_menu->setTitle(tr("&Device"));
 
+  window_menu = menu_bar->addMenu("");
+  window_menu->setTitle(tr("&Window"));
+
   help_menu = menu_bar->addMenu("");
   help_menu->setTitle(tr("&Help"));
 
@@ -1702,6 +1707,12 @@ void main_window::setup_menu_bar()
   upgrade_firmware_action->setObjectName("upgrade_firmware_action");
   upgrade_firmware_action->setText(tr("&Upgrade firmware..."));
 
+  graph_action = new QAction(this);
+  graph_action->setObjectName("graph_action");
+  graph_action->setText(tr("&Graph"));
+  graph_action->setShortcut(Qt::CTRL + Qt::Key_G);
+  connect(graph_action, SIGNAL(triggered()), this, SLOT(on_launchGraph_clicked()));
+
   documentation_action = new QAction(this);
   documentation_action->setObjectName("documentation_action");
   documentation_action->setText(tr("&Online documentation..."));
@@ -1728,6 +1739,8 @@ void main_window::setup_menu_bar()
   device_menu->addAction(apply_settings_action);
   device_menu->addSeparator();
   device_menu->addAction(upgrade_firmware_action);
+
+  window_menu->addAction(graph_action);
 
   help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
@@ -1771,9 +1784,8 @@ QWidget * main_window::setup_status_tab()
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
 
-  layout->addWidget(setup_variables_box(), 0, 0, Qt::AlignLeft);
+  layout->addWidget(setup_variables_box(), 0, 0);
   layout->addWidget(setup_preview_plot(), 0, 1, Qt::AlignCenter);
-
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
@@ -1798,7 +1810,7 @@ QWidget * main_window::setup_preview_plot()
   horizontal_layout->addWidget(preview_plot);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
-    SLOT(on_launchGraph_clicked(QMouseEvent*)));
+    SLOT(on_launchGraph_clicked()));
 
   preview_frame->setLayout(horizontal_layout);
 
@@ -1809,6 +1821,7 @@ QWidget * main_window::setup_variables_box()
 {
   variables_box = new QGroupBox();
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
+  variables_box->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
   QGridLayout * layout = new QGridLayout();
 
@@ -2235,10 +2248,15 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_reset_range_button->setObjectName("input_reset_range_button");
   input_reset_range_button->setText(tr("Reset to full range"));
 
+  // used so layout does not change when item is hidden
+  QSizePolicy p = this->sizePolicy();
+  p.setRetainSizeWhenHidden(true);
+
   input_scaling_order_warning_label = new QLabel(
     tr("Warning: some of the values\nare not in the correct order."));
   input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
   input_scaling_order_warning_label->setStyleSheet("color: red;");
+  input_scaling_order_warning_label->setSizePolicy(p);
 
   QGridLayout *input_scaling_layout = new QGridLayout();
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
