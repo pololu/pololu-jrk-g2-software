@@ -1,6 +1,6 @@
 #include "graph_widget.h"
 
-#include <iostream>
+#include <iostream> //tmphax
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -191,6 +191,14 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setVisible(false);
   plot.axis->setRange(-plot.range_value, plot.range_value);
 
+  select_all_none = new QCheckBox(tr("Select all/none"));
+  select_all_none->setObjectName("select_all_none");
+  select_all_none->setChecked(false);
+  select_all_none->setStyleSheet("padding: 0px 8px 0px 8px;");
+  connect(select_all_none, SIGNAL(stateChanged(int)),
+    this, SLOT(on_select_all_none_stateChanged(int)));
+
+  plot_visible_layout->addWidget(select_all_none, 0, 0);
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.range_label, row, 1);
   plot_visible_layout->addWidget(plot.range, row, 2);
@@ -250,4 +258,14 @@ void graph_widget::set_line_visible()
     plot->graph->setVisible(plot->display->isChecked());
     custom_plot->replot();
   }
+}
+
+void graph_widget::on_select_all_none_stateChanged(int state)
+{
+  for (auto plot : all_plots)
+  {
+    plot->display->setChecked(state == Qt::Checked);
+  }
+
+  set_line_visible();
 }
