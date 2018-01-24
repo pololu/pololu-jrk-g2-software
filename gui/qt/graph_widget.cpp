@@ -79,7 +79,7 @@ void graph_widget::setup_ui()
   label1->setText(tr("    Range (%):"));
 
   custom_plot = new QCustomPlot();
-  custom_plot->setMinimumSize(450, 450);
+  custom_plot->setMinimumSize(200, 200);
 
   label2 = new QLabel();
   label2->setText(tr("    Time (s):"));

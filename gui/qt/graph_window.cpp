@@ -37,7 +37,6 @@ void graph_window::closeEvent(QCloseEvent *event)
 void graph_window::receive_widget(graph_widget *widget)
 {
   grabbed_widget = widget;
-  grabbed_widget->set_preview_mode(false);
 
   central_layout->addWidget(grabbed_widget->custom_plot,
     0, 0, 2, 2);
@@ -48,4 +47,6 @@ void graph_window::receive_widget(graph_widget *widget)
 
    central_layout->setColumnStretch(1, 3);
    central_layout->setRowStretch(1, 3);
+
+   grabbed_widget->set_preview_mode(false);
 }

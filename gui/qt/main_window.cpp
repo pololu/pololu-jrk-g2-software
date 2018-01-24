@@ -1750,13 +1750,12 @@ QWidget * main_window::setup_status_tab()
   status_page_widget = new QWidget();
   QGridLayout * layout = new QGridLayout();
 
-  layout->addWidget(setup_variables_box(), 0, 0, 2, 1);
-  layout->addWidget(setup_preview_plot(), 0, 1, 2, 1, Qt::AlignCenter);
-  layout->addWidget(setup_manual_target_box(), 2, 0, 1, 3);
+  layout->addWidget(setup_variables_box(), 0, 0, Qt::AlignLeft);
+  layout->addWidget(setup_preview_plot(), 0, 1, Qt::AlignCenter);
 
-  layout->setRowStretch(3, 1);
-  layout->setColumnStretch(1, 1);
-  layout->setColumnStretch(2, 0);
+  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
+
+  layout->setRowStretch(2, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
@@ -1771,12 +1770,11 @@ QWidget * main_window::setup_preview_plot()
   preview_frame = new QFrame();
   preview_frame->setStyleSheet("border: 1px solid black");
 
-  preview_plot = new QWidget(preview_frame);
+  preview_plot = new QWidget();
   preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();
-  horizontal_layout->setMargin(1);
-  horizontal_layout->addWidget(preview_plot, 1);
+  horizontal_layout->addWidget(preview_plot);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(on_launchGraph_clicked(QMouseEvent*)));

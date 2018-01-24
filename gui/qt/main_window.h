@@ -55,6 +55,8 @@ class main_window : public QMainWindow
   };
 
 public:
+  virtual int widthForHeight (int h) const { return h; };
+
   main_window(QWidget * parent = 0);
   void set_controller(main_controller * controller);
 
