@@ -236,7 +236,7 @@ protected:
 private slots:
   void on_update_timer_timeout();
   void receive_widget(graph_widget * widget);
-  void on_launchGraph_clicked(QMouseEvent *);
+  void on_launchGraph_clicked();
   void on_device_name_value_linkActivated();
   void on_documentation_action_triggered();
   void on_about_action_triggered();
@@ -380,6 +380,8 @@ private:
   QAction * restore_defaults_action;
   QAction * apply_settings_action;
   QAction * upgrade_firmware_action;
+  QMenu * window_menu;
+  QAction *graph_action;
   QMenu * help_menu;
   QAction * documentation_action;
   QAction * about_action;

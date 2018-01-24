@@ -12,7 +12,7 @@ void graph_window::setup_ui()
 {
   setObjectName("graph_window");
 
-  setWindowTitle(tr("Pololu Jrk G2 Configuration Utility - Plots of Variables vs. Time"));
+  setWindowTitle(tr("Pololu Jrk G2 Configuration Utility - Graph"));
 
   central_layout = new QGridLayout();
 
