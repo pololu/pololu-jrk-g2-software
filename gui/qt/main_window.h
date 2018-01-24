@@ -281,6 +281,7 @@ private slots:
   void on_input_output_maximum_spinbox_valueChanged(int value);
   void on_input_scaling_degree_combobox_currentIndexChanged(int index);
   void on_input_reset_range_button_clicked();
+  void on_input_learn_button_clicked();
 
   void on_feedback_mode_combobox_currentIndexChanged(int index);
   void on_feedback_invert_checkbox_stateChanged(int state);
