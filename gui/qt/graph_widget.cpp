@@ -1,5 +1,7 @@
 #include "graph_widget.h"
 
+#include <iostream>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   setup_ui();
@@ -11,7 +13,7 @@ graph_widget::graph_widget(QWidget * parent)
     this, SLOT(change_ranges()));
 
   connect(domain, SIGNAL(valueChanged(int)),
-    this, SLOT(remove_data_to_scroll()));
+    this, SLOT(change_ranges()));
 }
 
 // Changes options for the custom_plot when in preview mode.
@@ -37,13 +39,15 @@ void graph_widget::set_preview_mode(bool preview_mode)
 
   custom_plot->xAxis->setTicks(!preview_mode);
   custom_plot->yAxis->setTicks(!preview_mode);
+
+  custom_plot->replot();
 }
 
 void graph_widget::clear_graphs()
 {
   for (auto plot : all_plots)
   {
-    plot->graph->clearData();
+    plot->graph->data()->clear();
   }
 
   custom_plot->replot();
@@ -133,23 +137,20 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
+  QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
+  x_axis_ticker->setTickStep(domain->value() * 100);
+  custom_plot->xAxis->setTicker(x_axis_ticker);
+
+  QSharedPointer<QCPAxisTickerFixed> y_axis_ticker(new QCPAxisTickerFixed);
+  y_axis_ticker->setTickStep(20);
+  custom_plot->yAxis->setTicker(y_axis_ticker);
+
   custom_plot->yAxis->setRange(-100,100);
-  custom_plot->yAxis->setAutoTickStep(false);
-  custom_plot->yAxis->setTickStep(20);
   custom_plot->yAxis->setTickLabelPadding(10);
-  custom_plot->xAxis->setTickLabelType(QCPAxis::ltNumber);
-  custom_plot->xAxis->setAutoTickStep(false);
-  custom_plot->xAxis->setTickStep(domain->value() * 100);
   custom_plot->xAxis->setTickLabelPadding(10);
 
-  custom_plot->xAxis2->setVisible(false);
-  custom_plot->yAxis2->setVisible(false);
-
   // this is used to see the x-axis to see accurate time.
-  // custom_plot->xAxis2->setTicks(true);
-  // custom_plot->xAxis2->setTickLabelType(QCPAxis::ltNumber);
-  // custom_plot->xAxis2->setAutoTickStep(true);
-  // custom_plot->xAxis2->setTickStep(1000);
+  // custom_plot->xAxis2->setVisible(true);
 
   set_line_visible();
 
@@ -211,17 +212,21 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 // and removes data outside of visible range
 void graph_widget::remove_data_to_scroll(uint32_t time)
 {
+  key = time; // used to store local copy of time value
+
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
 
   custom_plot->xAxis2->setRange(time, domain->value() * 1000, Qt::AlignRight);
-
-  custom_plot->xAxis->setTickStep(domain->value() * 100);
 
   custom_plot->replot();
 }
 
 void graph_widget::change_ranges()
 {
+  custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
+
+  custom_plot->xAxis2->setRange(key, domain->value() * 1000, Qt::AlignRight);
+
   for (auto plot : all_plots)
   {
     plot->axis->setRangeUpper((plot->range->value()) * ((max_y->value())/100));

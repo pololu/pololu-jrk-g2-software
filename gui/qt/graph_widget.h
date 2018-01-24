@@ -74,6 +74,8 @@ private:
   QLabel *label2;
   QLabel *label3;
 
+  uint32_t key; // used to store local copy of time value
+
   int row = 0;
 
 private slots:
