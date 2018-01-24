@@ -3,6 +3,7 @@
 #include "main_controller.h"
 #include "graph_window.h"
 #include "bootloader_window.h"
+#include "input_wizard.h"
 
 #include <to_string.h>
 
@@ -162,6 +163,7 @@ void main_window::set_input(uint16_t input)
 {
   graph->input.plot_value = input;
   input_value->setText(QString::number(input));
+  emit input_changed(input);
 }
 
 void main_window::set_target(uint16_t target)
@@ -1259,7 +1261,21 @@ void main_window::on_input_reset_range_button_clicked()
 
 void main_window::on_input_learn_button_clicked()
 {
-  // TODO
+  if (!controller->check_input_wizard_allowed()) { return; }
+
+  input_wizard wizard;
+
+  connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
+
+  if (wizard.exec() != QDialog::Accepted) { return; }
+
+  /** TODO:
+  controller->handle_input_invert_input(input_wizard->learned_input_invert());
+  controller->handle_input_min_input(input_wizard->learned_input_min());
+  controller->handle_input_neutral_min_input(input_wizard->learned_input_neutral_min());
+  controller->handle_input_neutral_max_input(input_wizard->learned_input_neutral_max());
+  controller->handle_input_max_input(input_wizard->learned_input_max());
+  **/
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)

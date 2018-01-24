@@ -858,6 +858,7 @@ void main_controller::handle_pid_constant_control_exponent(int index, uint16_t e
   settings_modified = true;
   handle_settings_changed();
 }
+
 void main_controller::recalculate_motor_asymmetric()
 {
   motor_asymmetric =
@@ -1049,6 +1050,29 @@ void main_controller::handle_input_scaling_degree_input(uint8_t input_scaling_de
   settings.set_input_scaling_degree(input_scaling_degree);
   settings_modified = true;
   handle_settings_changed();
+}
+
+bool main_controller::check_settings_applied_before_wizard()
+{
+  if (settings_modified)
+  {
+    window->show_info_message(
+      "This wizard cannot be used right now because the settings you changed "
+      "have not been applied to the device.\n\n"
+      "Please click \"Apply settings\" to apply your changes to the device or "
+      "select \"Reload settings from device\" in the Device menu to discard "
+      "your changes, then try again.");
+    return false;
+  }
+
+  return true;
+}
+
+bool main_controller::check_input_wizard_allowed()
+{
+  if (!connected()) { return false; }
+
+  return check_settings_applied_before_wizard();
 }
 
 void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)

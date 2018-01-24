@@ -76,8 +76,6 @@ public:
   void open_settings_from_file(std::string filename);
   void save_settings_to_file(std::string filename);
 
-  // These are called when the user changes a setting.
-
   void handle_input_mode_input(uint8_t input_mode);
   void handle_input_analog_samples_exponent_input(uint8_t);
   void handle_input_detect_disconnect_input(bool detect_disconnect);
@@ -100,6 +98,7 @@ public:
   void handle_output_neutral_input(uint16_t output_neutral);
   void handle_output_maximum_input(uint16_t output_maximum);
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
+  bool check_input_wizard_allowed();
 
   void handle_feedback_mode_input(uint8_t value);
   void handle_feedback_invert_input(bool invert_feedback);
@@ -163,6 +162,8 @@ private:
   void handle_settings_loaded();
 
   void recalculate_motor_asymmetric();
+
+  bool check_settings_applied_before_wizard();
 
   // void update_motor_status_message(bool prompt_to_resume);
 

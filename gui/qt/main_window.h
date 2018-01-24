@@ -221,6 +221,7 @@ private:
 
 signals:
   void pass_widget(graph_widget *widget);
+  void input_changed(uint16_t);
 
 protected:
   // void context_menu_event(QContextMenuEvent *event);
