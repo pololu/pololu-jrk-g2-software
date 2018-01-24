@@ -809,7 +809,10 @@ void main_window::set_serial_device_number(uint8_t serial_device_number)
 
 void main_window::set_tab_pages_enabled(bool enabled)
 {
-  for (int i = 0; i < tab_widget->count(); i++)
+  variables_box->setEnabled(enabled);
+  manual_target_box->setEnabled(enabled);
+
+  for (int i = 1; i < tab_widget->count(); i++)
   {
     tab_widget->widget(i)->setEnabled(enabled);
   }
