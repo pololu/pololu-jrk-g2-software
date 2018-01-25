@@ -256,8 +256,9 @@ void graph_widget::set_line_visible()
   for (auto plot : all_plots)
   {
     plot->graph->setVisible(plot->display->isChecked());
-    custom_plot->replot();
   }
+
+  custom_plot->replot();
 }
 
 void graph_widget::on_select_all_none_stateChanged(int state)
