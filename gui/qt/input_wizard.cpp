@@ -17,13 +17,13 @@
 input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
   : QWizard(parent), input_mode(input_mode)
 {
+  setWindowTitle(tr("Input setup wizard"));
+  setWindowIcon(QIcon(":app_icon"));  // TODO: make sure this works
+  setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
   setPage(INTRO, setup_intro_page());
   setPage(LEARN, setup_learn_page());
   setPage(CONCLUSION, setup_conclusion_page());
-
-  setWindowTitle(tr("Input Setup Wizard"));
-  setWindowIcon(QIcon(":app_icon"));  // TODO: make sure this works
-  setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
   setFixedSize(sizeHint());
 
@@ -103,13 +103,13 @@ void input_wizard::update_learn_text()
     if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
     {
       instruction_label->setText(tr(
-        "Verify that you have connected your input to the RC pin.  "
+        "Verify that you have connected your pulse width input to the RC pin.  "
         "Next, move the input to its neutral position."));
     }
     else if (input_mode == JRK_INPUT_MODE_ANALOG)
     {
       instruction_label->setText(tr(
-        "Verify that you have connected your input to the SDA/AN pin.  "
+        "Verify that you have connected your analog input to the SDA/AN pin.  "
         "Next, move the input to its neutral position."));
     }
     else
@@ -139,7 +139,7 @@ QWizardPage * input_wizard::setup_intro_page()
   QWizardPage * page = new QWizardPage();
   QVBoxLayout * layout = new QVBoxLayout();
 
-  page->setTitle(windowTitle());
+  page->setTitle("Welcome to the input setup wizard");
 
   QLabel * intro_label = new QLabel();
   intro_label->setWordWrap(true);
