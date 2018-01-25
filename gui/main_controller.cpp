@@ -1073,10 +1073,21 @@ void main_controller::handle_input_learn()
   if (!connected()) { return; }
   if (!check_settings_applied_before_wizard()) { return; }
 
+  if (settings.get_input_mode() != JRK_INPUT_MODE_ANALOG &&
+    settings.get_input_mode() != JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    // Should not happen because the button is disabled.
+    window->show_info_message(
+      "This wizard helps you set the input scaling parameters for the "
+      "pulse width (RC) or analog input.  "
+      "Please change the input mode to pulse width or analog, then try again.");
+    return;
+  }
+
   // Stop the motor so it isn't moving while people are learning the input.
   stop_motor();
 
-  window->run_input_wizard();
+  window->run_input_wizard(settings.get_input_mode());
 }
 
 void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)

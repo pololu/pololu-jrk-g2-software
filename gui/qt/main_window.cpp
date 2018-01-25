@@ -495,9 +495,9 @@ void main_window::set_input_scaling_order_warning_label()
   input_scaling_order_warning_label->setVisible(enabled);
 }
 
-void main_window::run_input_wizard()
+void main_window::run_input_wizard(uint8_t input_mode)
 {
-  input_wizard wizard(this);
+  input_wizard wizard(this, input_mode);
   connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
 
   if (wizard.exec() != QDialog::Accepted) { return; }

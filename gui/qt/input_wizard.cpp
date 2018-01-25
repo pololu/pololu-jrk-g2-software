@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QVBoxLayout>
+#include "jrk_protocol.h"
 
 #ifdef __APPLE__
 #define NEXT_BUTTON_TEXT tr("Continue")
@@ -13,8 +14,8 @@
 #define FINISH_BUTTON_TEXT tr("Finish")
 #endif
 
-input_wizard::input_wizard(QWidget * parent)
-  : QWizard(parent)
+input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
+  : QWizard(parent), input_mode(input_mode)
 {
   setPage(INTRO, setup_intro_page());
   setPage(LEARN, setup_learn_page());
@@ -92,6 +93,47 @@ bool input_wizard::handle_next_on_learn_page()
   return true;
 }
 
+void input_wizard::update_learn_text()
+{
+  switch (learn_step)
+  {
+  case NEUTRAL:
+    learn_page->setTitle(tr("Step 1 of 3: Neutral"));
+
+    if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+    {
+      instruction_label->setText(tr(
+        "Verify that you have connected your input to the RC pin.  "
+        "Next, move the input to its neutral position."));
+    }
+    else if (input_mode == JRK_INPUT_MODE_ANALOG)
+    {
+      instruction_label->setText(tr(
+        "Verify that you have connected your input to the SDA/AN pin.  "
+        "Next, move the input to its neutral position."));
+    }
+    else
+    {
+      // Should not happen.
+      instruction_label->setText(tr(
+          "Move the input to its neutral position."));
+    }
+    break;
+
+  case MAX:
+    learn_page->setTitle(tr("Step 2 of 3: Maximum"));
+    instruction_label->setText(tr(
+      "Move the input to its maximum (full forward) position."));
+    break;
+
+  case MIN:
+    learn_page->setTitle(tr("Step 3 of 3: Minimum"));
+    instruction_label->setText(tr(
+      "Move the input to its minimum (full reverse) position."));
+    break;
+  }
+}
+
 QWizardPage * input_wizard::setup_intro_page()
 {
   QWizardPage * page = new QWizardPage();
@@ -120,7 +162,7 @@ QWizardPage * input_wizard::setup_intro_page()
 
 QWizardPage * input_wizard::setup_learn_page()
 {
-  QWizardPage * page = new QWizardPage();
+  QWizardPage * page = learn_page = new QWizardPage();
   QVBoxLayout * layout = new QVBoxLayout();
 
   instruction_label = new QLabel();
@@ -149,6 +191,7 @@ QWizardPage * input_wizard::setup_learn_page()
   sampling_progress->setTextVisible(false);
   layout->addWidget(sampling_progress);
 
+  update_learn_text();
   set_progress_visible(false);
 
   layout->addStretch(1);

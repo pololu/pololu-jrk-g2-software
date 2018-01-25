@@ -17,7 +17,7 @@ class input_wizard : public QWizard
   enum learn_step { NEUTRAL, MAX, MIN };
 
 public:
-  input_wizard(QWidget * parent = 0);
+  input_wizard(QWidget * parent, uint8_t input_mode);
 
   struct result
   {
@@ -41,6 +41,7 @@ private:
 
   bool handle_back_on_learn_page();
   bool handle_next_on_learn_page();
+  void update_learn_text();
 
   QWizardPage * setup_intro_page();
   QWizardPage * setup_learn_page();
@@ -48,11 +49,15 @@ private:
   QWizardPage * setup_conclusion_page();
 
   // Controls on the 'Learn' page
+  QWizardPage * learn_page;
   QLabel * instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
   QLabel * input_value;
 
-  int current_page = 0;
+  int current_page = INTRO;
+  int learn_step = NEUTRAL;
   uint16_t input;
+
+  uint8_t input_mode;
 };
