@@ -502,6 +502,7 @@ void main_window::run_input_wizard()
 
   if (wizard.exec() != QDialog::Accepted) { return; }
 
+  controller->handle_input_invert_input(wizard.result.invert);
   controller->handle_input_absolute_minimum_input(wizard.result.absolute_minimum);
   controller->handle_input_absolute_maximum_input(wizard.result.absolute_maximum);
   controller->handle_input_minimum_input(wizard.result.minimum);
