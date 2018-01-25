@@ -15,7 +15,4 @@ input_wizard::input_wizard(QWidget * parent)
 void input_wizard::set_input(uint16_t value)
 {
   input = value;
-
-  // tmphax
-  std::cout << "wizard.input_value = " << value << std::endl;
 }

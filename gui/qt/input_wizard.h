@@ -15,10 +15,17 @@ class input_wizard : public QWizard
 public:
   input_wizard(QWidget * parent = 0);
 
-  // tmphax
-  ~input_wizard() {
-    std::cout << "Input wizard destructor" << std::endl;
-  }
+  struct result
+  {
+    uint16_t absolute_minimum = 0;
+    uint16_t absolute_maximum = 4095;
+    uint16_t minimum = 0;
+    uint16_t maximum = 4095;
+    uint16_t neutral_minimum = 2048;
+    uint16_t neutral_maximum = 2048;
+  };
+
+  result result;
 
 public slots:
   void set_input(uint16_t);

@@ -110,6 +110,10 @@ void main_window::show_warning_message(const std::string & message)
 
 void main_window::open_bootloader_window()
 {
+  // Note: Unlike the learning wizard dialogs, bootloader_window is not a
+  // QDialog (maybe it should be), so we cannot show it in a blocking way, so we
+  // must create it with 'new' and use signals to get its results.
+
   bootloader_window * window = new bootloader_window(this);
   connect(window, &bootloader_window::upload_complete,
     this, &main_window::upgrade_firmware_complete);
@@ -1265,19 +1269,18 @@ void main_window::on_input_learn_button_clicked()
 {
   if (!controller->check_input_wizard_allowed()) { return; }
 
-  input_wizard wizard;
+  input_wizard wizard(this);
 
   connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
 
   if (wizard.exec() != QDialog::Accepted) { return; }
 
-  /** TODO:
-  controller->handle_input_invert_input(input_wizard->learned_input_invert());
-  controller->handle_input_min_input(input_wizard->learned_input_min());
-  controller->handle_input_neutral_min_input(input_wizard->learned_input_neutral_min());
-  controller->handle_input_neutral_max_input(input_wizard->learned_input_neutral_max());
-  controller->handle_input_max_input(input_wizard->learned_input_max());
-  **/
+  controller->handle_input_absolute_minimum_input(wizard.result.absolute_minimum);
+  controller->handle_input_absolute_maximum_input(wizard.result.absolute_maximum);
+  controller->handle_input_minimum_input(wizard.result.minimum);
+  controller->handle_input_maximum_input(wizard.result.maximum);
+  controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
+  controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)
