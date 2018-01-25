@@ -2,6 +2,8 @@
 
 #include <iostream> //tmphax
 
+#include <QString>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   setup_ui();
@@ -138,11 +140,22 @@ void graph_widget::setup_ui()
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
   QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
-  x_axis_ticker->setTickStep(domain->value() * 100);
+  x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
+  x_axis_ticker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
   custom_plot->xAxis->setTicker(x_axis_ticker);
 
-  QSharedPointer<QCPAxisTickerFixed> y_axis_ticker(new QCPAxisTickerFixed);
-  y_axis_ticker->setTickStep(20);
+  QSharedPointer<QCPAxisTickerText> y_axis_ticker(new QCPAxisTickerText);
+
+  y_axis_ticker->addTick(0, "0");
+
+  for (int i = 20; i <= 100; (i += 20))
+  {
+    QString pos = QString::number(i);
+    QString neg = QString::number(-i);
+    y_axis_ticker->addTick(i, pos + "%");
+    y_axis_ticker->addTick(-i, neg + "%");
+  }
+
   custom_plot->yAxis->setTicker(y_axis_ticker);
 
   custom_plot->yAxis->setRange(-100,100);
