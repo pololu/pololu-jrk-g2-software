@@ -37,10 +37,13 @@ public slots:
   void set_input(uint16_t);
 
 private:
+  void set_next_button_enabled(bool enabled);
   void set_progress_visible(bool visible);
 
   bool handle_back_on_learn_page();
   bool handle_next_on_learn_page();
+  void handle_new_sample();
+  void handle_sampling_complete();
   void update_learn_text();
 
   QWizardPage * setup_intro_page();
@@ -55,9 +58,15 @@ private:
   QProgressBar * sampling_progress;
   QLabel * input_value;
 
-  int current_page = INTRO;
-  int learn_step = NEUTRAL;
+  // Input mode setting (RC or analog).
+  uint8_t input_mode;
+
+  // Input variable from the device.
   uint16_t input;
 
-  uint8_t input_mode;
+  // Current state of the wizard.
+  int current_page = INTRO;
+  int learn_step = NEUTRAL;
+  bool sampling = false;
+  std::vector<uint16_t> samples;
 };

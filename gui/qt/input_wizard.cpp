@@ -66,6 +66,10 @@ void input_wizard::handle_next_or_back(int id)
   }
 
   current_page = currentId();
+
+  set_next_button_enabled(!sampling);
+  set_progress_visible(sampling);
+  update_learn_text();
 }
 
 void input_wizard::set_input(uint16_t value)
@@ -73,6 +77,13 @@ void input_wizard::set_input(uint16_t value)
   input = value;
 
   input_value->setText(QString::number(value));
+
+  handle_new_sample();
+}
+
+void input_wizard::set_next_button_enabled(bool enabled)
+{
+  // TODO
 }
 
 void input_wizard::set_progress_visible(bool visible)
@@ -83,14 +94,61 @@ void input_wizard::set_progress_visible(bool visible)
 
 bool input_wizard::handle_back_on_learn_page()
 {
-  // TODO
-  return true;
+  if (sampling)
+  {
+    // We were in the middle of sampling, so just cancel that.
+    sampling = false;
+    return false;
+  }
+  else
+  {
+    // We were not sampling, so go back to the previous step or page.
+    if (learn_step == NEUTRAL)
+    {
+      return true;
+    }
+    else
+    {
+      learn_step--;
+      return false;
+    }
+  }
 }
 
 bool input_wizard::handle_next_on_learn_page()
 {
+  if (sampling)
+  {
+    // We will advance to the next step/page when the sampling is finished.
+    return false;
+  }
+
+  // Start sampling the input.
+  sampling = true;
+  samples.clear();
+  sampling_progress->setValue(0);
+  return false;
+}
+
+void input_wizard::handle_new_sample()
+{
+  if (!sampling) { return; }
+
+  samples.push_back(input);
+  sampling_progress->setValue(samples.size());
+
+  if (samples.size() == SAMPLE_COUNT)
+  {
+    sampling = false;
+    set_progress_visible(false);
+    set_next_button_enabled(true);
+    handle_sampling_complete();
+  }
+}
+
+void input_wizard::handle_sampling_complete()
+{
   // TODO
-  return true;
 }
 
 void input_wizard::update_learn_text()
@@ -191,7 +249,6 @@ QWizardPage * input_wizard::setup_learn_page()
   sampling_progress->setTextVisible(false);
   layout->addWidget(sampling_progress);
 
-  update_learn_text();
   set_progress_visible(false);
 
   layout->addStretch(1);
