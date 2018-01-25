@@ -1583,6 +1583,10 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
 
+  // Let the user specify which tab to start on.  Handy for development.
+  auto env = QProcessEnvironment::systemEnvironment();
+  tab_widget->setCurrentIndex(env.value("JRK2GUI_TAB").toInt());
+
   stop_motor_button = new QPushButton();
   stop_motor_button->setObjectName("stop_motor_button");
   stop_motor_button->setText(tr("&Stop motor"));

@@ -6,8 +6,6 @@
 #include <QWizard>
 #include <stdint.h>
 
-#include <iostream> // tmphax
-
 class input_wizard : public QWizard
 {
   Q_OBJECT
