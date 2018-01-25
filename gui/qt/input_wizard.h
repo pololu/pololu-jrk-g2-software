@@ -3,6 +3,7 @@
 #include <QWizard>
 #include <stdint.h>
 
+class nice_wizard_page;
 class QLabel;
 class QProgressBar;
 
@@ -46,13 +47,13 @@ private:
   void handle_sampling_complete();
   void update_learn_text();
 
-  QWizardPage * setup_intro_page();
-  QWizardPage * setup_learn_page();
+  nice_wizard_page * setup_intro_page();
+  nice_wizard_page * setup_learn_page();
   QLayout * setup_input_layout();
-  QWizardPage * setup_conclusion_page();
+  nice_wizard_page * setup_conclusion_page();
 
   // Controls on the 'Learn' page
-  QWizardPage * learn_page;
+  nice_wizard_page * learn_page;
   QLabel * instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;

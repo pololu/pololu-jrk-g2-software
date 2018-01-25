@@ -1,4 +1,5 @@
 #include "input_wizard.h"
+#include "nice_wizard_page.h"
 
 #include <QIcon>
 #include <QLabel>
@@ -32,9 +33,9 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
 }
 
 // This gets called when the user pressed next or back, and it receives the ID
-// of the page they are trying to go to.  It figures out what happened and then
-// calls a handler functions to make higher-level decisions.  The handler should
-// true if it is OK with changing to the new page.
+// of the page the QWizard class it trying to go to.  It figures out what
+// happened and then calls a handler function.  The handler should true if it is
+// OK with changing to the new page and take care of any other effects.
 void input_wizard::handle_next_or_back(int id)
 {
   // Look at current_page to figure out what whether the user is trying to move
@@ -83,7 +84,9 @@ void input_wizard::set_input(uint16_t value)
 
 void input_wizard::set_next_button_enabled(bool enabled)
 {
-  // TODO
+  // We only care about setting the next button to be enabled when we are on the
+  // learn page, it is always enabled on the other pages.
+  learn_page->setComplete(enabled);
 }
 
 void input_wizard::set_progress_visible(bool visible)
@@ -192,9 +195,9 @@ void input_wizard::update_learn_text()
   }
 }
 
-QWizardPage * input_wizard::setup_intro_page()
+nice_wizard_page * input_wizard::setup_intro_page()
 {
-  QWizardPage * page = new QWizardPage();
+  nice_wizard_page * page = new nice_wizard_page();
   QVBoxLayout * layout = new QVBoxLayout();
 
   page->setTitle("Welcome to the input setup wizard");
@@ -218,9 +221,9 @@ QWizardPage * input_wizard::setup_intro_page()
   return page;
 }
 
-QWizardPage * input_wizard::setup_learn_page()
+nice_wizard_page * input_wizard::setup_learn_page()
 {
-  QWizardPage * page = learn_page = new QWizardPage();
+  nice_wizard_page * page = learn_page = new nice_wizard_page();
   QVBoxLayout * layout = new QVBoxLayout();
 
   instruction_label = new QLabel();
@@ -280,9 +283,9 @@ QLayout * input_wizard::setup_input_layout()
   return layout;
 }
 
-QWizardPage * input_wizard::setup_conclusion_page()
+nice_wizard_page * input_wizard::setup_conclusion_page()
 {
-  QWizardPage * page = new QWizardPage();
+  nice_wizard_page * page = new nice_wizard_page();
   QVBoxLayout * layout = new QVBoxLayout();
 
   page->setTitle(tr("Input setup finished"));
