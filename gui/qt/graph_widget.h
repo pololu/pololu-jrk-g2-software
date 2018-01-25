@@ -85,5 +85,5 @@ private slots:
   void change_ranges();
   void on_pause_run_button_clicked();
   void set_line_visible();
-  void on_select_all_none_stateChanged(int state);
+  void select_all_none_stateChanged(int state);
 };

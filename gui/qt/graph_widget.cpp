@@ -22,7 +22,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   if (preview_mode)
   {
     custom_plot->setCursor(Qt::PointingHandCursor);
-    custom_plot->setToolTip("Click on preview to view full plot");
+    custom_plot->setToolTip("Click to open graph window");
     custom_plot->axisRect()->setAutoMargins(QCP::msNone);
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
     custom_plot->xAxis->setBasePen(QColor(Qt::white));
@@ -196,7 +196,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   select_all_none->setChecked(false);
   select_all_none->setStyleSheet("padding: 0px 8px 0px 8px;");
   connect(select_all_none, SIGNAL(stateChanged(int)),
-    this, SLOT(on_select_all_none_stateChanged(int)));
+    this, SLOT(select_all_none_stateChanged(int)));
 
   plot_visible_layout->addWidget(select_all_none, 0, 0);
   plot_visible_layout->addWidget(plot.display, row, 0);
@@ -261,7 +261,7 @@ void graph_widget::set_line_visible()
   custom_plot->replot();
 }
 
-void graph_widget::on_select_all_none_stateChanged(int state)
+void graph_widget::select_all_none_stateChanged(int state)
 {
   for (auto plot : all_plots)
   {

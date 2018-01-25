@@ -238,7 +238,7 @@ protected:
 private slots:
   void on_update_timer_timeout();
   void receive_widget(graph_widget * widget);
-  void on_launchGraph_clicked();
+  void preview_pane_clicked();
   void on_device_name_value_linkActivated();
   void on_documentation_action_triggered();
   void on_about_action_triggered();
@@ -269,7 +269,7 @@ private slots:
   void on_input_enable_crc_checkbox_stateChanged(int state);
   void on_input_device_spinbox_valueChanged(int value);
   void on_input_device_number_checkbox_stateChanged(int state);
-  void on_input_timeout_spinbox_valueChanged(int value);
+  void on_input_timeout_spinbox_valueChanged(double value);
   void on_input_disable_compact_protocol_checkbox_stateChanged(int state);
   void on_input_never_sleep_checkbox_stateChanged(int state);
   void on_input_absolute_minimum_spinbox_valueChanged(int value);
@@ -324,7 +324,7 @@ private slots:
   void on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(int value);
   void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
-  void on_error_enable_group_buttonToggled(int id, int index);
+  void error_enable_group_buttonToggled(int id, int index);
   void on_errors_clear_errors_clicked();
   void on_errors_reset_counts_clicked();
 
@@ -677,10 +677,10 @@ private:
   QSpinBox *pid_exponent_spinbox;
 
 private slots:
-  void on_pid_multiplier_spinbox_valueChanged(int value);
-  void on_pid_exponent_spinbox_valueChanged(int value);
-  void on_pid_constant_lineedit_textEdited(const QString&);
-  void on_pid_constant_lineedit_editingFinished();
+  void pid_multiplier_spinbox_valueChanged(int value);
+  void pid_exponent_spinbox_valueChanged(int value);
+  void pid_constant_lineedit_textEdited(const QString&);
+  void pid_constant_lineedit_editingFinished();
 
 private:
   friend class main_window;
