@@ -2,6 +2,7 @@
 #include "message_box.h"
 #include "nice_wizard_page.h"
 
+#include <uint16_range.h>
 #include <jrk_protocol.h>
 
 #include <QIcon>
@@ -169,7 +170,7 @@ void input_wizard::handle_new_sample()
 void input_wizard::handle_sampling_complete()
 {
   sampling = false;
-  set_next_button_enabled(false);
+  set_next_button_enabled(true);
   set_progress_visible(false);
 
   switch (learn_step)
@@ -198,21 +199,55 @@ void input_wizard::handle_sampling_complete()
 
 bool input_wizard::learn_neutral()
 {
+  uint16_range r = uint16_range::from_samples(samples);
+  if (!check_range_not_to_big(r)) { return false; }
+
   // TODO
+
   return true;
 }
 
 bool input_wizard::learn_max()
 {
+  uint16_range r = uint16_range::from_samples(samples);
+  if (!check_range_not_to_big(r)) { return false; }
+
   // TODO
   return true;
 }
 
 bool input_wizard::learn_min()
 {
-  assert(MIN == LAST_STEP);
+  uint16_range r = uint16_range::from_samples(samples);
+  if (!check_range_not_to_big(r)) { return false; }
+
   // TODO
   return true;
+}
+
+bool input_wizard::check_range_not_to_big(const uint16_range & range)
+{
+  // We consider 7.5% of the standard full range to be too much variation.
+  if (range.range() > (full_range() * 3 + 20) / 40)
+  {
+    show_error_message(
+      "The input value varied too widely (" + range.min_max_string() + ") "
+      "during the sampling time.  "
+      "Please hold the input still and try again.", this);
+    return false;
+  }
+  return true;
+}
+
+uint16_t input_wizard::full_range() const
+{
+  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    // Standard RC full range is 1500 to 3000 (units of 2/3 us).
+    return 1500;
+  }
+
+  return 4095;
 }
 
 void input_wizard::update_learn_text()
@@ -237,8 +272,9 @@ void input_wizard::update_learn_text()
     else
     {
       // Should not happen.
+      assert(0);
       instruction_label->setText(tr(
-          "Move the input to its neutral position."));
+        "Move the input to its neutral position."));
     }
     break;
 

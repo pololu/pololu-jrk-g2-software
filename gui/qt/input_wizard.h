@@ -3,6 +3,7 @@
 #include <QWizard>
 #include <stdint.h>
 
+class uint16_range;
 class nice_wizard_page;
 class QLabel;
 class QProgressBar;
@@ -50,6 +51,9 @@ private:
   bool learn_neutral();
   bool learn_max();
   bool learn_min();
+  bool check_range_not_to_big(const uint16_range &);
+  uint16_t full_range() const;
+
   void update_learn_text();
 
   nice_wizard_page * setup_intro_page();
