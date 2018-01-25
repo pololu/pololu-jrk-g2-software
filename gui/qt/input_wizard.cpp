@@ -18,12 +18,53 @@ input_wizard::input_wizard(QWidget * parent)
 {
   setPage(INTRO, setup_intro_page());
   setPage(LEARN, setup_learn_page());
+  setPage(CONCLUSION, setup_conclusion_page());
 
   setWindowTitle(tr("Input Setup Wizard"));
   setWindowIcon(QIcon(":app_icon"));  // TODO: make sure this works
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
   setFixedSize(sizeHint());
+
+  connect(this, &QWizard::currentIdChanged,
+    this, &input_wizard::handle_next_or_back);
+}
+
+// This gets called when the user pressed next or back, and it receives the ID
+// of the page they are trying to go to.  It figures out what happened and then
+// calls a handler functions to make higher-level decisions.  The handler should
+// true if it is OK with changing to the new page.
+void input_wizard::handle_next_or_back(int id)
+{
+  // Look at current_page to figure out what whether the user is trying to move
+  // forward or backward or neither.
+  if (current_page == id)
+  {
+    // We are already on the expected page so don't do anything.  This can
+    // happen if the user tried to move and we rejected it.
+    return;
+  }
+
+  if (current_page == LEARN)
+  {
+    if (id == INTRO)
+    {
+      // User clicked back from the learn page.
+      if (!handle_back_on_learn_page())
+      {
+        next();
+      }
+    }
+    else if (id == CONCLUSION)
+    {
+      if (!handle_next_on_learn_page())
+      {
+        back();
+      }
+    }
+  }
+
+  current_page = currentId();
 }
 
 void input_wizard::set_input(uint16_t value)
@@ -37,6 +78,18 @@ void input_wizard::set_progress_visible(bool visible)
 {
   sampling_label->setVisible(visible);
   sampling_progress->setVisible(visible);
+}
+
+bool input_wizard::handle_back_on_learn_page()
+{
+  // TODO
+  return true;
+}
+
+bool input_wizard::handle_next_on_learn_page()
+{
+  // TODO
+  return true;
 }
 
 QWizardPage * input_wizard::setup_intro_page()
@@ -125,4 +178,26 @@ QLayout * input_wizard::setup_input_layout()
   input_value->setFixedSize(input_value->sizeHint());
 
   return layout;
+}
+
+QWizardPage * input_wizard::setup_conclusion_page()
+{
+  QWizardPage * page = new QWizardPage();
+  QVBoxLayout * layout = new QVBoxLayout();
+
+  page->setTitle(tr("Input setup finished"));
+
+  QLabel * completed_label = new QLabel(
+    tr("You have successfully completed this wizard.  You can see your new "
+    "settings in the \"Input\" column and \"Invert input direction\" checkbox "
+    "after you click ") +
+    FINISH_BUTTON_TEXT + tr(".  "
+    "To use the new settings, you must first apply them to the device."));
+  completed_label->setWordWrap(true);
+  layout->addWidget(completed_label);
+
+  layout->addStretch(1);
+
+  page->setLayout(layout);
+  return page;
 }

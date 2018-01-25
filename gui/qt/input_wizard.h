@@ -33,14 +33,19 @@ public:
   result result;
 
 public slots:
+  void handle_next_or_back(int index);
   void set_input(uint16_t);
 
 private:
   void set_progress_visible(bool visible);
 
+  bool handle_back_on_learn_page();
+  bool handle_next_on_learn_page();
+
   QWizardPage * setup_intro_page();
   QWizardPage * setup_learn_page();
   QLayout * setup_input_layout();
+  QWizardPage * setup_conclusion_page();
 
   // Controls on the 'Learn' page
   QLabel * instruction_label;
@@ -48,5 +53,6 @@ private:
   QProgressBar * sampling_progress;
   QLabel * input_value;
 
+  int current_page = 0;
   uint16_t input;
 };
