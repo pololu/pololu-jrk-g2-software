@@ -495,6 +495,21 @@ void main_window::set_input_scaling_order_warning_label()
   input_scaling_order_warning_label->setVisible(enabled);
 }
 
+void main_window::run_input_wizard()
+{
+  input_wizard wizard(this);
+  connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
+
+  if (wizard.exec() != QDialog::Accepted) { return; }
+
+  controller->handle_input_absolute_minimum_input(wizard.result.absolute_minimum);
+  controller->handle_input_absolute_maximum_input(wizard.result.absolute_maximum);
+  controller->handle_input_minimum_input(wizard.result.minimum);
+  controller->handle_input_maximum_input(wizard.result.maximum);
+  controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
+  controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
+}
+
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
@@ -1267,20 +1282,7 @@ void main_window::on_input_reset_range_button_clicked()
 
 void main_window::on_input_learn_button_clicked()
 {
-  if (!controller->check_input_wizard_allowed()) { return; }
-
-  input_wizard wizard(this);
-
-  connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
-
-  if (wizard.exec() != QDialog::Accepted) { return; }
-
-  controller->handle_input_absolute_minimum_input(wizard.result.absolute_minimum);
-  controller->handle_input_absolute_maximum_input(wizard.result.absolute_maximum);
-  controller->handle_input_minimum_input(wizard.result.minimum);
-  controller->handle_input_maximum_input(wizard.result.maximum);
-  controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
-  controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
+  controller->handle_input_learn();
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)

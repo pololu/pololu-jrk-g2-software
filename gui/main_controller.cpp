@@ -1068,11 +1068,15 @@ bool main_controller::check_settings_applied_before_wizard()
   return true;
 }
 
-bool main_controller::check_input_wizard_allowed()
+void main_controller::handle_input_learn()
 {
-  if (!connected()) { return false; }
+  if (!connected()) { return; }
+  if (!check_settings_applied_before_wizard()) { return; }
 
-  return check_settings_applied_before_wizard();
+  // Stop the motor so it isn't moving while people are learning the input.
+  stop_motor();
+
+  window->run_input_wizard();
 }
 
 void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)

@@ -141,6 +141,7 @@ public:
   void set_input_output_maximum(uint16_t input_output_maximum);
   void set_input_scaling_degree(uint8_t input_scaling_degree);
   void set_input_scaling_order_warning_label();
+  void run_input_wizard();
 
   void set_feedback_mode(uint8_t feedback_mode);
   void set_feedback_invert(bool feedback_invert);
