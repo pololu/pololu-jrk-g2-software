@@ -40,16 +40,14 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
 // OK with changing to the new page and take care of any other effects.
 void input_wizard::handle_next_or_back(int id)
 {
-  // Look at current_page to figure out what whether the user is trying to move
-  // forward or backward or neither.
-  if (current_page == id)
+  if (page == id)
   {
     // We are already on the expected page so don't do anything.  This can
     // happen if the user tried to move and we rejected it.
     return;
   }
 
-  if (current_page == LEARN)
+  if (page == LEARN)
   {
     if (id == INTRO)
     {
@@ -68,7 +66,7 @@ void input_wizard::handle_next_or_back(int id)
     }
   }
 
-  current_page = currentId();
+  page = currentId();
 
   set_next_button_enabled(!sampling);
   set_progress_visible(sampling);
@@ -169,8 +167,6 @@ void input_wizard::handle_new_sample()
 void input_wizard::handle_sampling_complete()
 {
   sampling = false;
-  set_progress_visible(false);
-  set_next_button_enabled(true);
 
   // TODO
 

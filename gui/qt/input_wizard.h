@@ -14,7 +14,7 @@ class input_wizard : public QWizard
   // 20 samples, one every 50 ms.  Total time is 1000 ms.
   static const uint32_t SAMPLE_COUNT = 20;
 
-  enum page_number { INTRO, LEARN, CONCLUSION };
+  enum page { INTRO, LEARN, CONCLUSION };
   enum learn_step { NEUTRAL, MAX, MIN };
   const int FIRST_STEP = NEUTRAL;
   const int LAST_STEP = MIN;
@@ -68,7 +68,7 @@ private:
   uint16_t input;
 
   // Current state of the wizard.
-  int current_page = INTRO;
+  int page = INTRO;
   int learn_step = FIRST_STEP;
   bool learn_step_succeeded = false;
   bool sampling = false;
