@@ -2,7 +2,6 @@
 #include "message_box.h"
 #include "nice_wizard_page.h"
 
-#include <uint16_range.h>
 #include <jrk_protocol.h>
 
 #include <QIcon>
@@ -10,6 +9,7 @@
 #include <QProgressBar>
 #include <QVBoxLayout>
 
+#include <algorithm>
 #include <cassert>
 
 #ifdef __APPLE__
@@ -202,7 +202,11 @@ bool input_wizard::learn_neutral()
   uint16_range r = uint16_range::from_samples(samples);
   if (!check_range_not_to_big(r)) { return false; }
 
-  // TODO
+  // Set the deadband region to 5% of the standard full range or 3 times the
+  // sampled range, whichever is greater.
+  uint16_t deadband = std::max<uint16_t>((full_range() + 10) / 20, r.range());
+
+  learned_neutral = uint16_range::from_center_and_range(r.average, deadband, 4095);
 
   return true;
 }

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QWizard>
+#include <uint16_range.h>
 #include <stdint.h>
+#include <QWizard>
 
 class uint16_range;
 class nice_wizard_page;
@@ -80,4 +81,7 @@ private:
   bool learn_step_succeeded = false;
   bool sampling = false;
   std::vector<uint16_t> samples;
+  uint16_range learned_neutral;
+  uint16_range learned_max;
+  uint16_range learned_min;
 };
