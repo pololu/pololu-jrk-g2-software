@@ -16,6 +16,8 @@ class input_wizard : public QWizard
 
   enum page_number { INTRO, LEARN, CONCLUSION };
   enum learn_step { NEUTRAL, MAX, MIN };
+  const int FIRST_STEP = NEUTRAL;
+  const int LAST_STEP = MIN;
 
 public:
   input_wizard(QWidget * parent, uint8_t input_mode);
@@ -67,7 +69,8 @@ private:
 
   // Current state of the wizard.
   int current_page = INTRO;
-  int learn_step = NEUTRAL;
+  int learn_step = FIRST_STEP;
+  bool learn_step_succeeded = false;
   bool sampling = false;
   std::vector<uint16_t> samples;
 };

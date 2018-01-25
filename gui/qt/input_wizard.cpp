@@ -1,11 +1,13 @@
 #include "input_wizard.h"
 #include "nice_wizard_page.h"
+#include "jrk_protocol.h"
 
 #include <QIcon>
 #include <QLabel>
 #include <QProgressBar>
 #include <QVBoxLayout>
-#include "jrk_protocol.h"
+
+#include <cassert>
 
 #ifdef __APPLE__
 #define NEXT_BUTTON_TEXT tr("Continue")
@@ -106,7 +108,7 @@ bool input_wizard::handle_back_on_learn_page()
   else
   {
     // We were not sampling, so go back to the previous step or page.
-    if (learn_step == NEUTRAL)
+    if (learn_step == FIRST_STEP)
     {
       return true;
     }
@@ -120,17 +122,35 @@ bool input_wizard::handle_back_on_learn_page()
 
 bool input_wizard::handle_next_on_learn_page()
 {
-  if (sampling)
+  if (learn_step_succeeded)
+  {
+    // We completed this step of the learning so go to the next step or page.
+    learn_step_succeeded = false;
+    if (learn_step == LAST_STEP)
+    {
+      return true;
+    }
+    else
+    {
+      learn_step++;
+      return false;
+    }
+  }
+  else if (sampling)
   {
     // We will advance to the next step/page when the sampling is finished.
+    // This case shouldn't even happen because we disable the 'Next' button.
+    assert(0);
     return false;
   }
-
-  // Start sampling the input.
-  sampling = true;
-  samples.clear();
-  sampling_progress->setValue(0);
-  return false;
+  else
+  {
+    // Start sampling the input.
+    sampling = true;
+    samples.clear();
+    sampling_progress->setValue(0);
+    return false;
+  }
 }
 
 void input_wizard::handle_new_sample()
@@ -142,16 +162,34 @@ void input_wizard::handle_new_sample()
 
   if (samples.size() == SAMPLE_COUNT)
   {
-    sampling = false;
-    set_progress_visible(false);
-    set_next_button_enabled(true);
     handle_sampling_complete();
   }
 }
 
 void input_wizard::handle_sampling_complete()
 {
+  sampling = false;
+  set_progress_visible(false);
+  set_next_button_enabled(true);
+
   // TODO
+
+  switch (learn_step)
+  {
+  case NEUTRAL:
+    break;
+
+  case MAX:
+    break;
+
+  case MIN:
+    break;
+  }
+
+  // Go to the next step or page.  We can't directly control it so just trigger
+  // handle_next_or_back(), which will check the learn_step_succeded flag.
+  learn_step_succeeded = true;
+  next();
 }
 
 void input_wizard::update_learn_text()
