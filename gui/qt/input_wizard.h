@@ -47,6 +47,9 @@ private:
   bool handle_next_on_learn_page();
   void handle_new_sample();
   void handle_sampling_complete();
+  bool learn_neutral();
+  bool learn_max();
+  bool learn_min();
   void update_learn_text();
 
   nice_wizard_page * setup_intro_page();

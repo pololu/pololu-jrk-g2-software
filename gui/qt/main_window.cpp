@@ -4,6 +4,7 @@
 #include "graph_window.h"
 #include "bootloader_window.h"
 #include "input_wizard.h"
+#include "message_box.h"
 
 #include <to_string.h>
 
@@ -81,31 +82,22 @@ void main_window::start_update_timer()
 
 bool main_window::confirm(const std::string & question)
 {
-  QMessageBox mbox(QMessageBox::Question, windowTitle(),
-    QString::fromStdString(question), QMessageBox::Ok | QMessageBox::Cancel, this);
-  int button = mbox.exec();
-  return button == QMessageBox::Ok;
+  return ::confirm(question, this);
 }
 
 void main_window::show_error_message(const std::string & message)
 {
-  QMessageBox mbox(QMessageBox::Critical, windowTitle(),
-    QString::fromStdString(message), QMessageBox::NoButton, this);
-  mbox.exec();
+  ::show_error_message(message, this);
 }
 
 void main_window::show_info_message(const std::string & message)
 {
-  QMessageBox mbox(QMessageBox::Information, windowTitle(),
-    QString::fromStdString(message), QMessageBox::NoButton, this);
-  mbox.exec();
+  ::show_info_message(message, this);
 }
 
 void main_window::show_warning_message(const std::string & message)
 {
-  QMessageBox mbox(QMessageBox::Information, windowTitle(),
-    QString::fromStdString(message), QMessageBox::NoButton, this);
-  mbox.exec();
+  ::show_warning_message(message, this);
 }
 
 void main_window::open_bootloader_window()

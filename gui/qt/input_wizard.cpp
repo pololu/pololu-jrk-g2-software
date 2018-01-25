@@ -1,6 +1,8 @@
 #include "input_wizard.h"
+#include "message_box.h"
 #include "nice_wizard_page.h"
-#include "jrk_protocol.h"
+
+#include <jrk_protocol.h>
 
 #include <QIcon>
 #include <QLabel>
@@ -167,25 +169,50 @@ void input_wizard::handle_new_sample()
 void input_wizard::handle_sampling_complete()
 {
   sampling = false;
-
-  // TODO
+  set_next_button_enabled(false);
+  set_progress_visible(false);
 
   switch (learn_step)
   {
   case NEUTRAL:
+    learn_step_succeeded = learn_neutral();
     break;
 
   case MAX:
+    learn_step_succeeded = learn_max();
     break;
 
   case MIN:
+    learn_step_succeeded = learn_min();
     break;
   }
 
-  // Go to the next step or page.  We can't directly control it so just trigger
-  // handle_next_or_back(), which will check the learn_step_succeded flag.
-  learn_step_succeeded = true;
-  next();
+  if (learn_step_succeeded)
+  {
+    // Go to the next step or page.  We can't directly control it so just
+    // trigger handle_next_or_back(), which will check the learn_step_succeded
+    // flag.
+    next();
+  }
+}
+
+bool input_wizard::learn_neutral()
+{
+  // TODO
+  return true;
+}
+
+bool input_wizard::learn_max()
+{
+  // TODO
+  return true;
+}
+
+bool input_wizard::learn_min()
+{
+  assert(MIN == LAST_STEP);
+  // TODO
+  return true;
 }
 
 void input_wizard::update_learn_text()
