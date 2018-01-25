@@ -75,7 +75,7 @@ private:
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
-  QCheckBox *select_all_none;
+  QPushButton *select_all_none;
 
   uint32_t key; // used to store local copy of time value
 
@@ -85,5 +85,5 @@ private slots:
   void change_ranges();
   void on_pause_run_button_clicked();
   void set_line_visible();
-  void on_select_all_none_stateChanged(int state);
+  void select_all_none_clicked();
 };

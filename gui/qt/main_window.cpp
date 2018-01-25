@@ -962,7 +962,7 @@ void main_window::receive_widget(graph_widget *widget)
   preview_frame->setStyleSheet("border: 1px solid black");
 }
 
-void main_window::on_launchGraph_clicked()
+void main_window::preview_pane_clicked()
 {
   graph_action->setEnabled(false);
   graph_widget *red = graph;
@@ -1188,7 +1188,7 @@ void main_window::on_input_device_number_checkbox_stateChanged(int state)
   controller->handle_input_device_number_input(state == Qt::Checked);
 }
 
-void main_window::on_input_timeout_spinbox_valueChanged(int value)
+void main_window::on_input_timeout_spinbox_valueChanged(double value)
 {
   if (suppress_events) { return; }
   controller->handle_input_timeout_input(value);
@@ -1517,7 +1517,7 @@ void main_window::on_coast_when_off_button_group_buttonToggled(int id, bool chec
   if (checked) { controller->handle_coast_when_off_input(id); }
 }
 
-void main_window::on_error_enable_group_buttonToggled(int id, int index)
+void main_window::error_enable_group_buttonToggled(int id, int index)
 {
   if (suppress_events) { return; }
   controller->handle_error_enable_input(index, id);
@@ -1721,7 +1721,7 @@ void main_window::setup_menu_bar()
   graph_action->setObjectName("graph_action");
   graph_action->setText(tr("&Graph"));
   graph_action->setShortcut(Qt::CTRL + Qt::Key_G);
-  connect(graph_action, SIGNAL(triggered()), this, SLOT(on_launchGraph_clicked()));
+  connect(graph_action, SIGNAL(triggered()), this, SLOT(preview_pane_clicked()));
 
   documentation_action = new QAction(this);
   documentation_action->setObjectName("documentation_action");
@@ -1820,7 +1820,7 @@ QWidget * main_window::setup_preview_plot()
   horizontal_layout->addWidget(preview_plot);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
-    SLOT(on_launchGraph_clicked()));
+    SLOT(preview_pane_clicked()));
 
   preview_frame->setLayout(horizontal_layout);
 
@@ -2904,7 +2904,7 @@ void main_window::setup_error_row(int error_number,
     static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     [=] (int id)
     {
-      on_error_enable_group_buttonToggled(id, row.error_number);
+      error_enable_group_buttonToggled(id, row.error_number);
     });
 
   row.stopping_value = new QLabel(tr("No"));
@@ -2962,7 +2962,7 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_multiplier_spinbox->setRange(0, 1023);
 
   connect(pid_multiplier_spinbox, SIGNAL(valueChanged(int)), this,
-    SLOT(on_pid_multiplier_spinbox_valueChanged(int)));
+    SLOT(pid_multiplier_spinbox_valueChanged(int)));
 
   pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
@@ -2970,7 +2970,7 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_exponent_spinbox->setRange(0, 18);
 
   connect(pid_exponent_spinbox, SIGNAL(valueChanged(int)), this,
-    SLOT(on_pid_exponent_spinbox_valueChanged(int)));
+    SLOT(pid_exponent_spinbox_valueChanged(int)));
 
   pid_equal_label = new QLabel();
   pid_equal_label->setObjectName("pid_equal_label");
@@ -2990,10 +2990,10 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   pid_constant_lineedit->setValidator(constant_validator);
 
   connect(pid_constant_lineedit, SIGNAL(textEdited(const QString&)), this,
-    SLOT(on_pid_constant_lineedit_textEdited(const QString&)));
+    SLOT(pid_constant_lineedit_textEdited(const QString&)));
 
   connect(pid_constant_lineedit, SIGNAL(editingFinished()),
-    this, SLOT(on_pid_constant_lineedit_editingFinished()));
+    this, SLOT(pid_constant_lineedit_editingFinished()));
 
   QGridLayout *group_box_layout = new QGridLayout();
   group_box_layout->addWidget(pid_base_label,3,1,3,2);
@@ -3023,19 +3023,19 @@ main_controller * pid_constant_control::window_controller() const
   return ((main_window *)parent())->controller;
 }
 
-void pid_constant_control::on_pid_multiplier_spinbox_valueChanged(int value)
+void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
 {
   if (window_suppress_events()) { return; }
   window_controller()->handle_pid_constant_control_multiplier(index, value);
 }
 
-void pid_constant_control::on_pid_exponent_spinbox_valueChanged(int value)
+void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
 {
   if (window_suppress_events()) { return; }
   window_controller()->handle_pid_constant_control_exponent(index, value);
 }
 
-void pid_constant_control::on_pid_constant_lineedit_textEdited(const QString& text)
+void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 {
   if (window_suppress_events()) { return; }
   double value = pid_constant_lineedit->displayText().toDouble();
@@ -3043,7 +3043,7 @@ void pid_constant_control::on_pid_constant_lineedit_textEdited(const QString& te
   window_controller()->handle_pid_constant_control_constant(index, value);
 }
 
-void pid_constant_control::on_pid_constant_lineedit_editingFinished()
+void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
   if (window_suppress_events()) { return; }
   window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(), pid_exponent_spinbox->value());

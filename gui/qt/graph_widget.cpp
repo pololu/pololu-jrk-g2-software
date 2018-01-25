@@ -22,7 +22,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   if (preview_mode)
   {
     custom_plot->setCursor(Qt::PointingHandCursor);
-    custom_plot->setToolTip("Click on preview to view full plot");
+    custom_plot->setToolTip("Click to open graph window");
     custom_plot->axisRect()->setAutoMargins(QCP::msNone);
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
     custom_plot->xAxis->setBasePen(QColor(Qt::white));
@@ -79,7 +79,7 @@ void graph_widget::setup_ui()
   label1->setText(tr("    Range (%):"));
 
   custom_plot = new QCustomPlot();
-  custom_plot->setMinimumSize(200, 200);
+  custom_plot->setMinimumSize(300, 300);
 
   label2 = new QLabel();
   label2->setText(tr("    Time (s):"));
@@ -191,12 +191,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setVisible(false);
   plot.axis->setRange(-plot.range_value, plot.range_value);
 
-  select_all_none = new QCheckBox(tr("Select all/none"));
+  select_all_none = new QPushButton("Select all/none");
   select_all_none->setObjectName("select_all_none");
+  select_all_none->setCheckable(true);
   select_all_none->setChecked(false);
   select_all_none->setStyleSheet("padding: 0px 8px 0px 8px;");
-  connect(select_all_none, SIGNAL(stateChanged(int)),
-    this, SLOT(on_select_all_none_stateChanged(int)));
+  connect(select_all_none, SIGNAL(clicked()),
+    this, SLOT(select_all_none_clicked()));
 
   plot_visible_layout->addWidget(select_all_none, 0, 0);
   plot_visible_layout->addWidget(plot.display, row, 0);
@@ -256,15 +257,16 @@ void graph_widget::set_line_visible()
   for (auto plot : all_plots)
   {
     plot->graph->setVisible(plot->display->isChecked());
-    custom_plot->replot();
   }
+
+  custom_plot->replot();
 }
 
-void graph_widget::on_select_all_none_stateChanged(int state)
+void graph_widget::select_all_none_clicked()
 {
   for (auto plot : all_plots)
   {
-    plot->display->setChecked(state == Qt::Checked);
+    plot->display->setChecked(select_all_none->isChecked());
   }
 
   set_line_visible();
