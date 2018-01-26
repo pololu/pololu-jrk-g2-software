@@ -386,7 +386,7 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   QLabel * completed_label = new QLabel(
     tr("You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Feedback\" column and \"Invert input direction\" checkbox "
+    "settings in the \"Scaling\" box and \"Invert feedback direction\" checkbox "
     "after you click ") +
     FINISH_BUTTON_TEXT + tr(".  "
     "To use the new settings, you must first apply them to the device."));
