@@ -214,6 +214,16 @@ bool feedback_wizard::learn_min()
   learned_min = uint16_range::from_samples(samples);
   if (!check_range_not_to_big(learned_min)) { return false; }
 
+  if (learned_min.intersects(learned_max))
+  {
+    show_error_message(
+      "The values sampled for the minimum input (" +
+      learned_min.min_max_string() + ") intersect the values sampled for "
+      "the maximum input (" + learned_max.min_max_string() + ")." +
+      try_again, this);
+    return false;
+  }
+
   // Invert the channel if necessary.
   uint16_range * real_max = &learned_max;
   uint16_range * real_min = &learned_min;

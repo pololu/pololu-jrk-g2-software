@@ -173,6 +173,7 @@ void main_window::set_feedback(uint16_t feedback)
 {
   graph->feedback.plot_value = feedback;
   feedback_value->setText(QString::number(feedback));
+  emit feedback_changed(feedback);
 }
 
 void main_window::set_scaled_feedback(uint16_t scaled_feedback)
