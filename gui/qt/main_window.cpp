@@ -4,6 +4,7 @@
 #include "graph_window.h"
 #include "bootloader_window.h"
 #include "input_wizard.h"
+#include "feedback_wizard.h"
 #include "message_box.h"
 
 #include <to_string.h>
@@ -557,6 +558,20 @@ void main_window::set_feedback_detect_disconnect(bool value)
 void main_window::set_feedback_wraparound(bool value)
 {
   set_check_box(feedback_wraparound_checkbox, value);
+}
+
+void main_window::run_feedback_wizard(uint8_t feedback_mode)
+{
+  feedback_wizard wizard(this, feedback_mode);
+  connect(this, &main_window::feedback_changed, &wizard, &feedback_wizard::set_feedback);
+
+  if (wizard.exec() != QDialog::Accepted) { return; }
+
+  controller->handle_feedback_invert_input(wizard.result.invert);
+  controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
+  controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
+  controller->handle_feedback_minimum_input(wizard.result.minimum);
+  controller->handle_feedback_maximum_input(wizard.result.maximum);
 }
 
 void main_window::set_pid_multiplier(int index, uint16_t value)
@@ -1340,6 +1355,11 @@ void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
 {
   if (suppress_events) { return; }
   controller->handle_feedback_wraparound_input(state == Qt::Checked);
+}
+
+void main_window::on_feedback_learn_button_clicked()
+{
+  controller->handle_feedback_learn();
 }
 
 void main_window::on_pid_period_spinbox_valueChanged(int value)

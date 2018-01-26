@@ -31,6 +31,7 @@ add_executable (gui
   qt/graph_window.cpp
   qt/graph_widget.cpp
   qt/input_wizard.cpp
+  qt/feedback_wizard.cpp
   qt/main_window.cpp
   qt/qcustomplot.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/gui_info.rc

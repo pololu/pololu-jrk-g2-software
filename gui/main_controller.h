@@ -109,6 +109,7 @@ public:
   void handle_feedback_analog_samples_exponent_input(uint8_t);
   void handle_feedback_detect_disconnect_input(bool);
   void handle_feedback_wraparound_input(bool);
+  void handle_feedback_learn();
 
   void handle_pid_constant_control_multiplier(int index, uint16_t multiplier);
   void handle_pid_constant_control_exponent(int index, uint16_t exponent);

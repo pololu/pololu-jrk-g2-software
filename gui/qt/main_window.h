@@ -153,6 +153,7 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
+  void run_feedback_wizard(uint8_t feedback_mode);
 
   void set_pid_multiplier(int index, uint16_t value);
   void set_pid_exponent(int index, uint16_t value);
@@ -223,6 +224,7 @@ private:
 signals:
   void pass_widget(graph_widget *widget);
   void input_changed(uint16_t);
+  void feedback_changed(uint16_t);
 
 protected:
   // void context_menu_event(QContextMenuEvent *event);
@@ -295,6 +297,8 @@ private slots:
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
   void on_feedback_wraparound_checkbox_stateChanged(int state);
+  void on_feedback_learn_button_clicked();
+
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
