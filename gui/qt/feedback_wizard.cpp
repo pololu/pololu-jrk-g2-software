@@ -240,6 +240,9 @@ bool feedback_wizard::learn_min()
   // At this point, learned_max is entirely above learned_min.
   assert(real_max->is_entirely_above(*real_min));
 
+  result.maximum = real_max->min;
+  result.minimum = real_min->max;
+
   // Set the absolute range: when the feedback is outside of this range, the jrk
   // considers it to be an error.
   result.absolute_minimum = result.minimum / 2;
