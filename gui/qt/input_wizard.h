@@ -68,6 +68,7 @@ private:
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
   QLabel * input_value;
+  QLabel * input_pretty;
 
   // Input mode setting (RC or analog).
   uint8_t input_mode;

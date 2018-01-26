@@ -577,6 +577,8 @@ void main_controller::handle_variables_changed()
   window->set_up_time(variables.get_up_time());
 
   window->set_input(variables.get_input());
+  // TODO: also show nice units in parentheses
+
   window->set_target(variables.get_target());
 
   if (cached_settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
@@ -586,6 +588,8 @@ void main_controller::handle_variables_changed()
   else
   {
     window->set_feedback(variables.get_feedback());
+    // TODO: also show version with nice units in parentheses
+
     window->set_scaled_feedback(variables.get_scaled_feedback());
     window->set_error(variables.get_error());
     window->set_integral(variables.get_integral());

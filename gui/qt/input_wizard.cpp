@@ -2,6 +2,7 @@
 #include "message_box.h"
 #include "nice_wizard_page.h"
 
+#include <to_string.h>
 #include <jrk_protocol.h>
 
 #include <QIcon>
@@ -81,6 +82,17 @@ void input_wizard::set_input(uint16_t value)
   input = value;
 
   input_value->setText(QString::number(value));
+
+  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    input_pretty->setText("(" +
+      QString::fromStdString(convert_rc_12bit_to_us_string(input)) + ")");
+  }
+  else if (input_mode == JRK_INPUT_MODE_ANALOG)
+  {
+    input_pretty->setText("(" +
+      QString::fromStdString(convert_analog_12bit_to_v_string(input)) + ")");
+  }
 
   handle_new_sample();
 }
@@ -516,14 +528,20 @@ QLayout * input_wizard::setup_input_layout()
   input_value = new QLabel();
   layout->addWidget(input_value);
 
-  // TODO: display the human-readable input units too
-  // (after we add it to the main window)
+  input_pretty = new QLabel();
+  layout->addWidget(input_pretty);
 
   layout->addStretch(1);
 
   // Set a fixed size for performance.
-  input_value->setText(QString::number(4095));
+  input_value->setText(QString::number(4095) + " ");
   input_value->setFixedSize(input_value->sizeHint());
+  input_value->setText("");
+
+  input_pretty->setText("(" +
+    QString::fromStdString(convert_rc_12bit_to_us_string(4095) + ") "));
+  input_pretty->setFixedSize(input_pretty->sizeHint());
+  input_pretty->setText("");
 
   return layout;
 }

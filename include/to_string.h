@@ -52,3 +52,21 @@ static inline std::string convert_current_limit_ma_to_string(uint32_t ma)
      << std::setfill('0') << std::setw(2) << hundredths << " A";
   return ss.str();
 }
+
+// Converts a 12-bit analog reading between 0 and 4095 to the estimated voltage
+// in volts, as a string.  We estimate VDD to be 4800 mV.
+static inline std::string convert_analog_12bit_to_v_string(uint16_t reading)
+{
+  uint16_t mv = ((uint32_t)reading * 4800 + 2048) / 4096; // 4096 = 4.8 V
+  return convert_mv_to_v_string(mv, true);
+}
+
+// Converts a 12-bit RC reading between 0 and 4095 with units of 2/3 us to the
+// estimated pulse width in us, as a string.
+static inline std::string convert_rc_12bit_to_us_string(uint16_t reading)
+{
+  uint16_t us = ((uint32_t)reading * 4 + 3) / 6;
+  std::ostringstream ss;
+  ss << us << " \u03BCs";
+  return ss.str();
+}
