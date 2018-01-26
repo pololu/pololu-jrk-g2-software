@@ -2835,7 +2835,7 @@ QWidget *main_window::setup_errors_tab()
   setup_error_row(JRK_ERROR_NO_POWER, true, false);
   setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false);
   setup_error_row(JRK_ERROR_INPUT_INVALID, true, false);
-  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, true, false);
+  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false);
   setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false);
   setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false);
   setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true);
