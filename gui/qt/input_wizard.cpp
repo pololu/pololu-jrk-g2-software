@@ -213,19 +213,163 @@ bool input_wizard::learn_neutral()
 
 bool input_wizard::learn_max()
 {
-  uint16_range r = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(r)) { return false; }
+  learned_max = uint16_range::from_samples(samples);
+  if (!check_range_not_to_big(learned_max)) { return false; }
 
-  // TODO
+  if (learned_max.intersects(learned_neutral))
+  {
+    // The input was indistinguishable from neutral, so warn the user!
+    show_warning_message(
+      "The values sampled for the maximum input (" +
+      learned_max.min_max_string() +
+      ") intersect with the neutral deadband (" +
+      learned_neutral.min_max_string() + ").\n\n"
+      "If you continue, you will only be able to use the input in one " +
+      "direction.\n\n"
+      "You can go back and try again if this is not the desired behavior.",
+      this);
+  }
+
   return true;
 }
 
 bool input_wizard::learn_min()
 {
-  uint16_range r = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(r)) { return false; }
+  std::string const try_again = "\n\n"
+   "Please verify that your input is connected properly by moving it "
+   "while looking at the input value and try again.";
 
-  // TODO
+  learned_min = uint16_range::from_samples(samples);
+  if (!check_range_not_to_big(learned_min)) { return false; }
+
+  if (learned_min.intersects(learned_max))
+  {
+    show_error_message(
+      "The values sampled for the minimum input (" +
+      learned_min.min_max_string() + ") intersect the values sampled for "
+      "the maximum input (" + learned_max.min_max_string() + ")." +
+      try_again, this);
+    return false;
+  }
+
+  // Make sure at least one input direction is distinguishable from neutral.
+  if (learned_min.intersects(learned_neutral) && learned_max.intersects(learned_min))
+  {
+    show_error_message(
+      "The values sampled for the minimum input (" +
+      learned_min.min_max_string() + ") and the values sampled for the "
+      "maximum input (" + learned_max.min_max_string() +
+      ") both intersect the neutral deadband (" +
+      learned_neutral.min_max_string() + ")." + try_again, this);
+    return false;
+  }
+
+  // Invert the channel if necessary.
+  uint16_range * real_max = &learned_max;
+  uint16_range * real_min = &learned_min;
+  if (learned_min.is_entirely_above(learned_max))
+  {
+    result.invert = true;
+    std::swap(real_max, real_min);
+  }
+  else
+  {
+    result.invert = false;
+  }
+
+  // At this point, learned_max is entirely above learned_min.
+  assert(real_max->is_entirely_above(*real_min));
+
+  // Check that the max and min are not both on the same side of the deadband.
+  if (real_min->is_entirely_above(learned_neutral))
+  {
+    show_error_message(
+      "The maximum and minimum values measured for the input (" +
+      learned_max.min_max_string() + " and " +
+      learned_min.min_max_string() +
+      ") were both above the neutral deadband (" +
+      learned_neutral.min_max_string() + ")." + try_again, this);
+    return false;
+  }
+  if (learned_neutral.is_entirely_above(*real_max))
+  {
+    show_error_message(
+      "The maximum and minimum values measured for the input (" +
+      learned_max.min_max_string() + " and " +
+      learned_min.min_max_string() +
+      ") were both below the neutral deadband (" +
+      learned_neutral.min_max_string() + ")." + try_again, this);
+    return false;
+  }
+
+  if (learned_min.intersects(learned_neutral))
+  {
+    show_warning_message(
+      "The values sampled for the minimum input (" +
+      learned_min.min_max_string() +
+      ") intersect with the neutral deadband (" +
+      learned_neutral.min_max_string() + ").\n\n"
+      "If you continue, you will only be able to use the input in one " +
+      "direction.\n\n"
+      "You can go back and try again if this is not the desired behavior.",
+      this);
+  }
+
+  // All the checks are done, so figure out the new settings.
+
+  result.neutral_minimum = learned_neutral.min;
+  result.neutral_maximum = learned_neutral.max;
+
+  if (real_max->intersects(learned_neutral))
+  {
+    // real_max intersects the deadband, so that is a direction
+    // that the user doesn't want to move their input.
+    result.maximum = result.neutral_maximum;
+  }
+  else
+  {
+    // Try to set input maximum to a value that is a little bit below
+    // real_max->min so that when the user pushes the input all the way in that
+    // direction, they can get the full output.
+    int margin = std::min(
+      (real_max->min - result.neutral_maximum + 15) / 30,
+      (full_range() + 50) / 100);
+    result.maximum = real_max->min - margin;
+  }
+
+  if (real_min->intersects(learned_neutral))
+  {
+    // real_min intersects the deadband, so that is a direction
+    // that the user doesn't want to move their input.
+    result.minimum = result.neutral_minimum;
+  }
+  else
+  {
+    // Try to set input minimum to a value that is a little bit above
+    // real_min->max so that when the user pushes the input all the way in that
+    // direction, they can get the full output.
+    int margin = std::min(
+      (result.neutral_maximum - real_min->max + 15) / 30,
+      (full_range() + 50) / 100);
+    result.minimum = real_min->max + margin;
+  }
+
+  // Set the absolute range: when the input is outside of this range, the jrk
+  // considers it to be an error.
+  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    // We usually want 500 us to 2500 us to be the absolute range for RC inputs,
+    // but we try to keep a margin of 10 us between the error range and the
+    // values people want to use.  Remember the units are 2/3 us.
+    result.absolute_minimum = std::min(750, std::max(result.minimum - 15, 0));
+    result.absolute_maximum = std::max(750, std::min(result.maximum + 15, 4095));
+  }
+  else
+  {
+    result.absolute_minimum = result.minimum / 2;
+    result.absolute_maximum = 4095 - (4095 - result.maximum) / 2;
+  }
+
   return true;
 }
 
