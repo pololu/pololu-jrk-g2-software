@@ -203,7 +203,7 @@ void feedback_wizard::handle_sampling_complete()
 bool feedback_wizard::learn_max()
 {
   learned_max = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_max)) { return false; }
+  if (!check_range_not_too_big(learned_max)) { return false; }
 
   return true;
 }
@@ -215,7 +215,7 @@ bool feedback_wizard::learn_min()
    "the output while looking at the feedback value and try again.";
 
   learned_min = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_min)) { return false; }
+  if (!check_range_not_too_big(learned_min)) { return false; }
 
   if (learned_min.intersects(learned_max))
   {
@@ -371,7 +371,7 @@ QLayout * feedback_wizard::setup_feedback_layout()
   feedback_value->setText("");
 
   feedback_pretty->setText("(" +
-    QString::fromStdString(convert_analog_12bit_to_mv_string(4095) + ") "));
+    QString::fromStdString(convert_analog_12bit_to_v_string(4095) + ") "));
   feedback_pretty->setFixedSize(feedback_pretty->sizeHint());
   feedback_pretty->setText("");
 

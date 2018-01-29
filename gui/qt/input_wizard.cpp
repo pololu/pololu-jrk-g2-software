@@ -212,7 +212,7 @@ void input_wizard::handle_sampling_complete()
 bool input_wizard::learn_neutral()
 {
   uint16_range r = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(r)) { return false; }
+  if (!check_range_not_too_big(r)) { return false; }
 
   // Set the deadband region to 5% of the standard full range or 3 times the
   // sampled range, whichever is greater.
@@ -226,7 +226,7 @@ bool input_wizard::learn_neutral()
 bool input_wizard::learn_max()
 {
   learned_max = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_max)) { return false; }
+  if (!check_range_not_too_big(learned_max)) { return false; }
 
   if (learned_max.intersects(learned_neutral))
   {
@@ -252,7 +252,7 @@ bool input_wizard::learn_min()
    "while looking at the input value and try again.";
 
   learned_min = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_min)) { return false; }
+  if (!check_range_not_too_big(learned_min)) { return false; }
 
   if (learned_min.intersects(learned_max))
   {
