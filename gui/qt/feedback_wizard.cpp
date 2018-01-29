@@ -241,8 +241,8 @@ bool feedback_wizard::learn_min()
   }
   assert(real_max->is_entirely_above(*real_min));
 
-  result.maximum = real_max->min;
-  result.minimum = real_min->max;
+  result.maximum = real_max->average;
+  result.minimum = real_min->average;
 
   // Set the absolute range: when the feedback is outside of this range, the jrk
   // considers it to be an error.
@@ -387,8 +387,7 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   QLabel * completed_label = new QLabel(
     tr("You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Scaling\" box and \"Invert feedback direction\" checkbox "
-    "after you click ") +
+    "settings in the \"Scaling\" box after you click ") +
     FINISH_BUTTON_TEXT + tr(".  "
     "To use the new settings, you must first apply them to the device."));
   completed_label->setWordWrap(true);
