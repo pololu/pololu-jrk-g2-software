@@ -2460,13 +2460,13 @@ QWidget * main_window::setup_feedback_options_groupbox()
 {
   feedback_options_groupbox = new QGroupBox();
   feedback_options_groupbox->setObjectName("feedback_options_groupbox");
-  feedback_options_groupbox->setTitle(tr("Feedback options"));
+  feedback_options_groupbox->setTitle(tr("Options"));
 
   feedback_wraparound_checkbox = new QCheckBox(tr("Wraparound"));
   feedback_wraparound_checkbox->setObjectName("feedback_wraparound_checkbox");
-  feedback_wraparound_checkbox->setToolTip(
+  feedback_wraparound_checkbox->setToolTip(tr(
     "A scaled feedback value of 0 is considered to be adjacent to 4095.  "
-    "Suitable for systems that rotate over a full circle.");
+    "Suitable for systems that rotate over a full circle."));
 
   QGridLayout * layout = new QGridLayout();
   layout->addWidget(feedback_wraparound_checkbox, 0, 0, Qt::AlignLeft);

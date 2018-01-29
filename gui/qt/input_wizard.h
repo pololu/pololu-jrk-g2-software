@@ -52,7 +52,7 @@ private:
   bool learn_neutral();
   bool learn_max();
   bool learn_min();
-  bool check_range_not_to_big(const uint16_range &);
+  bool check_range_not_too_big(const uint16_range &);
   uint16_t full_range() const;
 
   void update_learn_text();

@@ -1,6 +1,7 @@
 #include "input_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
+#include "wizard_button_text.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -12,14 +13,6 @@
 
 #include <algorithm>
 #include <cassert>
-
-#ifdef __APPLE__
-#define NEXT_BUTTON_TEXT tr("Continue")
-#define FINISH_BUTTON_TEXT tr("Done")
-#else
-#define NEXT_BUTTON_TEXT tr("Next")
-#define FINISH_BUTTON_TEXT tr("Finish")
-#endif
 
 input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
   : QWizard(parent), input_mode(input_mode)
@@ -100,7 +93,7 @@ void input_wizard::set_input(uint16_t value)
 void input_wizard::set_next_button_enabled(bool enabled)
 {
   // We only care about setting the next button to be enabled when we are on the
-  // learn page, it is always enabled on the other pages.
+  // learn page; it is always enabled on the other pages.
   learn_page->setComplete(enabled);
 }
 
@@ -212,7 +205,7 @@ void input_wizard::handle_sampling_complete()
 bool input_wizard::learn_neutral()
 {
   uint16_range r = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(r)) { return false; }
+  if (!check_range_not_too_big(r)) { return false; }
 
   // Set the deadband region to 5% of the standard full range or 3 times the
   // sampled range, whichever is greater.
@@ -226,7 +219,7 @@ bool input_wizard::learn_neutral()
 bool input_wizard::learn_max()
 {
   learned_max = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_max)) { return false; }
+  if (!check_range_not_too_big(learned_max)) { return false; }
 
   if (learned_max.intersects(learned_neutral))
   {
@@ -252,7 +245,7 @@ bool input_wizard::learn_min()
    "while looking at the input value and try again.";
 
   learned_min = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_min)) { return false; }
+  if (!check_range_not_too_big(learned_min)) { return false; }
 
   if (learned_min.intersects(learned_max))
   {
@@ -288,8 +281,6 @@ bool input_wizard::learn_min()
   {
     result.invert = false;
   }
-
-  // At this point, learned_max is entirely above learned_min.
   assert(real_max->is_entirely_above(*real_min));
 
   // Check that the max and min are not both on the same side of the deadband.
@@ -385,7 +376,7 @@ bool input_wizard::learn_min()
   return true;
 }
 
-bool input_wizard::check_range_not_to_big(const uint16_range & range)
+bool input_wizard::check_range_not_too_big(const uint16_range & range)
 {
   // We consider 7.5% of the standard full range to be too much variation.
   if (range.range() > (full_range() * 3 + 20) / 40)

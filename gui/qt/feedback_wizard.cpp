@@ -1,6 +1,7 @@
 #include "feedback_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
+#include "wizard_button_text.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -12,14 +13,6 @@
 
 #include <algorithm>
 #include <cassert>
-
-#ifdef __APPLE__
-#define NEXT_BUTTON_TEXT tr("Continue")
-#define FINISH_BUTTON_TEXT tr("Done")
-#else
-#define NEXT_BUTTON_TEXT tr("Next")
-#define FINISH_BUTTON_TEXT tr("Finish")
-#endif
 
 feedback_wizard::feedback_wizard(QWidget * parent, uint8_t feedback_mode)
   : QWizard(parent), feedback_mode(feedback_mode)
@@ -83,8 +76,11 @@ void feedback_wizard::set_feedback(uint16_t value)
 
   feedback_value->setText(QString::number(value));
 
-  feedback_pretty->setText("(" +
-    QString::fromStdString(convert_analog_12bit_to_v_string(feedback)) + ")");
+  if (feedback_mode == JRK_FEEDBACK_MODE_ANALOG)
+  {
+    feedback_pretty->setText("(" +
+      QString::fromStdString(convert_analog_12bit_to_v_string(feedback)) + ")");
+  }
 
   handle_new_sample();
 }
@@ -92,7 +88,7 @@ void feedback_wizard::set_feedback(uint16_t value)
 void feedback_wizard::set_next_button_enabled(bool enabled)
 {
   // We only care about setting the next button to be enabled when we are on the
-  // learn page, it is always enabled on the other pages.
+  // learn page; it is always enabled on the other pages.
   learn_page->setComplete(enabled);
 }
 
@@ -200,7 +196,7 @@ void feedback_wizard::handle_sampling_complete()
 bool feedback_wizard::learn_max()
 {
   learned_max = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_max)) { return false; }
+  if (!check_range_not_too_big(learned_max)) { return false; }
 
   return true;
 }
@@ -208,18 +204,18 @@ bool feedback_wizard::learn_max()
 bool feedback_wizard::learn_min()
 {
   std::string const try_again = "\n\n"
-   "Please verify that your output is connected properly by moving it "
-   "while looking at the feedback value and try again.";
+   "Please verify that your feedback is connected properly by moving "
+   "the output while looking at the feedback value and try again.";
 
   learned_min = uint16_range::from_samples(samples);
-  if (!check_range_not_to_big(learned_min)) { return false; }
+  if (!check_range_not_too_big(learned_min)) { return false; }
 
   if (learned_min.intersects(learned_max))
   {
     show_error_message(
-      "The values sampled for the minimum input (" +
+      "The values sampled for the minimum feedback (" +
       learned_min.min_max_string() + ") intersect the values sampled for "
-      "the maximum input (" + learned_max.min_max_string() + ")." +
+      "the maximum feedback (" + learned_max.min_max_string() + ")." +
       try_again, this);
     return false;
   }
@@ -236,12 +232,10 @@ bool feedback_wizard::learn_min()
   {
     result.invert = false;
   }
-
-  // At this point, learned_max is entirely above learned_min.
   assert(real_max->is_entirely_above(*real_min));
 
-  result.maximum = real_max->min;
-  result.minimum = real_min->max;
+  result.maximum = real_max->average;
+  result.minimum = real_min->average;
 
   // Set the absolute range: when the feedback is outside of this range, the jrk
   // considers it to be an error.
@@ -251,7 +245,7 @@ bool feedback_wizard::learn_min()
   return true;
 }
 
-bool feedback_wizard::check_range_not_to_big(const uint16_range & range)
+bool feedback_wizard::check_range_not_too_big(const uint16_range & range)
 {
   // We consider 7.5% of the standard full range to be too much variation.
   if (range.range() > (full_range * 3 + 20) / 40)
@@ -327,7 +321,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   QLabel * next_label = new QLabel(
     tr("When you click ") + NEXT_BUTTON_TEXT +
     tr(", this wizard will sample the feedback values for one second.  "
-    "Please do not change the input while it is being sampled."));
+    "Please do not move the output while it is being sampled."));
   next_label->setWordWrap(true);
   layout->addWidget(next_label);
   layout->addSpacing(fontMetrics().height());
@@ -370,7 +364,7 @@ QLayout * feedback_wizard::setup_feedback_layout()
   feedback_value->setText("");
 
   feedback_pretty->setText("(" +
-    QString::fromStdString(convert_rc_12bit_to_us_string(4095) + ") "));
+    QString::fromStdString(convert_analog_12bit_to_v_string(4095) + ") "));
   feedback_pretty->setFixedSize(feedback_pretty->sizeHint());
   feedback_pretty->setText("");
 
@@ -386,8 +380,7 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   QLabel * completed_label = new QLabel(
     tr("You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Scaling\" box and \"Invert feedback direction\" checkbox "
-    "after you click ") +
+    "settings in the \"Scaling\" box after you click ") +
     FINISH_BUTTON_TEXT + tr(".  "
     "To use the new settings, you must first apply them to the device."));
   completed_label->setWordWrap(true);
