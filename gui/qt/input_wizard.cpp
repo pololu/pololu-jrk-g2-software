@@ -1,6 +1,7 @@
 #include "input_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
+#include "wizard_button_text.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -12,14 +13,6 @@
 
 #include <algorithm>
 #include <cassert>
-
-#ifdef __APPLE__
-#define NEXT_BUTTON_TEXT tr("Continue")
-#define FINISH_BUTTON_TEXT tr("Done")
-#else
-#define NEXT_BUTTON_TEXT tr("Next")
-#define FINISH_BUTTON_TEXT tr("Finish")
-#endif
 
 input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
   : QWizard(parent), input_mode(input_mode)
