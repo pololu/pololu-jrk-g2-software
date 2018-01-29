@@ -139,6 +139,8 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
+  plot_visible_layout->addWidget(show_all_none, row, 0, 1, 3);
+
   QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
   x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
   x_axis_ticker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
@@ -204,15 +206,12 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setVisible(false);
   plot.axis->setRange(-plot.range_value, plot.range_value);
 
-  select_all_none = new QPushButton("Select all/none");
-  select_all_none->setObjectName("select_all_none");
-  select_all_none->setCheckable(true);
-  select_all_none->setChecked(false);
-  select_all_none->setStyleSheet("padding: 0px 8px 0px 8px;");
-  connect(select_all_none, SIGNAL(clicked()),
-    this, SLOT(select_all_none_clicked()));
+  show_all_none = new QPushButton("Show all/none");
+  show_all_none->setObjectName("show_all_none");
 
-  plot_visible_layout->addWidget(select_all_none, 0, 0);
+  connect(show_all_none, SIGNAL(clicked()),
+    this, SLOT(show_all_none_clicked()));
+
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.range_label, row, 1);
   plot_visible_layout->addWidget(plot.range, row, 2);
@@ -275,11 +274,22 @@ void graph_widget::set_line_visible()
   custom_plot->replot();
 }
 
-void graph_widget::select_all_none_clicked()
+void graph_widget::show_all_none_clicked()
 {
+  int i = 0;
+
+  for (auto plot : all_plots)
+    if (plot->display->isChecked())
+    {
+      i++;
+    }
+
   for (auto plot : all_plots)
   {
-    plot->display->setChecked(select_all_none->isChecked());
+    if (i == all_plots.size())
+      plot->display->setChecked(false);
+    else
+      plot->display->setChecked(true);
   }
 
   set_line_visible();

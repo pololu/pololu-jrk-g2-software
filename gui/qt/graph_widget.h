@@ -11,6 +11,7 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QGridLayout>
+#include <QApplication>
 
 class graph_widget : public QWidget
 {
@@ -75,7 +76,7 @@ private:
   QLabel *label1;
   QLabel *label2;
   QLabel *label3;
-  QPushButton *select_all_none;
+  QPushButton *show_all_none;
 
   uint32_t key; // used to store local copy of time value
 
@@ -85,5 +86,5 @@ private slots:
   void change_ranges();
   void on_pause_run_button_clicked();
   void set_line_visible();
-  void select_all_none_clicked();
+  void show_all_none_clicked();
 };
