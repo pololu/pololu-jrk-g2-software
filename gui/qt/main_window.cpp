@@ -963,7 +963,6 @@ void main_window::on_update_timer_timeout()
 
 void main_window::receive_widget(graph_widget *widget)
 {
-  graph_action->setEnabled(true);
   widget->set_preview_mode(true);
 
   horizontal_layout->addWidget(widget->custom_plot);
@@ -972,7 +971,6 @@ void main_window::receive_widget(graph_widget *widget)
 
 void main_window::preview_pane_clicked()
 {
-  graph_action->setEnabled(false);
   graph_widget *red = graph;
   horizontal_layout->removeWidget(red);
   preview_frame->setStyleSheet("border: 1px solid white");
@@ -985,6 +983,8 @@ void main_window::preview_pane_clicked()
 
   popout_graph_window->receive_widget(red);
   popout_graph_window->show();
+
+  connect(graph_action, SIGNAL(triggered()), popout_graph_window, SLOT(raise()));
 }
 
 void main_window::on_device_name_value_linkActivated()
