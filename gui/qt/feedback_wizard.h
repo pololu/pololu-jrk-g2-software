@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <QWizard>
 
-
 class uint16_range;
 class nice_wizard_page;
 class QLabel;
@@ -50,7 +49,7 @@ private:
   void handle_sampling_complete();
   bool learn_max();
   bool learn_min();
-  bool check_range_not_to_big(const uint16_range &);
+  bool check_range_not_too_big(const uint16_range &);
   const uint16_t full_range = 4095;
   void update_learn_text();
 

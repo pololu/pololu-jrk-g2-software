@@ -100,7 +100,7 @@ void input_wizard::set_input(uint16_t value)
 void input_wizard::set_next_button_enabled(bool enabled)
 {
   // We only care about setting the next button to be enabled when we are on the
-  // learn page, it is always enabled on the other pages.
+  // learn page; it is always enabled on the other pages.
   learn_page->setComplete(enabled);
 }
 
@@ -288,8 +288,6 @@ bool input_wizard::learn_min()
   {
     result.invert = false;
   }
-
-  // At this point, learned_max is entirely above learned_min.
   assert(real_max->is_entirely_above(*real_min));
 
   // Check that the max and min are not both on the same side of the deadband.
@@ -385,7 +383,7 @@ bool input_wizard::learn_min()
   return true;
 }
 
-bool input_wizard::check_range_not_to_big(const uint16_range & range)
+bool input_wizard::check_range_not_too_big(const uint16_range & range)
 {
   // We consider 7.5% of the standard full range to be too much variation.
   if (range.range() > (full_range() * 3 + 20) / 40)
