@@ -58,13 +58,13 @@ void graph_widget::clear_graphs()
 
 void graph_widget::plot_data(uint32_t time)
 {
-  if (graph_paused)
-    return;
-
   for (auto plot : all_plots)
   {
     plot->graph->addData(time, plot->plot_value);
   }
+
+  if (graph_paused)
+    return;
 
   remove_data_to_scroll(time);
 }
@@ -77,13 +77,13 @@ void graph_widget::setup_ui()
   pause_run_button->setChecked(false);
   pause_run_button->setText(tr("&Pause"));
   pause_run_button->setMinimumSize(pause_run_button->sizeHint());
-  pause_run_button->setStyleSheet("QPushButton {\
-    color: white; background-color: red;\
-    border: none; font-weight: bold;}"
+  pause_run_button->
+    setStyleSheet(
+      "QPushButton {color: white; background-color: red;\
+        border: 2px outset red; font-weight: bold;}"
 
-    "QPushButton:checked{\
-    background-color: green;\
-    }");
+      "QPushButton:checked{background-color: green;\
+        border: 2px outset green;}");
 
   label1 = new QLabel();
   label1->setText(tr("    Range (\u0025):"));
@@ -117,7 +117,7 @@ void graph_widget::setup_ui()
   plot_visible_layout = new QGridLayout();
 
   bottom_control_layout = new QHBoxLayout();
-  bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignLeft);
+  bottom_control_layout->addWidget(pause_run_button, 1);
   bottom_control_layout->addWidget(label1, 0, Qt::AlignRight);
   bottom_control_layout->addWidget(min_y, 0);
   bottom_control_layout->addWidget(label3, 0);
@@ -246,6 +246,9 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
 
   custom_plot->xAxis2->setRange(time, domain->value() * 1000, Qt::AlignRight);
+
+  for (auto plot : all_plots)
+    plot->graph->data()->removeBefore(domain->value() * 1000);
 
   custom_plot->replot();
 }

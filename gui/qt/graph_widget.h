@@ -66,8 +66,6 @@ private:
 
   void remove_data_to_scroll(uint32_t time);
 
-  void setup_select_all_checkbox();
-
   QWidget *central_widget;
   QPushButton *pause_run_button;
   QDoubleSpinBox *min_y;
