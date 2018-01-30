@@ -70,16 +70,23 @@ void graph_widget::plot_data(uint32_t time)
 }
 
 void graph_widget::setup_ui()
-// sets the gui objects in the graph window
 {
   pause_run_button = new QPushButton(this);
   pause_run_button->setObjectName("pause_run_button");
   pause_run_button->setCheckable(true);
   pause_run_button->setChecked(false);
   pause_run_button->setText(tr("&Pause"));
+  pause_run_button->setMinimumSize(pause_run_button->sizeHint());
+  pause_run_button->setStyleSheet("QPushButton {\
+    color: white; background-color: red;\
+    border: none; font-weight: bold;}"
+
+    "QPushButton:checked{\
+    background-color: green;\
+    }");
 
   label1 = new QLabel();
-  label1->setText(tr("    Range (%):"));
+  label1->setText(tr("    Range (\u0025):"));
 
   custom_plot = new QCustomPlot();
   custom_plot->setMinimumSize(300, 300);
@@ -234,7 +241,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 // and removes data outside of visible range
 void graph_widget::remove_data_to_scroll(uint32_t time)
 {
-  key = time; // used to store local copy of time value
+  key = time; // stores a local copy of time value
 
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
 
@@ -258,10 +265,10 @@ void graph_widget::change_ranges()
   custom_plot->replot();
 }
 
-void graph_widget::on_pause_run_button_clicked()
+void graph_widget::on_pause_run_button_toggled(bool checked)
 {
-  pause_run_button->setText(pause_run_button->isChecked() ? "R&un" : "&Pause");
-  graph_paused = pause_run_button->isChecked();
+  pause_run_button->setText(checked ? "R&un" : "&Pause");
+  graph_paused = checked;
   custom_plot->replot();
 }
 
