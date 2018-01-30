@@ -3,6 +3,7 @@
 #include <iostream> //tmphax
 
 #include <QString>
+#include <algorithm>
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -276,17 +277,12 @@ void graph_widget::set_line_visible()
 
 void graph_widget::show_all_none_clicked()
 {
-  int i = 0;
-
-  for (auto plot : all_plots)
-    if (plot->display->isChecked())
-    {
-      i++;
-    }
+  bool all_checked = std::all_of(all_plots.begin(), all_plots.end(),
+    [](const plot * plot) {return plot->display->isChecked();});
 
   for (auto plot : all_plots)
   {
-    if (i == all_plots.size())
+    if (all_checked)
       plot->display->setChecked(false);
     else
       plot->display->setChecked(true);
