@@ -17,11 +17,11 @@
 void run_feedback_wizard(main_window * window)
 {
   main_controller * controller = window->controller;
-  jrk::settings * settings = &controller->cached_settings;
 
   if (!controller->connected()) { return; }
   if (!controller->check_settings_applied_before_wizard()) { return; }
 
+  jrk::settings * settings = &controller->cached_settings;
   if (settings->get_feedback_mode() != JRK_FEEDBACK_MODE_ANALOG)
   {
     // Should not happen because the button is disabled.
@@ -45,8 +45,6 @@ void run_feedback_wizard(main_window * window)
   controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
   controller->handle_feedback_minimum_input(wizard.result.minimum);
   controller->handle_feedback_maximum_input(wizard.result.maximum);
-
-  // TODO: force duty cycle to 0, clear larched errors
 }
 
 feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
@@ -81,7 +79,14 @@ void feedback_wizard::handle_next_or_back(int id)
     return;
   }
 
-  if (page == LEARN)
+  if (page == INTRO && id == LEARN)
+  {
+    if (!handle_next_on_intro_page())
+    {
+      back();
+    }
+  }
+  else if (page == LEARN)
   {
     if (id == INTRO)
     {
@@ -133,6 +138,14 @@ void feedback_wizard::set_progress_visible(bool visible)
 {
   sampling_label->setVisible(visible);
   sampling_progress->setVisible(visible);
+}
+
+bool feedback_wizard::handle_next_on_intro_page()
+{
+  // TODO: want error messages here to be displayed before the wizard changes to
+  // the new tab, maybe should use custom buttons
+  show_error_message("TODO", this);
+  return false;
 }
 
 bool feedback_wizard::handle_back_on_learn_page()
