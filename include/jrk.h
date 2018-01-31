@@ -2279,6 +2279,29 @@ JRK_API
 uint32_t jrk_calculate_raw_current_mv64(
   const jrk_settings * settings, const jrk_variables *);
 
+/// Returns a friendly but short diagnostic sentence about the jrk to say
+/// whether the motor is running and why.
+///
+/// The settings and vars arguments are required, but osettings can be NULL.
+/// (Currently osettings is only used to see if the PID parameters are all zero,
+/// but we can fall back to just checking the persistent settings and that will
+/// be good enough for almost all users.)
+///
+/// The flags argument is reserved and should be set to 0, but could be used in
+/// the future to specify options like what context the message will be printed
+/// in.
+///
+/// If there is an error, this returns a pointer to the error, and writes NULL
+/// to the diagnosis pointer.  Otherwise, it returns a NULL error and writes a
+/// pointer to a string into the diagnosis pointer.  The string is
+/// null-terminated and it must be freed with jrk_string_free().
+JRK_API
+jrk_error * jrk_diagnose(
+  const jrk_settings * settings,
+  const jrk_overridable_settings * osettings,
+  const jrk_variables * vars,
+  uint32_t flags,
+  char ** diagnosis);
 
 #ifdef __cplusplus
 }

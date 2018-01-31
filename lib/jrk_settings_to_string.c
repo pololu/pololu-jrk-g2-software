@@ -411,18 +411,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_FBT, "pin_config_fbt");
   }
 
-  if (error == NULL && str.data == NULL)
+  if (str.data == NULL)
   {
-    error = &jrk_error_no_memory;
+    return &jrk_error_no_memory;
   }
-
-  if (error == NULL)
+  else
   {
     *string = str.data;
-    str.data = NULL;
+    return NULL;
   }
-
-  jrk_string_free(str.data);
-
-  return error;
 }

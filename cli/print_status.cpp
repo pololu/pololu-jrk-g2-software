@@ -308,5 +308,21 @@ void print_status(const jrk::variables & vars,
     print_pin_info(vars, JRK_PIN_NUM_AUX, "AUX");
     print_pin_info(vars, JRK_PIN_NUM_FBA, "FBA");
     print_pin_info(vars, JRK_PIN_NUM_FBT, "FBT");
+    std::cout << std::endl;
   }
+
+  std::string diagnosis;
+  try
+  {
+    diagnosis = jrk::diagnose(settings, osettings, vars);
+  }
+  catch (const jrk::error & error)
+  {
+    diagnosis = "Error: " + error.message();
+  }
+
+  // This will be a long line, so don't make it longer using 'left_column'.
+  // Use quotes so that YAML parsers don't complain about special characters
+  // like colons.
+  std::cout << "Diagnosis: \'" << diagnosis << "\'" << std::endl;
 }

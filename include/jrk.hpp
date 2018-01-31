@@ -289,7 +289,7 @@ namespace jrk
     {
       char * str;
       throw_if_needed(jrk_settings_to_string(pointer, &str));
-      std::string result = std::string(str);
+      std::string result(str);
       jrk_string_free(str);
       return result;
     }
@@ -1843,19 +1843,44 @@ namespace jrk
 
   /// Wrapper for jrk_calculate_measured_current_ma().
   inline int32_t calculate_measured_current_ma(
-    const settings & settings, const variables & variables)
+    const settings & settings, const variables & vars)
   {
     return jrk_calculate_measured_current_ma(
-      settings.get_pointer(), variables.get_pointer());
+      settings.get_pointer(), vars.get_pointer());
   }
 
   /// Wrapper for jrk_calculate_raw_current_mv64().
   inline int32_t calculate_raw_current_mv64(
-    const settings & settings, const variables & variables)
+    const settings & settings, const variables & vars)
   {
     return jrk_calculate_raw_current_mv64(
-      settings.get_pointer(), variables.get_pointer());
+      settings.get_pointer(), vars.get_pointer());
   }
 
+  /// Wrapper for jrk_diagnose().
+  inline std::string diagnose(
+    const settings & settings,
+    const overridable_settings & osettings,
+    const variables & vars,
+    uint32_t flags = 0)
+  {
+    char * cstr;
+    throw_if_needed(jrk_diagnose(
+        settings.get_pointer(), osettings.get_pointer(), vars.get_pointer(),
+        flags, &cstr));
+    std::string diagnosis(cstr);
+    jrk_string_free(cstr);
+    return diagnosis;
+  }
+
+  /// Wrapper for jrk_diagnose() that doesn't require a
+  /// jrk::overridable_settings object.
+  inline std::string diagnose(
+    const settings & settings,
+    const variables & vars,
+    uint32_t flags = 0)
+  {
+    return diagnose(settings, jrk::overridable_settings(), vars, flags);
+  }
 }
 
