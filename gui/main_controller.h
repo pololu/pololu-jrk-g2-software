@@ -166,6 +166,8 @@ private:
 
   bool check_settings_applied_before_wizard();
 
+  void update_motor_status_message(bool prompt_to_resume);
+
   // void update_motor_status_message(bool prompt_to_resume);
 
   // Holds a list of the relevant devices that are connected to the computer.

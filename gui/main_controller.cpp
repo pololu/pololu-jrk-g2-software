@@ -623,7 +623,10 @@ void main_controller::handle_variables_changed()
   window->set_run_motor_enabled(connected() && error_active);
 
   if (connected() && variables)
+  {
     window->update_graph(variables.get_up_time());
+    window->set_motor_status_message(jrk::diagnose(cached_settings, variables), variables.get_error_flags_halting());
+  }
 }
 
 void main_controller::handle_settings_changed()
@@ -1071,6 +1074,12 @@ bool main_controller::check_settings_applied_before_wizard()
 
   return true;
 }
+
+void main_controller::update_motor_status_message(bool prompt_to_resume)
+{
+
+}
+
 
 void main_controller::handle_input_learn()
 {
