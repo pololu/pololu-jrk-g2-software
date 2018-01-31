@@ -90,6 +90,7 @@ void graph_widget::setup_ui()
 
   custom_plot = new QCustomPlot();
   custom_plot->setMinimumSize(300, 300);
+  custom_plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   label2 = new QLabel();
   label2->setText(tr("    Time (s):"));
