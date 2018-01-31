@@ -491,6 +491,7 @@ void main_window::set_input_scaling_order_warning_label()
 
 void main_window::run_input_wizard(uint8_t input_mode)
 {
+  // TODO: make the input wizard more like the feedback wizard
   input_wizard wizard(this, input_mode);
   connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
 
@@ -559,20 +560,6 @@ void main_window::set_feedback_detect_disconnect(bool value)
 void main_window::set_feedback_wraparound(bool value)
 {
   set_check_box(feedback_wraparound_checkbox, value);
-}
-
-void main_window::run_feedback_wizard(uint8_t feedback_mode)
-{
-  feedback_wizard wizard(this, feedback_mode);
-  connect(this, &main_window::feedback_changed, &wizard, &feedback_wizard::set_feedback);
-
-  if (wizard.exec() != QDialog::Accepted) { return; }
-
-  controller->handle_feedback_invert_input(wizard.result.invert);
-  controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
-  controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
-  controller->handle_feedback_minimum_input(wizard.result.minimum);
-  controller->handle_feedback_maximum_input(wizard.result.maximum);
 }
 
 void main_window::set_pid_multiplier(int index, uint16_t value)
@@ -1360,7 +1347,7 @@ void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
 
 void main_window::on_feedback_learn_button_clicked()
 {
-  controller->handle_feedback_learn();
+  run_feedback_wizard(this);
 }
 
 void main_window::on_pid_period_spinbox_valueChanged(int value)

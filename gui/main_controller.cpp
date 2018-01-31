@@ -1166,27 +1166,6 @@ void main_controller::handle_feedback_wraparound_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_feedback_learn()
-{
-  if (!connected()) { return; }
-  if (!check_settings_applied_before_wizard()) { return; }
-
-  if (settings.get_feedback_mode() != JRK_FEEDBACK_MODE_ANALOG)
-  {
-    // Should not happen because the button is disabled.
-    window->show_info_message(
-      "This wizard helps you set the feedback scaling parameters for the "
-      "analog feedback.  "
-      "Please change the feedback mode to analog, then try again.");
-    return;
-  }
-
-  // Stop the motor so it isn't moving while people are learning the feedback.
-  stop_motor();
-
-  window->run_feedback_wizard(settings.get_feedback_mode());
-}
-
 void main_controller::handle_pid_period_input(uint16_t value)
 {
   if (!connected()) { return; }

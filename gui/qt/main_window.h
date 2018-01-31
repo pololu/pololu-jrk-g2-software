@@ -153,7 +153,6 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
-  void run_feedback_wizard(uint8_t feedback_mode);
 
   void set_pid_multiplier(int index, uint16_t value);
   void set_pid_exponent(int index, uint16_t value);
@@ -209,7 +208,6 @@ public:
   void reset_graph();
 
   bool suppress_events = false;
-  main_controller * window_controller() const;
   main_controller * controller;
 
 private:

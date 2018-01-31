@@ -14,9 +14,46 @@
 #include <algorithm>
 #include <cassert>
 
-feedback_wizard::feedback_wizard(QWidget * parent, uint8_t feedback_mode)
-  : QWizard(parent), feedback_mode(feedback_mode)
+void run_feedback_wizard(main_window * window)
 {
+  main_controller * controller = window->controller;
+  jrk::settings * settings = &controller->cached_settings;
+
+  if (!controller->connected()) { return; }
+  if (!controller->check_settings_applied_before_wizard()) { return; }
+
+  if (settings->get_feedback_mode() != JRK_FEEDBACK_MODE_ANALOG)
+  {
+    // Should not happen because the button is disabled.
+    window->show_info_message(
+      "This wizard helps you set the feedback scaling parameters for the "
+      "analog feedback.  "
+      "Please change the feedback mode to analog, then try again.");
+    return;
+  }
+
+  feedback_wizard wizard(window, controller);
+
+  QObject::connect(window, &main_window::feedback_changed,
+    &wizard, &feedback_wizard::set_feedback);
+
+  if (wizard.exec() != QDialog::Accepted) { return; }
+
+  // TODO: controller->handle_motor_invert_input(wizard.result.motor_invert);
+  controller->handle_feedback_invert_input(wizard.result.invert);
+  controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
+  controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
+  controller->handle_feedback_minimum_input(wizard.result.minimum);
+  controller->handle_feedback_maximum_input(wizard.result.maximum);
+
+  // TODO: force duty cycle to 0, clear larched errors
+}
+
+feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
+  : QWizard(parent), controller(controller)
+{
+  feedback_mode = controller->cached_settings.get_feedback_mode();
+
   setWindowTitle("Feedback setup wizard");
   setWindowIcon(QIcon(":app_icon")); //TODO: make sure this works
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);

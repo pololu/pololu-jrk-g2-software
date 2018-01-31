@@ -109,7 +109,6 @@ public:
   void handle_feedback_analog_samples_exponent_input(uint8_t);
   void handle_feedback_detect_disconnect_input(bool);
   void handle_feedback_wraparound_input(bool);
-  void handle_feedback_learn();
 
   void handle_pid_constant_control_multiplier(int index, uint16_t multiplier);
   void handle_pid_constant_control_exponent(int index, uint16_t exponent);
@@ -164,7 +163,11 @@ private:
 
   void recalculate_motor_asymmetric();
 
+public:
+
   bool check_settings_applied_before_wizard();
+
+private:
 
   // void update_motor_status_message(bool prompt_to_resume);
 
@@ -195,9 +198,13 @@ private:
   // True if motor reverse values are different from the forward values.
   bool motor_asymmetric = false;
 
+public:
+
   // Holds a cached copy of the settings from the device, without any unapplied
   // changes.
   jrk::settings cached_settings;
+
+private:
 
   // True if the working settings have been modified by user and could be
   // different from what is cached and on the device.
@@ -219,8 +226,12 @@ private:
 
   void reload_variables();
 
+public:
+
   // Returns true if we are currently connected to a device.
   bool connected() const { return device_handle; }
+
+private:
 
   main_window * window;
 };

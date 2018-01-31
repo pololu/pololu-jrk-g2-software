@@ -3,11 +3,15 @@
 #include <uint16_range.h>
 #include <stdint.h>
 #include <QWizard>
+#include "main_window.h"
+#include "main_controller.h"
 
 class uint16_range;
 class nice_wizard_page;
 class QLabel;
 class QProgressBar;
+
+void run_feedback_wizard(main_window *);
 
 class feedback_wizard : public QWizard
 {
@@ -22,7 +26,7 @@ class feedback_wizard : public QWizard
   const int LAST_STEP = MIN;
 
 public:
-  feedback_wizard(QWidget * parent, uint8_t feedback_mode);
+  feedback_wizard(QWidget * parent, main_controller *);
 
   struct result
   {
@@ -52,6 +56,11 @@ private:
   bool check_range_not_too_big(const uint16_range &);
   const uint16_t full_range = 4095;
   void update_learn_text();
+
+  // This class needs to hold a pointer to the main_controller since there are a
+  // variety of commands it needs to send to the jrk to control the motor, which
+  // means it has access to a lot of things that it should not use.
+  main_controller * controller;
 
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
