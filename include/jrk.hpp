@@ -1589,6 +1589,12 @@ namespace jrk
       return jrk_variables_get_error(pointer);
     }
 
+    /// Wrapper for jrk_variables_get_force_mode().
+    uint8_t get_force_mode() const noexcept
+    {
+      return jrk_variables_get_force_mode(pointer);
+    }
+
     /// Wrapper for jrk_variables_get_analog_reading().
     uint16_t get_analog_reading(uint8_t pin) const noexcept
     {
@@ -1763,12 +1769,6 @@ namespace jrk
       throw_if_needed(jrk_set_target(pointer, target));
     }
 
-    /// Wrapper for jrk_override_duty_cycle().
-    void override_duty_cycle(int16_t duty_cycle, uint8_t timeout)
-    {
-      throw_if_needed(jrk_override_duty_cycle(pointer, duty_cycle, timeout));
-    }
-
     /// Wrapper for jrk_stop_motor().
     void stop_motor()
     {
@@ -1787,6 +1787,18 @@ namespace jrk
       uint16_t error_flags;
       throw_if_needed(jrk_clear_errors(pointer, &error_flags));
       return error_flags;
+    }
+
+    /// Wrapper for jrk_force_duty_cycle_target().
+    void force_duty_cycle_target(int16_t duty_cycle)
+    {
+      throw_if_needed(jrk_force_duty_cycle_target(pointer, duty_cycle));
+    }
+
+    /// Wrapper for jrk_force_duty_cycle().
+    void force_duty_cycle(int16_t duty_cycle)
+    {
+      throw_if_needed(jrk_force_duty_cycle(pointer, duty_cycle));
     }
 
     /// Wrapper for jrk_restore_defaults().

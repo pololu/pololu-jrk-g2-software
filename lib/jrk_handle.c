@@ -202,27 +202,6 @@ jrk_error * jrk_set_target(jrk_handle * handle, uint16_t target)
   return error;
 }
 
-jrk_error * jrk_override_duty_cycle(jrk_handle * handle,
-  int16_t duty_cycle, uint8_t timeout)
-{
-  if (handle == NULL)
-  {
-    return jrk_error_create("Handle is null.");
-  }
-
-  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-      0x40, JRK_CMD_OVERRIDE_DUTY_CYCLE,
-      (uint16_t)duty_cycle, timeout, NULL, 0, NULL));
-
-  if (error != NULL)
-  {
-    error = jrk_error_add(error,
-      "There was an error overriding the duty cycle.");
-  }
-
-  return error;
-}
-
 jrk_error * jrk_stop_motor(jrk_handle * handle)
 {
   if (handle == NULL)
@@ -297,6 +276,44 @@ jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
   {
     error = jrk_error_add(error,
       "There was an error while clearing errors.");
+  }
+
+  return error;
+}
+
+jrk_error * jrk_force_duty_cycle_target(jrk_handle * handle, int16_t duty_cycle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
+    0x40, JRK_CMD_FORCE_DUTY_CYCLE_TARGET, duty_cycle, 0, NULL, 0, NULL));
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error forcing the duty cycle target.");
+  }
+
+  return error;
+}
+
+jrk_error * jrk_force_duty_cycle(jrk_handle * handle, int16_t duty_cycle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
+    0x40, JRK_CMD_FORCE_DUTY_CYCLE, duty_cycle, 0, NULL, 0, NULL));
+
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error forcing the duty cycle.");
   }
 
   return error;
@@ -402,7 +419,6 @@ jrk_error * jrk_get_variable_segment(jrk_handle * handle,
 
   return NULL;
 }
-
 
 jrk_error * jrk_restore_defaults(jrk_handle * handle)
 {

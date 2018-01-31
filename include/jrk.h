@@ -77,6 +77,13 @@ const char * jrk_look_up_product_name_ui(uint32_t product);
 JRK_API
 const char * jrk_look_up_error_name_ui(uint32_t error);
 
+/// Looks up a user-friendly string corresponding to the specified force mode
+/// from jrk_variables_get_force_mode() (e.g. "Duty cycle"). Returns "(Unknown)"
+/// if the argument is not valid.  The returned string will be valid
+/// indefinitely and should not be freed.
+JRK_API
+const char * jrk_look_up_force_mode_name_ui(uint8_t force_mode);
+
 /// Looks up a user-friendly string corresponding to the specified device reset,
 /// e.g. "Stack underflow".  The device_reset argument should be one of the
 /// JRK_RESET_* macros, but if it is not, this function returns "(Unknown)".
@@ -1869,6 +1876,31 @@ uint8_t jrk_variables_get_current_chopping_occurrence_count(const jrk_variables 
 JRK_API
 int16_t jrk_variables_get_error(const jrk_variables *);
 
+// Gets the force_move variable.
+//
+// This will be one of the following values:
+//
+// - JRK_FORCE_MODE_NONE: The jrk's movement is not being forced; it will
+//   operate normally if there are no errors.
+// - JRK_FORCE_MODE_DUTY_CYCLE_TARGET: The duty cycle target is being forced
+//   to a particular value due to a previous jrk_force_duty_cycle_target()
+//   command that was issued.  The duty cycle target gets ignored if
+//   there are any errors.  You can get the forced value from
+//   jrk_variables_get_duty_cycle_target().
+//   Use jrk_force_duty_cycle_target() to get into this mode.
+// - JRK_FORCE_MODE_DUTY_CYCLE:  The duty cycle is being forced to a
+//   particular value unless there are errors happening (excluding
+//   "Input invalid", "Input disconnect", "Feedback disconnect" errors).
+//   You can get the forced value by looking at jrk_variables_get_duty_cycle(),
+//   unless important errors are happening as defined above, in which case
+//   the duty cycle is controlled normally and will decelerate to 0.
+//   Use jrk_force_duty_cycle() to get into this mode.
+//
+// When the 'Awaiting command' error flag is set, this variable should always be
+// JRK_FORCE_MODE_NONE.
+JRK_API
+uint8_t jrk_variables_get_force_mode(const jrk_variables *);
+
 // Gets the analog reading from the specified pin.
 //
 // The pin_number argument should be one of the JRK_PIN_NUM_* macros.
@@ -2027,8 +2059,9 @@ jrk_error * jrk_set_target(jrk_handle *, uint16_t target);
 /// Sends a "Motor off" command to the jrk.
 ///
 /// This command turns the motor off by setting the "Awaiting command" error
-/// bit.  The jrk will not restart the motor until it receives a "Set target"
-/// command (see jrk_set_target()).
+/// bit.  The jrk will not restart the motor until it receives a
+/// jrk_set_target(), jrk_force_duty_cycle_target(), or jrk_force_duty_cycle()
+/// command.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_stop_motor(jrk_handle *);
 
@@ -2048,6 +2081,47 @@ jrk_error * jrk_run_motor(jrk_handle *);
 /// cleared.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
+
+/// Sends a "Force duty cycle target" command to the jrk.
+///
+/// The jrk will ignore the results of the usual algorithm for choosing the duty
+/// cycle target, and instead set it to be equal to the target specified by this
+/// command.  The jrk will set its 'Integral' variable to 0 while in this mode.
+///
+/// This is useful if the jrk is configured to use feedback but you want to take
+/// control of the motor for some time, while still respecting errors and motor
+/// limits as usual.
+///
+/// The duty_cycle argument should be between -600 and 600.
+///
+/// You can get out of this mode using jrk_set_target(), jrk_force_duty_cycle(),
+/// or jrk_stop_motor().
+///
+/// See jrk_variables_get_force_mode() and jrk_variables_get_duty_cycle_target().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_force_duty_cycle_target(jrk_handle *, int16_t duty_cycle);
+
+/// Sends a "Force duty cycle" command to the jrk.
+///
+/// The jrk will ignore the results of the usual algorithm for choosing the duty
+/// cycle, and instead set it to be equal to the target specified by this
+/// command, ignoring all motor limits except the maximum duty cycle parameters,
+/// and ignoring the 'Input invalid', 'Input disconnect', and 'Feedback
+/// disconnect' errors.  This command will have an immediate effect, so it
+/// doesn't matter if the PID period is set to something really long.  The jrk
+/// will set its 'Integral' variable to 0 while in this mode.
+///
+/// This is useful if the jrk is configured to use feedback but you want to take
+/// control of the motor for some time, without respecting motor limits.
+///
+/// The duty_cycle argument should be between -600 and 600.
+///
+/// You can get out of this mode using jrk_set_target(), jrk_force_duty_cycle(),
+/// or jrk_stop_motor().
+///
+/// See jrk_variables_get_force_mode() and jrk_variables_get_duty_cycle_target().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_force_duty_cycle(jrk_handle *, int16_t duty_cycle);
 
 /// Reads the jrk's status variables and returns them as an object.
 ///
@@ -2081,24 +2155,6 @@ jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
   uint16_t flags);
-
-/// Sends an "Override duty cycle" command to the jrk.
-///
-/// For specified number of PID periods, the jrk will ignore the results of the
-/// usual algorithm for choosing the duty cycle target, and instead set it to be
-/// equal to the target specified by this command.
-///
-/// The dutyCycle argument should be between -600 and 600.
-///
-/// The timeout argument is the number of PID periods for the override to be
-/// active, and can be any number from 0 to 255.  Set it to 0 if you want to
-/// cancel an earlier override.
-///
-/// While the override is active, motor limits like maximum acceleration are
-/// still enforced, and errors can still stop the motor.
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_override_duty_cycle(jrk_handle *,
-  int16_t duty_cycle, uint8_t timeout);
 
 /// Reads all of the jrk's non-volatile settings and returns them as an object.
 ///

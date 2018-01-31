@@ -95,6 +95,14 @@ const jrk_name jrk_error_names_ui[] =
   { NULL, 0 },
 };
 
+const jrk_name jrk_force_mode_names_ui[] =
+{
+  { "None", JRK_FORCE_MODE_NONE },
+  { "Duty cycle target", JRK_FORCE_MODE_DUTY_CYCLE_TARGET },
+  { "Duty cycle", JRK_FORCE_MODE_DUTY_CYCLE },
+  { NULL, 0 },
+};
+
 const jrk_name jrk_device_reset_names_ui[] =
 {
   { "Power-on reset", JRK_RESET_POWER_UP },
@@ -134,6 +142,13 @@ const char * jrk_look_up_error_name_ui(uint32_t error)
 {
   const char * str = "(Unknown)";
   jrk_code_to_name(jrk_error_names_ui, error, &str);
+  return str;
+}
+
+const char * jrk_look_up_force_mode_name_ui(uint8_t force_mode)
+{
+  const char * str = "(Unknown)";
+  jrk_code_to_name(jrk_force_mode_names_ui, force_mode, &str);
   return str;
 }
 

@@ -18,12 +18,12 @@ static const char help[] =
   "\n"
   "Control commands:\n"
   "  --target NUM                 Set the target value (if input mode is Serial)\n"
-  "  --speed NUM                  Set the target value to 2048 plus NUM\n"
-  "  --override NUM TIMEOUT       Ignore PID and target, set duty cycle target\n"
-  "                               to NUM for TIMEOUT PID periods.\n"
+  "  --speed NUM                  Set the target value to 2048 plus NUM.\n"
   "  --stop                       Stop the motor\n"
   "  --run                        Run the motor\n"
   "  --clear-errors               Clear latched errors\n"
+  "  --force-duty-cycle-target N  Force the duty cycle target to value N.\n"
+  "  --force-duty-cycle NUM       Force the duty cycle to value NUM.\n"
   "\n"
   "Permanent settings:\n"
   "  --restore-defaults           Restore device's factory settings\n"
@@ -72,15 +72,17 @@ struct arguments
   bool set_target = false;
   uint16_t target;
 
-  bool override_duty_cycle = false;
-  int16_t override_duty_cycle_value = 0;
-  uint8_t override_duty_cycle_timeout = 0;
-
   bool stop_motor = false;
 
   bool run_motor = false;
 
   bool clear_errors = false;
+
+  bool force_duty_cycle = false;
+  int16_t force_duty_cycle_value = 0;
+
+  bool force_duty_cycle_target = false;
+  int16_t force_duty_cycle_target_value = 0;
 
   bool restore_defaults = false;
 
@@ -130,10 +132,11 @@ struct arguments
       show_ttl_port ||
       show_help ||
       set_target ||
-      override_duty_cycle ||
       stop_motor ||
       run_motor ||
       clear_errors ||
+      force_duty_cycle_target ||
+      force_duty_cycle ||
       restore_defaults ||
       set_settings ||
       get_settings ||
@@ -297,16 +300,8 @@ static arguments parse_args(int argc, char ** argv)
     else if (arg == "--speed")
     {
       args.set_target = true;
-      int32_t speed = parse_arg_int<int32_t>(arg_reader);
-      if (speed < -2048) { args.target = 0; }
-      else if (speed > 2047) { args.target = 4095; }
-      else { args.target = 2048 + speed; }
-    }
-    else if (arg == "--override")
-    {
-      args.override_duty_cycle = true;
-      args.override_duty_cycle_value = parse_arg_int<int16_t>(arg_reader);
-      args.override_duty_cycle_timeout = parse_arg_int<uint8_t>(arg_reader);
+      int32_t speed = parse_arg_int<int16_t>(arg_reader, -600, 600);
+      args.target = 2048 + speed;
     }
     else if (arg == "--stop" || arg == "--stop-motor" || arg == "--stopmotor"
       || arg == "--motor-off" || arg == "--motoroff")
@@ -320,6 +315,18 @@ static arguments parse_args(int argc, char ** argv)
     else if (arg == "--clear-errors" || arg == "--clearerrors")
     {
       args.clear_errors = true;
+    }
+    else if (arg == "--force-duty-cycle-target")
+    {
+      args.force_duty_cycle_target = true;
+      args.force_duty_cycle_target_value =
+        parse_arg_int<int16_t>(arg_reader, -600, 600);
+    }
+    else if (arg == "--force-duty-cycle")
+    {
+      args.force_duty_cycle = true;
+      args.force_duty_cycle_value =
+        parse_arg_int<int16_t>(arg_reader, -600, 600);
     }
     else if (arg == "--restore-defaults" || arg == "--restoredefaults")
     {
@@ -663,10 +670,14 @@ static void run(const arguments & args)
     handle(selector).set_target(args.target);
   }
 
-  if (args.override_duty_cycle)
+  if (args.force_duty_cycle_target)
   {
-    handle(selector).override_duty_cycle(
-      args.override_duty_cycle_value, args.override_duty_cycle_timeout);
+    handle(selector).force_duty_cycle_target(args.force_duty_cycle_target_value);
+  }
+
+  if (args.force_duty_cycle)
+  {
+    handle(selector).force_duty_cycle(args.force_duty_cycle_value);
   }
 
   if (args.run_motor)

@@ -179,6 +179,13 @@ void print_status(const jrk::variables & vars,
     << vars.get_pid_period_count()
     << std::endl;
 
+  if (full_output)
+  {
+    std::cout << left_column << "Force mode: "
+      << jrk_look_up_force_mode_name_ui(vars.get_force_mode())
+      << std::endl;
+  }
+
   std::cout << std::endl;
 
   print_errors(vars.get_error_flags_halting(),

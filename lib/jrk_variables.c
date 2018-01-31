@@ -33,6 +33,7 @@ struct jrk_variables {
 
   // End of auto-generated variables struct members.
 
+  uint8_t force_mode;
   struct {
     uint16_t analog_reading;
     bool digital_reading;
@@ -145,6 +146,8 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->current_chopping_occurrence_count = buf[JRK_VAR_CURRENT_CHOPPING_OCCURRENCE_COUNT];
 
   // End of auto-generated buffer-to-variables code.
+
+  vars->force_mode = buf[JRK_VAR_FLAG_BYTE1] & 3;
 
   {
     // Digital readings.
@@ -398,6 +401,12 @@ int16_t jrk_variables_get_error(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
   return vars->scaled_feedback - vars->target;
+}
+
+uint8_t jrk_variables_get_force_mode(const jrk_variables * vars)
+{
+  if (vars == NULL) { return 0; }
+  return vars->force_mode;
 }
 
 uint16_t jrk_variables_get_analog_reading(const jrk_variables * variables,
