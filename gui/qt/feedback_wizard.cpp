@@ -142,10 +142,8 @@ void feedback_wizard::set_progress_visible(bool visible)
 
 bool feedback_wizard::handle_next_on_intro_page()
 {
-  // TODO: want error messages here to be displayed before the wizard changes to
-  // the new tab, maybe should use custom buttons
-  show_error_message("TODO", this);
-  return false;
+  // TODO: force duty cycle target to 0, clear latched errors
+  return true;
 }
 
 bool feedback_wizard::handle_back_on_learn_page()
