@@ -34,8 +34,6 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     return jrk_error_create("Settings pointer is null.");
   }
 
-  jrk_error * error = NULL;
-
   jrk_string str;
   jrk_string_setup(&str);
 
