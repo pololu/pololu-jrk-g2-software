@@ -47,6 +47,7 @@ private:
   void set_next_button_enabled(bool enabled);
   void set_progress_visible(bool visible);
 
+  bool handle_next_on_intro_page();
   bool handle_back_on_learn_page();
   bool handle_next_on_learn_page();
   void handle_new_sample();
