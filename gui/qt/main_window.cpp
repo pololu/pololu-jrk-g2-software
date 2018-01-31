@@ -341,6 +341,31 @@ void main_window::set_never_sleep(bool never_sleep)
   set_check_box(input_never_sleep_checkbox, never_sleep);
 }
 
+void main_window::set_motor_status_message(std::string const & message, uint16_t error_flag)
+{
+  // setStyleSheet() is expensive, so only call it if something actually
+  // changed. Check if there's currently a stylesheet applied and decide
+  // whether we need to do anything based on that.
+  bool styled = !motor_status_value->styleSheet().isEmpty();
+  bool stopped = false;
+
+  if (error_flag != 0)
+  {
+    stopped = true;
+  }
+
+  if (!styled && stopped)
+  {
+    motor_status_value->setStyleSheet("color: red;");
+  }
+  else if (styled && !stopped)
+  {
+    motor_status_value->setStyleSheet("");
+  }
+
+  motor_status_value->setText(QString::fromStdString(message));
+}
+
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
@@ -1599,9 +1624,12 @@ void main_window::setup_ui()
   run_motor_button->setStyleSheet(
     ":enabled { background-color: green; color: white; font-weight: bold; }");
 
+  motor_status_value = new QLabel();
+
   QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
   stop_and_run_buttons->addWidget(stop_motor_button, 0, Qt::AlignLeft);
   stop_and_run_buttons->addWidget(run_motor_button, 0, Qt::AlignLeft);
+  stop_and_run_buttons->addWidget(motor_status_value, 0, Qt::AlignLeft);
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");

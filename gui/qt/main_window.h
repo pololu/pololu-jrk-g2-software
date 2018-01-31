@@ -118,6 +118,8 @@ public:
 
   void set_never_sleep(bool never_sleep);
 
+  void set_motor_status_message(std::string const & message, uint16_t error_flag);
+
   void set_input_mode(uint8_t input_mode);
   void set_input_invert(bool input_invert);
   void set_input_analog_samples_exponent(uint8_t value);
@@ -394,6 +396,7 @@ private:
   QLabel * device_list_label;
   QComboBox * device_list_value;
   QLabel * connection_status_value;
+  QLabel * motor_status_value;
 
   QTabWidget *tab_widget;
 
