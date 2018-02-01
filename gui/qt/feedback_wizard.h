@@ -39,6 +39,8 @@ public:
 
   result result;
 
+  virtual void showEvent(QShowEvent *);
+
 public slots:
   void handle_next();
   void handle_back();

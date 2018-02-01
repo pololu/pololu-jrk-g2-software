@@ -37,8 +37,14 @@ void run_feedback_wizard(main_window * window)
   QObject::connect(window, &main_window::feedback_changed,
     &wizard, &feedback_wizard::set_feedback);
 
-  if (wizard.exec() != QDialog::Accepted) { return; }
+  int result = wizard.exec();
 
+  // Put the jrk back into a more normal state instead of the force duty cycle
+  // state.  Also, this is important to do because the window could conceivably
+  // be closed while the duty cycle is being forced to some non-zero value.
+  controller->stop_motor();
+
+  if (result != QDialog::Accepted) { return; }
   // TODO: controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
   controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
@@ -69,27 +75,28 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   connect(button(BackButton), &QAbstractButton::clicked, this, &handle_back);
 }
 
-void feedback_wizard::handle_next()
+void feedback_wizard::showEvent(QShowEvent * event)
 {
 #ifdef _WIN32
   // In Windows, there is a special back button that we need to find and fix.
-  // It is a QVistaBackButton, which is a subclass of QAbstractButton, but it is
-  // NOT a Q_OBJECT.
+  // It doesn't have a good object name or class name, so we just identify it
+  // using "disconnect".
   //
-  // It is the only QAbstractButton child with an empty object name (for now),
-  // so that is how we find it.  This is fragile; it would be much better
-  // if Qt assigned an object name to it.
+  // The back button is set up in QWizard::event when it receives a show event.
+  // It then calls QDialog::event, which eventually calls QWidget::event, which
+  // calls showEvent, so showEvent is a good place to fix the button.
   for (QAbstractButton * button : findChildren<QAbstractButton *>())
   {
-    if (button->objectName().isEmpty() &&
-      QString("QAbstractButton") == button->metaObject()->className())
+    if (disconnect(button, SIGNAL(clicked()), this, SLOT(back())))
     {
-      button->disconnect(SIGNAL(clicked()));
-      connect(button, &QAbstractButton::clicked, this, &handle_back);
+      connect(button, SIGNAL(clicked()), this, SLOT(handle_back()));
     }
   }
 #endif
+}
 
+void feedback_wizard::handle_next()
+{
   if (currentId() == INTRO)
   {
     if (handle_next_on_intro_page())
@@ -356,15 +363,19 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
   intro_label->setText(tr(
     "This wizard will help you quickly set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
-  layout->addStretch(1);
+
+  // TODO: warn if PID period or accel/decel parameters are too slow
+  // TODO: warn if max duty cycle is too slow
 
   QLabel * stopped_label = new QLabel();
   stopped_label->setWordWrap(true);
   stopped_label->setText(tr(
-    "NOTE: Your motor has been automatically stopped so that it does not "
-    "cause problems while you are using this wizard.  To restart it manually "
-    "later, you can click the \"Run motor\" button (after fixing any errors)."));
+    "NOTE: When you click " NEXT_BUTTON_TEXT ", this wizard will stop the motor "
+    "and clear any latched errors.  To restart the motor later, "
+    "you can click the \"Run motor\" button (after fixing any errors)."));
   layout->addWidget(stopped_label);
+
+  layout->addStretch(1);
 
   page->setLayout(layout);
   return page;
