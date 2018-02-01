@@ -363,17 +363,7 @@ void main_window::set_motor_status_message(std::string const & message, uint16_t
     motor_status_value->setStyleSheet("");
   }
 
-  QString original_text = QString::fromStdString(message);
-
-  // Elides text if too long for layout.
-  QFontMetrics metrics(motor_status_value->font());
-  QString elided_text = metrics.elidedText(original_text,
-    Qt::ElideRight, motor_status_value->width());
-
-  motor_status_value->setText(elided_text);
-  if (elided_text != original_text)
-    motor_status_value->setToolTip(original_text);
-  motor_status_value->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  motor_status_value->setText(QString::fromStdString(message));
 }
 
 void main_window::set_input_mode(uint8_t input_mode)
@@ -1626,18 +1616,15 @@ void main_window::setup_ui()
   stop_motor_button->setObjectName("stop_motor_button");
   stop_motor_button->setText(tr("&Stop motor"));
   stop_motor_button->setStyleSheet(
-    ":enabled { background-color: red; color: white; border: 2px outset red;\
-      font-weight: bold; }");
+    ":enabled { background-color: red; color: white; font-weight: bold; }");
 
   run_motor_button = new QPushButton();
   run_motor_button->setObjectName("run_motor_button");
   run_motor_button->setText(tr("&Run motor"));
   run_motor_button->setStyleSheet(
-    ":enabled { background-color: green; color: white; border: 2px outset green;\
-      font-weight: bold; }");
+    ":enabled { background-color: green; color: white; font-weight: bold; }");
 
-  motor_status_value = new QLabel();
-  motor_status_value->setMouseTracking(true);
+  motor_status_value = new extended_label();
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
@@ -1646,8 +1633,7 @@ void main_window::setup_ui()
   QHBoxLayout *footer_layout = new QHBoxLayout();
   footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);
   footer_layout->addWidget(run_motor_button, 0, Qt::AlignLeft);
-  footer_layout->addWidget(motor_status_value, 2);
-  footer_layout->addStretch(1);
+  footer_layout->addWidget(motor_status_value, 2, Qt::AlignLeft);
   footer_layout->addWidget(apply_settings_button, 0, Qt::AlignRight);
 
   QHBoxLayout *header_layout = new QHBoxLayout();
@@ -1658,8 +1644,6 @@ void main_window::setup_ui()
   grid_layout->addLayout(header_layout, 0, 0, Qt::AlignLeft);
   grid_layout->addWidget(tab_widget, 1, 0, 1, 3);
   grid_layout->addLayout(footer_layout, 2, 0, 1, 3);
-
-  grid_layout->setColumnStretch(2, 1);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -3103,5 +3087,47 @@ void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
   if (window_suppress_events()) { return; }
-  window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(), pid_exponent_spinbox->value());
+  window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(),
+    pid_exponent_spinbox->value());
+}
+
+extended_label::extended_label(const QString &text, QWidget *parent) :
+  QLabel(text, parent),
+  label_text(text)
+{
+  setToolTip(text);
+}
+
+void extended_label::resizeEvent(QResizeEvent *event)
+{
+  QFontMetrics fm(fontMetrics());
+  QString str = fm.elidedText(label_text, Qt::ElideRight,
+    event->size().width());
+  setText(str);
+  QLabel::resizeEvent(event);
+}
+
+QSize extended_label::minimumSizeHint() const
+{
+  if (pixmap() != NULL)
+    return QLabel::sizeHint();
+  const QFontMetrics &fm = fontMetrics();
+  QSize size(fm.width("..."), fm.height());
+  return size;
+}
+
+QSize extended_label::sizeHint() const
+{
+  if (pixmap() != NULL)
+    return QLabel::sizeHint();
+  const QFontMetrics& fm = fontMetrics();
+  QSize size(fm.width(label_text), fm.height());
+  return size;
+}
+
+void extended_label::setText(const QString &text)
+{
+  label_text = text;
+  setToolTip(text);
+  QLabel::setText(text);
 }

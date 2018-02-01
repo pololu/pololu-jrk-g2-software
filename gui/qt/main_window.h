@@ -31,6 +31,7 @@ class QSpinBox;
 
 class pid_constant_control;
 class pid_constant_validator;
+class extended_label;
 class main_controller;
 
 class main_window : public QMainWindow
@@ -396,7 +397,7 @@ private:
   QLabel * device_list_label;
   QComboBox * device_list_value;
   QLabel * connection_status_value;
-  QLabel * motor_status_value;
+  extended_label * motor_status_value;
 
   QTabWidget *tab_widget;
 
@@ -732,4 +733,23 @@ public:
       return QValidator::Invalid;
     }
   }
+};
+
+class extended_label : public QLabel
+{
+  Q_OBJECT
+
+public:
+  extended_label( QWidget *parent = Q_NULLPTR ) : QLabel( parent ) {}
+  extended_label( const QString& text, QWidget* parent = 0 );
+
+  virtual QSize minimumSizeHint() const;
+  virtual QSize sizeHint() const;
+  void setText( const QString &text );
+
+protected:
+  virtual void resizeEvent( QResizeEvent *event );
+
+private:
+  QString label_text;
 };
