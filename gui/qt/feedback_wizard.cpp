@@ -401,13 +401,19 @@ void feedback_wizard::update_learn_text()
   case MAX:
     learn_page->setTitle(tr("Step 1 of 2: Maximum"));
     instruction_label->setText(tr(
-      "Move the output to its maximum (full forward) position."));
+      "Use the \"Drive forward\" button to drive the motor to its "
+      "maximum (full forward) position.  If the motor goes in the wrong "
+      "direction, go back and toggle the \"Invert motor direction\" "
+      "checkbox to fix it.  Alternatively, you can move the output of "
+      "your system manually."));
     break;
 
   case MIN:
     learn_page->setTitle(tr("Step 2 of 2: Minimum"));
     instruction_label->setText(tr(
-      "Move the output to its minimum (full reverse) position."));
+      "Use the \"Drive reverse\" button to drive the motor to its "
+      "minimum (full reverse) position.  Alternatively, you can move "
+      "the output of your system manually."));
     break;
   }
 }
