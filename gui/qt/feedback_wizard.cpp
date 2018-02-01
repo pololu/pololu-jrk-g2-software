@@ -81,10 +81,9 @@ void feedback_wizard::handle_next()
   // if Qt assigned an object name to it.
   for (QAbstractButton * button : findChildren<QAbstractButton *>())
   {
-    if (button->objectName().isEmpty() &&
-      QString("QAbstractButton") == button->metaObject()->className())
+    if (button->objectName().isEmpty())
     {
-      button->disconnect(SIGNAL(clicked()));
+      disconnect(button, &QAbstractButton::clicked, 0, 0);
       connect(button, &QAbstractButton::clicked, this, &handle_back);
     }
   }
