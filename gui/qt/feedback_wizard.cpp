@@ -69,26 +69,28 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   connect(button(BackButton), &QAbstractButton::clicked, this, &handle_back);
 }
 
-void feedback_wizard::handle_next()
+void feedback_wizard::showEvent(QShowEvent * event)
 {
 #ifdef _WIN32
   // In Windows, there is a special back button that we need to find and fix.
-  // It is a QVistaBackButton, which is a subclass of QAbstractButton, but it is
-  // NOT a Q_OBJECT.
+  // It doesn't have a good object name or class name, so we just identify it
+  // using "disconnect".
   //
-  // It is the only QAbstractButton child with an empty object name (for now),
-  // so that is how we find it.  This is fragile; it would be much better
-  // if Qt assigned an object name to it.
+  // The back button is set up in QWizard::event when it receives a show event.
+  // It then calls QDialog::event, which eventually calls QWidget::event, which
+  // calls showEvent, so showEvent is a good place to fix the button.
   for (QAbstractButton * button : findChildren<QAbstractButton *>())
   {
-    if (button->objectName().isEmpty())
+    if (disconnect(button, SIGNAL(clicked()), this, SLOT(back())))
     {
-      disconnect(button, &QAbstractButton::clicked, 0, 0);
-      connect(button, &QAbstractButton::clicked, this, &handle_back);
+      connect(button, SIGNAL(clicked()), this, SLOT(handle_back()));
     }
   }
 #endif
+}
 
+void feedback_wizard::handle_next()
+{
   if (currentId() == INTRO)
   {
     if (handle_next_on_intro_page())
