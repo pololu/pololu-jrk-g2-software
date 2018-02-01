@@ -62,50 +62,71 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
 
   setFixedSize(sizeHint());
 
-  connect(this, &QWizard::currentIdChanged,
-    this, &feedback_wizard::handle_next_or_back);
+  // Handle the next and back buttons with custom slots.
+  disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
+  connect(button(NextButton), &QAbstractButton::clicked, this, &handle_next);
+  disconnect(button(BackButton), &QAbstractButton::clicked, 0, 0);
+  connect(button(BackButton), &QAbstractButton::clicked, this, &handle_back);
 }
 
-// This gets called when the user pressed next or back, and it receives the ID
-// of the page the QWizard class it trying to go to.  It figures out what
-// happened and then calls a handler function.  The handler should true if it is
-// OK with changing to the new page and take care of any other effects.
-void feedback_wizard::handle_next_or_back(int id)
+void feedback_wizard::handle_next()
 {
-  if (page == id)
+#ifdef _WIN32
+  // In Windows, there is a special back button that we need to find and fix.
+  // It is a QVistaBackButton, which is a subclass of QAbstractButton, but it is
+  // NOT a Q_OBJECT.
+  //
+  // It is the only QAbstractButton child with an empty object name (for now),
+  // so that is how we find it.  This is fragile; it would be much better
+  // if Qt assigned an object name to it.
+  for (QAbstractButton * button : findChildren<QAbstractButton *>())
   {
-    // We are already on the expected page so don't do anything.  This can
-    // happen if the user tried to move and we rejected it.
-    return;
+    if (button->objectName().isEmpty() &&
+      QString("QAbstractButton") == button->metaObject()->className())
+    {
+      button->disconnect(SIGNAL(clicked()));
+      connect(button, &QAbstractButton::clicked, this, &handle_back);
+    }
+  }
+#endif
+
+  if (currentId() == INTRO)
+  {
+    if (handle_next_on_intro_page())
+    {
+      next();
+    }
+  }
+  else if (currentId() == LEARN)
+  {
+    if (handle_next_on_learn_page())
+    {
+      next();
+    }
+  }
+  else
+  {
+    next();
   }
 
-  if (page == INTRO && id == LEARN)
+  set_next_button_enabled(!sampling);
+  set_progress_visible(sampling);
+  update_learn_text();
+}
+
+void feedback_wizard::handle_back()
+{
+  if (currentId() == LEARN)
   {
-    if (!handle_next_on_intro_page())
+    if (handle_back_on_learn_page())
     {
       back();
     }
   }
-  else if (page == LEARN)
+  else
   {
-    if (id == INTRO)
-    {
-      // User clicked back from the learn page.
-      if (!handle_back_on_learn_page())
-      {
-        next();
-      }
-    }
-    else if (id == CONCLUSION)
-    {
-      if (!handle_next_on_learn_page())
-      {
-        back();
-      }
-    }
+    back();
   }
-
-  page = currentId();
 
   set_next_button_enabled(!sampling);
   set_progress_visible(sampling);
@@ -142,10 +163,8 @@ void feedback_wizard::set_progress_visible(bool visible)
 
 bool feedback_wizard::handle_next_on_intro_page()
 {
-  // TODO: want error messages here to be displayed before the wizard changes to
-  // the new tab, maybe should use custom buttons
-  show_error_message("TODO", this);
-  return false;
+  // TODO: force duty cycle target to 0, clear latched errors
+  return true;
 }
 
 bool feedback_wizard::handle_back_on_learn_page()
@@ -236,10 +255,8 @@ void feedback_wizard::handle_sampling_complete()
 
   if (learn_step_succeeded)
   {
-    // Go to the next step or page.  We can't directly control it so just
-    // trigger handle_next_or_back(), which will check the learn_step_succeded
-    // flag.
-    next();
+    // Go to the next step or page.
+    handle_next();
   }
 }
 

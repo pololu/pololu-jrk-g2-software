@@ -2301,11 +2301,11 @@ QWidget * main_window::setup_input_scaling_groupbox()
 
   input_learn_button = new QPushButton();
   input_learn_button->setObjectName("input_learn_button");
-  input_learn_button->setText(tr("Learn..."));
+  input_learn_button->setText(tr("&Learn..."));
 
   input_reset_range_button = new QPushButton();
   input_reset_range_button->setObjectName("input_reset_range_button");
-  input_reset_range_button->setText(tr("Reset to full range"));
+  input_reset_range_button->setText(tr("R&eset to full range"));
 
   // used so layout does not change when item is hidden
   QSizePolicy p = this->sizePolicy();
@@ -2424,10 +2424,10 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_absolute_minimum_spinbox->setObjectName("feedback_absolute_minimum_spinbox");
   feedback_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
 
-  feedback_learn_button = new QPushButton(tr("Learn..."));
+  feedback_learn_button = new QPushButton(tr("&Learn..."));
   feedback_learn_button->setObjectName("feedback_learn_button");
 
-  feedback_reset_range_button = new QPushButton(tr("Reset to full range"));
+  feedback_reset_range_button = new QPushButton(tr("R&eset to full range"));
   feedback_reset_range_button->setObjectName("feedback_reset_range_button");
 
   QGridLayout *feedback_scaling_layout = new QGridLayout();
