@@ -76,7 +76,7 @@ private:
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
   QLayout * setup_feedback_layout();
-  QLayout * setup_motor_control_layout();
+  QWidget * setup_motor_control_widget();
   nice_wizard_page * setup_conclusion_page();
 
   // Controls on the 'Learn' page
@@ -86,6 +86,8 @@ private:
   QProgressBar * sampling_progress;
   QLabel * feedback_value;
   QLabel * feedback_pretty;
+  QWidget * motor_control_widget;
+  QLabel * bottom_instruction_label;
 
   // Input mode setting (RC or analog).
   uint8_t feedback_mode;

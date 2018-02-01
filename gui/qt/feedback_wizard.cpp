@@ -66,7 +66,9 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   setPage(LEARN, setup_learn_page());
   setPage(CONCLUSION, setup_conclusion_page());
 
-  setFixedSize(sizeHint());
+  QSize size = sizeHint();
+  size.setHeight(size.height() * 3 / 2);
+  setFixedSize(size);
 
   // Handle the next and back buttons with custom slots.
   disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
@@ -204,6 +206,9 @@ void feedback_wizard::set_progress_visible(bool visible)
 {
   sampling_label->setVisible(visible);
   sampling_progress->setVisible(visible);
+
+  motor_control_widget->setVisible(!visible);
+  bottom_instruction_label->setVisible(!visible);
 }
 
 bool feedback_wizard::handle_next_on_intro_page()
@@ -466,22 +471,22 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   instruction_label = new QLabel();
   instruction_label->setWordWrap(true);
   instruction_label->setAlignment(Qt::AlignTop);
-  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 2);
+  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 4);
   layout->addWidget(instruction_label);
   layout->addSpacing(fontMetrics().height());
 
   layout->addLayout(setup_feedback_layout());
   layout->addSpacing(fontMetrics().height());
 
-  layout->addLayout(setup_motor_control_layout());
+  layout->addWidget(setup_motor_control_widget());
   layout->addSpacing(fontMetrics().height());
 
-  QLabel * next_label = new QLabel(
+  bottom_instruction_label = new QLabel(
     tr("When you click ") + NEXT_BUTTON_TEXT +
     tr(", this wizard will sample the feedback values for one second.  "
     "Please do not move the output while it is being sampled."));
-  next_label->setWordWrap(true);
-  layout->addWidget(next_label);
+  bottom_instruction_label->setWordWrap(true);
+  layout->addWidget(bottom_instruction_label);
   layout->addSpacing(fontMetrics().height());
 
   sampling_label = new QLabel(tr("Sampling..."));
@@ -529,7 +534,7 @@ QLayout * feedback_wizard::setup_feedback_layout()
   return layout;
 }
 
-QLayout * feedback_wizard::setup_motor_control_layout()
+QWidget * feedback_wizard::setup_motor_control_widget()
 {
   QHBoxLayout * layout = new QHBoxLayout();
 
@@ -545,7 +550,10 @@ QLayout * feedback_wizard::setup_motor_control_layout()
 
   layout->addStretch(1);
 
-  return layout;
+  motor_control_widget = new QWidget();
+  motor_control_widget->setLayout(layout);
+
+  return motor_control_widget;
 }
 
 nice_wizard_page * feedback_wizard::setup_conclusion_page()
