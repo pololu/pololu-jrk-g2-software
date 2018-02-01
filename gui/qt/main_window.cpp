@@ -1626,13 +1626,15 @@ void main_window::setup_ui()
   stop_motor_button->setObjectName("stop_motor_button");
   stop_motor_button->setText(tr("&Stop motor"));
   stop_motor_button->setStyleSheet(
-    ":enabled { background-color: red; color: white; font-weight: bold; }");
+    ":enabled { background-color: red; color: white; border: 2px outset red;\
+      font-weight: bold; }");
 
   run_motor_button = new QPushButton();
   run_motor_button->setObjectName("run_motor_button");
   run_motor_button->setText(tr("&Run motor"));
   run_motor_button->setStyleSheet(
-    ":enabled { background-color: green; color: white; font-weight: bold; }");
+    ":enabled { background-color: green; color: white; border: 2px outset green;\
+      font-weight: bold; }");
 
   motor_status_value = new QLabel();
   motor_status_value->setMouseTracking(true);
