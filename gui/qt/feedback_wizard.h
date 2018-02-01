@@ -45,6 +45,9 @@ public slots:
   void handle_next();
   void handle_back();
   void set_feedback(uint16_t);
+  void reverse_button_pressed();
+  void forward_button_pressed();
+  void drive_button_released();
 
 private:
   void set_next_button_enabled(bool enabled);
@@ -73,6 +76,7 @@ private:
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
   QLayout * setup_feedback_layout();
+  QLayout * setup_motor_control_layout();
   nice_wizard_page * setup_conclusion_page();
 
   // Controls on the 'Learn' page

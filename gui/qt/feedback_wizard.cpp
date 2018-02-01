@@ -155,6 +155,44 @@ void feedback_wizard::set_feedback(uint16_t value)
   handle_new_sample();
 }
 
+void feedback_wizard::reverse_button_pressed()
+{
+  try
+  {
+    // TODO: need to allow full speed also
+    controller->force_duty_cycle_target_nocatch(-300);
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+  }
+}
+
+void feedback_wizard::forward_button_pressed()
+{
+  try
+  {
+    // TODO: need to allow full speed also
+    controller->force_duty_cycle_target_nocatch(300);
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+  }
+}
+
+void feedback_wizard::drive_button_released()
+{
+  try
+  {
+    controller->force_duty_cycle_target_nocatch(0);
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+  }
+}
+
 void feedback_wizard::set_next_button_enabled(bool enabled)
 {
   // We only care about setting the next button to be enabled when we are on the
@@ -429,6 +467,9 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addLayout(setup_feedback_layout());
   layout->addSpacing(fontMetrics().height());
 
+  layout->addLayout(setup_motor_control_layout());
+  layout->addSpacing(fontMetrics().height());
+
   QLabel * next_label = new QLabel(
     tr("When you click ") + NEXT_BUTTON_TEXT +
     tr(", this wizard will sample the feedback values for one second.  "
@@ -478,6 +519,25 @@ QLayout * feedback_wizard::setup_feedback_layout()
     QString::fromStdString(convert_analog_12bit_to_v_string(4095) + ") "));
   feedback_pretty->setFixedSize(feedback_pretty->sizeHint());
   feedback_pretty->setText("");
+
+  return layout;
+}
+
+QLayout * feedback_wizard::setup_motor_control_layout()
+{
+  QHBoxLayout * layout = new QHBoxLayout();
+
+  QPushButton * reverse_button = new QPushButton(tr("Drive reverse"));
+  connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
+  connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
+  layout->addWidget(reverse_button);
+
+  QPushButton * forward_button = new QPushButton(tr("Drive forward"));
+  connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
+  connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
+  layout->addWidget(forward_button);
+
+  layout->addStretch(1);
 
   return layout;
 }
