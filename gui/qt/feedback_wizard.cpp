@@ -37,8 +37,14 @@ void run_feedback_wizard(main_window * window)
   QObject::connect(window, &main_window::feedback_changed,
     &wizard, &feedback_wizard::set_feedback);
 
-  if (wizard.exec() != QDialog::Accepted) { return; }
+  int result = wizard.exec();
 
+  // Put the jrk back into a more normal state instead of the force duty cycle
+  // state.  Also, this is important to do because the window could conceivably
+  // be closed while the duty cycle is being forced to some non-zero value.
+  controller->stop_motor();
+
+  if (result != QDialog::Accepted) { return; }
   // TODO: controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
   controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
@@ -357,15 +363,19 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
   intro_label->setText(tr(
     "This wizard will help you quickly set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
-  layout->addStretch(1);
+
+  // TODO: warn if PID period or accel/decel parameters are too slow
+  // TODO: warn if max duty cycle is too slow
 
   QLabel * stopped_label = new QLabel();
   stopped_label->setWordWrap(true);
   stopped_label->setText(tr(
-    "NOTE: Your motor has been automatically stopped so that it does not "
-    "cause problems while you are using this wizard.  To restart it manually "
-    "later, you can click the \"Run motor\" button (after fixing any errors)."));
+    "NOTE: When you click " NEXT_BUTTON_TEXT ", this wizard will stop the motor "
+    "and clear any latched errors.  To restart the motor later, "
+    "you can click the \"Run motor\" button (after fixing any errors)."));
   layout->addWidget(stopped_label);
+
+  layout->addStretch(1);
 
   page->setLayout(layout);
   return page;
