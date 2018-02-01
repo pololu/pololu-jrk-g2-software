@@ -363,11 +363,16 @@ void main_window::set_motor_status_message(std::string const & message, uint16_t
     motor_status_value->setStyleSheet("");
   }
 
+  QString original_text = QString::fromStdString(message);
+
+  // Elides text if too long for layout.
   QFontMetrics metrics(motor_status_value->font());
-  QString elidedText = metrics.elidedText(QString::fromStdString(message),
+  QString elided_text = metrics.elidedText(original_text,
     Qt::ElideRight, motor_status_value->width());
 
-  motor_status_value->setText(elidedText);
+  motor_status_value->setText(elided_text);
+  if (elided_text != original_text)
+    motor_status_value->setToolTip(original_text);
   motor_status_value->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
@@ -1630,6 +1635,7 @@ void main_window::setup_ui()
     ":enabled { background-color: green; color: white; font-weight: bold; }");
 
   motor_status_value = new QLabel();
+  motor_status_value->setMouseTracking(true);
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
