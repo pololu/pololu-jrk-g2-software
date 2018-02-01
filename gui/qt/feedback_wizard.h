@@ -40,7 +40,8 @@ public:
   result result;
 
 public slots:
-  void handle_next_or_back(int index);
+  void handle_next();
+  void handle_back();
   void set_feedback(uint16_t);
 
 private:
@@ -83,7 +84,6 @@ private:
   uint16_t feedback;
 
   // Current state of the wizard.
-  int page = INTRO;
   int learn_step = FIRST_STEP;
   bool learn_step_succeeded = false;
   bool sampling = false;
