@@ -73,6 +73,9 @@ public:
   void set_target(uint16_t);
   void clear_current_chopping_count();
 
+  void force_duty_cycle_target_nocatch(int16_t);
+  void clear_errors_nocatch();
+
   void open_settings_from_file(std::string filename);
   void save_settings_to_file(std::string filename);
 

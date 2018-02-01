@@ -507,14 +507,14 @@ bool main_controller::do_motor_direction_detect()
 void main_controller::show_exception(std::exception const & e,
     std::string const & context)
 {
-    std::string message;
-    if (context.size() > 0)
-    {
-      message += context;
-      message += "  ";
-    }
-    message += e.what();
-    window->show_error_message(message);
+  std::string message;
+  if (context.size() > 0)
+  {
+    message += context;
+    message += "  ";
+  }
+  message += e.what();
+  window->show_error_message(message);
 }
 
 void main_controller::handle_model_changed()
@@ -1605,6 +1605,16 @@ void main_controller::clear_current_chopping_count()
 {
   current_chopping_count = 0;
   handle_variables_changed();
+}
+
+void main_controller::force_duty_cycle_target_nocatch(int16_t duty_cycle)
+{
+  device_handle.force_duty_cycle_target(duty_cycle);
+}
+
+void main_controller::clear_errors_nocatch()
+{
+  device_handle.clear_errors();
 }
 
 void main_controller::open_settings_from_file(std::string filename)

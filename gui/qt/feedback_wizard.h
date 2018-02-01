@@ -58,8 +58,12 @@ private:
   bool learn_max();
   bool learn_min();
   bool check_range_not_too_big(const uint16_range &);
+
   const uint16_t full_range = 4095;
+
   void update_learn_text();
+
+  void throw_if_not_connected();
 
   // This class needs to hold a pointer to the main_controller since there are a
   // variety of commands it needs to send to the jrk to control the motor, which

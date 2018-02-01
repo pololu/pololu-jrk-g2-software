@@ -170,7 +170,30 @@ void feedback_wizard::set_progress_visible(bool visible)
 
 bool feedback_wizard::handle_next_on_intro_page()
 {
-  // TODO: force duty cycle target to 0, clear latched errors
+  try
+  {
+    throw_if_not_connected();
+
+    // Force the duty cycle target to 0 to make this wizard safer and because
+    // that should be the default state when we drive the motor around manually.
+    controller->force_duty_cycle_target_nocatch(0);
+
+    // Clear latched errors so we are more likely to be able to run the motor.
+    // This should be done second because if we do it first, it might cause the
+    // motor to run.
+    controller->clear_errors_nocatch();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+    return false;
+  }
+
+  // This shouldn't be necessary, but if there is ever a bug in the "Back"
+  // button and we go back to the intro page prematurely, it will help.
+  learn_step = FIRST_STEP;
+  sampling = false;
+
   return true;
 }
 
@@ -348,6 +371,16 @@ void feedback_wizard::update_learn_text()
     instruction_label->setText(tr(
       "Move the output to its minimum (full reverse) position."));
     break;
+  }
+}
+
+void feedback_wizard::throw_if_not_connected()
+{
+  if (!controller->connected())
+  {
+    throw std::runtime_error(
+      "The connection to the device was lost.  "
+      "Please close this wizard, reconnect, and try again.");
   }
 }
 
