@@ -45,7 +45,8 @@ void run_feedback_wizard(main_window * window)
   controller->stop_motor();
 
   if (result != QDialog::Accepted) { return; }
-  // TODO: controller->handle_motor_invert_input(wizard.result.motor_invert);
+
+  controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
   controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
   controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
@@ -56,7 +57,9 @@ void run_feedback_wizard(main_window * window)
 feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   : QWizard(parent), controller(controller)
 {
-  feedback_mode = controller->cached_settings.get_feedback_mode();
+  const jrk::settings & settings = controller->cached_settings;
+  feedback_mode = settings.get_feedback_mode();
+  result.motor_invert = settings.get_motor_invert();
 
   setWindowTitle("Feedback setup wizard");
   setWindowIcon(QIcon(":app_icon")); //TODO: make sure this works
@@ -443,7 +446,8 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
   QLabel * intro_label = new QLabel();
   intro_label->setWordWrap(true);
   intro_label->setText(tr(
-    "This wizard will help you quickly set up the feedback scaling parameters."));
+    "This wizard will help you quickly detect your motor direction "
+    "and set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
 
   // TODO: warn if PID period or accel/decel parameters are too slow
@@ -564,10 +568,10 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   page->setTitle(tr("Feedback setup finished"));
 
   QLabel * completed_label = new QLabel(
-    tr("You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Scaling\" box after you click ") +
-    FINISH_BUTTON_TEXT + tr(".  "
-    "To use the new settings, you must first apply them to the device."));
+    "You have successfully completed this wizard.  You can see your new "
+    "settings in the \"Scaling\" box and the \"Invert motor direction\" "
+    "checkbox after you click " FINISH_BUTTON_TEXT ".  "
+    "To use the new settings, you must first apply them to the device.");
   completed_label->setWordWrap(true);
   layout->addWidget(completed_label);
 

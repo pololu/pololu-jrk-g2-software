@@ -30,6 +30,7 @@ public:
 
   struct result
   {
+    bool motor_invert = false;
     bool invert = false;
     uint16_t absolute_minimum = 0;
     uint16_t absolute_maximum = 4095;
