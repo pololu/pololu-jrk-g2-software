@@ -625,7 +625,8 @@ void main_controller::handle_variables_changed()
   if (connected() && variables)
   {
     window->update_graph(variables.get_up_time());
-    window->set_motor_status_message(jrk::diagnose(cached_settings, variables), variables.get_error_flags_halting());
+    window->set_motor_status_message(jrk::diagnose(cached_settings, variables),
+      variables.get_error_flags_halting());
   }
 }
 

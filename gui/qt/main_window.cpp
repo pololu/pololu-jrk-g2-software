@@ -363,7 +363,12 @@ void main_window::set_motor_status_message(std::string const & message, uint16_t
     motor_status_value->setStyleSheet("");
   }
 
-  motor_status_value->setText(QString::fromStdString(message));
+  QFontMetrics metrics(motor_status_value->font());
+  QString elidedText = metrics.elidedText(QString::fromStdString(message),
+    Qt::ElideRight, motor_status_value->width());
+
+  motor_status_value->setText(elidedText);
+  motor_status_value->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 void main_window::set_input_mode(uint8_t input_mode)
@@ -1626,25 +1631,27 @@ void main_window::setup_ui()
 
   motor_status_value = new QLabel();
 
-  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
-  stop_and_run_buttons->addWidget(stop_motor_button, 0, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(run_motor_button, 0, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(motor_status_value, 0, Qt::AlignLeft);
-
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
 
+  QHBoxLayout *footer_layout = new QHBoxLayout();
+  footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);
+  footer_layout->addWidget(run_motor_button, 0, Qt::AlignLeft);
+  footer_layout->addWidget(motor_status_value, 2);
+  footer_layout->addStretch(1);
+  footer_layout->addWidget(apply_settings_button, 0, Qt::AlignRight);
+
   QHBoxLayout *header_layout = new QHBoxLayout();
   header_layout->addWidget(device_list_label, 0);
   header_layout->addWidget(device_list_value, 0);
-  header_layout->addWidget(connection_status_value, 0);
+  header_layout->addWidget(connection_status_value, 1);
 
-  grid_layout->addLayout(header_layout, 0, 0, 1, 0, Qt::AlignLeft);
-  grid_layout->addWidget(tab_widget, 1, 0, 1, 5);
-  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
-  grid_layout->addWidget(apply_settings_button, 2, 4, Qt::AlignRight);
+  grid_layout->addLayout(header_layout, 0, 0, Qt::AlignLeft);
+  grid_layout->addWidget(tab_widget, 1, 0, 1, 3);
+  grid_layout->addLayout(footer_layout, 2, 0, 1, 3);
 
+  grid_layout->setColumnStretch(2, 1);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -3090,4 +3097,3 @@ void pid_constant_control::pid_constant_lineedit_editingFinished()
   if (window_suppress_events()) { return; }
   window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(), pid_exponent_spinbox->value());
 }
-
