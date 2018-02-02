@@ -46,6 +46,7 @@ public slots:
   void handle_next();
   void handle_back();
   void set_feedback(uint16_t);
+  void motor_invert_changed(bool);
   void reverse_button_pressed();
   void forward_button_pressed();
   void drive_button_released();
@@ -66,7 +67,7 @@ private:
   const uint16_t full_range = 4095;
 
   void update_learn_page();
-
+  int forward_duty_cycle();
   void throw_if_not_connected();
 
   // This class needs to hold a pointer to the main_controller since there are a
@@ -76,7 +77,7 @@ private:
 
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
-  QLayout * setup_feedback_layout();
+  QWidget * setup_feedback_widget();
   QWidget * setup_motor_control_widget();
   nice_wizard_page * setup_conclusion_page();
 
@@ -85,6 +86,8 @@ private:
   QLabel * instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
+  QCheckBox * motor_invert_checkbox;
+  QWidget * feedback_widget;
   QLabel * feedback_value;
   QLabel * feedback_pretty;
   QWidget * motor_control_widget;
@@ -92,6 +95,9 @@ private:
 
   // Input mode setting (RC or analog).
   uint8_t feedback_mode;
+
+  // The motor_invert setting from the original settings.
+  bool original_motor_invert;
 
   // Input variable from the device.
   uint16_t feedback;

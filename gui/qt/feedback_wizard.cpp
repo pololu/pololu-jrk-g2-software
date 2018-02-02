@@ -59,7 +59,7 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
 {
   const jrk::settings & settings = controller->cached_settings;
   feedback_mode = settings.get_feedback_mode();
-  result.motor_invert = settings.get_motor_invert();
+  result.motor_invert = original_motor_invert = settings.get_motor_invert();
 
   setWindowTitle("Feedback setup wizard");
   setWindowIcon(QIcon(":app_icon")); //TODO: make sure this works
@@ -156,12 +156,17 @@ void feedback_wizard::set_feedback(uint16_t value)
   handle_new_sample();
 }
 
+void feedback_wizard::motor_invert_changed(bool value)
+{
+  result.motor_invert = value;
+}
+
 void feedback_wizard::reverse_button_pressed()
 {
   try
   {
     // TODO: need to allow full speed also
-    controller->force_duty_cycle_target_nocatch(-300);
+    controller->force_duty_cycle_target_nocatch(-forward_duty_cycle());
   }
   catch (const std::exception & e)
   {
@@ -174,7 +179,7 @@ void feedback_wizard::forward_button_pressed()
   try
   {
     // TODO: need to allow full speed also
-    controller->force_duty_cycle_target_nocatch(300);
+    controller->force_duty_cycle_target_nocatch(forward_duty_cycle());
   }
   catch (const std::exception & e)
   {
@@ -403,6 +408,9 @@ void feedback_wizard::update_learn_page()
   set_next_button_enabled(!sampling);
   set_progress_visible(sampling);
 
+  feedback_widget->setVisible(learn_step != MOTOR_DIR);
+  motor_invert_checkbox->setVisible(learn_step == MOTOR_DIR);
+
   switch (learn_step)
   {
   case MOTOR_DIR:
@@ -441,6 +449,18 @@ void feedback_wizard::update_learn_page()
       "feedback values for one second.  Please do not move the output "
       "while it is being sampled."));
     break;
+  }
+}
+
+int feedback_wizard::forward_duty_cycle()
+{
+  if (result.motor_invert != original_motor_invert)
+  {
+    return -300;
+  }
+  else
+  {
+    return 300;
   }
 }
 
@@ -497,7 +517,14 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addWidget(instruction_label);
   layout->addSpacing(fontMetrics().height());
 
-  layout->addLayout(setup_feedback_layout());
+  motor_invert_checkbox = new QCheckBox();
+  motor_invert_checkbox->setText(tr("Invert motor direction"));
+  motor_invert_checkbox->setChecked(original_motor_invert);
+  connect(motor_invert_checkbox, &QCheckBox::stateChanged,
+    this, &motor_invert_changed);
+  layout->addWidget(motor_invert_checkbox);
+
+  layout->addWidget(setup_feedback_widget());
   layout->addSpacing(fontMetrics().height());
 
   layout->addWidget(setup_motor_control_widget());
@@ -525,7 +552,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   return page;
 }
 
-QLayout * feedback_wizard::setup_feedback_layout()
+QWidget * feedback_wizard::setup_feedback_widget()
 {
   QHBoxLayout * layout = new QHBoxLayout();
 
@@ -539,6 +566,7 @@ QLayout * feedback_wizard::setup_feedback_layout()
   layout->addWidget(feedback_pretty);
 
   layout->addStretch(1);
+  layout->setMargin(0);
 
   // Set a fixed size for performance.
   feedback_value->setText(QString::number(4095) + " ");
@@ -550,7 +578,10 @@ QLayout * feedback_wizard::setup_feedback_layout()
   feedback_pretty->setFixedSize(feedback_pretty->sizeHint());
   feedback_pretty->setText("");
 
-  return layout;
+  feedback_widget = new QWidget();
+  feedback_widget->setLayout(layout);
+
+  return feedback_widget;
 }
 
 QWidget * feedback_wizard::setup_motor_control_widget()
@@ -568,6 +599,7 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   layout->addWidget(forward_button);
 
   layout->addStretch(1);
+  layout->setMargin(0);
 
   motor_control_widget = new QWidget();
   motor_control_widget->setLayout(layout);
