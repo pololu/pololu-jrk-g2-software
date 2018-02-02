@@ -13,6 +13,30 @@
   (1 << JRK_ERROR_INPUT_DISCONNECT) | \
   (1 << JRK_ERROR_FEEDBACK_DISCONNECT))
 
+// TODO: say when it's at duty cycle limit
+// TODO: if duty cycle is 0, if it hasn't reached the target or limit, say accelerating
+
+// Returns true if the device's PID coefficients are zero.
+static bool pid_zero(
+  const jrk_settings * settings,
+  const jrk_overridable_settings * osettings)
+{
+  if (osettings)
+  {
+    return
+      !jrk_overridable_settings_get_proportional_multiplier(osettings) &&
+      !jrk_overridable_settings_get_integral_multiplier(osettings) &&
+      !jrk_overridable_settings_get_derivative_multiplier(osettings);
+  }
+  else
+  {
+    return
+      !jrk_settings_get_proportional_multiplier(settings) &&
+      !jrk_settings_get_integral_multiplier(settings) &&
+      !jrk_settings_get_derivative_multiplier(settings);
+  }
+}
+
 jrk_error * jrk_diagnose(
   const jrk_settings * settings,
   const jrk_overridable_settings * osettings,
@@ -163,23 +187,7 @@ jrk_error * jrk_diagnose(
 
     if (duty_cycle == 0)
     {
-      bool pid_zero;
-      if (osettings)
-      {
-        pid_zero =
-          !jrk_overridable_settings_get_proportional_multiplier(osettings) &&
-          !jrk_overridable_settings_get_integral_multiplier(osettings) &&
-          !jrk_overridable_settings_get_derivative_multiplier(osettings);
-      }
-      else
-      {
-        pid_zero =
-          !jrk_settings_get_proportional_multiplier(settings) &&
-          !jrk_settings_get_integral_multiplier(settings) &&
-          !jrk_settings_get_derivative_multiplier(settings);
-      }
-
-      if (pid_zero)
+      if (pid_zero(settings, osettings))
       {
         jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
       }
