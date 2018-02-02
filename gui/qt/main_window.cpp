@@ -1597,7 +1597,7 @@ void main_window::setup_ui()
     device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
-  grid_layout = new QGridLayout();
+  grid_layout = new QVBoxLayout();
   grid_layout->setObjectName("grid_layout");
 
   tab_widget = new QTabWidget();
@@ -1641,9 +1641,9 @@ void main_window::setup_ui()
   header_layout->addWidget(device_list_value, 0);
   header_layout->addWidget(connection_status_value, 1);
 
-  grid_layout->addLayout(header_layout, 0, 0, Qt::AlignLeft);
-  grid_layout->addWidget(tab_widget, 1, 0, 1, 3);
-  grid_layout->addLayout(footer_layout, 2, 0, 1, 3);
+  grid_layout->addLayout(header_layout, 0);
+  grid_layout->addWidget(tab_widget, 0);
+  grid_layout->addLayout(footer_layout, 0);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
