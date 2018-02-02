@@ -307,7 +307,6 @@ private slots:
 
   void on_pwm_frequency_combobox_currentIndexChanged(int index);
   void on_motor_invert_checkbox_stateChanged(int state);
-  void on_detect_motor_button_clicked();
   void on_motor_asymmetric_checkbox_stateChanged(int state);
   void on_max_duty_cycle_forward_spinbox_valueChanged(int value);
   void on_max_duty_cycle_reverse_spinbox_valueChanged(int value);

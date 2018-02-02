@@ -56,8 +56,6 @@ private:
   // Returns true for success, false for failure.
   bool update_device_list();
 
-  bool do_motor_direction_detect();
-
   // True if device_list changed the last time update_device_list() was
   // called.
   bool device_list_changed;

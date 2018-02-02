@@ -1412,21 +1412,6 @@ void main_window::on_motor_invert_checkbox_stateChanged(int state)
   controller->handle_motor_invert_input(state == Qt::Checked);
 }
 
-void main_window::on_detect_motor_button_clicked()
-{
-  QMessageBox mbox(QMessageBox::Question, "Detect motor direction confirmation",
-    "Really detect motor direction?  This will drive the motor!\n"
-    "Feedback must be configured and tested before proceeding.\n"
-    "It is also recommended that you set Max. duty cycle, Max. current,\n"
-    "and enable the \"Max. current exceeded\" error for this test.",
-    QMessageBox::Ok | QMessageBox::Cancel, this);
-  int button = mbox.exec();
-  if (button == QMessageBox::Ok)
-  {
-    controller->handle_motor_detect_direction_button_clicked();
-  }
-}
-
 void main_window::on_motor_asymmetric_checkbox_stateChanged(int state)
 {
   if (suppress_events) { return; }
@@ -2577,9 +2562,10 @@ QWidget *main_window::setup_motor_tab()
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
 
+  // TODO: remove detect motor direction button when we're sure we don't need it
   detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
   detect_motor_button->setObjectName("detect_motor_button");
-  detect_motor_button->setEnabled(true); //tmphax: not ready to use
+  detect_motor_button->setVisible(false);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
