@@ -1626,25 +1626,24 @@ void main_window::setup_ui()
 
   motor_status_value = new QLabel();
 
-  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
-  stop_and_run_buttons->addWidget(stop_motor_button, 0, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(run_motor_button, 0, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(motor_status_value, 0, Qt::AlignLeft);
-
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
+
+  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
+  stop_and_run_buttons->addWidget(stop_motor_button, 0, Qt::AlignLeft);
+  stop_and_run_buttons->addWidget(run_motor_button, 0, Qt::AlignLeft);
+  stop_and_run_buttons->addWidget(motor_status_value, 1);
+  stop_and_run_buttons->addWidget(apply_settings_button, 0, Qt::AlignRight);
 
   QHBoxLayout *header_layout = new QHBoxLayout();
   header_layout->addWidget(device_list_label, 0);
   header_layout->addWidget(device_list_value, 0);
   header_layout->addWidget(connection_status_value, 0);
 
-  grid_layout->addLayout(header_layout, 0, 0, 1, 0, Qt::AlignLeft);
-  grid_layout->addWidget(tab_widget, 1, 0, 1, 5);
-  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 3, Qt::AlignLeft);
-  grid_layout->addWidget(apply_settings_button, 2, 4, Qt::AlignRight);
-
+  grid_layout->addLayout(header_layout, 0, 0, 1, 1, Qt::AlignLeft);
+  grid_layout->addWidget(tab_widget, 1, 0, 1, 1);
+  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 1);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
