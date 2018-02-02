@@ -21,6 +21,11 @@ static bool pid_zero(
   const jrk_settings * settings,
   const jrk_overridable_settings * osettings)
 {
+  if (jrk_settings_get_feedback_mode(settings) == JRK_FEEDBACK_MODE_NONE)
+  {
+    return false;  // PID coefficients don't matter.
+  }
+
   if (osettings)
   {
     return
@@ -84,8 +89,6 @@ jrk_error * jrk_diagnose(
   int16_t duty_cycle = jrk_variables_get_duty_cycle(vars);
 
   int16_t duty_cycle_target = jrk_variables_get_duty_cycle_target(vars);
-
-  uint8_t feedback_mode = jrk_settings_get_feedback_mode(settings);
 
   jrk_string str;
   jrk_string_setup(&str);
@@ -168,38 +171,17 @@ jrk_error * jrk_diagnose(
       jrk_sprintf(&str, "Motor is running with a forced duty cycle target.");
     }
   }
-  else if (feedback_mode == JRK_FEEDBACK_MODE_NONE)
+  else if (duty_cycle == 0 && pid_zero(settings,osettings))
   {
-    // Open loop mode.
-
-    if (duty_cycle == 0)
-    {
-      jrk_sprintf(&str, "Motor is ready to run.");
-    }
-    else
-    {
-      jrk_sprintf(&str, "Motor is running.");
-    }
+    jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
+  }
+  else if (duty_cycle == 0)
+  {
+    jrk_sprintf(&str, "Motor is ready to run.");
   }
   else
   {
-    // Closed loop mode (either analog or frequency feedback).
-
-    if (duty_cycle == 0)
-    {
-      if (pid_zero(settings, osettings))
-      {
-        jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
-      }
-      else
-      {
-        jrk_sprintf(&str, "Motor is ready to run.");
-      }
-    }
-    else
-    {
-      jrk_sprintf(&str, "Motor is running.");
-    }
+    jrk_sprintf(&str, "Motor is running.");
   }
 
   if (str.data == NULL)
