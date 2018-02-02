@@ -1597,8 +1597,8 @@ void main_window::setup_ui()
     device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
-  grid_layout = new QVBoxLayout();
-  grid_layout->setObjectName("grid_layout");
+  main_window_layout = new QVBoxLayout();
+  main_window_layout->setObjectName("main_window_layout");
 
   tab_widget = new QTabWidget();
   tab_widget->addTab(setup_status_tab(), tr("Status"));
@@ -1641,9 +1641,9 @@ void main_window::setup_ui()
   header_layout->addWidget(device_list_value, 0);
   header_layout->addWidget(connection_status_value, 1);
 
-  grid_layout->addLayout(header_layout, 0);
-  grid_layout->addWidget(tab_widget, 0);
-  grid_layout->addLayout(footer_layout, 0);
+  main_window_layout->addLayout(header_layout, 0);
+  main_window_layout->addWidget(tab_widget, 0);
+  main_window_layout->addLayout(footer_layout, 0);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -1654,7 +1654,7 @@ void main_window::setup_ui()
   connect(apply_settings_button, SIGNAL(clicked()),
     apply_settings_action, SLOT(trigger()));
 
-  central_widget->setLayout(grid_layout);
+  central_widget->setLayout(main_window_layout);
 
   QMetaObject::connectSlotsByName(this);
 }

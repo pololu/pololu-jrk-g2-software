@@ -366,7 +366,7 @@ private:
   QTimer *update_timer = NULL;
 
   QWidget *central_widget;
-  QVBoxLayout *grid_layout;
+  QVBoxLayout *main_window_layout;
   QHBoxLayout *horizontal_layout;
   graph_widget *graph;
   graph_window *popout_graph_window;
