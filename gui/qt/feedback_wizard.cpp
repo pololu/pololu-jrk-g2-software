@@ -121,9 +121,7 @@ void feedback_wizard::handle_next()
     next();
   }
 
-  set_next_button_enabled(!sampling);
-  set_progress_visible(sampling);
-  update_learn_text();
+  update_learn_page();
 }
 
 void feedback_wizard::handle_back()
@@ -140,9 +138,7 @@ void feedback_wizard::handle_back()
     back();
   }
 
-  set_next_button_enabled(!sampling);
-  set_progress_visible(sampling);
-  update_learn_text();
+  update_learn_page();
 }
 
 void feedback_wizard::set_feedback(uint16_t value)
@@ -402,8 +398,11 @@ bool feedback_wizard::check_range_not_too_big(const uint16_range & range)
   return true;
 }
 
-void feedback_wizard::update_learn_text()
+void feedback_wizard::update_learn_page()
 {
+  set_next_button_enabled(!sampling);
+  set_progress_visible(sampling);
+
   switch (learn_step)
   {
   case MOTOR_DIR:

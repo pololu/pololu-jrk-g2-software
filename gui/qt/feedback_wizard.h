@@ -65,7 +65,7 @@ private:
 
   const uint16_t full_range = 4095;
 
-  void update_learn_text();
+  void update_learn_page();
 
   void throw_if_not_connected();
 
