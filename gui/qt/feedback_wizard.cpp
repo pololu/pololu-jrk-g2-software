@@ -454,14 +454,19 @@ void feedback_wizard::update_learn_page()
 
 int feedback_wizard::forward_duty_cycle()
 {
+  int duty_cycle = 300;
+
+  if (full_speed_checkbox->isChecked())
+  {
+    duty_cycle = 600;
+  }
+
   if (result.motor_invert != original_motor_invert)
   {
-    return -300;
+    duty_cycle = -duty_cycle;
   }
-  else
-  {
-    return 300;
-  }
+
+  return duty_cycle;
 }
 
 void feedback_wizard::throw_if_not_connected()
@@ -588,15 +593,18 @@ QWidget * feedback_wizard::setup_motor_control_widget()
 {
   QHBoxLayout * layout = new QHBoxLayout();
 
-  QPushButton * reverse_button = new QPushButton(tr("Drive reverse"));
+  reverse_button = new QPushButton(tr("Drive reverse"));
   connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
   connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
   layout->addWidget(reverse_button);
 
-  QPushButton * forward_button = new QPushButton(tr("Drive forward"));
+  forward_button = new QPushButton(tr("Drive forward"));
   connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
   connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
   layout->addWidget(forward_button);
+
+  full_speed_checkbox = new QCheckBox(tr("Full speed"));
+  layout->addWidget(full_speed_checkbox);
 
   layout->addStretch(1);
   layout->setMargin(0);

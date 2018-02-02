@@ -91,6 +91,9 @@ private:
   QLabel * feedback_value;
   QLabel * feedback_pretty;
   QWidget * motor_control_widget;
+  QPushButton * reverse_button;
+  QPushButton * forward_button;
+  QCheckBox * full_speed_checkbox;
   QLabel * bottom_instruction_label;
 
   // Input mode setting (RC or analog).
