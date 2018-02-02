@@ -70,7 +70,7 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   setPage(CONCLUSION, setup_conclusion_page());
 
   QSize size = sizeHint();
-  size.setHeight(size.height() * 3 / 2);
+  size.setHeight(size.height() * 4 / 3);
   setFixedSize(size);
 
   // Handle the next and back buttons with custom slots.
@@ -268,7 +268,7 @@ bool feedback_wizard::handle_back_on_learn_page()
 
 bool feedback_wizard::handle_next_on_learn_page()
 {
-  if (learn_step_succeeded)
+  if (learn_step_succeeded || learn_step == MOTOR_DIR)
   {
     // We completed this step of the learning so go to the next step or page.
     learn_step_succeeded = false;
@@ -406,22 +406,41 @@ void feedback_wizard::update_learn_text()
 {
   switch (learn_step)
   {
+  case MOTOR_DIR:
+    learn_page->setTitle(tr("Step 1 of 3: Motor direction"));
+    instruction_label->setText(tr(
+      "Use the controls below to drive the motor.  If the motor moves in the "
+      "wrong direction, toggle the \"Invert motor direction\" checkbox to fix "
+      "it and try again.  If the motor does not move at all, exit this wizard, "
+      "fix any errors that are occurring, and check the motor wiring. "
+      "You can skip this step by clicking " NEXT_BUTTON_TEXT "."));
+    bottom_instruction_label->setText("");
+    break;
+
   case MAX:
-    learn_page->setTitle(tr("Step 1 of 2: Maximum"));
+    learn_page->setTitle(tr("Step 2 of 3: Maximum"));
     instruction_label->setText(tr(
       "Use the \"Drive forward\" button to drive the motor to its "
       "maximum (full forward) position.  If the motor goes in the wrong "
       "direction, go back and toggle the \"Invert motor direction\" "
-      "checkbox to fix it.  Alternatively, you can move the output of "
+      "checkbox to fix it.  You can move the output of "
       "your system manually."));
+    bottom_instruction_label->setText(tr(
+      "When you click " NEXT_BUTTON_TEXT ", this wizard will sample the "
+      "feedback values for one second.  Please do not move the output "
+      "while it is being sampled."));
     break;
 
   case MIN:
-    learn_page->setTitle(tr("Step 2 of 2: Minimum"));
+    learn_page->setTitle(tr("Step 3 of 3: Minimum"));
     instruction_label->setText(tr(
       "Use the \"Drive reverse\" button to drive the motor to its "
-      "minimum (full reverse) position.  Alternatively, you can move "
-      "the output of your system manually."));
+      "minimum (full reverse) position.  You can move "
+      "the output of your system manually if you want."));
+    bottom_instruction_label->setText(tr(
+      "When you click " NEXT_BUTTON_TEXT ", this wizard will sample the "
+      "feedback values for one second.  Please do not move the output "
+      "while it is being sampled."));
     break;
   }
 }
@@ -485,10 +504,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addWidget(setup_motor_control_widget());
   layout->addSpacing(fontMetrics().height());
 
-  bottom_instruction_label = new QLabel(
-    tr("When you click ") + NEXT_BUTTON_TEXT +
-    tr(", this wizard will sample the feedback values for one second.  "
-    "Please do not move the output while it is being sampled."));
+  bottom_instruction_label = new QLabel();
   bottom_instruction_label->setWordWrap(true);
   layout->addWidget(bottom_instruction_label);
   layout->addSpacing(fontMetrics().height());

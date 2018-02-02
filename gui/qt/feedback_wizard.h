@@ -21,8 +21,8 @@ class feedback_wizard : public QWizard
   static const uint32_t SAMPLE_COUNT = 20;
 
   enum page { INTRO, LEARN, CONCLUSION };
-  enum learn_step { MAX, MIN };
-  const int FIRST_STEP = MAX;
+  enum learn_step { MOTOR_DIR, MAX, MIN };
+  const int FIRST_STEP = MOTOR_DIR;
   const int LAST_STEP = MIN;
 
 public:
