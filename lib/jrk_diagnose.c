@@ -149,6 +149,7 @@ jrk_error * jrk_diagnose(
       jrk_sprintf(&str, "Motor stopped due to an error.");
     }
   }
+  // Below this point, we know there are no errors.
   else if (force_mode == JRK_FORCE_MODE_DUTY_CYCLE)
   {
     if (duty_cycle == 0)
@@ -171,13 +172,14 @@ jrk_error * jrk_diagnose(
       jrk_sprintf(&str, "Motor is running with a forced duty cycle target.");
     }
   }
+  // Below this point, we know this is normal operation (force_mode == 0).
   else if (duty_cycle == 0 && pid_zero(settings,osettings))
   {
     jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
   }
   else if (duty_cycle == 0)
   {
-    jrk_sprintf(&str, "Motor is ready to run.");
+    jrk_sprintf(&str, "Motor stopped.");
   }
   else
   {
