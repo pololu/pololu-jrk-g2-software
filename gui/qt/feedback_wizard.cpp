@@ -36,6 +36,8 @@ void run_feedback_wizard(main_window * window)
 
   QObject::connect(window, &main_window::feedback_changed,
     &wizard, &feedback_wizard::set_feedback);
+  QObject::connect(window, &main_window::motor_status_changed,
+    &wizard, &feedback_wizard::set_motor_status);
 
   int result = wizard.exec();
 
@@ -154,6 +156,22 @@ void feedback_wizard::set_feedback(uint16_t value)
   }
 
   handle_new_sample();
+}
+
+void feedback_wizard::set_motor_status(QString status, bool error)
+{
+  bool styled = !motor_status_value->styleSheet().isEmpty();
+
+  if (!styled && error)
+  {
+    motor_status_value->setStyleSheet("color: red;");
+  }
+  else if (styled && !error)
+  {
+    motor_status_value->setStyleSheet("");
+  }
+
+  motor_status_value->setText(status);
 }
 
 void feedback_wizard::motor_invert_changed(bool value)
@@ -591,22 +609,30 @@ QWidget * feedback_wizard::setup_feedback_widget()
 
 QWidget * feedback_wizard::setup_motor_control_widget()
 {
-  QHBoxLayout * layout = new QHBoxLayout();
+  QHBoxLayout * button_layout = new QHBoxLayout();
 
   reverse_button = new QPushButton(tr("Drive reverse"));
   connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
   connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
-  layout->addWidget(reverse_button);
+  button_layout->addWidget(reverse_button);
 
   forward_button = new QPushButton(tr("Drive forward"));
   connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
   connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
-  layout->addWidget(forward_button);
+  button_layout->addWidget(forward_button);
 
   full_speed_checkbox = new QCheckBox(tr("Full speed"));
-  layout->addWidget(full_speed_checkbox);
+  button_layout->addWidget(full_speed_checkbox);
 
-  layout->addStretch(1);
+  button_layout->addStretch(1);
+  button_layout->setMargin(0);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addLayout(button_layout);
+
+  motor_status_value = new QLabel();
+  layout->addWidget(motor_status_value);
+
   layout->setMargin(0);
 
   motor_control_widget = new QWidget();

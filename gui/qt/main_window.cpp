@@ -363,7 +363,9 @@ void main_window::set_motor_status_message(std::string const & message, uint16_t
     motor_status_value->setStyleSheet("");
   }
 
-  motor_status_value->setText(QString::fromStdString(message));
+  QString message_qstr = QString::fromStdString(message);
+  motor_status_value->setText(message_qstr);
+  emit motor_status_changed(message_qstr, stopped);
 }
 
 void main_window::set_input_mode(uint8_t input_mode)
