@@ -482,12 +482,7 @@ void feedback_wizard::update_learn_page()
 
 int feedback_wizard::forward_duty_cycle()
 {
-  int duty_cycle = 300;
-
-  if (full_speed_checkbox->isChecked())
-  {
-    duty_cycle = 600;
-  }
+  int duty_cycle = duty_cycle_input->value();
 
   if (result.motor_invert != original_motor_invert)
   {
@@ -662,12 +657,19 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
   connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
 
-  full_speed_checkbox = new QCheckBox(tr("Full speed"));
+  QLabel * duty_cycle_input_label = new QLabel(tr("  Duty cycle target:"));
+
+  duty_cycle_input = new QSpinBox();
+  duty_cycle_input->setRange(0, 600);
+  duty_cycle_input->setValue(60);
+  duty_cycle_input->setSingleStep(60);
+  duty_cycle_input->setToolTip("For full speed, enter 600.");
 
   QHBoxLayout * button_layout = new QHBoxLayout();
   button_layout->addWidget(reverse_button);
   button_layout->addWidget(forward_button);
-  button_layout->addWidget(full_speed_checkbox);
+  button_layout->addWidget(duty_cycle_input_label);
+  button_layout->addWidget(duty_cycle_input);
   button_layout->addStretch(1);
   button_layout->setMargin(0);
 
@@ -697,6 +699,7 @@ QWidget * feedback_wizard::setup_motor_control_widget()
 
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addLayout(button_layout);
+  layout->addSpacing(fontMetrics().height());
   layout->addWidget(max_duty_cycle_label);
   layout->addLayout(vars_layout);
   layout->addWidget(motor_status_value);
