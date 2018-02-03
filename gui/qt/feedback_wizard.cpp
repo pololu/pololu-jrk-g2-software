@@ -193,7 +193,6 @@ void feedback_wizard::reverse_button_pressed()
 {
   try
   {
-    // TODO: need to allow full speed also
     controller->force_duty_cycle_target_nocatch(-forward_duty_cycle());
   }
   catch (const std::exception & e)
@@ -206,7 +205,6 @@ void feedback_wizard::forward_button_pressed()
 {
   try
   {
-    // TODO: need to allow full speed also
     controller->force_duty_cycle_target_nocatch(forward_duty_cycle());
   }
   catch (const std::exception & e)
@@ -455,11 +453,10 @@ void feedback_wizard::update_learn_page()
   case MAX:
     learn_page->setTitle(tr("Step 2 of 3: Maximum"));
     instruction_label->setText(tr(
-      "Use the \"Drive forward\" button to drive the motor to its "
-      "maximum (full forward) position.  If the motor goes in the wrong "
-      "direction, go back and toggle the \"Invert motor direction\" "
-      "checkbox to fix it.  You can move the output of "
-      "your system manually."));
+      "Use the \"Drive forward\" button or move the output manually to get it "
+      "to its maximum (full forward) position.  "
+      "If the \"Drive forward\" button drives in the wrong direction, go back "
+      "and toggle the \"Invert motor direction\" checkbox to fix it."));
     bottom_instruction_label->setText(tr(
       "When you click " NEXT_BUTTON_TEXT ", this wizard will sample the "
       "feedback values for one second.  Please do not move the output "
@@ -469,9 +466,8 @@ void feedback_wizard::update_learn_page()
   case MIN:
     learn_page->setTitle(tr("Step 3 of 3: Minimum"));
     instruction_label->setText(tr(
-      "Use the \"Drive reverse\" button to drive the motor to its "
-      "minimum (full reverse) position.  You can move "
-      "the output of your system manually if you want."));
+      "Use the \"Drive reverse\" button or move the output manually to get it "
+      "to its minimum (full reverse) position."));
     bottom_instruction_label->setText(tr(
       "When you click " NEXT_BUTTON_TEXT ", this wizard will sample the "
       "feedback values for one second.  Please do not move the output "
@@ -516,8 +512,7 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
     "and set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
 
-  // TODO: warn if PID period or accel/decel parameters are too slow
-  // TODO: warn if max duty cycle is too slow
+  // TODO: warn if PID period or accel/decel parameters are too slow?
 
   QLabel * stopped_label = new QLabel();
   stopped_label->setWordWrap(true);
@@ -659,6 +654,7 @@ QWidget * feedback_wizard::setup_motor_control_widget()
 
   QLabel * duty_cycle_input_label = new QLabel(tr("  Duty cycle target:"));
 
+  // TODO: make this hard to edit?
   duty_cycle_input = new QSpinBox();
   duty_cycle_input->setRange(0, 600);
   duty_cycle_input->setValue(60);
