@@ -442,9 +442,10 @@ void feedback_wizard::update_learn_page()
   case MOTOR_DIR:
     learn_page->setTitle(tr("Step 1 of 3: Motor direction"));
     instruction_label->setText(tr(
-      "Use the controls below to drive the motor.  If the motor moves in the "
+      "Click and hold the buttons below to drive the motor.  "
+      "If the motor moves in the "
       "wrong direction, toggle the \"Invert motor direction\" checkbox to fix "
-      "it and try again.  If the motor does not move at all, "
+      "it, and try again.  If the motor does not move at all, "
       "try increasing the duty cycle target, "
       "fixing any errors that are occurring, "
       "and checking the motor wiring. "
@@ -615,6 +616,8 @@ static QString get_max_duty_cycle_str(const jrk::settings & settings)
   {
     limits << settings.get_max_duty_cycle_reverse();
   }
+  // TODO: does this setting really have an effect when we are forcing
+  // the duty cycle target?
   if (settings.get_max_duty_cycle_while_feedback_out_of_range() <
     settings.get_max_duty_cycle_reverse() ||
     settings.get_max_duty_cycle_while_feedback_out_of_range() <
@@ -654,13 +657,18 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
   connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
 
-  QLabel * duty_cycle_input_label = new QLabel(tr("  Duty cycle target:"));
+  // TODO: make clickable
+  QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
 
-  // TODO: make this hard to edit?
+  // TODO: display as a percentage
   duty_cycle_input = new QSpinBox();
+  // TODO: max value should be max duty cycle setting
+  // TODO: when they reach the max duty cycle setting, show a message:
+  //  (Jan wants)
   duty_cycle_input->setRange(0, 600);
+  // TODO: default value is 25% of the max duty cycle (lower of fwd and reverse)
   duty_cycle_input->setValue(60);
-  duty_cycle_input->setSingleStep(60);
+  duty_cycle_input->setSingleStep(60);  // TODO: Jan said maybe 5%
   duty_cycle_input->setToolTip("For full speed, enter 600.");
 
   QHBoxLayout * button_layout = new QHBoxLayout();
@@ -671,13 +679,19 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   button_layout->addStretch(1);
   button_layout->setMargin(0);
 
+  // TODO: duty cycle target is too much detail
+  // just say "Click and hold one of the buttons above to drive the motor."
+  // don't say "force" or "target"
   motor_status_value = new QLabel();
 
+  // TODO: remove this stuff
   QLabel * max_duty_cycle_label = new QLabel();
   max_duty_cycle_label->setText(get_max_duty_cycle_str(controller->cached_settings));
 
+  // TODO: say 'Duty cycle percent'
   QLabel * duty_cycle_label = new QLabel(tr("Duty cycle:"));
 
+  // TODO: don't show this, only show duty cycle as a percentage
   duty_cycle_value = new QLabel();
   duty_cycle_value->setText("-600 ");
   duty_cycle_value->setFixedSize(duty_cycle_value->sizeHint());

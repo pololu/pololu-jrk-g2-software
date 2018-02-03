@@ -1,0 +1,16 @@
+Window title: Feedback setup wizard
+
+TODO: convince people we should not:
+  Show learned value, have a button for resetting, don't do sampling when we
+  click the Next button.
+
+TODO: warn if PID period or accel/decel parameters are too slow?
+
+TODO:
+  Feedback tab: put Learn button in better place, make it clear it applied to all.
+  "Feedback setup wizard..." upper left, reset upper right.
+
+TODO:
+  Nice "Feedback setup wizard..." button under the "n" of "Invert motor direction"
+
+TODO: look into justifying text and making margins even on the sides
