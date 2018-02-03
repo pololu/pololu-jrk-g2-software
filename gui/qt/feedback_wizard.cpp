@@ -444,8 +444,10 @@ void feedback_wizard::update_learn_page()
     instruction_label->setText(tr(
       "Use the controls below to drive the motor.  If the motor moves in the "
       "wrong direction, toggle the \"Invert motor direction\" checkbox to fix "
-      "it and try again.  If the motor does not move at all, exit this wizard, "
-      "fix any errors that are occurring, and check the motor wiring. "
+      "it and try again.  If the motor does not move at all, "
+      "try increasing the duty cycle target, "
+      "fixing any errors that are occurring, "
+      "and checking the motor wiring. "
       "You can skip this step by clicking " NEXT_BUTTON_TEXT "."));
     bottom_instruction_label->setText("");
     break;
