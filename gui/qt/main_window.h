@@ -225,6 +225,7 @@ signals:
   void pass_widget(graph_widget *widget);
   void input_changed(uint16_t);
   void feedback_changed(uint16_t);
+  void duty_cycle_changed(int16_t);
   void motor_status_changed(QString status, bool error);
 
 protected:

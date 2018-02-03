@@ -46,6 +46,7 @@ public slots:
   void handle_next();
   void handle_back();
   void set_feedback(uint16_t);
+  void set_duty_cycle(int16_t);
   void set_motor_status(QString status, bool error);
   void motor_invert_changed(bool);
   void reverse_button_pressed();
@@ -94,6 +95,8 @@ private:
   QWidget * motor_control_widget;
   QPushButton * reverse_button;
   QPushButton * forward_button;
+  QLabel * duty_cycle_value;
+  QLabel * duty_cycle_percent;
   QLabel * motor_status_value;
   QCheckBox * full_speed_checkbox;
   QLabel * bottom_instruction_label;

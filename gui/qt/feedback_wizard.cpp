@@ -36,6 +36,8 @@ void run_feedback_wizard(main_window * window)
 
   QObject::connect(window, &main_window::feedback_changed,
     &wizard, &feedback_wizard::set_feedback);
+  QObject::connect(window, &main_window::duty_cycle_changed,
+    &wizard, &feedback_wizard::set_duty_cycle);
   QObject::connect(window, &main_window::motor_status_changed,
     &wizard, &feedback_wizard::set_motor_status);
 
@@ -156,6 +158,14 @@ void feedback_wizard::set_feedback(uint16_t value)
   }
 
   handle_new_sample();
+}
+
+void feedback_wizard::set_duty_cycle(int16_t value)
+{
+  duty_cycle_value->setText(QString::number(value));
+
+  duty_cycle_percent->setText("(" +
+    QString::fromStdString(convert_duty_cycle_to_percent_string(value)) + ")");
 }
 
 void feedback_wizard::set_motor_status(QString status, bool error)
@@ -577,29 +587,25 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
 
 QWidget * feedback_wizard::setup_feedback_widget()
 {
-  QHBoxLayout * layout = new QHBoxLayout();
-
   QLabel * feedback_label = new QLabel(tr("Feedback:"));
-  layout->addWidget(feedback_label);
 
   feedback_value = new QLabel();
-  layout->addWidget(feedback_value);
-
-  feedback_pretty = new QLabel();
-  layout->addWidget(feedback_pretty);
-
-  layout->addStretch(1);
-  layout->setMargin(0);
-
-  // Set a fixed size for performance.
-  feedback_value->setText(QString::number(4095) + " ");
+  feedback_value->setText("4095 ");
   feedback_value->setFixedSize(feedback_value->sizeHint());
   feedback_value->setText("");
 
+  feedback_pretty = new QLabel();
   feedback_pretty->setText("(" +
     QString::fromStdString(convert_analog_12bit_to_v_string(4095) + ") "));
   feedback_pretty->setFixedSize(feedback_pretty->sizeHint());
   feedback_pretty->setText("");
+
+  QHBoxLayout * layout = new QHBoxLayout();
+  layout->addWidget(feedback_label);
+  layout->addWidget(feedback_value);
+  layout->addWidget(feedback_pretty);
+  layout->addStretch(1);
+  layout->setMargin(0);
 
   feedback_widget = new QWidget();
   feedback_widget->setLayout(layout);
@@ -670,9 +676,29 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   QLabel * max_duty_cycle_label = new QLabel();
   max_duty_cycle_label->setText(get_max_duty_cycle_str(controller->cached_settings));
 
+  QLabel * duty_cycle_label = new QLabel(tr("Duty cycle:"));
+
+  duty_cycle_value = new QLabel();
+  duty_cycle_value->setText("-600 ");
+  duty_cycle_value->setFixedSize(duty_cycle_value->sizeHint());
+  duty_cycle_value->setText("");
+
+  duty_cycle_percent = new QLabel();
+  duty_cycle_percent->setText("(-100%) ");
+  duty_cycle_percent->setFixedSize(duty_cycle_percent->sizeHint());
+  duty_cycle_percent->setText("");
+
+  QHBoxLayout * vars_layout = new QHBoxLayout();
+  vars_layout->addWidget(duty_cycle_label);
+  vars_layout->addWidget(duty_cycle_value);
+  vars_layout->addWidget(duty_cycle_percent);
+  vars_layout->addStretch(1);
+  vars_layout->setMargin(0);
+
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addLayout(button_layout);
   layout->addWidget(max_duty_cycle_label);
+  layout->addLayout(vars_layout);
   layout->addWidget(motor_status_value);
   layout->setMargin(0);
 
