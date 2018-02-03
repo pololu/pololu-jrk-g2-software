@@ -607,32 +607,73 @@ QWidget * feedback_wizard::setup_feedback_widget()
   return feedback_widget;
 }
 
+// Just give the users a hint about max duty cycle settings that could
+// prevent them from reaching a good speed during the wizard.
+static QString get_max_duty_cycle_str(const jrk::settings & settings)
+{
+  QList<uint16_t> limits;
+  limits << settings.get_max_duty_cycle_forward();
+  if (settings.get_max_duty_cycle_reverse() != settings.get_max_duty_cycle_forward())
+  {
+    limits << settings.get_max_duty_cycle_reverse();
+  }
+  if (settings.get_max_duty_cycle_while_feedback_out_of_range() <
+    settings.get_max_duty_cycle_reverse() ||
+    settings.get_max_duty_cycle_while_feedback_out_of_range() <
+    settings.get_max_duty_cycle_forward())
+  {
+    limits << settings.get_max_duty_cycle_while_feedback_out_of_range();
+  }
+
+  QString r;
+  if (limits.size() == 1)
+  {
+    r.append("Max. duty cycle setting: ");
+  }
+  else
+  {
+    r.append("Max. duty cycle settings: ");
+  }
+
+  QStringList limit_strs;
+  for (uint16_t limit : limits)
+  {
+    limit_strs << QString::number(limit);
+  }
+
+  r.append(limit_strs.join("/"));
+
+  return r;
+}
+
 QWidget * feedback_wizard::setup_motor_control_widget()
 {
-  QHBoxLayout * button_layout = new QHBoxLayout();
-
   reverse_button = new QPushButton(tr("Drive reverse"));
   connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
   connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
-  button_layout->addWidget(reverse_button);
 
   forward_button = new QPushButton(tr("Drive forward"));
   connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
   connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
-  button_layout->addWidget(forward_button);
 
   full_speed_checkbox = new QCheckBox(tr("Full speed"));
-  button_layout->addWidget(full_speed_checkbox);
 
+  QHBoxLayout * button_layout = new QHBoxLayout();
+  button_layout->addWidget(reverse_button);
+  button_layout->addWidget(forward_button);
+  button_layout->addWidget(full_speed_checkbox);
   button_layout->addStretch(1);
   button_layout->setMargin(0);
 
+  motor_status_value = new QLabel();
+
+  QLabel * max_duty_cycle_label = new QLabel();
+  max_duty_cycle_label->setText(get_max_duty_cycle_str(controller->cached_settings));
+
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addLayout(button_layout);
-
-  motor_status_value = new QLabel();
+  layout->addWidget(max_duty_cycle_label);
   layout->addWidget(motor_status_value);
-
   layout->setMargin(0);
 
   motor_control_widget = new QWidget();
