@@ -26,8 +26,8 @@ void run_feedback_wizard(main_window * window)
   {
     // Should not happen because the button is disabled.
     window->show_info_message(
-      "This wizard helps you set the feedback scaling parameters for the "
-      "analog feedback.  "
+      "This wizard helps you detect the motor direction and set the "
+      "analog feedback scaling parameters.  "
       "Please change the feedback mode to analog, then try again.");
     return;
   }

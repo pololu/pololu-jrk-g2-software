@@ -2562,10 +2562,10 @@ QWidget *main_window::setup_motor_tab()
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
 
-  // TODO: remove detect motor direction button when we're sure we don't need it
-  detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
+  detect_motor_button = new QPushButton(tr("&Learn..."));
   detect_motor_button->setObjectName("detect_motor_button");
-  detect_motor_button->setVisible(false);
+  connect(detect_motor_button, &QPushButton::clicked,
+    this, &on_feedback_learn_button_clicked);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
@@ -2775,13 +2775,15 @@ QWidget *main_window::setup_motor_tab()
   motor_off_layout->addWidget(motor_brake_radio,0,1);
   motor_off_layout->addWidget(motor_coast_radio,1,1);
 
+  // TODO: should just be QVBoxLayout
   QGridLayout *layout = motor_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(frequency_layout,0,0,Qt::AlignLeft);
-  layout->addLayout(invert_layout,1,0,Qt::AlignLeft);
-  layout->addLayout(motor_controls_layout,2,0,Qt::AlignLeft);
-  layout->addLayout(deceleration_layout,3,0,Qt::AlignLeft);
-  layout->addLayout(motor_off_layout,4,0,Qt::AlignLeft);
+  layout->addLayout(frequency_layout, 0, 0, Qt::AlignLeft);
+  layout->addLayout(invert_layout, 1, 0, Qt::AlignLeft);
+  layout->addItem(setup_vertical_spacer(), 2, 0);
+  layout->addLayout(motor_controls_layout, 3, 0, Qt::AlignLeft);
+  layout->addLayout(deceleration_layout, 4, 0, Qt::AlignLeft);
+  layout->addLayout(motor_off_layout, 5, 0, Qt::AlignLeft);
 
   motor_page_widget->setLayout(layout);
 
