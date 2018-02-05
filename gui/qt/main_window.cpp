@@ -977,7 +977,7 @@ void main_window::receive_widget(graph_widget *widget)
 {
   widget->set_preview_mode(true);
 
-  horizontal_layout->addWidget(widget->custom_plot);
+  horizontal_layout->addWidget(widget->custom_plot, 1);
   preview_frame->setFrameShape(QFrame::Box);
 }
 
@@ -1830,10 +1830,11 @@ QWidget * main_window::setup_status_tab()
   QGridLayout * layout = new QGridLayout();
 
   layout->addWidget(setup_variables_box(), 0, 0);
-  layout->addWidget(setup_preview_plot(), 0, 1, Qt::AlignCenter);
+  layout->addWidget(setup_preview_plot(), 0, 1);
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
+  layout->setColumnStretch(1, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
@@ -1853,7 +1854,7 @@ QWidget * main_window::setup_preview_plot()
   preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();
-  horizontal_layout->addWidget(preview_plot);
+  horizontal_layout->addWidget(preview_plot, 1);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(preview_pane_clicked()));
@@ -1867,7 +1868,6 @@ QWidget * main_window::setup_variables_box()
 {
   variables_box = new QGroupBox();
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
-  variables_box->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
   QGridLayout * layout = new QGridLayout();
 
