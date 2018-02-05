@@ -162,10 +162,8 @@ void feedback_wizard::set_feedback(uint16_t value)
 
 void feedback_wizard::set_duty_cycle(int16_t value)
 {
-  duty_cycle_value->setText(QString::number(value));
-
-  duty_cycle_percent->setText("(" +
-    QString::fromStdString(convert_duty_cycle_to_percent_string(value)) + ")");
+  duty_cycle_value->setText(QString::fromStdString(
+      convert_duty_cycle_to_percent_string(value)));
 }
 
 void feedback_wizard::set_motor_status(QString status, bool error)
@@ -614,7 +612,6 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
   connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
 
-  // TODO: make clickable
   QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
 
   // TODO: display as a percentage
@@ -644,21 +641,14 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   // TODO: say 'Duty cycle percent'
   QLabel * duty_cycle_label = new QLabel(tr("Duty cycle:"));
 
-  // TODO: don't show this, only show duty cycle as a percentage
   duty_cycle_value = new QLabel();
-  duty_cycle_value->setText("-600 ");
+  duty_cycle_value->setText("-100% ");
   duty_cycle_value->setFixedSize(duty_cycle_value->sizeHint());
   duty_cycle_value->setText("");
-
-  duty_cycle_percent = new QLabel();
-  duty_cycle_percent->setText("(-100%) ");
-  duty_cycle_percent->setFixedSize(duty_cycle_percent->sizeHint());
-  duty_cycle_percent->setText("");
 
   QHBoxLayout * vars_layout = new QHBoxLayout();
   vars_layout->addWidget(duty_cycle_label);
   vars_layout->addWidget(duty_cycle_value);
-  vars_layout->addWidget(duty_cycle_percent);
   vars_layout->addStretch(1);
   vars_layout->setMargin(0);
 

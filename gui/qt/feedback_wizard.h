@@ -96,7 +96,6 @@ private:
   QPushButton * reverse_button;
   QPushButton * forward_button;
   QLabel * duty_cycle_value;
-  QLabel * duty_cycle_percent;
   QLabel * motor_status_value;
   QSpinBox * duty_cycle_input;
   QLabel * bottom_instruction_label;
