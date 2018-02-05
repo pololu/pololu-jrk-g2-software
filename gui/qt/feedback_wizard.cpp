@@ -515,8 +515,6 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
     "and set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
 
-  // TODO: warn if PID period or accel/decel parameters are too slow?
-
   QLabel * stopped_label = new QLabel();
   stopped_label->setWordWrap(true);
   stopped_label->setText(tr(
@@ -606,47 +604,6 @@ QWidget * feedback_wizard::setup_feedback_widget()
   return feedback_widget;
 }
 
-// Just give the users a hint about max duty cycle settings that could
-// prevent them from reaching a good speed during the wizard.
-static QString get_max_duty_cycle_str(const jrk::settings & settings)
-{
-  QList<uint16_t> limits;
-  limits << settings.get_max_duty_cycle_forward();
-  if (settings.get_max_duty_cycle_reverse() != settings.get_max_duty_cycle_forward())
-  {
-    limits << settings.get_max_duty_cycle_reverse();
-  }
-  // TODO: does this setting really have an effect when we are forcing
-  // the duty cycle target?
-  if (settings.get_max_duty_cycle_while_feedback_out_of_range() <
-    settings.get_max_duty_cycle_reverse() ||
-    settings.get_max_duty_cycle_while_feedback_out_of_range() <
-    settings.get_max_duty_cycle_forward())
-  {
-    limits << settings.get_max_duty_cycle_while_feedback_out_of_range();
-  }
-
-  QString r;
-  if (limits.size() == 1)
-  {
-    r.append("Max. duty cycle setting: ");
-  }
-  else
-  {
-    r.append("Max. duty cycle settings: ");
-  }
-
-  QStringList limit_strs;
-  for (uint16_t limit : limits)
-  {
-    limit_strs << QString::number(limit);
-  }
-
-  r.append(limit_strs.join("/"));
-
-  return r;
-}
-
 QWidget * feedback_wizard::setup_motor_control_widget()
 {
   reverse_button = new QPushButton(tr("Drive reverse"));
@@ -684,10 +641,6 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   // don't say "force" or "target"
   motor_status_value = new QLabel();
 
-  // TODO: remove this stuff
-  QLabel * max_duty_cycle_label = new QLabel();
-  max_duty_cycle_label->setText(get_max_duty_cycle_str(controller->cached_settings));
-
   // TODO: say 'Duty cycle percent'
   QLabel * duty_cycle_label = new QLabel(tr("Duty cycle:"));
 
@@ -712,7 +665,6 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addLayout(button_layout);
   layout->addSpacing(fontMetrics().height());
-  layout->addWidget(max_duty_cycle_label);
   layout->addLayout(vars_layout);
   layout->addWidget(motor_status_value);
   layout->setMargin(0);
