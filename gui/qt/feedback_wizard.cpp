@@ -479,7 +479,8 @@ void feedback_wizard::update_learn_page()
 
 int feedback_wizard::forward_duty_cycle()
 {
-  int duty_cycle = duty_cycle_input->value();
+  int duty_cycle = duty_cycle_input->value() *
+    (JRK_MAX_ALLOWED_DUTY_CYCLE / 100);
 
   if (result.motor_invert != original_motor_invert)
   {
@@ -614,16 +615,15 @@ QWidget * feedback_wizard::setup_motor_control_widget()
 
   QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
 
-  // TODO: display as a percentage
   duty_cycle_input = new QSpinBox();
   // TODO: max value should be max duty cycle setting
   // TODO: when they reach the max duty cycle setting, show a message:
   //  (Jan wants)
-  duty_cycle_input->setRange(0, 600);
+  duty_cycle_input->setRange(0, 100);
   // TODO: default value is 25% of the max duty cycle (lower of fwd and reverse)
-  duty_cycle_input->setValue(60);
-  duty_cycle_input->setSingleStep(60);  // TODO: Jan said maybe 5%
-  duty_cycle_input->setToolTip("For full speed, enter 600.");
+  duty_cycle_input->setValue(10);
+  duty_cycle_input->setSingleStep(5);
+  duty_cycle_input->setSuffix("%");
 
   QHBoxLayout * button_layout = new QHBoxLayout();
   button_layout->addWidget(reverse_button);
