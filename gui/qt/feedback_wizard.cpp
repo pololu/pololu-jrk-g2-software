@@ -65,6 +65,10 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   feedback_mode = settings.get_feedback_mode();
   result.motor_invert = original_motor_invert = settings.get_motor_invert();
 
+  max_duty_cycle_percent = std::min(
+    settings.get_max_duty_cycle_forward(),
+    settings.get_max_duty_cycle_reverse()) / DUTY_CYCLE_FACTOR;
+
   setWindowTitle("Feedback setup wizard");
   setWindowIcon(QIcon(":app_icon")); //TODO: make sure this works
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -479,8 +483,7 @@ void feedback_wizard::update_learn_page()
 
 int feedback_wizard::forward_duty_cycle()
 {
-  int duty_cycle = duty_cycle_input->value() *
-    (JRK_MAX_ALLOWED_DUTY_CYCLE / 100);
+  int duty_cycle = duty_cycle_input->value() * DUTY_CYCLE_FACTOR;
 
   if (result.motor_invert != original_motor_invert)
   {
@@ -616,12 +619,10 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
 
   duty_cycle_input = new QSpinBox();
-  // TODO: max value should be max duty cycle setting
   // TODO: when they reach the max duty cycle setting, show a message:
   //  (Jan wants)
-  duty_cycle_input->setRange(0, 100);
-  // TODO: default value is 25% of the max duty cycle (lower of fwd and reverse)
-  duty_cycle_input->setValue(10);
+  duty_cycle_input->setRange(0, max_duty_cycle_percent);
+  duty_cycle_input->setValue(max_duty_cycle_percent / 4);
   duty_cycle_input->setSingleStep(5);
   duty_cycle_input->setSuffix("%");
 

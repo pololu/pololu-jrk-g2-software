@@ -20,6 +20,9 @@ class feedback_wizard : public QWizard
   // 20 samples, one every 50 ms.  Total time is 1000 ms.
   static const uint32_t SAMPLE_COUNT = 20;
 
+  // For converting between native jrk duty cycles and percentages.
+  static const int DUTY_CYCLE_FACTOR = JRK_MAX_ALLOWED_DUTY_CYCLE / 100;
+
   enum page { INTRO, LEARN, CONCLUSION };
   enum learn_step { MOTOR_DIR, MAX, MIN };
   const int FIRST_STEP = MOTOR_DIR;
@@ -100,11 +103,10 @@ private:
   QSpinBox * duty_cycle_input;
   QLabel * bottom_instruction_label;
 
-  // Input mode setting (RC or analog).
+  // The jrk's current settings.
   uint8_t feedback_mode;
-
-  // The motor_invert setting from the original settings.
   bool original_motor_invert;
+  uint8_t max_duty_cycle_percent;
 
   // Input variable from the device.
   uint16_t feedback;
