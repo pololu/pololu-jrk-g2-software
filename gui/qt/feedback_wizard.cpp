@@ -638,8 +638,7 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   // don't say "force" or "target"
   motor_status_value = new QLabel();
 
-  // TODO: say 'Duty cycle percent'
-  QLabel * duty_cycle_label = new QLabel(tr("Duty cycle:"));
+  QLabel * duty_cycle_label = new QLabel(tr("Duty cycle percent:"));
 
   duty_cycle_value = new QLabel();
   duty_cycle_value->setText("-100% ");
