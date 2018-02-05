@@ -52,6 +52,7 @@ public slots:
   void set_duty_cycle(int16_t);
   void set_motor_status(QString status, bool error);
   void motor_invert_changed(bool);
+  void duty_cycle_input_changed();
   void reverse_button_pressed();
   void forward_button_pressed();
   void drive_button_released();
@@ -98,9 +99,10 @@ private:
   QWidget * motor_control_widget;
   QPushButton * reverse_button;
   QPushButton * forward_button;
+  QSpinBox * duty_cycle_input;
+  QLabel * max_duty_cycle_note;
   QLabel * duty_cycle_value;
   QLabel * motor_status_value;
-  QSpinBox * duty_cycle_input;
   QLabel * bottom_instruction_label;
 
   // The jrk's current settings.

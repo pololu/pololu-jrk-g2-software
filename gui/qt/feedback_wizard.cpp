@@ -191,6 +191,19 @@ void feedback_wizard::motor_invert_changed(bool value)
   result.motor_invert = value;
 }
 
+void feedback_wizard::duty_cycle_input_changed()
+{
+  if (duty_cycle_input->value() == max_duty_cycle_percent)
+  {
+    max_duty_cycle_note->setText(tr(
+      "The selected speed limit is the maximum speed allowed by your settings."));
+  }
+  else
+  {
+    max_duty_cycle_note->setText("");
+  }
+}
+
 void feedback_wizard::reverse_button_pressed()
 {
   try
@@ -626,12 +639,21 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   duty_cycle_input->setSingleStep(5);
   duty_cycle_input->setSuffix("%");
 
-  QHBoxLayout * button_layout = new QHBoxLayout();
-  button_layout->addWidget(reverse_button);
-  button_layout->addWidget(forward_button);
-  button_layout->addWidget(duty_cycle_input_label);
-  button_layout->addWidget(duty_cycle_input);
-  button_layout->addStretch(1);
+  max_duty_cycle_note = new QLabel();
+
+  connect(duty_cycle_input, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &duty_cycle_input_changed);
+
+  // Just in case the input is already at its maximum value.
+  duty_cycle_input_changed();
+
+  QGridLayout * button_layout = new QGridLayout();
+  button_layout->addWidget(reverse_button, 0, 0);
+  button_layout->addWidget(forward_button, 0, 1);
+  button_layout->addWidget(duty_cycle_input_label, 0, 2);
+  button_layout->addWidget(duty_cycle_input, 0, 3);
+  button_layout->addWidget(max_duty_cycle_note, 1, 0, 1, 5);
+  button_layout->setColumnStretch(4, 1);
   button_layout->setMargin(0);
 
   // TODO: duty cycle target is too much detail
