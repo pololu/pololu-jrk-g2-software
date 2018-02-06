@@ -26,4 +26,5 @@ signals:
 
 public slots:
   void receive_widget(graph_widget *widget);
+  void raise_window();
 };

@@ -2,6 +2,8 @@
 #include "main_window.h"
 #include "graph_widget.h"
 
+#include <iostream>
+
 graph_window::graph_window(QWidget *parent)
 {
   setup_ui();
@@ -27,10 +29,6 @@ void graph_window::closeEvent(QCloseEvent *event)
   emit pass_widget(grabbed_widget);
   grabbed_widget = 0;
 
-  // Reverts graph_window state to normal to fix Qt bug when window is
-  // maximized, closed, and then reopened.
-  setWindowState(Qt::WindowNoState);
-
   QWidget::closeEvent(event);
 }
 
@@ -49,4 +47,18 @@ void graph_window::receive_widget(graph_widget *widget)
    central_layout->setRowStretch(1, 3);
 
    grabbed_widget->set_preview_mode(false);
+}
+
+// Directs focus to graph_window.
+void graph_window::raise_window()
+{
+  // Shows graph_window if not already shown.
+  // Reverts graph_window state to normal to fix Qt bug when window is
+  // maximized, closed, and then reopened.
+  if (!this->isVisible())
+    this->showNormal();
+
+  this->raise();
+
+  this->activateWindow();
 }

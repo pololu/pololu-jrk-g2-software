@@ -994,9 +994,7 @@ void main_window::preview_pane_clicked()
   }
 
   popout_graph_window->receive_widget(red);
-  popout_graph_window->show();
-
-  connect(graph_action, SIGNAL(triggered()), popout_graph_window, SLOT(raise()));
+  popout_graph_window->raise_window();
 }
 
 void main_window::on_device_name_value_linkActivated()
