@@ -2287,9 +2287,9 @@ uint32_t jrk_calculate_raw_current_mv64(
 /// but we can fall back to just checking the persistent settings and that will
 /// be good enough for almost all users.)
 ///
-/// The flags argument is reserved and should be set to 0, but could be used in
-/// the future to specify options like what context the message will be printed
-/// in.
+/// The flags argument should generally be set to 0.  If you want a message
+/// tailored for the GUI's feedback wizard, set it to
+/// JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD.
 ///
 /// If there is an error, this returns a pointer to the error, and writes NULL
 /// to the diagnosis pointer.  Otherwise, it returns a NULL error and writes a
@@ -2302,6 +2302,8 @@ jrk_error * jrk_diagnose(
   const jrk_variables * vars,
   uint32_t flags,
   char ** diagnosis);
+
+#define JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD 1
 
 #ifdef __cplusplus
 }

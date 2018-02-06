@@ -75,8 +75,8 @@ void run_feedback_wizard(main_window * window)
     &wizard, &feedback_wizard::set_feedback);
   QObject::connect(window, &main_window::duty_cycle_changed,
     &wizard, &feedback_wizard::set_duty_cycle);
-  QObject::connect(window, &main_window::motor_status_changed,
-    &wizard, &feedback_wizard::set_motor_status);
+  QObject::connect(window, &main_window::controller_updated,
+    &wizard, &feedback_wizard::controller_updated);
 
   int result = wizard.exec();
 
@@ -207,20 +207,34 @@ void feedback_wizard::set_duty_cycle(int16_t value)
       convert_duty_cycle_to_percent_string(value)));
 }
 
-void feedback_wizard::set_motor_status(QString status, bool error)
+void feedback_wizard::controller_updated()
 {
-  bool styled = !motor_status_value->styleSheet().isEmpty();
+  std::string status;
+  bool use_red;
 
-  if (!styled && error)
+  if (controller->connected())
+  {
+    status = jrk::diagnose(controller->cached_settings,
+      controller->variables, JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD);
+    uint16_t errors = controller->variables.get_error_flags_halting();
+    use_red = (errors & ~(1 << JRK_ERROR_AWAITING_COMMAND)) ? 1 : 0;
+  }
+  else
+  {
+    status = "Device disconnected.";
+    use_red = true;
+  }
+
+  bool styled = !motor_status_value->styleSheet().isEmpty();
+  if (!styled && use_red)
   {
     motor_status_value->setStyleSheet("color: red;");
   }
-  else if (styled && !error)
+  else if (styled && !use_red)
   {
     motor_status_value->setStyleSheet("");
   }
-
-  motor_status_value->setText(status);
+  motor_status_value->setText(QString::fromStdString(status));
 }
 
 void feedback_wizard::motor_invert_changed(bool value)

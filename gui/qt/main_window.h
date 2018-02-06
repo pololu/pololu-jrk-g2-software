@@ -226,7 +226,7 @@ signals:
   void input_changed(uint16_t);
   void feedback_changed(uint16_t);
   void duty_cycle_changed(int16_t);
-  void motor_status_changed(QString status, bool error);
+  void controller_updated();
 
 protected:
   // void context_menu_event(QContextMenuEvent *event);

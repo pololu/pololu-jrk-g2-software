@@ -207,14 +207,14 @@ public:
   // changes.
   jrk::settings cached_settings;
 
+  // Holds the variables/status of the device.
+  jrk::variables variables;
+
 private:
 
   // True if the working settings have been modified by user and could be
   // different from what is cached and on the device.
   bool settings_modified = false;
-
-  // Holds the variables/status of the device.
-  jrk::variables variables;
 
   // Running sum of variables.get_current_chopping_occurrence_count().
   uint32_t current_chopping_count = 0;

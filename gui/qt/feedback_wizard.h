@@ -50,7 +50,7 @@ public slots:
   void handle_back();
   void set_feedback(uint16_t);
   void set_duty_cycle(int16_t);
-  void set_motor_status(QString status, bool error);
+  void controller_updated();
   void motor_invert_changed(bool);
   void duty_cycle_input_changed();
   void reverse_button_pressed();

@@ -2,8 +2,6 @@ Window title: Feedback setup wizard
 
 TODO: Show learned value after it's learned
 
-TODO: warn if PID period or accel/decel parameters are too slow?
-
 TODO:
   Feedback tab: put Learn button in better place, make it clear it applied to all.
   "Feedback setup wizard..." upper left, reset upper right.

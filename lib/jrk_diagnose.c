@@ -160,6 +160,8 @@ jrk_error * jrk_diagnose(
     return jrk_error_create("Variables object is null.");
   }
 
+  bool feedback_wizard = (flags & JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD) ? 1 : 0;
+
   uint8_t feedback_mode = jrk_settings_get_feedback_mode(settings);
 
   uint16_t errors_latched = jrk_settings_get_error_latch(settings)
@@ -203,7 +205,15 @@ jrk_error * jrk_diagnose(
   }
   else if (errors_halting == (1 << JRK_ERROR_AWAITING_COMMAND))
   {
-    jrk_sprintf(&str, "Motor stopped: waiting for a command.");
+    if (feedback_wizard)
+    {
+      jrk_sprintf(&str, "Motor stopped: click and hold one of the buttons above "
+        "to drive the motor.");
+    }
+    else
+    {
+      jrk_sprintf(&str, "Motor stopped: waiting for a command.");
+    }
   }
   else if (real_errors_halting == (1 << JRK_ERROR_NO_POWER))
   {
@@ -293,11 +303,26 @@ jrk_error * jrk_diagnose(
   {
     if (duty_cycle_target == 0 && duty_cycle == 0)
     {
-      jrk_sprintf(&str, "Motor stopped: duty cycle target is forced to 0.");
+      if (feedback_wizard)
+      {
+        jrk_sprintf(&str, "Motor stopped: click and hold one of the buttons above "
+          "to drive the motor.");
+      }
+      else
+      {
+        jrk_sprintf(&str, "Motor stopped: duty cycle target is forced to 0.");
+      }
     }
     else
     {
-      jrk_sprintf(&str, "Motor is running with a forced duty cycle target.");
+      if (feedback_wizard)
+      {
+        jrk_sprintf(&str, "Motor is running.");
+      }
+      else
+      {
+        jrk_sprintf(&str, "Motor is running with a forced duty cycle target.");
+      }
     }
   }
   // Below this point, we know this is normal operation (force_mode == 0).
