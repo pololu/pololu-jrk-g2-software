@@ -14,6 +14,43 @@
 #include <algorithm>
 #include <cassert>
 
+// TODO: handle pressing Enter better, don't always want it to go to the Next page
+// Next button shouldn't have that highlight unless pressing enter uses it.
+// Enter when the speed limit entry is selected should not go to next page
+
+// TODO: Invert motor direction checkbox should be radio buttons, above paragraph.
+// Choose your motor direction:
+// - Standard ("forward" means OUTA positive, OUTB negative)
+// - Inverted ("forward" means OUTA negative, OUTB positive)
+//
+// Box: Test motor direction
+//   Instructions
+//   buttons,
+
+// TODO: step 2 and 3 names: Forward extreme, Reverse extreme
+
+// TODO: let people manually type max feedback, or click sample button
+
+// TODO: Arrange your system so that it is in the farthest forward position possible.
+// If the "Drive forward"
+
+// TODO: step 4: confirm feedback polarity (let them skip)
+// disable drive reverse button
+// ask them to back away from extreme reverse using the drive forward button
+
+// TODO: Learn raw feedback polarity based on first time they drive the buttons
+// Based on that, flip the raw value on step 2.  Step 2 has raw feedback value
+// and radio buttons for inverting it or not.  Default is based on last
+// behavior in step 1.
+// Say drive forward should correspond to number going up, if not, switch feedback
+// polarity.  Step 2 is learn feedback polarity.  Step 3 is maximum.  Step 4 is minimum.
+
+// TODO: Click Finish to Apply settings, allow users to edit the
+// settings before applying
+
+// TODO: Custom button for "Back"
+
+
 void run_feedback_wizard(main_window * window)
 {
   main_controller * controller = window->controller;

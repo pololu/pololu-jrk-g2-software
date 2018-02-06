@@ -1,8 +1,6 @@
 Window title: Feedback setup wizard
 
-TODO: convince people we should not:
-  Show learned value, have a button for resetting, don't do sampling when we
-  click the Next button.
+TODO: Show learned value after it's learned
 
 TODO: warn if PID period or accel/decel parameters are too slow?
 
