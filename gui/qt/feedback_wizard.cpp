@@ -1,7 +1,6 @@
 #include "feedback_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
-#include "wizard_button_text.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -80,6 +79,7 @@ void run_feedback_wizard(main_window * window)
   controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
   controller->handle_feedback_minimum_input(wizard.result.minimum);
   controller->handle_feedback_maximum_input(wizard.result.maximum);
+  controller->apply_settings();
 }
 
 feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
@@ -104,6 +104,12 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   QSize size = sizeHint();
   size.setHeight(size.height() * 4 / 3);
   setFixedSize(size);
+
+  // Custom text for the buttons, so that it doesn't change when they are on
+  // macOS and so we can make it clear that the 'Finish' button also applies
+  // settings.
+  setButtonText(NextButton, tr("Next"));
+  setButtonText(FinishButton, tr("Finish and apply settings"));
 
   // Handle the next and back buttons with custom slots.
   disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
@@ -523,7 +529,7 @@ void feedback_wizard::update_learn_page()
       "try increasing the duty cycle target, "
       "fixing any errors that are occurring, "
       "and checking the motor wiring. "
-      "You can skip this step by clicking " NEXT_BUTTON_TEXT "."));
+      "You can skip this step by clicking Next."));
     bottom_instruction_label->setText("");
     break;
 
@@ -535,7 +541,7 @@ void feedback_wizard::update_learn_page()
       "If the \"Drive forward\" button drives in the wrong direction, go back "
       "and toggle the \"Invert motor direction\" checkbox to fix it."));
     bottom_instruction_label->setText(tr(
-      "When you click " NEXT_BUTTON_TEXT ", this wizard will sample the "
+      "When you click Next, this wizard will sample the "
       "feedback values for one second.  Please do not move the output "
       "while it is being sampled."));
     break;
@@ -546,7 +552,7 @@ void feedback_wizard::update_learn_page()
       "Use the \"Drive reverse\" button or move the output manually to get it "
       "to its minimum (full reverse) position."));
     bottom_instruction_label->setText(tr(
-      "When you click " NEXT_BUTTON_TEXT ", this wizard will sample the "
+      "When you click Next, this wizard will sample the "
       "feedback values for one second.  Please do not move the output "
       "while it is being sampled."));
     break;
@@ -592,7 +598,7 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
   QLabel * stopped_label = new QLabel();
   stopped_label->setWordWrap(true);
   stopped_label->setText(tr(
-    "NOTE: When you click " NEXT_BUTTON_TEXT ", this wizard will stop the motor "
+    "NOTE: When you click Next, this wizard will stop the motor "
     "and clear any latched errors.  To restart the motor later, "
     "you can click the \"Run motor\" button (after fixing any errors)."));
   layout->addWidget(stopped_label);
@@ -750,11 +756,9 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   page->setTitle(tr("Feedback setup finished"));
 
+  // TODO: better text here to explain what's going on
   QLabel * completed_label = new QLabel(
-    "You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Scaling\" box and the \"Invert motor direction\" "
-    "checkbox after you click " FINISH_BUTTON_TEXT ".  "
-    "To use the new settings, you must first apply them to the device.");
+    "You have successfully completed this wizard.");
   completed_label->setWordWrap(true);
   layout->addWidget(completed_label);
 
