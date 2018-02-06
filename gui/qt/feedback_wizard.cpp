@@ -22,6 +22,13 @@
 //   Instructions
 //   buttons,
 
+// TODO: Move to the most forward position, which will be the minimum feedback
+// value because you.
+
+// TODO: learn steps: blank text box, force them to enter something
+// between Next button gets enabled.
+// "Determine the minimum feedback value at the forward extreme"
+
 // TODO: let people manually type max feedback, or click sample button
 
 // TODO: Learn raw feedback polarity based on first time they drive the buttons
@@ -75,8 +82,8 @@ void run_feedback_wizard(main_window * window)
 
   controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
-  controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
-  controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
+  controller->handle_feedback_error_minimum_input(wizard.result.error_minimum);
+  controller->handle_feedback_error_maximum_input(wizard.result.error_maximum);
   controller->handle_feedback_minimum_input(wizard.result.minimum);
   controller->handle_feedback_maximum_input(wizard.result.maximum);
   controller->apply_settings();
@@ -119,6 +126,8 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
 
   connect(qApp, &QApplication::focusChanged,
     this, &focus_changed);
+
+  connect(this, &QDialog::finished, this, &copy_form_into_result);
 }
 
 void feedback_wizard::showEvent(QShowEvent * event)
@@ -172,6 +181,7 @@ void feedback_wizard::handle_next()
   {
     if (handle_next_on_learn_page())
     {
+      copy_result_into_form();
       next();
     }
   }
@@ -487,10 +497,10 @@ bool feedback_wizard::learn_min()
   result.maximum = real_max->average;
   result.minimum = real_min->average;
 
-  // Set the absolute range: when the feedback is outside of this range, the jrk
+  // Set the error range: when the feedback is outside of this range, the jrk
   // considers it to be an error.
-  result.absolute_minimum = result.minimum / 2;
-  result.absolute_maximum = 4095 - (4095 - result.maximum) / 2;
+  result.error_minimum = result.minimum / 2;
+  result.error_maximum = 4095 - (4095 - result.maximum) / 2;
 
   return true;
 }
@@ -557,6 +567,22 @@ void feedback_wizard::update_learn_page()
       "while it is being sampled."));
     break;
   }
+}
+
+// This is called when we are about to show the conclusion page.  It copies the
+// settings in the result struct into the form on that pageso the user can see
+// them and edit them.
+void feedback_wizard::copy_result_into_form()
+{
+  // TODO
+}
+
+// This is called when the user is done with the wizard.  In case they
+// successfully completed the conclusion page, we want to copy the settings they
+// chose from the form back into the result struct.
+void feedback_wizard::copy_form_into_result()
+{
+  // TODO
 }
 
 int feedback_wizard::forward_duty_cycle()

@@ -35,8 +35,8 @@ public:
   {
     bool motor_invert = false;
     bool invert = false;
-    uint16_t absolute_minimum = 0;
-    uint16_t absolute_maximum = 4095;
+    uint16_t error_minimum = 0;
+    uint16_t error_maximum = 4095;
     uint16_t minimum = 0;
     uint16_t maximum = 4095;
   };
@@ -75,6 +75,10 @@ private:
 
   void update_learn_page();
   int forward_duty_cycle();
+
+  void copy_result_into_form();
+  void copy_form_into_result();
+
   void throw_if_not_connected();
 
   // This class needs to hold a pointer to the main_controller since there are a
@@ -105,6 +109,14 @@ private:
   QLabel * duty_cycle_value;
   QLabel * motor_status_value;
   QLabel * bottom_instruction_label;
+
+  // TODO: Controls on the 'Conclusion' page.
+  //QCheckBox * final_motor_invert_checkbox;
+  //QSpinBox * final_feedback_invert_checkbox;
+  //QSpinBox * final_feedback_error_max_spinbox;
+  //QSpinBox * final_feedback_max_spinbox;
+  //QSpinBox * final_feedback_min_spinbox;
+  //QSpinBox * final_feedback_error_min_spinbox;
 
   // The jrk's current settings.
   uint8_t feedback_mode;
