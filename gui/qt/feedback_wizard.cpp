@@ -707,9 +707,6 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   button_layout->setColumnStretch(4, 1);
   button_layout->setMargin(0);
 
-  // TODO: duty cycle target is too much detail
-  // just say "Click and hold one of the buttons above to drive the motor."
-  // don't say "force" or "target"
   motor_status_value = new QLabel();
 
   QLabel * duty_cycle_label = new QLabel(tr("Duty cycle percent:"));
