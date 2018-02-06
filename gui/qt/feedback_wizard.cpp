@@ -636,7 +636,7 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   //  (Jan wants)
   duty_cycle_input->setRange(0, max_duty_cycle_percent);
   duty_cycle_input->setValue(max_duty_cycle_percent / 4);
-  duty_cycle_input->setSingleStep(5);
+  duty_cycle_input->setSingleStep(1);
   duty_cycle_input->setSuffix("%");
 
   max_duty_cycle_note = new QLabel();
