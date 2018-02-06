@@ -14,10 +14,6 @@
 #include <algorithm>
 #include <cassert>
 
-// TODO: handle pressing Enter better, don't always want it to go to the Next page
-// Next button shouldn't have that highlight unless pressing enter uses it.
-// Enter when the speed limit entry is selected should not go to next page
-
 // TODO: Invert motor direction checkbox should be radio buttons, above paragraph.
 // Choose your motor direction:
 // - Standard ("forward" means OUTA positive, OUTB negative)
@@ -123,6 +119,9 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   connect(button(NextButton), &QAbstractButton::clicked, this, &handle_next);
   disconnect(button(BackButton), &QAbstractButton::clicked, 0, 0);
   connect(button(BackButton), &QAbstractButton::clicked, this, &handle_back);
+
+  connect(qApp, &QApplication::focusChanged,
+    this, &focus_changed);
 }
 
 void feedback_wizard::showEvent(QShowEvent * event)
@@ -143,6 +142,24 @@ void feedback_wizard::showEvent(QShowEvent * event)
     }
   }
 #endif
+}
+
+void feedback_wizard::focus_changed()
+{
+  // If the user presses "Enter" when the focus is in the duty cycle input box,
+  // we don't want to trigger the "Next" button.  So whenever the focus changes,
+  // we use 'setDefault' to change whether the "Next" button is the default button
+  // (i.e. the one that 'Enter' acts on).
+  bool next_is_default = !duty_cycle_input->hasFocus();
+  QAbstractButton * next_button = button(NextButton);
+  if (next_button->inherits("QPushButton"))
+  {
+    qobject_cast<QPushButton *>(next_button)->setDefault(next_is_default);
+  }
+  else
+  {
+    assert(0);
+  }
 }
 
 void feedback_wizard::handle_next()

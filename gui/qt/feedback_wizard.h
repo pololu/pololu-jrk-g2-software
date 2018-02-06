@@ -46,6 +46,7 @@ public:
   virtual void showEvent(QShowEvent *);
 
 public slots:
+  void focus_changed();
   void handle_next();
   void handle_back();
   void set_feedback(uint16_t);
