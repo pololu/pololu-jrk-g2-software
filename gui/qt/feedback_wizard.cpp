@@ -7,6 +7,7 @@
 
 #include <QIcon>
 #include <QLabel>
+#include <QLineEdit>
 #include <QProgressBar>
 #include <QRadioButton>
 #include <QVBoxLayout>
@@ -163,6 +164,8 @@ void feedback_wizard::focus_changed()
 
 void feedback_wizard::handle_next()
 {
+  if (disconnected_error()) { return; }
+
   if (currentId() == INTRO)
   {
     if (handle_next_on_intro_page())
@@ -264,6 +267,16 @@ void feedback_wizard::feedback_invert_changed()
   result.invert = feedback_invert_radio_true->isChecked();
 }
 
+void feedback_wizard::learn_max_button_pressed()
+{
+  start_sampling(learn_max_value);
+}
+
+void feedback_wizard::learn_min_button_pressed()
+{
+  start_sampling(learn_min_value);
+}
+
 void feedback_wizard::duty_cycle_input_changed()
 {
   if (duty_cycle_input->value() == max_duty_cycle_percent)
@@ -320,20 +333,10 @@ void feedback_wizard::set_next_button_enabled(bool enabled)
   learn_page->setComplete(enabled);
 }
 
-void feedback_wizard::set_progress_visible(bool visible)
-{
-  sampling_label->setVisible(visible);
-  sampling_progress->setVisible(visible);
-
-  motor_control_box->setVisible(!visible);
-}
-
 bool feedback_wizard::handle_next_on_intro_page()
 {
   try
   {
-    throw_if_not_connected();
-
     // Force the duty cycle target to 0 to make this wizard safer and because
     // that should be the default state when we drive the motor around manually.
     controller->force_duty_cycle_target_nocatch(0);
@@ -359,59 +362,51 @@ bool feedback_wizard::handle_next_on_intro_page()
 
 bool feedback_wizard::handle_back_on_learn_page()
 {
-  if (sampling)
+  sampling = false;
+
+  // Go back to the previous step or page.
+  if (learn_step == FIRST_STEP)
   {
-    // We were in the middle of sampling, so just cancel that.
-    sampling = false;
-    return false;
+    return true;
   }
   else
   {
-    // We were not sampling, so go back to the previous step or page.
-    if (learn_step == FIRST_STEP)
-    {
-      return true;
-    }
-    else
-    {
-      learn_step--;
-      return false;
-    }
+    learn_step--;
+    return false;
   }
 }
 
 bool feedback_wizard::handle_next_on_learn_page()
 {
-  if (learn_step_succeeded || learn_step == MOTOR_DIR
-    || learn_step == FEEDBACK_DIR)
+  sampling = false;
+
+  if (learn_step == MAXMIN)
   {
-    // We completed this step of the learning so go to the next step or page.
-    learn_step_succeeded = false;
-    if (learn_step == LAST_STEP)
-    {
-      return true;
-    }
-    else
-    {
-      learn_step++;
-      return false;
-    }
-  }
-  else if (sampling)
-  {
-    // We will advance to the next step/page when the sampling is finished.
-    // This case shouldn't even happen because we disable the 'Next' button.
-    assert(0);
+    show_error_message("TODO: validate the max/min values and create settings", this);
     return false;
+  }
+
+  // Go to the next step or page.
+  if (learn_step == LAST_STEP)
+  {
+    return true;
   }
   else
   {
-    // Start sampling the feedback.
-    sampling = true;
-    samples.clear();
-    sampling_progress->setValue(0);
+    learn_step++;
     return false;
   }
+}
+
+void feedback_wizard::start_sampling(QLineEdit * input)
+{
+  if (disconnected_error()) { return; }
+
+  sampling = true;
+  sampling_input = input;
+  samples.clear();
+  sampling_progress->setValue(0);
+  update_learn_page_for_sampling();
 }
 
 void feedback_wizard::handle_new_sample()
@@ -430,27 +425,12 @@ void feedback_wizard::handle_new_sample()
 void feedback_wizard::handle_sampling_complete()
 {
   sampling = false;
-  set_next_button_enabled(true);
-  set_progress_visible(false);
+  update_learn_page_for_sampling();
 
-  switch (learn_step)
-  {
-  case MAX:
-    learn_step_succeeded = learn_max();
-    break;
-
-  case MIN:
-    learn_step_succeeded = learn_min();
-    break;
-  }
-
-  if (learn_step_succeeded)
-  {
-    // Go to the next step or page.
-    handle_next();
-  }
+  // TODO
 }
 
+// TODO: probably remove this function
 bool feedback_wizard::learn_max()
 {
   learned_max = uint16_range::from_samples(samples);
@@ -459,6 +439,7 @@ bool feedback_wizard::learn_max()
   return true;
 }
 
+// TODO: probably remove this function
 bool feedback_wizard::learn_min()
 {
   std::string const try_again = "\n\n"
@@ -519,17 +500,17 @@ bool feedback_wizard::check_range_not_too_big(const uint16_range & range)
 
 void feedback_wizard::update_learn_page()
 {
-  set_next_button_enabled(!sampling);
-  set_progress_visible(sampling);
+  update_learn_page_for_sampling();
 
   motor_invert_widget->setVisible(learn_step == MOTOR_DIR);
   feedback_invert_widget->setVisible(learn_step == FEEDBACK_DIR);
+  maxmin_widget->setVisible(learn_step == MAXMIN);
   feedback_widget->setVisible(learn_step != MOTOR_DIR);
 
   switch (learn_step)
   {
   case MOTOR_DIR:
-    learn_page->setTitle(tr("Step 1 of 4: Motor direction"));
+    learn_page->setTitle(tr("Step 1 of 3: Motor direction"));
     top_instruction_label->setText(tr("Choose the motor direction:"));
     motor_instruction_label->setText(tr(
       "You can click and hold the buttons below to "
@@ -537,38 +518,64 @@ void feedback_wizard::update_learn_page()
       "If the motor moves in the wrong direction, change your choice "
       "of direction above and try again.  "
       "If the motor does not move at all, try increasing the speed limit, "
-      "fixing any errors that are occurring, "
-      "and checking the motor wiring."));
+      "fixing any errors, and checking the motor wiring."));
     break;
 
   case FEEDBACK_DIR:
-    learn_page->setTitle(tr("Step 2 of 4: Feeedback direction"));
+    learn_page->setTitle(tr("Step 2 of 3: Feeedback direction"));
     top_instruction_label->setText("Choose the feedback direction:");
     motor_instruction_label->setText(tr(
       "You can click and hold the buttons below to see how the feedback "
       "reading responds when the motor moves.  If the feedback reading "
-      "decreases when the motor moves forward, you should select "
+      "decreases while driving forward, you should select "
       "\"Inverted feedback direction\"."));
     break;
 
-  case MAX:
-    learn_page->setTitle(tr("Step 3 of 4: Maximum"));
-    top_instruction_label->setText(tr(
-      "Use the \"Drive forward\" button or move the output manually to get it "
-      "to its maximum (full forward) position.  "
-      "If the \"Drive forward\" button drives in the wrong direction, go back "
-      "and toggle the \"Invert motor direction\" checkbox to fix it."));
-    motor_instruction_label->setText("");
-    break;
-
-  case MIN:
-    learn_page->setTitle(tr("Step 4 of 4: Minimum"));
-    top_instruction_label->setText(tr(
-      "Use the \"Drive reverse\" button or move the output manually to get it "
-      "to its minimum (full reverse) position."));
-    motor_instruction_label->setText("");
+  case MAXMIN:
+    learn_page->setTitle(tr("Step 3 of 3: Feedback range"));
+    if (result.invert)
+    {
+      top_instruction_label->setText(tr(
+        "Move the system to its most forward position and click the \"Sample\" "
+        "button next to the \"Forward extreme\" box to record the feedback reading. "
+        "Since feedback is inverted, the most forward position has the "
+        "lowest feedback value. "
+        "Then move the system to the other extreme and click the \"Sample\" "
+        "button for the \"Reverse extreme\"."
+      ));
+      learn_max_label->setText(tr("Forward extreme (minimum value):"));
+      learn_min_label->setText(tr("Reverse extreme (maximum value):"));
+    }
+    else
+    {
+      top_instruction_label->setText(tr(
+        "Move the system to its most forward position and click the \"Sample\" "
+        "button next to the \"Forward extreme\" box to record the feedback reading. "
+        "The most forward position has the highest feedback value. "
+        "Then move the system to the other extreme and click the \"Sample\" "
+        "button for the \"Reverse extreme\"."
+      ));
+      learn_max_label->setText(tr("Forward extreme (maximum value):"));
+      learn_min_label->setText(tr("Reverse extreme (minimum value):"));
+    }
+    motor_instruction_label->setText(tr(
+      "You can click and hold the buttons below to drive the motor."));
     break;
   }
+}
+
+void feedback_wizard::update_learn_page_for_sampling()
+{
+  sampling_label->setVisible(sampling);
+  sampling_progress->setVisible(sampling);
+
+  motor_control_box->setVisible(!sampling);
+
+  learn_max_value->setEnabled(!sampling);
+  learn_min_value->setEnabled(!sampling);
+
+  learn_max_button->setEnabled(!sampling);
+  learn_min_button->setEnabled(!sampling);
 }
 
 // This is called when we are about to show the conclusion page.  It copies the
@@ -599,14 +606,13 @@ int feedback_wizard::forward_duty_cycle()
   return duty_cycle;
 }
 
-void feedback_wizard::throw_if_not_connected()
+bool feedback_wizard::disconnected_error()
 {
-  if (!controller->connected())
-  {
-    throw std::runtime_error(
-      "The connection to the device was lost.  "
-      "Please close this wizard, reconnect, and try again.");
-  }
+  if (controller->connected()) { return false; }
+
+  show_error_message(
+    "The jrk is disconnected.  Please exit this wizard and reconnect.", this);
+  return true;
 }
 
 nice_wizard_page * feedback_wizard::setup_intro_page()
@@ -639,6 +645,9 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
 
 nice_wizard_page * feedback_wizard::setup_learn_page()
 {
+  int_validator = new QIntValidator(this);
+  int_validator->setRange(0, 4095);
+
   top_instruction_label = new QLabel();
   top_instruction_label->setAlignment(Qt::AlignTop);
   top_instruction_label->setWordWrap(true);
@@ -653,6 +662,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addWidget(top_instruction_label);
   layout->addWidget(setup_motor_invert_widget());
   layout->addWidget(setup_feedback_invert_widget());
+  layout->addWidget(setup_maxmin_widget());
   layout->addWidget(setup_feedback_widget());
   layout->addSpacing(fontMetrics().height());
   layout->addWidget(setup_motor_control_box());
@@ -728,6 +738,48 @@ QWidget * feedback_wizard::setup_feedback_invert_widget()
   feedback_invert_widget = new QWidget();
   feedback_invert_widget->setLayout(feedback_invert_layout);
   return feedback_invert_widget;
+}
+
+QWidget * feedback_wizard::setup_maxmin_widget()
+{
+  QGridLayout * layout = new QGridLayout();
+
+  learn_max_label = new QLabel();
+
+  learn_max_value = new QLineEdit();
+  learn_max_value->setValidator(int_validator);
+
+  learn_max_button = new QPushButton(tr("Sample"));
+  connect(learn_max_button, &QAbstractButton::clicked,
+    this, &learn_max_button_pressed);
+
+  learn_min_label = new QLabel();
+
+  learn_min_value = new QLineEdit();
+  learn_min_value->setValidator(int_validator);
+
+  learn_min_button = new QPushButton(tr("Sample"));
+  connect(learn_min_button, &QAbstractButton::clicked,
+    this, &learn_min_button_pressed);
+
+  {
+    int width = fontMetrics().width("99999999");
+    learn_max_value->setFixedWidth(width);
+    learn_min_value->setFixedWidth(width);
+  }
+
+  layout->addWidget(learn_max_label, 0, 0);
+  layout->addWidget(learn_max_value, 0, 1);
+  layout->addWidget(learn_max_button, 0, 2);
+  layout->addWidget(learn_min_label, 1, 0);
+  layout->addWidget(learn_min_value, 1, 1);
+  layout->addWidget(learn_min_button, 1, 2);
+  layout->setColumnStretch(3, 1);
+  layout->setMargin(0);
+
+  maxmin_widget = new QWidget();
+  maxmin_widget->setLayout(layout);
+  return maxmin_widget;
 }
 
 QWidget * feedback_wizard::setup_feedback_widget()
