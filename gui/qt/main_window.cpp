@@ -2045,15 +2045,17 @@ QWidget * main_window::setup_input_tab()
   input_mode_combobox->addItem("Pulse width", JRK_INPUT_MODE_PULSE_WIDTH);
 
   QHBoxLayout *input_mode_layout = new QHBoxLayout();
-  input_mode_layout->addWidget(input_mode_label, 0, Qt::AlignLeft);
-  input_mode_layout->addWidget(input_mode_combobox, 0, Qt::AlignLeft);
+  input_mode_layout->addWidget(input_mode_label);
+  input_mode_layout->addWidget(input_mode_combobox);
+  input_mode_layout->addStretch(1);
 
   QGridLayout *layout = input_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(input_mode_layout, 0, 0, Qt::AlignLeft);
+  layout->addLayout(input_mode_layout, 0, 0);
   layout->addWidget(setup_input_analog_groupbox(), 1, 0);
   layout->addWidget(setup_input_serial_groupbox(), 2, 0);
   layout->addWidget(setup_input_scaling_groupbox(), 1, 1, 2, 1, Qt::AlignTop);
+  layout->setRowStretch(3, 1);
+  layout->setColumnStretch(2, 1);
 
   input_page_widget->setLayout(layout);
 
