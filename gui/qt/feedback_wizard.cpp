@@ -14,15 +14,6 @@
 #include <algorithm>
 #include <cassert>
 
-// TODO: Invert motor direction checkbox should be radio buttons, above paragraph.
-// Choose your motor direction:
-// - Standard ("forward" means OUTA positive, OUTB negative)
-// - Inverted ("forward" means OUTA negative, OUTB positive)
-//
-// Box: Test motor direction
-//   Instructions
-//   buttons,
-
 // TODO: Move to the most forward position, which will be the minimum feedback
 // value because you.
 
@@ -329,7 +320,6 @@ void feedback_wizard::set_progress_visible(bool visible)
   sampling_progress->setVisible(visible);
 
   motor_control_box->setVisible(!visible);
-  bottom_instruction_label->setVisible(!visible);
 }
 
 bool feedback_wizard::handle_next_on_intro_page()
@@ -533,22 +523,21 @@ void feedback_wizard::update_learn_page()
   {
   case MOTOR_DIR:
     learn_page->setTitle(tr("Step 1 of 4: Motor direction"));
-    top_instruction_label->setText(tr(
-      "Click and hold the buttons below to drive the motor.  "
-      "If the motor moves in the "
-      "wrong direction, toggle the \"Invert motor direction\" checkbox to fix "
-      "it, and try again.  If the motor does not move at all, "
-      "try increasing the duty cycle target, "
+    top_instruction_label->setText(tr("Choose the motor direction:"));
+    motor_instruction_label->setText(tr(
+      "You can click and hold the buttons below to "
+      "drive the motor and test its direction.  "
+      "If the motor moves in the wrong direction, change your choice "
+      "of direction above and try again.  "
+      "If the motor does not move at all, try increasing the speed limit, "
       "fixing any errors that are occurring, "
-      "and checking the motor wiring. "
-      "You can skip this step by clicking Next."));
-    bottom_instruction_label->setText("");
+      "and checking the motor wiring."));
     break;
 
   case FEEDBACK_DIR:
     learn_page->setTitle(tr("Step 2 of 4: Feeedback direction"));
-    top_instruction_label->setText(tr("")); // TODO
-    bottom_instruction_label->setText("");
+    top_instruction_label->setText(""); // TODO
+    motor_instruction_label->setText("");
     break;
 
   case MAX:
@@ -558,10 +547,7 @@ void feedback_wizard::update_learn_page()
       "to its maximum (full forward) position.  "
       "If the \"Drive forward\" button drives in the wrong direction, go back "
       "and toggle the \"Invert motor direction\" checkbox to fix it."));
-    bottom_instruction_label->setText(tr(
-      "When you click Next, this wizard will sample the "
-      "feedback values for one second.  Please do not move the output "
-      "while it is being sampled."));
+    motor_instruction_label->setText("");
     break;
 
   case MIN:
@@ -569,10 +555,7 @@ void feedback_wizard::update_learn_page()
     top_instruction_label->setText(tr(
       "Use the \"Drive reverse\" button or move the output manually to get it "
       "to its minimum (full reverse) position."));
-    bottom_instruction_label->setText(tr(
-      "When you click Next, this wizard will sample the "
-      "feedback values for one second.  Please do not move the output "
-      "while it is being sampled."));
+    motor_instruction_label->setText("");
     break;
   }
 }
@@ -649,11 +632,9 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   QVBoxLayout * layout = new QVBoxLayout();
 
   top_instruction_label = new QLabel();
-  top_instruction_label->setWordWrap(true);
   top_instruction_label->setAlignment(Qt::AlignTop);
-  top_instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 4);
+  top_instruction_label->setWordWrap(true);
   layout->addWidget(top_instruction_label);
-  layout->addSpacing(fontMetrics().height());
 
   motor_invert_radio_false = new QRadioButton();
   motor_invert_radio_false->setText(tr(
@@ -668,7 +649,6 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   QVBoxLayout * motor_invert_layout = new QVBoxLayout();
   motor_invert_layout->addWidget(motor_invert_radio_false);
   motor_invert_layout->addWidget(motor_invert_radio_true);
-  motor_invert_layout->setMargin(0);
 
   // This must be done after the radio buttons are added to their parent,
   // because they become unchecked at that time.
@@ -689,11 +669,6 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addSpacing(fontMetrics().height());
 
   layout->addWidget(setup_motor_control_box());
-  layout->addSpacing(fontMetrics().height());
-
-  bottom_instruction_label = new QLabel();
-  bottom_instruction_label->setWordWrap(true);
-  layout->addWidget(bottom_instruction_label);
   layout->addSpacing(fontMetrics().height());
 
   sampling_label = new QLabel(tr("Sampling..."));
@@ -743,6 +718,10 @@ QWidget * feedback_wizard::setup_feedback_widget()
 
 QGroupBox * feedback_wizard::setup_motor_control_box()
 {
+  motor_instruction_label = new QLabel();
+  motor_instruction_label->setAlignment(Qt::AlignTop);
+  motor_instruction_label->setWordWrap(true);
+
   reverse_button = new QPushButton(tr("Drive reverse"));
   connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
   connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
@@ -796,14 +775,12 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(motor_instruction_label);
   layout->addLayout(button_layout);
-  layout->addSpacing(fontMetrics().height());
   layout->addLayout(vars_layout);
   layout->addWidget(motor_status_value);
 
   motor_control_box = new QGroupBox();
   // TODO: this title is only appropriate on step 1, right?
-  // Can we just call the box 'Drive motor'?
-  motor_control_box->setTitle(tr("Test motor direction"));
+  motor_control_box->setTitle(tr("Test motor direction (optional)"));
   motor_control_box->setLayout(layout);
 
   return motor_control_box;

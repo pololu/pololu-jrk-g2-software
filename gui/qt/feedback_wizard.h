@@ -111,7 +111,6 @@ private:
   QLabel * max_duty_cycle_note;
   QLabel * duty_cycle_value;
   QLabel * motor_status_value;
-  QLabel * bottom_instruction_label;
 
   // TODO: Controls on the 'Conclusion' page.
   //QCheckBox * final_motor_invert_checkbox;
