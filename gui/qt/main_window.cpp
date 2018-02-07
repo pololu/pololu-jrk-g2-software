@@ -1619,9 +1619,7 @@ void main_window::setup_ui()
   QHBoxLayout *footer_layout = new QHBoxLayout();
   footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);
   footer_layout->addWidget(run_motor_button, 0, Qt::AlignLeft);
-  footer_layout->addStretch(0);
   footer_layout->addWidget(motor_status_value, 1);
-  footer_layout->addStretch(0);
   footer_layout->addWidget(apply_settings_button, 0, Qt::AlignRight);
 
   QHBoxLayout *header_layout = new QHBoxLayout();
