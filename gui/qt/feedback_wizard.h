@@ -52,7 +52,7 @@ public slots:
   void set_feedback(uint16_t);
   void set_duty_cycle(int16_t);
   void controller_updated();
-  void motor_invert_changed(bool);
+  void motor_invert_changed();
   void duty_cycle_input_changed();
   void reverse_button_pressed();
   void forward_button_pressed();
@@ -97,7 +97,9 @@ private:
   QLabel * instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
-  QCheckBox * motor_invert_checkbox;
+  QWidget * motor_invert_widget;
+  QRadioButton * motor_invert_radio_true;
+  QRadioButton * motor_invert_radio_false;
   QWidget * feedback_widget;
   QLabel * feedback_value;
   QLabel * feedback_pretty;

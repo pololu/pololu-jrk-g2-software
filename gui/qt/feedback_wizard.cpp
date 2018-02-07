@@ -8,6 +8,7 @@
 #include <QIcon>
 #include <QLabel>
 #include <QProgressBar>
+#include <QRadioButton>
 #include <QVBoxLayout>
 
 #include <algorithm>
@@ -261,9 +262,9 @@ void feedback_wizard::controller_updated()
   motor_status_value->setText(QString::fromStdString(status));
 }
 
-void feedback_wizard::motor_invert_changed(bool value)
+void feedback_wizard::motor_invert_changed()
 {
-  result.motor_invert = value;
+  result.motor_invert = motor_invert_radio_true->isChecked();
 }
 
 void feedback_wizard::duty_cycle_input_changed()
@@ -526,7 +527,7 @@ void feedback_wizard::update_learn_page()
   set_progress_visible(sampling);
 
   feedback_widget->setVisible(learn_step != MOTOR_DIR);
-  motor_invert_checkbox->setVisible(learn_step == MOTOR_DIR);
+  motor_invert_widget->setVisible(learn_step == MOTOR_DIR);
 
   switch (learn_step)
   {
@@ -654,12 +655,35 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addWidget(instruction_label);
   layout->addSpacing(fontMetrics().height());
 
-  motor_invert_checkbox = new QCheckBox();
-  motor_invert_checkbox->setText(tr("Invert motor direction"));
-  motor_invert_checkbox->setChecked(original_motor_invert);
-  connect(motor_invert_checkbox, &QCheckBox::stateChanged,
+  motor_invert_radio_false = new QRadioButton();
+  motor_invert_radio_false->setText(tr(
+    "Standard (\"forward\" means OUTA positive, OUTB negative)"));
+
+  motor_invert_radio_true = new QRadioButton();
+  motor_invert_radio_true->setText(tr(
+    "Inverted (\"forward\" means OUTA negative, OUTB positive)"));
+  connect(motor_invert_radio_true, &QRadioButton::toggled,
     this, &motor_invert_changed);
-  layout->addWidget(motor_invert_checkbox);
+
+  QVBoxLayout * motor_invert_layout = new QVBoxLayout();
+  motor_invert_layout->addWidget(motor_invert_radio_false);
+  motor_invert_layout->addWidget(motor_invert_radio_true);
+  motor_invert_layout->setMargin(0);
+
+  // This must be done after the radio buttons are added to their parent,
+  // because they become unchecked at that time.
+  if (original_motor_invert)
+  {
+    motor_invert_radio_true->setChecked(true);
+  }
+  else
+  {
+    motor_invert_radio_false->setChecked(true);
+  }
+
+  motor_invert_widget = new QWidget();
+  motor_invert_widget->setLayout(motor_invert_layout);
+  layout->addWidget(motor_invert_widget);
 
   layout->addWidget(setup_feedback_widget());
   layout->addSpacing(fontMetrics().height());
