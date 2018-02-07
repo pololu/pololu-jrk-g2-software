@@ -226,6 +226,8 @@ signals:
   void pass_widget(graph_widget *widget);
   void input_changed(uint16_t);
   void feedback_changed(uint16_t);
+  void duty_cycle_changed(int16_t);
+  void controller_updated();
 
 protected:
   // void context_menu_event(QContextMenuEvent *event);
@@ -308,7 +310,6 @@ private slots:
 
   void on_pwm_frequency_combobox_currentIndexChanged(int index);
   void on_motor_invert_checkbox_stateChanged(int state);
-  void on_detect_motor_button_clicked();
   void on_motor_asymmetric_checkbox_stateChanged(int state);
   void on_max_duty_cycle_forward_spinbox_valueChanged(int value);
   void on_max_duty_cycle_reverse_spinbox_valueChanged(int value);

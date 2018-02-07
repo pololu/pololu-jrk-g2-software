@@ -56,8 +56,6 @@ private:
   // Returns true for success, false for failure.
   bool update_device_list();
 
-  bool do_motor_direction_detect();
-
   // True if device_list changed the last time update_device_list() was
   // called.
   bool device_list_changed;
@@ -72,6 +70,9 @@ public:
   void run_motor();
   void set_target(uint16_t);
   void clear_current_chopping_count();
+
+  void force_duty_cycle_target_nocatch(int16_t);
+  void clear_errors_nocatch();
 
   void open_settings_from_file(std::string filename);
   void save_settings_to_file(std::string filename);
@@ -206,14 +207,14 @@ public:
   // changes.
   jrk::settings cached_settings;
 
+  // Holds the variables/status of the device.
+  jrk::variables variables;
+
 private:
 
   // True if the working settings have been modified by user and could be
   // different from what is cached and on the device.
   bool settings_modified = false;
-
-  // Holds the variables/status of the device.
-  jrk::variables variables;
 
   // Running sum of variables.get_current_chopping_occurrence_count().
   uint32_t current_chopping_count = 0;

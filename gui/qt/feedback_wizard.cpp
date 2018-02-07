@@ -1,7 +1,6 @@
 #include "feedback_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
-#include "wizard_button_text.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -13,6 +12,30 @@
 
 #include <algorithm>
 #include <cassert>
+
+// TODO: Invert motor direction checkbox should be radio buttons, above paragraph.
+// Choose your motor direction:
+// - Standard ("forward" means OUTA positive, OUTB negative)
+// - Inverted ("forward" means OUTA negative, OUTB positive)
+//
+// Box: Test motor direction
+//   Instructions
+//   buttons,
+
+// TODO: let people manually type max feedback, or click sample button
+
+// TODO: Learn raw feedback polarity based on first time they drive the buttons
+// Based on that, flip the raw value on step 2.  Step 2 has raw feedback value
+// and radio buttons for inverting it or not.  Default is based on last
+// behavior in step 1.
+// Say drive forward should correspond to number going up, if not, switch feedback
+// polarity.  Step 2 is learn feedback polarity.  Step 3 is maximum.  Step 4 is minimum.
+
+// TODO: Click Finish to Apply settings, allow users to edit the
+// settings before applying
+
+// TODO: Custom button for "Back"
+
 
 void run_feedback_wizard(main_window * window)
 {
@@ -26,8 +49,8 @@ void run_feedback_wizard(main_window * window)
   {
     // Should not happen because the button is disabled.
     window->show_info_message(
-      "This wizard helps you set the feedback scaling parameters for the "
-      "analog feedback.  "
+      "This wizard helps you detect the motor direction and set the "
+      "analog feedback scaling parameters.  "
       "Please change the feedback mode to analog, then try again.");
     return;
   }
@@ -36,6 +59,10 @@ void run_feedback_wizard(main_window * window)
 
   QObject::connect(window, &main_window::feedback_changed,
     &wizard, &feedback_wizard::set_feedback);
+  QObject::connect(window, &main_window::duty_cycle_changed,
+    &wizard, &feedback_wizard::set_duty_cycle);
+  QObject::connect(window, &main_window::controller_updated,
+    &wizard, &feedback_wizard::controller_updated);
 
   int result = wizard.exec();
 
@@ -45,18 +72,26 @@ void run_feedback_wizard(main_window * window)
   controller->stop_motor();
 
   if (result != QDialog::Accepted) { return; }
-  // TODO: controller->handle_motor_invert_input(wizard.result.motor_invert);
+
+  controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
   controller->handle_feedback_absolute_minimum_input(wizard.result.absolute_minimum);
   controller->handle_feedback_absolute_maximum_input(wizard.result.absolute_maximum);
   controller->handle_feedback_minimum_input(wizard.result.minimum);
   controller->handle_feedback_maximum_input(wizard.result.maximum);
+  controller->apply_settings();
 }
 
 feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   : QWizard(parent), controller(controller)
 {
-  feedback_mode = controller->cached_settings.get_feedback_mode();
+  const jrk::settings & settings = controller->cached_settings;
+  feedback_mode = settings.get_feedback_mode();
+  result.motor_invert = original_motor_invert = settings.get_motor_invert();
+
+  max_duty_cycle_percent = std::min(
+    settings.get_max_duty_cycle_forward(),
+    settings.get_max_duty_cycle_reverse()) / DUTY_CYCLE_FACTOR;
 
   setWindowTitle("Feedback setup wizard");
   setWindowIcon(QIcon(":app_icon")); //TODO: make sure this works
@@ -66,13 +101,24 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   setPage(LEARN, setup_learn_page());
   setPage(CONCLUSION, setup_conclusion_page());
 
-  setFixedSize(sizeHint());
+  QSize size = sizeHint();
+  size.setHeight(size.height() * 4 / 3);
+  setFixedSize(size);
+
+  // Custom text for the buttons, so that it doesn't change when they are on
+  // macOS and so we can make it clear that the 'Finish' button also applies
+  // settings.
+  setButtonText(NextButton, tr("Next"));
+  setButtonText(FinishButton, tr("Finish and apply settings"));
 
   // Handle the next and back buttons with custom slots.
   disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
   connect(button(NextButton), &QAbstractButton::clicked, this, &handle_next);
   disconnect(button(BackButton), &QAbstractButton::clicked, 0, 0);
   connect(button(BackButton), &QAbstractButton::clicked, this, &handle_back);
+
+  connect(qApp, &QApplication::focusChanged,
+    this, &focus_changed);
 }
 
 void feedback_wizard::showEvent(QShowEvent * event)
@@ -93,6 +139,24 @@ void feedback_wizard::showEvent(QShowEvent * event)
     }
   }
 #endif
+}
+
+void feedback_wizard::focus_changed()
+{
+  // If the user presses "Enter" when the focus is in the duty cycle input box,
+  // we don't want to trigger the "Next" button.  So whenever the focus changes,
+  // we use 'setDefault' to change whether the "Next" button is the default button
+  // (i.e. the one that 'Enter' acts on).
+  bool next_is_default = !duty_cycle_input->hasFocus();
+  QAbstractButton * next_button = button(NextButton);
+  if (next_button->inherits("QPushButton"))
+  {
+    qobject_cast<QPushButton *>(next_button)->setDefault(next_is_default);
+  }
+  else
+  {
+    assert(0);
+  }
 }
 
 void feedback_wizard::handle_next()
@@ -116,9 +180,7 @@ void feedback_wizard::handle_next()
     next();
   }
 
-  set_next_button_enabled(!sampling);
-  set_progress_visible(sampling);
-  update_learn_text();
+  update_learn_page();
 }
 
 void feedback_wizard::handle_back()
@@ -135,9 +197,7 @@ void feedback_wizard::handle_back()
     back();
   }
 
-  set_next_button_enabled(!sampling);
-  set_progress_visible(sampling);
-  update_learn_text();
+  update_learn_page();
 }
 
 void feedback_wizard::set_feedback(uint16_t value)
@@ -155,6 +215,96 @@ void feedback_wizard::set_feedback(uint16_t value)
   handle_new_sample();
 }
 
+void feedback_wizard::set_duty_cycle(int16_t value)
+{
+  duty_cycle_value->setText(QString::fromStdString(
+      convert_duty_cycle_to_percent_string(value)));
+}
+
+void feedback_wizard::controller_updated()
+{
+  std::string status;
+  bool use_red;
+
+  if (controller->connected())
+  {
+    status = jrk::diagnose(controller->cached_settings,
+      controller->variables, JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD);
+    uint16_t errors = controller->variables.get_error_flags_halting();
+    use_red = (errors & ~(1 << JRK_ERROR_AWAITING_COMMAND)) ? 1 : 0;
+  }
+  else
+  {
+    status = "Device disconnected.";
+    use_red = true;
+  }
+
+  bool styled = !motor_status_value->styleSheet().isEmpty();
+  if (!styled && use_red)
+  {
+    motor_status_value->setStyleSheet("color: red;");
+  }
+  else if (styled && !use_red)
+  {
+    motor_status_value->setStyleSheet("");
+  }
+  motor_status_value->setText(QString::fromStdString(status));
+}
+
+void feedback_wizard::motor_invert_changed(bool value)
+{
+  result.motor_invert = value;
+}
+
+void feedback_wizard::duty_cycle_input_changed()
+{
+  if (duty_cycle_input->value() == max_duty_cycle_percent)
+  {
+    max_duty_cycle_note->setText(tr(
+      "The selected speed limit is the maximum speed allowed by your settings."));
+  }
+  else
+  {
+    max_duty_cycle_note->setText("");
+  }
+}
+
+void feedback_wizard::reverse_button_pressed()
+{
+  try
+  {
+    controller->force_duty_cycle_target_nocatch(-forward_duty_cycle());
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+  }
+}
+
+void feedback_wizard::forward_button_pressed()
+{
+  try
+  {
+    controller->force_duty_cycle_target_nocatch(forward_duty_cycle());
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+  }
+}
+
+void feedback_wizard::drive_button_released()
+{
+  try
+  {
+    controller->force_duty_cycle_target_nocatch(0);
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+  }
+}
+
 void feedback_wizard::set_next_button_enabled(bool enabled)
 {
   // We only care about setting the next button to be enabled when we are on the
@@ -166,11 +316,37 @@ void feedback_wizard::set_progress_visible(bool visible)
 {
   sampling_label->setVisible(visible);
   sampling_progress->setVisible(visible);
+
+  motor_control_widget->setVisible(!visible);
+  bottom_instruction_label->setVisible(!visible);
 }
 
 bool feedback_wizard::handle_next_on_intro_page()
 {
-  // TODO: force duty cycle target to 0, clear latched errors
+  try
+  {
+    throw_if_not_connected();
+
+    // Force the duty cycle target to 0 to make this wizard safer and because
+    // that should be the default state when we drive the motor around manually.
+    controller->force_duty_cycle_target_nocatch(0);
+
+    // Clear latched errors so we are more likely to be able to run the motor.
+    // This should be done second because if we do it first, it might cause the
+    // motor to run.
+    controller->clear_errors_nocatch();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+    return false;
+  }
+
+  // This shouldn't be necessary, but if there is ever a bug in the "Back"
+  // button and we go back to the intro page prematurely, it will help.
+  learn_step = FIRST_STEP;
+  sampling = false;
+
   return true;
 }
 
@@ -199,7 +375,7 @@ bool feedback_wizard::handle_back_on_learn_page()
 
 bool feedback_wizard::handle_next_on_learn_page()
 {
-  if (learn_step_succeeded)
+  if (learn_step_succeeded || learn_step == MOTOR_DIR)
   {
     // We completed this step of the learning so go to the next step or page.
     learn_step_succeeded = false;
@@ -333,21 +509,75 @@ bool feedback_wizard::check_range_not_too_big(const uint16_range & range)
   return true;
 }
 
-void feedback_wizard::update_learn_text()
+void feedback_wizard::update_learn_page()
 {
+  set_next_button_enabled(!sampling);
+  set_progress_visible(sampling);
+
+  feedback_widget->setVisible(learn_step != MOTOR_DIR);
+  motor_invert_checkbox->setVisible(learn_step == MOTOR_DIR);
+
   switch (learn_step)
   {
-  case MAX:
-    learn_page->setTitle(tr("Step 1 of 2: Maximum"));
+  case MOTOR_DIR:
+    learn_page->setTitle(tr("Step 1 of 3: Motor direction"));
     instruction_label->setText(tr(
-      "Move the output to its maximum (full forward) position."));
+      "Click and hold the buttons below to drive the motor.  "
+      "If the motor moves in the "
+      "wrong direction, toggle the \"Invert motor direction\" checkbox to fix "
+      "it, and try again.  If the motor does not move at all, "
+      "try increasing the duty cycle target, "
+      "fixing any errors that are occurring, "
+      "and checking the motor wiring. "
+      "You can skip this step by clicking Next."));
+    bottom_instruction_label->setText("");
+    break;
+
+  case MAX:
+    learn_page->setTitle(tr("Step 2 of 3: Maximum"));
+    instruction_label->setText(tr(
+      "Use the \"Drive forward\" button or move the output manually to get it "
+      "to its maximum (full forward) position.  "
+      "If the \"Drive forward\" button drives in the wrong direction, go back "
+      "and toggle the \"Invert motor direction\" checkbox to fix it."));
+    bottom_instruction_label->setText(tr(
+      "When you click Next, this wizard will sample the "
+      "feedback values for one second.  Please do not move the output "
+      "while it is being sampled."));
     break;
 
   case MIN:
-    learn_page->setTitle(tr("Step 2 of 2: Minimum"));
+    learn_page->setTitle(tr("Step 3 of 3: Minimum"));
     instruction_label->setText(tr(
-      "Move the output to its minimum (full reverse) position."));
+      "Use the \"Drive reverse\" button or move the output manually to get it "
+      "to its minimum (full reverse) position."));
+    bottom_instruction_label->setText(tr(
+      "When you click Next, this wizard will sample the "
+      "feedback values for one second.  Please do not move the output "
+      "while it is being sampled."));
     break;
+  }
+}
+
+int feedback_wizard::forward_duty_cycle()
+{
+  int duty_cycle = duty_cycle_input->value() * DUTY_CYCLE_FACTOR;
+
+  if (result.motor_invert != original_motor_invert)
+  {
+    duty_cycle = -duty_cycle;
+  }
+
+  return duty_cycle;
+}
+
+void feedback_wizard::throw_if_not_connected()
+{
+  if (!controller->connected())
+  {
+    throw std::runtime_error(
+      "The connection to the device was lost.  "
+      "Please close this wizard, reconnect, and try again.");
   }
 }
 
@@ -361,16 +591,14 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
   QLabel * intro_label = new QLabel();
   intro_label->setWordWrap(true);
   intro_label->setText(tr(
-    "This wizard will help you quickly set up the feedback scaling parameters."));
+    "This wizard will help you quickly detect your motor direction "
+    "and set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
-
-  // TODO: warn if PID period or accel/decel parameters are too slow
-  // TODO: warn if max duty cycle is too slow
 
   QLabel * stopped_label = new QLabel();
   stopped_label->setWordWrap(true);
   stopped_label->setText(tr(
-    "NOTE: When you click " NEXT_BUTTON_TEXT ", this wizard will stop the motor "
+    "NOTE: When you click Next, this wizard will stop the motor "
     "and clear any latched errors.  To restart the motor later, "
     "you can click the \"Run motor\" button (after fixing any errors)."));
   layout->addWidget(stopped_label);
@@ -389,19 +617,26 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   instruction_label = new QLabel();
   instruction_label->setWordWrap(true);
   instruction_label->setAlignment(Qt::AlignTop);
-  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 2);
+  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 4);
   layout->addWidget(instruction_label);
   layout->addSpacing(fontMetrics().height());
 
-  layout->addLayout(setup_feedback_layout());
+  motor_invert_checkbox = new QCheckBox();
+  motor_invert_checkbox->setText(tr("Invert motor direction"));
+  motor_invert_checkbox->setChecked(original_motor_invert);
+  connect(motor_invert_checkbox, &QCheckBox::stateChanged,
+    this, &motor_invert_changed);
+  layout->addWidget(motor_invert_checkbox);
+
+  layout->addWidget(setup_feedback_widget());
   layout->addSpacing(fontMetrics().height());
 
-  QLabel * next_label = new QLabel(
-    tr("When you click ") + NEXT_BUTTON_TEXT +
-    tr(", this wizard will sample the feedback values for one second.  "
-    "Please do not move the output while it is being sampled."));
-  next_label->setWordWrap(true);
-  layout->addWidget(next_label);
+  layout->addWidget(setup_motor_control_widget());
+  layout->addSpacing(fontMetrics().height());
+
+  bottom_instruction_label = new QLabel();
+  bottom_instruction_label->setWordWrap(true);
+  layout->addWidget(bottom_instruction_label);
   layout->addSpacing(fontMetrics().height());
 
   sampling_label = new QLabel(tr("Sampling..."));
@@ -421,32 +656,97 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   return page;
 }
 
-QLayout * feedback_wizard::setup_feedback_layout()
+QWidget * feedback_wizard::setup_feedback_widget()
 {
-  QHBoxLayout * layout = new QHBoxLayout();
-
   QLabel * feedback_label = new QLabel(tr("Feedback:"));
-  layout->addWidget(feedback_label);
 
   feedback_value = new QLabel();
-  layout->addWidget(feedback_value);
-
-  feedback_pretty = new QLabel();
-  layout->addWidget(feedback_pretty);
-
-  layout->addStretch(1);
-
-  // Set a fixed size for performance.
-  feedback_value->setText(QString::number(4095) + " ");
+  feedback_value->setText("4095 ");
   feedback_value->setFixedSize(feedback_value->sizeHint());
   feedback_value->setText("");
 
+  feedback_pretty = new QLabel();
   feedback_pretty->setText("(" +
     QString::fromStdString(convert_analog_12bit_to_v_string(4095) + ") "));
   feedback_pretty->setFixedSize(feedback_pretty->sizeHint());
   feedback_pretty->setText("");
 
-  return layout;
+  QHBoxLayout * layout = new QHBoxLayout();
+  layout->addWidget(feedback_label);
+  layout->addWidget(feedback_value);
+  layout->addWidget(feedback_pretty);
+  layout->addStretch(1);
+  layout->setMargin(0);
+
+  feedback_widget = new QWidget();
+  feedback_widget->setLayout(layout);
+
+  return feedback_widget;
+}
+
+QWidget * feedback_wizard::setup_motor_control_widget()
+{
+  reverse_button = new QPushButton(tr("Drive reverse"));
+  connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
+  connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
+
+  forward_button = new QPushButton(tr("Drive forward"));
+  connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
+  connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
+
+  QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
+
+  duty_cycle_input = new QSpinBox();
+  // TODO: when they reach the max duty cycle setting, show a message:
+  //  (Jan wants)
+  duty_cycle_input->setRange(0, max_duty_cycle_percent);
+  duty_cycle_input->setValue(max_duty_cycle_percent / 4);
+  duty_cycle_input->setSingleStep(1);
+  duty_cycle_input->setSuffix("%");
+
+  max_duty_cycle_note = new QLabel();
+
+  connect(duty_cycle_input, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &duty_cycle_input_changed);
+
+  // Just in case the input is already at its maximum value.
+  duty_cycle_input_changed();
+
+  QGridLayout * button_layout = new QGridLayout();
+  button_layout->addWidget(reverse_button, 0, 0);
+  button_layout->addWidget(forward_button, 0, 1);
+  button_layout->addWidget(duty_cycle_input_label, 0, 2);
+  button_layout->addWidget(duty_cycle_input, 0, 3);
+  button_layout->addWidget(max_duty_cycle_note, 1, 0, 1, 5);
+  button_layout->setColumnStretch(4, 1);
+  button_layout->setMargin(0);
+
+  motor_status_value = new QLabel();
+
+  QLabel * duty_cycle_label = new QLabel(tr("Duty cycle percent:"));
+
+  duty_cycle_value = new QLabel();
+  duty_cycle_value->setText("-100% ");
+  duty_cycle_value->setFixedSize(duty_cycle_value->sizeHint());
+  duty_cycle_value->setText("");
+
+  QHBoxLayout * vars_layout = new QHBoxLayout();
+  vars_layout->addWidget(duty_cycle_label);
+  vars_layout->addWidget(duty_cycle_value);
+  vars_layout->addStretch(1);
+  vars_layout->setMargin(0);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addLayout(button_layout);
+  layout->addSpacing(fontMetrics().height());
+  layout->addLayout(vars_layout);
+  layout->addWidget(motor_status_value);
+  layout->setMargin(0);
+
+  motor_control_widget = new QWidget();
+  motor_control_widget->setLayout(layout);
+
+  return motor_control_widget;
 }
 
 nice_wizard_page * feedback_wizard::setup_conclusion_page()
@@ -456,11 +756,9 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   page->setTitle(tr("Feedback setup finished"));
 
+  // TODO: better text here to explain what's going on
   QLabel * completed_label = new QLabel(
-    tr("You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Scaling\" box after you click ") +
-    FINISH_BUTTON_TEXT + tr(".  "
-    "To use the new settings, you must first apply them to the device."));
+    "You have successfully completed this wizard.");
   completed_label->setWordWrap(true);
   layout->addWidget(completed_label);
 

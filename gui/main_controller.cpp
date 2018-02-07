@@ -422,99 +422,17 @@ bool main_controller::update_device_list()
   }
 }
 
-bool main_controller::do_motor_direction_detect()
-{
-  int scaled_feedback_stop, scaled_feedback_forward;
-  bool inverted = false;
-
-  // require that the feedback is close to its midpoint before proceeding
-  while(true)
-  {
-    scaled_feedback_stop = variables.get_scaled_feedback();
-
-    if (scaled_feedback_stop >= 1024 && scaled_feedback_stop <= 2047 + 1024)
-        break;
-
-    if (!window->confirm("Center the output, then click OK."))
-        return false;
-  }
-
-  int diff;
-  int factor = 1;
-  if (scaled_feedback_stop >= 2048)
-    factor = -1; // go downward instead of upward so that we have more range
-
-  // step up +300, trying to move the motor
-  for (diff = 32; diff <= 4095; diff += 32)
-  {
-    uint16_t target = (uint16_t)(2048 + diff * factor);
-    if (target > 4095)
-      target = 4095; // since 2048 + 2048 = 4096.
-    device_handle.set_target(target);
-    scaled_feedback_forward = variables.get_scaled_feedback();
-    if (scaled_feedback_forward > scaled_feedback_stop + 100)
-    {
-      if (factor == -1)
-          inverted = true; // because we were trying to move downward
-      break;
-    }
-    if (scaled_feedback_forward < scaled_feedback_stop - 100)
-    {
-      if (factor == 1)
-          inverted = true; // because we were trying to move upward
-      break;
-    }
-  }
-
-  int duty_cycle = variables.get_duty_cycle();;
-
-  device_handle.stop_motor();
-
-  if (diff > 4095) // we didn't break out of the loop
-  {
-    // window->show_error_message("Error detecting motor direction:  Driving the motor with a duty cyle of "
-    //     + duty_cycle + " did not change the measured feedback. "
-    //     + " Check your motor and feedback connections.");
-    return false;
-  }
-
-  // now we can set the checkbox
-  bool previously_checked = settings.get_motor_invert();
-  if(settings.get_motor_invert())
-  {
-    settings.set_motor_invert(!inverted); // since it responds backwards when it is already inverted
-  }
-  else
-  {
-    settings.set_motor_invert(inverted);
-  }
-
-  // display a nice message
-  if (previously_checked && !settings.get_motor_invert())
-  {
-    window->show_error_message("The motor is NOT inverted.  Please click the apply button to apply this setting to the jrk.");
-    return true;
-  }
-  else if (!previously_checked && settings.get_motor_invert())
-  {
-    window->show_info_message("The motor is inverted.  Please click the apply button to apply this setting to the jrk.");
-    return true;
-  }
-
-  return false;
-}
-
 void main_controller::show_exception(std::exception const & e,
     std::string const & context)
 {
-    std::string message;
-    if (context.size() > 0)
-    {
-      message += context;
-      message += "  ";
-    }
-    message += e.what();
-    window->show_error_message(message);
+  std::string message;
+  if (context.size() > 0)
+  {
+    message += context;
+    message += "  ";
+  }
+  message += e.what();
+  window->show_error_message(message);
 }
 
 void main_controller::handle_model_changed()
@@ -1225,54 +1143,6 @@ void main_controller::handle_motor_invert_input(bool motor_invert)
   handle_settings_changed();
 }
 
-// TODO: Review this and make it work properly.  We probably want to use the new
-// overridable settings feature instead of changing EEPROM, and also display a
-// nice wizard with information from the device so people can know what's
-// happening.
-void main_controller::handle_motor_detect_direction_button_clicked()
-{
-  if (!connected()) { return; }
-
-  if((variables.get_error_flags_halting() &
-    ~(1<<(uint16_t)JRK_ERROR_AWAITING_COMMAND | 1<<(uint16_t)JRK_ERROR_INPUT_INVALID)) != 0)
-  {
-      // there is some error stopping the motor other than just waiting for a command
-      window->show_error_message("An error is stopping the motor.  You must fix this before detecting the direction.");
-      return;
-  }
-
-  if (settings.get_feedback_mode() != JRK_FEEDBACK_MODE_ANALOG)
-  {
-      window->show_error_message("Feedback mode must be Analog to detect the motor direction.");
-      return;
-  }
-
-  device_handle.stop_motor();
-
-  settings.set_input_mode(JRK_INPUT_MODE_SERIAL);
-  settings.set_pid_period(1);
-  settings.set_proportional_exponent(3);
-  settings.set_proportional_multiplier(8);
-  settings.set_derivative_multiplier(0);
-  settings.set_integral_multiplier(0);
-  device_handle.reinitialize();
-
-  bool updated = do_motor_direction_detect();
-
-  settings.set_input_mode(settings.get_input_mode());
-  settings.set_pid_period(settings.get_pid_period());
-  settings.set_proportional_exponent(settings.get_proportional_exponent());
-  settings.set_proportional_multiplier(settings.get_proportional_multiplier());
-  settings.set_derivative_multiplier(settings.get_derivative_multiplier());
-  settings.set_integral_multiplier(settings.get_integral_multiplier());
-  device_handle.reinitialize();
-
-  device_handle.stop_motor();
-
-  settings_modified = true;
-  handle_settings_changed();
-}
-
 void main_controller::handle_motor_asymmetric_input(bool asymmetric)
 {
   if (!connected()) { return; }
@@ -1566,13 +1436,15 @@ void main_controller::stop_motor()
     show_exception(e);
   }
 
-  // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
-  // speed, starting at a speed of zero, in feedback mode none.  In the other
-  // feedback modes, these controls are disabled.
-  //
-  // If the user want to go back to the speed they were previously using, they
-  // can just press 'Run motor' instead of messing with the scroll bar.
-  window->set_manual_target_inputs(2048);
+  if (cached_settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
+  {
+    // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
+    // speed, starting at a speed of zero.
+    //
+    // If the user wants to go back to the speed they were previously using, they
+    // can just press 'Run motor' instead of messing with the scroll bar.
+    window->set_manual_target_inputs(2048);
+  }
 }
 
 void main_controller::run_motor()
@@ -1607,6 +1479,16 @@ void main_controller::clear_current_chopping_count()
 {
   current_chopping_count = 0;
   handle_variables_changed();
+}
+
+void main_controller::force_duty_cycle_target_nocatch(int16_t duty_cycle)
+{
+  device_handle.force_duty_cycle_target(duty_cycle);
+}
+
+void main_controller::clear_errors_nocatch()
+{
+  device_handle.clear_errors();
 }
 
 void main_controller::open_settings_from_file(std::string filename)

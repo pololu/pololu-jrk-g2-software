@@ -5,6 +5,16 @@
 #include <sstream>
 #include <iomanip>
 
+static inline std::string convert_duty_cycle_to_percent_string(int16_t duty_cycle)
+{
+  int16_t percent;
+  if (duty_cycle > 0) { percent = (duty_cycle + 3) / 6; }
+  else { percent = (duty_cycle - 3) / 6; }
+  std::ostringstream ss;
+  ss << percent << "%";
+  return ss.str();
+}
+
 // TODO: use this or delete it
 static inline std::string convert_error_flags_to_hex_string(uint16_t flags)
 {

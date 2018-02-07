@@ -339,26 +339,29 @@ uint32_t jrk_calculate_measured_current_ma(
   {
     uint16_t firmware_calculated_current = jrk_variables_get_current(vars);
 
-#ifndef NDEBUG
-    uint16_t software_calculated_current =
-      jrk_calculate_measured_current_ma_umc04a(
-        jrk_variables_get_raw_current(vars),
-        jrk_variables_get_current_limit_code(vars),
-        jrk_variables_get_last_duty_cycle(vars),
-        jrk_get_rsense_mohm(product),
-        jrk_settings_get_current_offset_calibration(settings),
-        jrk_settings_get_current_scale_calibration(settings)
-      );
-
-    if (firmware_calculated_current != software_calculated_current)
+    // Enable this code if you want to compare the firmware currrent calculation
+    // to the software one and detect mismatches.
+    if (0)
     {
-      // The only reason this should happen is if there is a bug in the firmware
-      // or software calculation.
-      fprintf(stderr, "warning: current calculation mismatch: %u != %u\n",
-        firmware_calculated_current, software_calculated_current);
-      fflush(stderr);
+      uint16_t software_calculated_current =
+        jrk_calculate_measured_current_ma_umc04a(
+          jrk_variables_get_raw_current(vars),
+          jrk_variables_get_current_limit_code(vars),
+          jrk_variables_get_last_duty_cycle(vars),
+          jrk_get_rsense_mohm(product),
+          jrk_settings_get_current_offset_calibration(settings),
+          jrk_settings_get_current_scale_calibration(settings)
+          );
+
+      if (firmware_calculated_current != software_calculated_current)
+      {
+        // The only reason this should happen is if there is a bug in the firmware
+        // or software calculation.
+        fprintf(stderr, "warning: current calculation mismatch: %u != %u\n",
+          firmware_calculated_current, software_calculated_current);
+        fflush(stderr);
+      }
     }
-#endif
 
     return firmware_calculated_current;
   }

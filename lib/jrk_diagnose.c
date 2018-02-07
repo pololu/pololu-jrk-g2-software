@@ -13,6 +13,125 @@
   (1 << JRK_ERROR_INPUT_DISCONNECT) | \
   (1 << JRK_ERROR_FEEDBACK_DISCONNECT))
 
+// Returns true if the duty cycle is non-zero and at the max duty cycle.
+static bool duty_cycle_at_max_non_zero(
+  const jrk_settings * settings,
+  const jrk_overridable_settings * osettings,
+  int16_t duty_cycle)
+{
+  if (duty_cycle == 0)
+  {
+    return false;
+  }
+
+  if (duty_cycle > 0)
+  {
+    uint16_t max_duty_cycle_forward;
+    if (osettings)
+    {
+      max_duty_cycle_forward =
+        jrk_overridable_settings_get_max_duty_cycle_forward(osettings);
+    }
+    else
+    {
+      max_duty_cycle_forward =
+        jrk_settings_get_max_duty_cycle_forward(settings);
+    }
+
+    return duty_cycle == max_duty_cycle_forward;
+  }
+  else
+  {
+    uint16_t max_duty_cycle_reverse;
+    if (osettings)
+    {
+      max_duty_cycle_reverse =
+        jrk_overridable_settings_get_max_duty_cycle_reverse(osettings);
+    }
+    else
+    {
+      max_duty_cycle_reverse =
+        jrk_settings_get_max_duty_cycle_reverse(settings);
+    }
+
+    return duty_cycle == -max_duty_cycle_reverse;
+  }
+}
+
+// Returns true if the duty cycle is 0 and the duty cycle target is not 0,
+// and this is due to a max. duty cycle limit being 0.
+static bool duty_cycle_at_max_zero(
+  const jrk_settings * settings,
+  const jrk_overridable_settings * osettings,
+  int16_t duty_cycle,
+  int16_t duty_cycle_target)
+{
+  if (!(duty_cycle == 0 && duty_cycle_target != 0))
+  {
+    return false;
+  }
+
+  if (duty_cycle_target > 0)
+  {
+    uint16_t max_duty_cycle_forward;
+    if (osettings)
+    {
+      max_duty_cycle_forward =
+        jrk_overridable_settings_get_max_duty_cycle_forward(osettings);
+    }
+    else
+    {
+      max_duty_cycle_forward =
+        jrk_settings_get_max_duty_cycle_forward(settings);
+    }
+
+    return max_duty_cycle_forward == 0;
+  }
+  else
+  {
+    uint16_t max_duty_cycle_reverse;
+    if (osettings)
+    {
+      max_duty_cycle_reverse =
+        jrk_overridable_settings_get_max_duty_cycle_reverse(osettings);
+    }
+    else
+    {
+      max_duty_cycle_reverse =
+        jrk_settings_get_max_duty_cycle_reverse(settings);
+    }
+
+    return max_duty_cycle_reverse == 0;
+  }
+}
+
+// Returns true if the device's setting indicate closed-loop feedback but the
+// PID coefficients are zero.
+static bool pid_zero(
+  const jrk_settings * settings,
+  const jrk_overridable_settings * osettings)
+{
+  if (jrk_settings_get_feedback_mode(settings) == JRK_FEEDBACK_MODE_NONE)
+  {
+    return false;  // PID coefficients don't matter.
+  }
+
+  if (osettings)
+  {
+    return
+      !jrk_overridable_settings_get_proportional_multiplier(osettings) &&
+      !jrk_overridable_settings_get_integral_multiplier(osettings) &&
+      !jrk_overridable_settings_get_derivative_multiplier(osettings);
+  }
+  else
+  {
+    return
+      !jrk_settings_get_proportional_multiplier(settings) &&
+      !jrk_settings_get_integral_multiplier(settings) &&
+      !jrk_settings_get_derivative_multiplier(settings);
+  }
+}
+
 jrk_error * jrk_diagnose(
   const jrk_settings * settings,
   const jrk_overridable_settings * osettings,
@@ -41,10 +160,16 @@ jrk_error * jrk_diagnose(
     return jrk_error_create("Variables object is null.");
   }
 
+  bool feedback_wizard = (flags & JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD) ? 1 : 0;
+
+  uint8_t feedback_mode = jrk_settings_get_feedback_mode(settings);
+
   uint16_t errors_latched = jrk_settings_get_error_latch(settings)
     | ERRORS_ALWAYS_LATCHED;
 
   uint8_t force_mode = jrk_variables_get_force_mode(vars);
+
+  bool open_loop = feedback_mode == JRK_FEEDBACK_MODE_NONE || force_mode;
 
   uint16_t errors_halting = jrk_variables_get_error_flags_halting(vars);
   if (force_mode == JRK_FORCE_MODE_DUTY_CYCLE)
@@ -58,10 +183,8 @@ jrk_error * jrk_diagnose(
     errors_halting & errors_latched & ~(1 << JRK_ERROR_AWAITING_COMMAND);
 
   int16_t duty_cycle = jrk_variables_get_duty_cycle(vars);
-
+  int16_t last_duty_cycle = jrk_variables_get_last_duty_cycle(vars);
   int16_t duty_cycle_target = jrk_variables_get_duty_cycle_target(vars);
-
-  uint8_t feedback_mode = jrk_settings_get_feedback_mode(settings);
 
   jrk_string str;
   jrk_string_setup(&str);
@@ -82,7 +205,15 @@ jrk_error * jrk_diagnose(
   }
   else if (errors_halting == (1 << JRK_ERROR_AWAITING_COMMAND))
   {
-    jrk_sprintf(&str, "Motor stopped: waiting for a command.");
+    if (feedback_wizard)
+    {
+      jrk_sprintf(&str, "Motor stopped: click and hold one of the buttons above "
+        "to drive the motor.");
+    }
+    else
+    {
+      jrk_sprintf(&str, "Motor stopped: waiting for a command.");
+    }
   }
   else if (real_errors_halting == (1 << JRK_ERROR_NO_POWER))
   {
@@ -122,76 +253,92 @@ jrk_error * jrk_diagnose(
       jrk_sprintf(&str, "Motor stopped due to an error.");
     }
   }
+  // Below this point, we know there are no errors.
   else if (force_mode == JRK_FORCE_MODE_DUTY_CYCLE)
   {
     if (duty_cycle == 0)
     {
+      // It could be that a "Force duty cycle" command specified a speed of 0,
+      // or it could be that one or more of the "Max. duty cycle" settings was
+      // set to 0, and the "Force duty cycle" command tried to make the motor
+      // go in that direction.
       jrk_sprintf(&str, "Motor stopped: duty cycle is forced to 0.");
+    }
+    else if (duty_cycle_at_max_non_zero(settings, osettings, duty_cycle))
+    {
+      jrk_sprintf(&str, "Motor is running, forced to max. duty cycle.");
     }
     else
     {
       jrk_sprintf(&str, "Motor is running with a forced duty cycle.");
     }
   }
-  else if (force_mode == JRK_FORCE_MODE_DUTY_CYCLE_TARGET)
+  // Below this point, there are no errors and no forced duty cycle, so we
+  // know the jrk is trying to reach the duty cycle target.
+  else if (duty_cycle_at_max_zero(settings, osettings, duty_cycle, duty_cycle_target))
   {
-    if (duty_cycle_target == 0)
+    jrk_sprintf(&str, "Motor stopped because max. duty cycle is 0.");
+  }
+  else if (duty_cycle_target != duty_cycle &&
+    duty_cycle_at_max_non_zero(settings, osettings, duty_cycle))
+  {
+    jrk_sprintf(&str, "Motor running at max. duty cycle.");
+  }
+  else if (duty_cycle_target != duty_cycle && duty_cycle != last_duty_cycle &&
+    open_loop)
+  {
+    // These messages would oscillate pretty quickly during closed loop feedback
+    // and be annoying, so don't show them.
+    if ((duty_cycle > 0 && duty_cycle > last_duty_cycle) ||
+      (duty_cycle < 0 && duty_cycle < last_duty_cycle))
     {
-      jrk_sprintf(&str, "Motor stopped: duty cycle target is forced to 0.");
+      jrk_sprintf(&str, "Motor is accelerating.");
     }
     else
     {
-      jrk_sprintf(&str, "Motor is running with a forced duty cycle target.");
+      jrk_sprintf(&str, "Motor is decelerating.");
     }
   }
-  else if (feedback_mode == JRK_FEEDBACK_MODE_NONE)
+  else if (force_mode == JRK_FORCE_MODE_DUTY_CYCLE_TARGET)
   {
-    // Open loop mode.
-
-    if (duty_cycle == 0)
+    if (duty_cycle_target == 0 && duty_cycle == 0)
     {
-      jrk_sprintf(&str, "Motor is ready to run.");
+      if (feedback_wizard)
+      {
+        jrk_sprintf(&str, "Motor stopped: click and hold one of the buttons above "
+          "to drive the motor.");
+      }
+      else
+      {
+        jrk_sprintf(&str, "Motor stopped: duty cycle target is forced to 0.");
+      }
     }
     else
     {
-      jrk_sprintf(&str, "Motor is running.");
+      if (feedback_wizard)
+      {
+        jrk_sprintf(&str, "Motor is running.");
+      }
+      else
+      {
+        jrk_sprintf(&str, "Motor is running with a forced duty cycle target.");
+      }
     }
+  }
+  // Below this point, we know this is normal operation (force_mode == 0).
+  else if (duty_cycle == 0 && pid_zero(settings, osettings))
+  {
+    jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
+  }
+  else if (duty_cycle == 0)
+  {
+    // Probably stopped intentionally, or maybe due to the "Max duty cycle while
+    // feedback is out of range" setting.
+    jrk_sprintf(&str, "Motor stopped.");
   }
   else
   {
-    // Closed loop mode (either analog or frequency feedback).
-
-    if (duty_cycle == 0)
-    {
-      bool pid_zero;
-      if (osettings)
-      {
-        pid_zero =
-          !jrk_overridable_settings_get_proportional_multiplier(osettings) &&
-          !jrk_overridable_settings_get_integral_multiplier(osettings) &&
-          !jrk_overridable_settings_get_derivative_multiplier(osettings);
-      }
-      else
-      {
-        pid_zero =
-          !jrk_settings_get_proportional_multiplier(settings) &&
-          !jrk_settings_get_integral_multiplier(settings) &&
-          !jrk_settings_get_derivative_multiplier(settings);
-      }
-
-      if (pid_zero)
-      {
-        jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
-      }
-      else
-      {
-        jrk_sprintf(&str, "Motor is ready to run.");
-      }
-    }
-    else
-    {
-      jrk_sprintf(&str, "Motor is running.");
-    }
+    jrk_sprintf(&str, "Motor is running.");
   }
 
   if (str.data == NULL)

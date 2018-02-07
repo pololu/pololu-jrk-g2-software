@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QMessageBox>
+#include <stdexcept>
+#include <string>
 
 namespace
 {
@@ -32,5 +34,23 @@ namespace
       QMessageBox::Ok | QMessageBox::Cancel, parent);
     int button = mbox.exec();
     return button == QMessageBox::Ok;
+  }
+
+  void show_exception(const std::exception & e,
+    const std::string & context, QWidget * parent)
+  {
+    std::string message;
+    if (context.size() > 0)
+    {
+      message += context;
+      message += "  ";
+    }
+    message += e.what();
+    show_error_message(message, parent);
+  }
+
+  void show_exception(const std::exception & e, QWidget * parent)
+  {
+    show_exception(e, "", parent);
   }
 }
