@@ -219,6 +219,7 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   graph->duty_cycle.plot_value = duty_cycle;
   duty_cycle_value->setText(QString::number(duty_cycle));
+  emit duty_cycle_changed(duty_cycle);
 }
 
 void main_window::set_raw_current_mv(uint16_t current)
@@ -363,7 +364,8 @@ void main_window::set_motor_status_message(std::string const & message, uint16_t
     motor_status_value->setStyleSheet("");
   }
 
-  motor_status_value->setText(QString::fromStdString(message));
+  QString message_qstr = QString::fromStdString(message);
+  motor_status_value->setText(message_qstr);
 }
 
 void main_window::set_input_mode(uint8_t input_mode)
@@ -971,6 +973,7 @@ void main_window::closeEvent(QCloseEvent * event)
 void main_window::on_update_timer_timeout()
 {
   controller->update();
+  emit controller_updated();
 }
 
 void main_window::receive_widget(graph_widget *widget)
@@ -1408,21 +1411,6 @@ void main_window::on_motor_invert_checkbox_stateChanged(int state)
 {
   if (suppress_events) { return; }
   controller->handle_motor_invert_input(state == Qt::Checked);
-}
-
-void main_window::on_detect_motor_button_clicked()
-{
-  QMessageBox mbox(QMessageBox::Question, "Detect motor direction confirmation",
-    "Really detect motor direction?  This will drive the motor!\n"
-    "Feedback must be configured and tested before proceeding.\n"
-    "It is also recommended that you set Max. duty cycle, Max. current,\n"
-    "and enable the \"Max. current exceeded\" error for this test.",
-    QMessageBox::Ok | QMessageBox::Cancel, this);
-  int button = mbox.exec();
-  if (button == QMessageBox::Ok)
-  {
-    controller->handle_motor_detect_direction_button_clicked();
-  }
 }
 
 void main_window::on_motor_asymmetric_checkbox_stateChanged(int state)
@@ -2577,9 +2565,10 @@ QWidget *main_window::setup_motor_tab()
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
 
-  detect_motor_button = new QPushButton(tr("Detect Motor Direction"));
+  detect_motor_button = new QPushButton(tr("&Learn..."));
   detect_motor_button->setObjectName("detect_motor_button");
-  detect_motor_button->setEnabled(true); //tmphax: not ready to use
+  connect(detect_motor_button, &QPushButton::clicked,
+    this, &on_feedback_learn_button_clicked);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
@@ -2789,13 +2778,15 @@ QWidget *main_window::setup_motor_tab()
   motor_off_layout->addWidget(motor_brake_radio,0,1);
   motor_off_layout->addWidget(motor_coast_radio,1,1);
 
+  // TODO: should just be QVBoxLayout
   QGridLayout *layout = motor_page_layout = new QGridLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(frequency_layout,0,0,Qt::AlignLeft);
-  layout->addLayout(invert_layout,1,0,Qt::AlignLeft);
-  layout->addLayout(motor_controls_layout,2,0,Qt::AlignLeft);
-  layout->addLayout(deceleration_layout,3,0,Qt::AlignLeft);
-  layout->addLayout(motor_off_layout,4,0,Qt::AlignLeft);
+  layout->addLayout(frequency_layout, 0, 0, Qt::AlignLeft);
+  layout->addLayout(invert_layout, 1, 0, Qt::AlignLeft);
+  layout->addItem(setup_vertical_spacer(), 2, 0);
+  layout->addLayout(motor_controls_layout, 3, 0, Qt::AlignLeft);
+  layout->addLayout(deceleration_layout, 4, 0, Qt::AlignLeft);
+  layout->addLayout(motor_off_layout, 5, 0, Qt::AlignLeft);
 
   motor_page_widget->setLayout(layout);
 
