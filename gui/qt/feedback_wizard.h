@@ -88,6 +88,7 @@ private:
 
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
+  QWidget * setup_motor_invert_widget();
   QWidget * setup_feedback_widget();
   QGroupBox * setup_motor_control_box();
   nice_wizard_page * setup_conclusion_page();
@@ -98,8 +99,11 @@ private:
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
   QWidget * motor_invert_widget;
-  QRadioButton * motor_invert_radio_true;
   QRadioButton * motor_invert_radio_false;
+  QRadioButton * motor_invert_radio_true;
+  QWidget * feedback_invert_widget;
+  QRadioButton * feedback_invert_radio_false;
+  QRadioButton * feedback_invert_radio_true;
   QWidget * feedback_widget;
   QLabel * feedback_value;
   QLabel * feedback_pretty;

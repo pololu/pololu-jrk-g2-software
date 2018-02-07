@@ -628,14 +628,36 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
 
 nice_wizard_page * feedback_wizard::setup_learn_page()
 {
-  nice_wizard_page * page = learn_page = new nice_wizard_page();
-  QVBoxLayout * layout = new QVBoxLayout();
-
   top_instruction_label = new QLabel();
   top_instruction_label->setAlignment(Qt::AlignTop);
   top_instruction_label->setWordWrap(true);
-  layout->addWidget(top_instruction_label);
 
+  sampling_label = new QLabel(tr("Sampling..."));
+
+  sampling_progress = new QProgressBar();
+  sampling_progress->setMaximum(SAMPLE_COUNT);
+  sampling_progress->setTextVisible(false);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addWidget(top_instruction_label);
+  layout->addWidget(setup_motor_invert_widget());
+  layout->addWidget(setup_feedback_widget());
+  layout->addSpacing(fontMetrics().height());
+  layout->addWidget(setup_motor_control_box());
+  layout->addSpacing(fontMetrics().height());
+  layout->addWidget(sampling_label);
+  layout->addWidget(sampling_progress);
+  layout->addStretch(1);
+
+  set_progress_visible(false);
+
+  nice_wizard_page * page = learn_page = new nice_wizard_page();
+  page->setLayout(layout);
+  return page;
+}
+
+QWidget * feedback_wizard::setup_motor_invert_widget()
+{
   motor_invert_radio_false = new QRadioButton();
   motor_invert_radio_false->setText(tr(
     "Standard (\"forward\" means OUTA positive, OUTB negative)"));
@@ -663,29 +685,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
 
   motor_invert_widget = new QWidget();
   motor_invert_widget->setLayout(motor_invert_layout);
-  layout->addWidget(motor_invert_widget);
-
-  layout->addWidget(setup_feedback_widget());
-  layout->addSpacing(fontMetrics().height());
-
-  layout->addWidget(setup_motor_control_box());
-  layout->addSpacing(fontMetrics().height());
-
-  sampling_label = new QLabel(tr("Sampling..."));
-  layout->addWidget(sampling_label);
-
-  sampling_progress = new QProgressBar();
-  sampling_progress->setMaximum(SAMPLE_COUNT);
-  sampling_progress->setTextVisible(false);
-  layout->addWidget(sampling_progress);
-
-  set_progress_visible(false);
-
-  layout->addStretch(1);
-
-  page->setLayout(layout);
-
-  return page;
+  return motor_invert_widget;
 }
 
 QWidget * feedback_wizard::setup_feedback_widget()
