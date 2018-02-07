@@ -1622,7 +1622,7 @@ void main_window::setup_ui()
   run_motor_button->setStyleSheet(
     ":enabled { background-color: green; color: white; font-weight: bold; }");
 
-  motor_status_value = new extended_label();
+  motor_status_value = new elided_label();
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
@@ -3091,43 +3091,31 @@ void pid_constant_control::pid_constant_lineedit_editingFinished()
     pid_exponent_spinbox->value());
 }
 
-extended_label::extended_label(const QString &text, QWidget *parent) :
-  QLabel(text, parent),
-  label_text(text)
+void elided_label::setText(const QString& txt)
 {
-  setToolTip(text);
+  setToolTip(txt);
+  QLabel::setText(txt);
+  cache_elided_text(geometry().width());
+  setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 }
 
-void extended_label::resizeEvent(QResizeEvent *event)
+void elided_label::cache_elided_text(int w)
 {
-  QFontMetrics fm(fontMetrics());
-  QString str = fm.elidedText(label_text, Qt::ElideRight,
-    event->size().width());
-  setText(str);
-  QLabel::resizeEvent(event);
+  elided_text = fontMetrics().elidedText(text(),
+    Qt::ElideRight, w);
 }
 
-QSize extended_label::minimumSizeHint() const
+void elided_label::resizeEvent(QResizeEvent* e)
 {
-  if (pixmap() != NULL)
-    return QLabel::sizeHint();
-  const QFontMetrics &fm = fontMetrics();
-  QSize size(fm.width("..."), fm.height());
-  return size;
+  QLabel::resizeEvent(e);
+  cache_elided_text(e->size().width());
 }
 
-QSize extended_label::sizeHint() const
+void elided_label::paintEvent(QPaintEvent* e)
 {
-  if (pixmap() != NULL)
-    return QLabel::sizeHint();
-  const QFontMetrics& fm = fontMetrics();
-  QSize size(fm.width(label_text), fm.height());
-  return size;
-}
+  QPainter p(this);
 
-void extended_label::setText(const QString &text)
-{
-  label_text = text;
-  setToolTip(text);
-  QLabel::setText(text);
+  p.drawText(0, 0, geometry().width(), geometry().height(),
+    QStyle::visualAlignment(Qt::LeftToRight, Qt::AlignVCenter),
+      elided_text);
 }

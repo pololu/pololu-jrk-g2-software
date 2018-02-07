@@ -554,6 +554,7 @@ void main_controller::handle_device_changed()
     window->set_firmware_version(na);
     window->set_cmd_port(na);
     window->set_ttl_port(na);
+    window->set_motor_status_message("");
 
     if (connection_error)
     {
