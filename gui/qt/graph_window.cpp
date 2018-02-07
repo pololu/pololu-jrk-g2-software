@@ -36,6 +36,9 @@ void graph_window::receive_widget(graph_widget *widget)
 {
   grabbed_widget = widget;
 
+  grabbed_widget->bottom_control_layout->setParent(0);
+  grabbed_widget->plot_visible_layout->setParent(0);
+
   central_layout->addWidget(grabbed_widget->custom_plot,
     0, 0, 2, 2);
   central_layout->addLayout(grabbed_widget->bottom_control_layout,
