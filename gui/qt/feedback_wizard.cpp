@@ -385,7 +385,8 @@ bool feedback_wizard::handle_back_on_learn_page()
 
 bool feedback_wizard::handle_next_on_learn_page()
 {
-  if (learn_step_succeeded || learn_step == MOTOR_DIR)
+  if (learn_step_succeeded || learn_step == MOTOR_DIR
+    || learn_step == FEEDBACK_DIR)
   {
     // We completed this step of the learning so go to the next step or page.
     learn_step_succeeded = false;
@@ -530,7 +531,7 @@ void feedback_wizard::update_learn_page()
   switch (learn_step)
   {
   case MOTOR_DIR:
-    learn_page->setTitle(tr("Step 1 of 3: Motor direction"));
+    learn_page->setTitle(tr("Step 1 of 4: Motor direction"));
     instruction_label->setText(tr(
       "Click and hold the buttons below to drive the motor.  "
       "If the motor moves in the "
@@ -543,8 +544,14 @@ void feedback_wizard::update_learn_page()
     bottom_instruction_label->setText("");
     break;
 
+  case FEEDBACK_DIR:
+    learn_page->setTitle(tr("Step 2 of 4: Feeedback direction"));
+    instruction_label->setText(tr("TODO"));
+    bottom_instruction_label->setText("");
+    break;
+
   case MAX:
-    learn_page->setTitle(tr("Step 2 of 3: Maximum"));
+    learn_page->setTitle(tr("Step 3 of 4: Maximum"));
     instruction_label->setText(tr(
       "Use the \"Drive forward\" button or move the output manually to get it "
       "to its maximum (full forward) position.  "
@@ -557,7 +564,7 @@ void feedback_wizard::update_learn_page()
     break;
 
   case MIN:
-    learn_page->setTitle(tr("Step 3 of 3: Minimum"));
+    learn_page->setTitle(tr("Step 4 of 4: Minimum"));
     instruction_label->setText(tr(
       "Use the \"Drive reverse\" button or move the output manually to get it "
       "to its minimum (full reverse) position."));

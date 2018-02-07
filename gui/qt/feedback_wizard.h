@@ -24,7 +24,7 @@ class feedback_wizard : public QWizard
   static const int DUTY_CYCLE_FACTOR = JRK_MAX_ALLOWED_DUTY_CYCLE / 100;
 
   enum page { INTRO, LEARN, CONCLUSION };
-  enum learn_step { MOTOR_DIR, MAX, MIN };
+  enum learn_step { MOTOR_DIR, FEEDBACK_DIR, MAX, MIN };
   const int FIRST_STEP = MOTOR_DIR;
   const int LAST_STEP = MIN;
 
