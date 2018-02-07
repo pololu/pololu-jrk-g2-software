@@ -82,8 +82,8 @@ void run_feedback_wizard(main_window * window)
 
   controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
-  controller->handle_feedback_error_minimum_input(wizard.result.error_minimum);
-  controller->handle_feedback_error_maximum_input(wizard.result.error_maximum);
+  controller->handle_feedback_absolute_minimum_input(wizard.result.error_minimum);
+  controller->handle_feedback_absolute_maximum_input(wizard.result.error_maximum);
   controller->handle_feedback_minimum_input(wizard.result.minimum);
   controller->handle_feedback_maximum_input(wizard.result.maximum);
   controller->apply_settings();
