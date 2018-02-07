@@ -581,7 +581,7 @@ private:
   // motor tab
 
   QWidget * motor_page_widget;
-  QGridLayout * motor_page_layout;
+  QVBoxLayout * motor_page_layout;
   QButtonGroup * coast_when_off_button_group;
   QLabel * pwm_frequency_label;
   QComboBox * pwm_frequency_combobox;

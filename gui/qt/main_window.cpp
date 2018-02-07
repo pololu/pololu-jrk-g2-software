@@ -2758,33 +2758,36 @@ QWidget *main_window::setup_motor_tab()
   QHBoxLayout *frequency_layout = new QHBoxLayout();
   frequency_layout->addWidget(pwm_frequency_label);
   frequency_layout->addWidget(pwm_frequency_combobox);
+  frequency_layout->addStretch(1);;
 
   QHBoxLayout *invert_layout = new QHBoxLayout();
   invert_layout->addWidget(motor_invert_checkbox);
   invert_layout->addWidget(detect_motor_button);
+  invert_layout->addStretch(1);
 
   QHBoxLayout *deceleration_layout = new QHBoxLayout();
   deceleration_layout->addWidget(
-    max_duty_cycle_while_feedback_out_of_range_label, -1, Qt::AlignLeft);
+    max_duty_cycle_while_feedback_out_of_range_label);
   deceleration_layout->addWidget(
-    max_duty_cycle_while_feedback_out_of_range_spinbox, -1, Qt::AlignLeft);
+    max_duty_cycle_while_feedback_out_of_range_spinbox);
   deceleration_layout->addWidget(
-    max_duty_cycle_while_feedback_out_of_range_means_label, -1, Qt::AlignLeft);
+    max_duty_cycle_while_feedback_out_of_range_means_label);
+  deceleration_layout->addStretch(1);
 
   QGridLayout *motor_off_layout = new QGridLayout();
   motor_off_layout->addWidget(motor_off_label,0,0);
   motor_off_layout->addWidget(motor_brake_radio,0,1);
   motor_off_layout->addWidget(motor_coast_radio,1,1);
+  motor_off_layout->setColumnStretch(2, 1);
 
-  // TODO: should just be QVBoxLayout
-  QGridLayout *layout = motor_page_layout = new QGridLayout();
+  QVBoxLayout *layout = motor_page_layout = new QVBoxLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(frequency_layout, 0, 0, Qt::AlignLeft);
-  layout->addLayout(invert_layout, 1, 0, Qt::AlignLeft);
-  layout->addItem(setup_vertical_spacer(), 2, 0);
-  layout->addLayout(motor_controls_layout, 3, 0, Qt::AlignLeft);
-  layout->addLayout(deceleration_layout, 4, 0, Qt::AlignLeft);
-  layout->addLayout(motor_off_layout, 5, 0, Qt::AlignLeft);
+  layout->addLayout(frequency_layout);
+  layout->addLayout(invert_layout);
+  layout->addItem(setup_vertical_spacer());
+  layout->addLayout(motor_controls_layout);
+  layout->addLayout(deceleration_layout);
+  layout->addLayout(motor_off_layout);
 
   motor_page_widget->setLayout(layout);
 
