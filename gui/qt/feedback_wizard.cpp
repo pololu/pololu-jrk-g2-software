@@ -87,6 +87,7 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   const jrk::settings & settings = controller->cached_settings;
   feedback_mode = settings.get_feedback_mode();
   result.motor_invert = original_motor_invert = settings.get_motor_invert();
+  result.invert = settings.get_feedback_invert();
 
   max_duty_cycle_percent = std::min(
     settings.get_max_duty_cycle_forward(),
@@ -256,6 +257,11 @@ void feedback_wizard::controller_updated()
 void feedback_wizard::motor_invert_changed()
 {
   result.motor_invert = motor_invert_radio_true->isChecked();
+}
+
+void feedback_wizard::feedback_invert_changed()
+{
+  result.invert = feedback_invert_radio_true->isChecked();
 }
 
 void feedback_wizard::duty_cycle_input_changed()
@@ -516,8 +522,9 @@ void feedback_wizard::update_learn_page()
   set_next_button_enabled(!sampling);
   set_progress_visible(sampling);
 
-  feedback_widget->setVisible(learn_step != MOTOR_DIR);
   motor_invert_widget->setVisible(learn_step == MOTOR_DIR);
+  feedback_invert_widget->setVisible(learn_step == FEEDBACK_DIR);
+  feedback_widget->setVisible(learn_step != MOTOR_DIR);
 
   switch (learn_step)
   {
@@ -536,8 +543,12 @@ void feedback_wizard::update_learn_page()
 
   case FEEDBACK_DIR:
     learn_page->setTitle(tr("Step 2 of 4: Feeedback direction"));
-    top_instruction_label->setText(""); // TODO
-    motor_instruction_label->setText("");
+    top_instruction_label->setText("Choose the feedback direction:");
+    motor_instruction_label->setText(tr(
+      "You can click and hold the buttons below to see how the feedback "
+      "reading responds when the motor moves.  If the feedback reading "
+      "decreases when the motor moves forward, you should select "
+      "\"Inverted feedback direction\"."));
     break;
 
   case MAX:
@@ -641,6 +652,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(top_instruction_label);
   layout->addWidget(setup_motor_invert_widget());
+  layout->addWidget(setup_feedback_invert_widget());
   layout->addWidget(setup_feedback_widget());
   layout->addSpacing(fontMetrics().height());
   layout->addWidget(setup_motor_control_box());
@@ -648,8 +660,6 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addWidget(sampling_label);
   layout->addWidget(sampling_progress);
   layout->addStretch(1);
-
-  set_progress_visible(false);
 
   nice_wizard_page * page = learn_page = new nice_wizard_page();
   page->setLayout(layout);
@@ -660,11 +670,11 @@ QWidget * feedback_wizard::setup_motor_invert_widget()
 {
   motor_invert_radio_false = new QRadioButton();
   motor_invert_radio_false->setText(tr(
-    "Standard (\"forward\" means OUTA positive, OUTB negative)"));
+    "Standard motor direction (\"forward\" means OUTA positive, OUTB negative)"));
 
   motor_invert_radio_true = new QRadioButton();
   motor_invert_radio_true->setText(tr(
-    "Inverted (\"forward\" means OUTA negative, OUTB positive)"));
+    "Inverted motor direction (\"forward\" means OUTA negative, OUTB positive)"));
   connect(motor_invert_radio_true, &QRadioButton::toggled,
     this, &motor_invert_changed);
 
@@ -674,7 +684,7 @@ QWidget * feedback_wizard::setup_motor_invert_widget()
 
   // This must be done after the radio buttons are added to their parent,
   // because they become unchecked at that time.
-  if (original_motor_invert)
+  if (result.motor_invert)
   {
     motor_invert_radio_true->setChecked(true);
   }
@@ -686,6 +696,38 @@ QWidget * feedback_wizard::setup_motor_invert_widget()
   motor_invert_widget = new QWidget();
   motor_invert_widget->setLayout(motor_invert_layout);
   return motor_invert_widget;
+}
+
+QWidget * feedback_wizard::setup_feedback_invert_widget()
+{
+  feedback_invert_radio_false = new QRadioButton();
+  feedback_invert_radio_false->setText(tr(
+    "Standard feedback direction (\"forward\" means increasing reading)"));
+
+  feedback_invert_radio_true = new QRadioButton();
+  feedback_invert_radio_true->setText(tr(
+    "Inverted feedback direction (\"forward\" means decreasing reading)"));
+  connect(feedback_invert_radio_true, &QRadioButton::toggled,
+    this, &feedback_invert_changed);
+
+  QVBoxLayout * feedback_invert_layout = new QVBoxLayout();
+  feedback_invert_layout->addWidget(feedback_invert_radio_false);
+  feedback_invert_layout->addWidget(feedback_invert_radio_true);
+
+  // This must be done after the radio buttons are added to their parent,
+  // because they become unchecked at that time.
+  if (result.invert)
+  {
+    feedback_invert_radio_true->setChecked(true);
+  }
+  else
+  {
+    feedback_invert_radio_false->setChecked(true);
+  }
+
+  feedback_invert_widget = new QWidget();
+  feedback_invert_widget->setLayout(feedback_invert_layout);
+  return feedback_invert_widget;
 }
 
 QWidget * feedback_wizard::setup_feedback_widget()

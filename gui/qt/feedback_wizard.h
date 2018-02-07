@@ -53,6 +53,7 @@ public slots:
   void set_duty_cycle(int16_t);
   void controller_updated();
   void motor_invert_changed();
+  void feedback_invert_changed();
   void duty_cycle_input_changed();
   void reverse_button_pressed();
   void forward_button_pressed();
@@ -89,6 +90,7 @@ private:
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
   QWidget * setup_motor_invert_widget();
+  QWidget * setup_feedback_invert_widget();
   QWidget * setup_feedback_widget();
   QGroupBox * setup_motor_control_box();
   nice_wizard_page * setup_conclusion_page();
