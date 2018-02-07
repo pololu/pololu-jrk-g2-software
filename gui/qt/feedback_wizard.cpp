@@ -328,7 +328,7 @@ void feedback_wizard::set_progress_visible(bool visible)
   sampling_label->setVisible(visible);
   sampling_progress->setVisible(visible);
 
-  motor_control_widget->setVisible(!visible);
+  motor_control_box->setVisible(!visible);
   bottom_instruction_label->setVisible(!visible);
 }
 
@@ -533,7 +533,7 @@ void feedback_wizard::update_learn_page()
   {
   case MOTOR_DIR:
     learn_page->setTitle(tr("Step 1 of 4: Motor direction"));
-    instruction_label->setText(tr(
+    top_instruction_label->setText(tr(
       "Click and hold the buttons below to drive the motor.  "
       "If the motor moves in the "
       "wrong direction, toggle the \"Invert motor direction\" checkbox to fix "
@@ -547,13 +547,13 @@ void feedback_wizard::update_learn_page()
 
   case FEEDBACK_DIR:
     learn_page->setTitle(tr("Step 2 of 4: Feeedback direction"));
-    instruction_label->setText(tr("TODO"));
+    top_instruction_label->setText(tr("")); // TODO
     bottom_instruction_label->setText("");
     break;
 
   case MAX:
     learn_page->setTitle(tr("Step 3 of 4: Maximum"));
-    instruction_label->setText(tr(
+    top_instruction_label->setText(tr(
       "Use the \"Drive forward\" button or move the output manually to get it "
       "to its maximum (full forward) position.  "
       "If the \"Drive forward\" button drives in the wrong direction, go back "
@@ -566,7 +566,7 @@ void feedback_wizard::update_learn_page()
 
   case MIN:
     learn_page->setTitle(tr("Step 4 of 4: Minimum"));
-    instruction_label->setText(tr(
+    top_instruction_label->setText(tr(
       "Use the \"Drive reverse\" button or move the output manually to get it "
       "to its minimum (full reverse) position."));
     bottom_instruction_label->setText(tr(
@@ -648,11 +648,11 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   nice_wizard_page * page = learn_page = new nice_wizard_page();
   QVBoxLayout * layout = new QVBoxLayout();
 
-  instruction_label = new QLabel();
-  instruction_label->setWordWrap(true);
-  instruction_label->setAlignment(Qt::AlignTop);
-  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 4);
-  layout->addWidget(instruction_label);
+  top_instruction_label = new QLabel();
+  top_instruction_label->setWordWrap(true);
+  top_instruction_label->setAlignment(Qt::AlignTop);
+  top_instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 4);
+  layout->addWidget(top_instruction_label);
   layout->addSpacing(fontMetrics().height());
 
   motor_invert_radio_false = new QRadioButton();
@@ -688,7 +688,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   layout->addWidget(setup_feedback_widget());
   layout->addSpacing(fontMetrics().height());
 
-  layout->addWidget(setup_motor_control_widget());
+  layout->addWidget(setup_motor_control_box());
   layout->addSpacing(fontMetrics().height());
 
   bottom_instruction_label = new QLabel();
@@ -741,7 +741,7 @@ QWidget * feedback_wizard::setup_feedback_widget()
   return feedback_widget;
 }
 
-QWidget * feedback_wizard::setup_motor_control_widget()
+QGroupBox * feedback_wizard::setup_motor_control_box()
 {
   reverse_button = new QPushButton(tr("Drive reverse"));
   connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
@@ -798,12 +798,12 @@ QWidget * feedback_wizard::setup_motor_control_widget()
   layout->addSpacing(fontMetrics().height());
   layout->addLayout(vars_layout);
   layout->addWidget(motor_status_value);
-  layout->setMargin(0);
 
-  motor_control_widget = new QWidget();
-  motor_control_widget->setLayout(layout);
+  motor_control_box = new QGroupBox();
+  motor_control_box->setTitle(tr("Drive motor"));
+  motor_control_box->setLayout(layout);
 
-  return motor_control_widget;
+  return motor_control_box;
 }
 
 nice_wizard_page * feedback_wizard::setup_conclusion_page()

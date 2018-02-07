@@ -89,12 +89,12 @@ private:
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
   QWidget * setup_feedback_widget();
-  QWidget * setup_motor_control_widget();
+  QGroupBox * setup_motor_control_box();
   nice_wizard_page * setup_conclusion_page();
 
   // Controls on the 'Learn' page
   nice_wizard_page * learn_page;
-  QLabel * instruction_label;
+  QLabel * top_instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
   QWidget * motor_invert_widget;
@@ -103,7 +103,8 @@ private:
   QWidget * feedback_widget;
   QLabel * feedback_value;
   QLabel * feedback_pretty;
-  QWidget * motor_control_widget;
+  QGroupBox * motor_control_box;
+  QLabel * motor_instruction_label;
   QPushButton * reverse_button;
   QPushButton * forward_button;
   QSpinBox * duty_cycle_input;
