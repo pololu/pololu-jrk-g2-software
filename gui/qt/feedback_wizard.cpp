@@ -794,13 +794,16 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
   vars_layout->setMargin(0);
 
   QVBoxLayout * layout = new QVBoxLayout();
+  layout->addWidget(motor_instruction_label);
   layout->addLayout(button_layout);
   layout->addSpacing(fontMetrics().height());
   layout->addLayout(vars_layout);
   layout->addWidget(motor_status_value);
 
   motor_control_box = new QGroupBox();
-  motor_control_box->setTitle(tr("Drive motor"));
+  // TODO: this title is only appropriate on step 1, right?
+  // Can we just call the box 'Drive motor'?
+  motor_control_box->setTitle(tr("Test motor direction"));
   motor_control_box->setLayout(layout);
 
   return motor_control_box;
