@@ -63,8 +63,6 @@ public slots:
   void drive_button_released();
 
 private:
-  void set_next_button_enabled(bool enabled);
-
   bool handle_next_on_intro_page();
   bool handle_back_on_learn_page();
   bool handle_next_on_learn_page();
@@ -79,6 +77,7 @@ private:
 
   void update_learn_page();
   void update_learn_page_for_sampling();
+  void update_learn_page_completeness();
   int forward_duty_cycle();
 
   void copy_result_into_form();

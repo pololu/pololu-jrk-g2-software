@@ -340,13 +340,6 @@ void feedback_wizard::drive_button_released()
   }
 }
 
-void feedback_wizard::set_next_button_enabled(bool enabled)
-{
-  // We only care about setting the next button to be enabled when we are on the
-  // learn page; it is always enabled on the other pages.
-  learn_page->setComplete(enabled);
-}
-
 bool feedback_wizard::handle_next_on_intro_page()
 {
   try
@@ -518,6 +511,7 @@ bool feedback_wizard::check_range_not_too_big(const uint16_range & range)
 void feedback_wizard::update_learn_page()
 {
   update_learn_page_for_sampling();
+  update_learn_page_completeness();
 
   motor_invert_widget->setVisible(learn_step == MOTOR_DIR);
   feedback_invert_widget->setVisible(learn_step == FEEDBACK_DIR);
@@ -594,6 +588,28 @@ void feedback_wizard::update_learn_page_for_sampling()
   learn_max_button->setEnabled(!sampling);
   learn_min_button->setEnabled(!sampling);
 }
+
+// Makes sure that the 'Next' button is grayed out if there are empty required
+// inputs on the page.
+void feedback_wizard::update_learn_page_completeness()
+{
+  if (learn_step == MAXMIN)
+  {
+    if (learn_max_value->text().isEmpty() || learn_min_value->text().isEmpty())
+    {
+      learn_page->setComplete(false);
+    }
+    else
+    {
+      learn_page->setComplete(true);
+    }
+  }
+  else
+  {
+    learn_page->setComplete(true);
+  }
+}
+
 
 // This is called when we are about to show the conclusion page.  It copies the
 // settings in the result struct into the form on that page so the user can see
@@ -769,6 +785,8 @@ QWidget * feedback_wizard::setup_maxmin_widget()
 
   learn_max_value = new QLineEdit();
   learn_max_value->setValidator(int_validator);
+  connect(learn_max_value, &QLineEdit::textChanged,
+    this, &update_learn_page_completeness);
 
   learn_max_button = new QPushButton(tr("Sample"));
   connect(learn_max_button, &QAbstractButton::clicked,
@@ -778,6 +796,8 @@ QWidget * feedback_wizard::setup_maxmin_widget()
 
   learn_min_value = new QLineEdit();
   learn_min_value->setValidator(int_validator);
+  connect(learn_min_value, &QLineEdit::textChanged,
+    this, &update_learn_page_completeness);
 
   learn_min_button = new QPushButton(tr("Sample"));
   connect(learn_min_button, &QAbstractButton::clicked,
