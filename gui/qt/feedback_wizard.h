@@ -55,8 +55,8 @@ public slots:
   void controller_updated();
   void motor_invert_changed();
   void feedback_invert_changed();
-  void learn_max_button_pressed();
-  void learn_min_button_pressed();
+  void learn_fwd_button_pressed();
+  void learn_rev_button_pressed();
   void duty_cycle_input_changed();
   void reverse_button_pressed();
   void forward_button_pressed();
@@ -69,8 +69,7 @@ private:
   void start_sampling(QLineEdit *);
   void handle_new_sample();
   void handle_sampling_complete();
-  bool learn_max();
-  bool learn_min();
+  bool determine_settings();
   bool check_range_not_too_big(const uint16_range &);
 
   const uint16_t full_range = 4095;
@@ -115,12 +114,12 @@ private:
   QRadioButton * feedback_invert_radio_false;
   QRadioButton * feedback_invert_radio_true;
   QWidget * maxmin_widget;
-  QLabel * learn_max_label;
-  QLineEdit * learn_max_value;
-  QPushButton * learn_max_button;
-  QLabel * learn_min_label;
-  QLineEdit * learn_min_value;
-  QPushButton * learn_min_button;
+  QLabel * learn_fwd_label;
+  QLineEdit * learn_fwd_value;
+  QPushButton * learn_fwd_button;
+  QLabel * learn_rev_label;
+  QLineEdit * learn_rev_value;
+  QPushButton * learn_rev_button;
   QWidget * feedback_widget;
   QLabel * feedback_value;
   QLabel * feedback_pretty;

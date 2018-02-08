@@ -191,7 +191,6 @@ void feedback_wizard::handle_next()
   {
     if (handle_next_on_learn_page())
     {
-      copy_result_into_form();
       next();
     }
   }
@@ -281,14 +280,14 @@ void feedback_wizard::feedback_invert_changed()
   result.invert = feedback_invert_radio_true->isChecked();
 }
 
-void feedback_wizard::learn_max_button_pressed()
+void feedback_wizard::learn_fwd_button_pressed()
 {
-  start_sampling(learn_max_value);
+  start_sampling(learn_fwd_value);
 }
 
-void feedback_wizard::learn_min_button_pressed()
+void feedback_wizard::learn_rev_button_pressed()
 {
-  start_sampling(learn_min_value);
+  start_sampling(learn_rev_value);
 }
 
 void feedback_wizard::duty_cycle_input_changed()
@@ -387,15 +386,14 @@ bool feedback_wizard::handle_next_on_learn_page()
 {
   sampling = false;
 
-  if (learn_step == MAXMIN)
-  {
-    show_error_message("TODO: validate the max/min values and create settings", this);
-    return false;
-  }
-
   // Go to the next step or page.
   if (learn_step == LAST_STEP)
   {
+    if (!determine_settings())
+    {
+      return false;
+    }
+    copy_result_into_form();
     return true;
   }
   else
@@ -438,56 +436,65 @@ void feedback_wizard::handle_sampling_complete()
   if (!check_range_not_too_big(range)) { return; }
 
   sampling_input->setText(QString::number(range.average));
+  sampling_input->setFocus();
 }
 
-// TODO: probably remove this function
-bool feedback_wizard::learn_max()
+bool feedback_wizard::determine_settings()
 {
-  learned_max = uint16_range::from_samples(samples);
-  if (!check_range_not_too_big(learned_max)) { return false; }
-
-  return true;
-}
-
-// TODO: probably remove this function
-bool feedback_wizard::learn_min()
-{
-  std::string const try_again = "\n\n"
+  const std::string try_again = "\n\n"
    "Please verify that your feedback is connected properly by moving "
    "the output while looking at the feedback value and try again.";
 
-  learned_min = uint16_range::from_samples(samples);
-  if (!check_range_not_too_big(learned_min)) { return false; }
+  bool fwd_ok, rev_ok;
+  int feedback_fwd = learn_fwd_value->text().toInt(&fwd_ok);
+  int feedback_rev = learn_rev_value->text().toInt(&rev_ok);
 
-  if (learned_min.intersects(learned_max))
+  if (learn_fwd_value->text().isEmpty() || !fwd_ok ||
+    learn_rev_value->text().isEmpty() || !rev_ok ||
+    feedback_fwd < 0 || feedback_fwd > 4095 ||
+    feedback_rev < 0 || feedback_rev > 4095)
   {
-    show_error_message(
-      "The values sampled for the minimum feedback (" +
-      learned_min.min_max_string() + ") intersect the values sampled for "
-      "the maximum feedback (" + learned_max.min_max_string() + ")." +
-      try_again, this);
+    // This shouldn't happen because of our QIntValidator and disabling
+    // the 'Next' button when the inputs are empty.
+    show_error_message("Both feedback values must be between 0 and 4095.", this);
     return false;
   }
 
-  // Invert the channel if necessary.
-  uint16_range * real_max = &learned_max;
-  uint16_range * real_min = &learned_min;
-  if (learned_min.is_entirely_above(learned_max))
+  int distance = abs(feedback_fwd - feedback_rev);
+  if (distance == 0)
   {
-    result.invert = true;
-    std::swap(real_max, real_min);
+    show_error_message("The two feedback values are the same." + try_again,
+      this);
+    return false;
   }
-  else
+  // TODO: check this threshold with other people, make sure it is OK
+  if (distance < 32)
   {
-    result.invert = false;
+    show_error_message("The two feedback values are too close." + try_again,
+      this);
+    return false;
   }
-  assert(real_max->is_entirely_above(*real_min));
 
-  result.maximum = real_max->average;
-  result.minimum = real_min->average;
+  result.maximum = feedback_fwd;
+  result.minimum = feedback_rev;
+  if (result.invert) { std::swap(result.maximum, result.minimum); }
 
-  // Set the error range: when the feedback is outside of this range, the jrk
-  // considers it to be an error.
+  if (result.maximum < result.minimum)
+  {
+    if (result.invert)
+    {
+      show_error_message("Because the feedback direction is inverted, the "
+        "forward extreme (minimum) feedback value needs to be less than the "
+        "reverse extreme (maximum) feedback value.", this);
+    }
+    else
+    {
+      show_error_message("The forward extreme (maximum) feedback value needs "
+        "to be less than the reverse extreme (minimum) feedback value.", this);
+    }
+    return false;
+  }
+
   result.error_minimum = result.minimum / 2;
   result.error_maximum = 4095 - (4095 - result.maximum) / 2;
 
@@ -554,8 +561,8 @@ void feedback_wizard::update_learn_page()
         "Then move the system to the other extreme and click the \"Sample\" "
         "button for the \"Reverse extreme\"."
       ));
-      learn_max_label->setText(tr("Forward extreme (minimum value):"));
-      learn_min_label->setText(tr("Reverse extreme (maximum value):"));
+      learn_fwd_label->setText(tr("Forward extreme (minimum value):"));
+      learn_rev_label->setText(tr("Reverse extreme (maximum value):"));
     }
     else
     {
@@ -566,8 +573,8 @@ void feedback_wizard::update_learn_page()
         "Then move the system to the other extreme and click the \"Sample\" "
         "button for the \"Reverse extreme\"."
       ));
-      learn_max_label->setText(tr("Forward extreme (maximum value):"));
-      learn_min_label->setText(tr("Reverse extreme (minimum value):"));
+      learn_fwd_label->setText(tr("Forward extreme (maximum value):"));
+      learn_rev_label->setText(tr("Reverse extreme (minimum value):"));
     }
     motor_instruction_label->setText(tr(
       "You can click and hold the buttons below to drive the motor."));
@@ -582,11 +589,11 @@ void feedback_wizard::update_learn_page_for_sampling()
 
   motor_control_box->setVisible(!sampling);
 
-  learn_max_value->setEnabled(!sampling);
-  learn_min_value->setEnabled(!sampling);
+  learn_fwd_value->setEnabled(!sampling);
+  learn_rev_value->setEnabled(!sampling);
 
-  learn_max_button->setEnabled(!sampling);
-  learn_min_button->setEnabled(!sampling);
+  learn_fwd_button->setEnabled(!sampling);
+  learn_rev_button->setEnabled(!sampling);
 }
 
 // Makes sure that the 'Next' button is grayed out if there are empty required
@@ -595,7 +602,7 @@ void feedback_wizard::update_learn_page_completeness()
 {
   if (learn_step == MAXMIN)
   {
-    if (learn_max_value->text().isEmpty() || learn_min_value->text().isEmpty())
+    if (learn_fwd_value->text().isEmpty() || learn_rev_value->text().isEmpty())
     {
       learn_page->setComplete(false);
     }
@@ -781,40 +788,40 @@ QWidget * feedback_wizard::setup_maxmin_widget()
 {
   QGridLayout * layout = new QGridLayout();
 
-  learn_max_label = new QLabel();
+  learn_fwd_label = new QLabel();
 
-  learn_max_value = new QLineEdit();
-  learn_max_value->setValidator(int_validator);
-  connect(learn_max_value, &QLineEdit::textChanged,
+  learn_fwd_value = new QLineEdit();
+  learn_fwd_value->setValidator(int_validator);
+  connect(learn_fwd_value, &QLineEdit::textChanged,
     this, &update_learn_page_completeness);
 
-  learn_max_button = new QPushButton(tr("Sample"));
-  connect(learn_max_button, &QAbstractButton::clicked,
-    this, &learn_max_button_pressed);
+  learn_fwd_button = new QPushButton(tr("Sample"));
+  connect(learn_fwd_button, &QAbstractButton::clicked,
+    this, &learn_fwd_button_pressed);
 
-  learn_min_label = new QLabel();
+  learn_rev_label = new QLabel();
 
-  learn_min_value = new QLineEdit();
-  learn_min_value->setValidator(int_validator);
-  connect(learn_min_value, &QLineEdit::textChanged,
+  learn_rev_value = new QLineEdit();
+  learn_rev_value->setValidator(int_validator);
+  connect(learn_rev_value, &QLineEdit::textChanged,
     this, &update_learn_page_completeness);
 
-  learn_min_button = new QPushButton(tr("Sample"));
-  connect(learn_min_button, &QAbstractButton::clicked,
-    this, &learn_min_button_pressed);
+  learn_rev_button = new QPushButton(tr("Sample"));
+  connect(learn_rev_button, &QAbstractButton::clicked,
+    this, &learn_rev_button_pressed);
 
   {
     int width = fontMetrics().width("99999999");
-    learn_max_value->setFixedWidth(width);
-    learn_min_value->setFixedWidth(width);
+    learn_fwd_value->setFixedWidth(width);
+    learn_rev_value->setFixedWidth(width);
   }
 
-  layout->addWidget(learn_max_label, 0, 0);
-  layout->addWidget(learn_max_value, 0, 1);
-  layout->addWidget(learn_max_button, 0, 2);
-  layout->addWidget(learn_min_label, 1, 0);
-  layout->addWidget(learn_min_value, 1, 1);
-  layout->addWidget(learn_min_button, 1, 2);
+  layout->addWidget(learn_fwd_label, 0, 0);
+  layout->addWidget(learn_fwd_value, 0, 1);
+  layout->addWidget(learn_fwd_button, 0, 2);
+  layout->addWidget(learn_rev_label, 1, 0);
+  layout->addWidget(learn_rev_value, 1, 1);
+  layout->addWidget(learn_rev_button, 1, 2);
   layout->setColumnStretch(3, 1);
   layout->setMargin(0);
 
