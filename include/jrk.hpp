@@ -329,28 +329,28 @@ namespace jrk
       return jrk_settings_get_input_mode(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_input_absolute_minimum().
-    void set_input_absolute_minimum(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_input_error_minimum().
+    void set_input_error_minimum(uint16_t value) noexcept
     {
-      jrk_settings_set_input_absolute_minimum(pointer, value);
+      jrk_settings_set_input_error_minimum(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_input_absolute_minimum().
-    uint16_t get_input_absolute_minimum() const noexcept
+    /// Wrapper for jrk_settings_get_input_error_minimum().
+    uint16_t get_input_error_minimum() const noexcept
     {
-      return jrk_settings_get_input_absolute_minimum(pointer);
+      return jrk_settings_get_input_error_minimum(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_input_absolute_maximum().
-    void set_input_absolute_maximum(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_input_error_maximum().
+    void set_input_error_maximum(uint16_t value) noexcept
     {
-      jrk_settings_set_input_absolute_maximum(pointer, value);
+      jrk_settings_set_input_error_maximum(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_input_absolute_maximum().
-    uint16_t get_input_absolute_maximum() const noexcept
+    /// Wrapper for jrk_settings_get_input_error_maximum().
+    uint16_t get_input_error_maximum() const noexcept
     {
-      return jrk_settings_get_input_absolute_maximum(pointer);
+      return jrk_settings_get_input_error_maximum(pointer);
     }
 
     /// Wrapper for jrk_settings_set_input_minimum().
@@ -497,28 +497,28 @@ namespace jrk
       return jrk_settings_get_feedback_mode(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_feedback_absolute_minimum().
-    void set_feedback_absolute_minimum(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_feedback_error_minimum().
+    void set_feedback_error_minimum(uint16_t value) noexcept
     {
-      jrk_settings_set_feedback_absolute_minimum(pointer, value);
+      jrk_settings_set_feedback_error_minimum(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_feedback_absolute_minimum().
-    uint16_t get_feedback_absolute_minimum() const noexcept
+    /// Wrapper for jrk_settings_get_feedback_error_minimum().
+    uint16_t get_feedback_error_minimum() const noexcept
     {
-      return jrk_settings_get_feedback_absolute_minimum(pointer);
+      return jrk_settings_get_feedback_error_minimum(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_feedback_absolute_maximum().
-    void set_feedback_absolute_maximum(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_feedback_error_maximum().
+    void set_feedback_error_maximum(uint16_t value) noexcept
     {
-      jrk_settings_set_feedback_absolute_maximum(pointer, value);
+      jrk_settings_set_feedback_error_maximum(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_feedback_absolute_maximum().
-    uint16_t get_feedback_absolute_maximum() const noexcept
+    /// Wrapper for jrk_settings_get_feedback_error_maximum().
+    uint16_t get_feedback_error_maximum() const noexcept
     {
-      return jrk_settings_get_feedback_absolute_maximum(pointer);
+      return jrk_settings_get_feedback_error_maximum(pointer);
     }
 
     /// Wrapper for jrk_settings_set_feedback_minimum().

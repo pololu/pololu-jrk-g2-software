@@ -89,8 +89,8 @@ public:
   void handle_input_disable_compact_protocol_input(bool value);
   void handle_input_never_sleep_input(bool value);
   void handle_input_invert_input(bool input_invert);
-  void handle_input_absolute_minimum_input(uint16_t input_absolute_minimum);
-  void handle_input_absolute_maximum_input(uint16_t input_absolute_maximum);
+  void handle_input_error_minimum_input(uint16_t input_error_minimum);
+  void handle_input_error_maximum_input(uint16_t input_error_maximum);
   void handle_input_minimum_input(uint16_t input_minimum);
   void handle_input_maximum_input(uint16_t input_maximum);
   void handle_input_neutral_minimum_input(uint16_t input_neutral_minimum);
@@ -103,8 +103,8 @@ public:
 
   void handle_feedback_mode_input(uint8_t value);
   void handle_feedback_invert_input(bool invert_feedback);
-  void handle_feedback_absolute_minimum_input(uint16_t value);
-  void handle_feedback_absolute_maximum_input(uint16_t value);
+  void handle_feedback_error_minimum_input(uint16_t value);
+  void handle_feedback_error_maximum_input(uint16_t value);
   void handle_feedback_maximum_input(uint16_t value);
   void handle_feedback_minimum_input(uint16_t value);
   void handle_feedback_analog_samples_exponent_input(uint8_t);

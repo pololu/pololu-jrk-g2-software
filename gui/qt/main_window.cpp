@@ -448,14 +448,14 @@ void main_window::set_input_never_sleep(bool enabled)
   set_check_box(input_never_sleep_checkbox, enabled);
 }
 
-void main_window::set_input_absolute_minimum(uint16_t input_absolute_minimum)
+void main_window::set_input_error_minimum(uint16_t input_error_minimum)
 {
-  set_spin_box(input_absolute_minimum_spinbox, input_absolute_minimum);
+  set_spin_box(input_error_minimum_spinbox, input_error_minimum);
 }
 
-void main_window::set_input_absolute_maximum(uint16_t input_absolute_maximum)
+void main_window::set_input_error_maximum(uint16_t input_error_maximum)
 {
-  set_spin_box(input_absolute_maximum_spinbox, input_absolute_maximum);
+  set_spin_box(input_error_maximum_spinbox, input_error_maximum);
 }
 
 void main_window::set_input_minimum(uint16_t input_minimum)
@@ -511,9 +511,9 @@ static bool ordered(QList<int> p)
 void main_window::set_input_scaling_order_warning_label()
 {
   bool enabled =
-  !ordered({input_absolute_minimum_spinbox->value(), input_minimum_spinbox->value(),
+  !ordered({input_error_minimum_spinbox->value(), input_minimum_spinbox->value(),
     input_neutral_minimum_spinbox->value(), input_neutral_maximum_spinbox->value(),
-    input_maximum_spinbox->value(), input_absolute_maximum_spinbox->value()});
+    input_maximum_spinbox->value(), input_error_maximum_spinbox->value()});
   input_scaling_order_warning_label->setVisible(enabled);
 }
 
@@ -526,8 +526,8 @@ void main_window::run_input_wizard(uint8_t input_mode)
   if (wizard.exec() != QDialog::Accepted) { return; }
 
   controller->handle_input_invert_input(wizard.result.invert);
-  controller->handle_input_absolute_minimum_input(wizard.result.absolute_minimum);
-  controller->handle_input_absolute_maximum_input(wizard.result.absolute_maximum);
+  controller->handle_input_error_minimum_input(wizard.result.error_minimum);
+  controller->handle_input_error_maximum_input(wizard.result.error_maximum);
   controller->handle_input_minimum_input(wizard.result.minimum);
   controller->handle_input_maximum_input(wizard.result.maximum);
   controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
@@ -547,14 +547,14 @@ void main_window::set_feedback_invert(bool feedback_invert)
   set_check_box(feedback_invert_checkbox, feedback_invert);
 }
 
-void main_window::set_feedback_absolute_minimum(uint16_t value)
+void main_window::set_feedback_error_minimum(uint16_t value)
 {
-  set_spin_box(feedback_absolute_minimum_spinbox, value);
+  set_spin_box(feedback_error_minimum_spinbox, value);
 }
 
-void main_window::set_feedback_absolute_maximum(uint16_t value)
+void main_window::set_feedback_error_maximum(uint16_t value)
 {
-  set_spin_box(feedback_absolute_maximum_spinbox, value);
+  set_spin_box(feedback_error_maximum_spinbox, value);
 }
 
 void main_window::set_feedback_minimum(uint16_t value)
@@ -570,8 +570,8 @@ void main_window::set_feedback_maximum(uint16_t value)
 void main_window::set_feedback_scaling_order_warning_label()
 {
   bool enabled =
-  !ordered({feedback_absolute_minimum_spinbox->value(), feedback_minimum_spinbox->value(),
-    feedback_maximum_spinbox->value(), feedback_absolute_maximum_spinbox->value()});
+  !ordered({feedback_error_minimum_spinbox->value(), feedback_minimum_spinbox->value(),
+    feedback_maximum_spinbox->value(), feedback_error_maximum_spinbox->value()});
   feedback_scaling_order_warning_label->setVisible(enabled);
 }
 
@@ -1227,16 +1227,16 @@ void main_window::on_input_never_sleep_checkbox_stateChanged(int state)
   controller->handle_input_never_sleep_input(state == Qt::Checked);
 }
 
-void main_window::on_input_absolute_minimum_spinbox_valueChanged(int value)
+void main_window::on_input_error_minimum_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_input_absolute_minimum_input(value);
+  controller->handle_input_error_minimum_input(value);
 }
 
-void main_window::on_input_absolute_maximum_spinbox_valueChanged(int value)
+void main_window::on_input_error_maximum_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_input_absolute_maximum_input(value);
+  controller->handle_input_error_maximum_input(value);
 }
 
 void main_window::on_input_minimum_spinbox_valueChanged(int value)
@@ -1290,8 +1290,8 @@ void main_window::on_input_scaling_degree_combobox_currentIndexChanged(int index
 
 void main_window::on_input_reset_range_button_clicked()
 {
-  controller->handle_input_absolute_minimum_input(0);
-  controller->handle_input_absolute_maximum_input(4095);
+  controller->handle_input_error_minimum_input(0);
+  controller->handle_input_error_maximum_input(4095);
   controller->handle_input_minimum_input(0);
   controller->handle_input_maximum_input(4095);
   controller->handle_input_neutral_minimum_input(2048);
@@ -1320,16 +1320,16 @@ void main_window::on_feedback_invert_checkbox_stateChanged(int state)
   controller->handle_feedback_invert_input(state == Qt::Checked);
 }
 
-void main_window::on_feedback_absolute_minimum_spinbox_valueChanged(int value)
+void main_window::on_feedback_error_minimum_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_feedback_absolute_minimum_input(value);
+  controller->handle_feedback_error_minimum_input(value);
 }
 
-void main_window::on_feedback_absolute_maximum_spinbox_valueChanged(int value)
+void main_window::on_feedback_error_maximum_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_feedback_absolute_maximum_input(value);
+  controller->handle_feedback_error_maximum_input(value);
 }
 
 void main_window::on_feedback_maximum_spinbox_valueChanged(int value)
@@ -1346,10 +1346,10 @@ void main_window::on_feedback_minimum_spinbox_valueChanged(int value)
 
 void main_window::on_feedback_reset_range_button_clicked()
 {
-  controller->handle_feedback_absolute_maximum_input(4095);
+  controller->handle_feedback_error_maximum_input(4095);
   controller->handle_feedback_maximum_input(4095);
   controller->handle_feedback_minimum_input(0);
-  controller->handle_feedback_absolute_minimum_input(0);
+  controller->handle_feedback_error_minimum_input(0);
 }
 
 void main_window::on_feedback_analog_samples_combobox_currentIndexChanged(int index)
@@ -2196,8 +2196,8 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
   input_invert_checkbox->setObjectName("input_invert_checkbox");
 
-  input_absolute_max_label = new QLabel(tr("Absolute max:"));
-  input_absolute_max_label->setObjectName("input_absolute_max_label");
+  input_error_max_label = new QLabel(tr("Error max:"));
+  input_error_max_label->setObjectName("input_error_max_label");
 
   input_maximum_label = new QLabel(tr("Maximum:"));
   input_maximum_label->setObjectName("input_maximum_label");
@@ -2211,8 +2211,8 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_minimum_label = new QLabel(tr("Minimum:"));
   input_minimum_label->setObjectName("input_minimum_label");
 
-  input_absolute_min_label = new QLabel(tr("Absolute min:"));
-  input_absolute_min_label->setObjectName("input_absolute_min_label");
+  input_error_min_label = new QLabel(tr("Error min:"));
+  input_error_min_label->setObjectName("input_error_min_label");
 
   input_degree_label = new QLabel(tr("Degree:"));
   input_degree_label->setObjectName("input_degree_label");
@@ -2220,10 +2220,10 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_input_label = new QLabel(tr("Input"));
   input_input_label->setObjectName("input_input_label");
 
-  input_absolute_maximum_spinbox = new QSpinBox();
-  input_absolute_maximum_spinbox->setObjectName("input_absolute_maximum_spinbox");
-  input_absolute_maximum_spinbox->setRange(0, UINT12_MAX);
-  input_absolute_maximum_spinbox->setValue(4095);
+  input_error_maximum_spinbox = new QSpinBox();
+  input_error_maximum_spinbox->setObjectName("input_error_maximum_spinbox");
+  input_error_maximum_spinbox->setRange(0, UINT12_MAX);
+  input_error_maximum_spinbox->setValue(4095);
 
   input_maximum_spinbox = new QSpinBox();
   input_maximum_spinbox->setObjectName("input_maximum_spinbox");
@@ -2245,10 +2245,10 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_minimum_spinbox->setRange(0, UINT12_MAX);
   input_minimum_spinbox->setValue(4);
 
-  input_absolute_minimum_spinbox = new QSpinBox();
-  input_absolute_minimum_spinbox->setObjectName("input_absolute_minimum_spinbox");
-  input_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
-  input_absolute_minimum_spinbox->setValue(0);
+  input_error_minimum_spinbox = new QSpinBox();
+  input_error_minimum_spinbox->setObjectName("input_error_minimum_spinbox");
+  input_error_minimum_spinbox->setRange(0, UINT12_MAX);
+  input_error_minimum_spinbox->setValue(0);
 
   input_scaling_degree_combobox = new QComboBox();
   input_scaling_degree_combobox->setObjectName("input_scaling_degree_combobox");
@@ -2298,8 +2298,8 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_input_label, 1, 1, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_target_label, 1, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_absolute_max_label, 2, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_absolute_maximum_spinbox, 2, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_error_max_label, 2, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_error_maximum_spinbox, 2, 1, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_maximum_label, 3, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_maximum_spinbox, 3, 1, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_output_maximum_spinbox, 3, 2, Qt::AlignLeft);
@@ -2311,8 +2311,8 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_layout->addWidget(input_minimum_label, 6, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_minimum_spinbox, 6, 1, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_output_minimum_spinbox, 6, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_absolute_min_label, 7, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_absolute_minimum_spinbox, 7, 1, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_error_min_label, 7, 0, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_error_minimum_spinbox, 7, 1, Qt::AlignLeft);
   input_scaling_layout->addItem(setup_vertical_spacer(), 8, 0);
   input_scaling_layout->addWidget(input_degree_label, 9, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_scaling_degree_combobox, 9, 1, 1, 2, Qt::AlignLeft);
@@ -2364,8 +2364,8 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
   feedback_invert_checkbox->setObjectName("feedback_invert_checkbox");
 
-  feedback_absolute_max_label = new QLabel(tr("Absolute max:"));
-  feedback_absolute_max_label->setObjectName("feedback_absolute_max_label");
+  feedback_error_max_label = new QLabel(tr("Error max:"));
+  feedback_error_max_label->setObjectName("feedback_error_max_label");
 
   feedback_maximum_label = new QLabel(tr("Maximum:"));
   feedback_maximum_label->setObjectName("feedback_maximum_label");
@@ -2373,8 +2373,8 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_minimum_label = new QLabel(tr("Minimum:"));
   feedback_minimum_label->setObjectName("feedback_minimum_label");
 
-  feedback_absolute_min_label = new QLabel(tr("Absolute min:"));
-  feedback_absolute_min_label->setObjectName("feedback_absolute_min_label");
+  feedback_error_min_label = new QLabel(tr("Error min:"));
+  feedback_error_min_label->setObjectName("feedback_error_min_label");
 
   feedback_calibration_label = new QLabel(tr("Calibration"));
   feedback_calibration_label->setObjectName("feedback_calibration_label");
@@ -2385,9 +2385,9 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_order_warning_label->setStyleSheet("color: red;");
   feedback_scaling_order_warning_label->setSizePolicy(p);
 
-  feedback_absolute_maximum_spinbox = new QSpinBox();
-  feedback_absolute_maximum_spinbox->setObjectName("feedback_absolute_maximum_spinbox");
-  feedback_absolute_maximum_spinbox->setRange(0, UINT12_MAX);
+  feedback_error_maximum_spinbox = new QSpinBox();
+  feedback_error_maximum_spinbox->setObjectName("feedback_error_maximum_spinbox");
+  feedback_error_maximum_spinbox->setRange(0, UINT12_MAX);
 
   feedback_maximum_spinbox = new QSpinBox();
   feedback_maximum_spinbox->setObjectName("feedback_maximum_spinbox");
@@ -2397,9 +2397,9 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_minimum_spinbox->setObjectName("feedback_minimum_spinbox");
   feedback_minimum_spinbox->setRange(0, UINT12_MAX);
 
-  feedback_absolute_minimum_spinbox = new QSpinBox();
-  feedback_absolute_minimum_spinbox->setObjectName("feedback_absolute_minimum_spinbox");
-  feedback_absolute_minimum_spinbox->setRange(0, UINT12_MAX);
+  feedback_error_minimum_spinbox = new QSpinBox();
+  feedback_error_minimum_spinbox->setObjectName("feedback_error_minimum_spinbox");
+  feedback_error_minimum_spinbox->setRange(0, UINT12_MAX);
 
   feedback_learn_button = new QPushButton(tr("&Learn..."));
   feedback_learn_button->setObjectName("feedback_learn_button");
@@ -2410,14 +2410,14 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QGridLayout *feedback_scaling_layout = new QGridLayout();
   feedback_scaling_layout->addWidget(feedback_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_calibration_label, 1, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_absolute_max_label, 2, 0, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_absolute_maximum_spinbox, 2, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_error_max_label, 2, 0, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_error_maximum_spinbox, 2, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_maximum_label, 3, 0, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_maximum_spinbox, 3, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_minimum_label, 4, 0, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_minimum_spinbox, 4, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_absolute_min_label, 5, 0, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_absolute_minimum_spinbox, 5, 1, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_error_min_label, 5, 0, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_error_minimum_spinbox, 5, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_learn_button, 0, 3, Qt::AlignRight);
   feedback_scaling_layout->addWidget(feedback_reset_range_button, 1, 3, Qt::AlignRight);
   feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label, 2, 2, 4, 2, Qt::AlignCenter);

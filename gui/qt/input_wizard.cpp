@@ -357,20 +357,20 @@ bool input_wizard::learn_min()
     result.minimum = real_min->max + margin;
   }
 
-  // Set the absolute range: when the input is outside of this range, the jrk
+  // Set the error range: when the input is outside of this range, the jrk
   // considers it to be an error.
   if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
   {
-    // We usually want 500 us to 2500 us to be the absolute range for RC inputs,
+    // We usually want 500 us to 2500 us to be the error range for RC inputs,
     // but we try to keep a margin of 10 us between the error range and the
     // values people want to use.  Remember the units are 2/3 us.
-    result.absolute_minimum = std::min(750, std::max(result.minimum - 15, 0));
-    result.absolute_maximum = std::max(750, std::min(result.maximum + 15, 4095));
+    result.error_minimum = std::min(750, std::max(result.minimum - 15, 0));
+    result.error_maximum = std::max(750, std::min(result.maximum + 15, 4095));
   }
   else
   {
-    result.absolute_minimum = result.minimum / 2;
-    result.absolute_maximum = 4095 - (4095 - result.maximum) / 2;
+    result.error_minimum = result.minimum / 2;
+    result.error_maximum = 4095 - (4095 - result.maximum) / 2;
   }
 
   return true;

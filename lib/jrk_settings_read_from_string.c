@@ -77,33 +77,33 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_input_mode(settings, input_mode);
   }
-  else if (!strcmp(key, "input_absolute_minimum"))
+  else if (!strcmp(key, "input_error_minimum"))
   {
-    int64_t input_absolute_minimum;
-    if (jrk_string_to_i64(value, &input_absolute_minimum))
+    int64_t input_error_minimum;
+    if (jrk_string_to_i64(value, &input_error_minimum))
     {
-      return jrk_error_create("Invalid input_absolute_minimum value.");
+      return jrk_error_create("Invalid input_error_minimum value.");
     }
-    if (input_absolute_minimum < 0 || input_absolute_minimum > UINT16_MAX)
+    if (input_error_minimum < 0 || input_error_minimum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The input_absolute_minimum value is out of range.");
+        "The input_error_minimum value is out of range.");
     }
-    jrk_settings_set_input_absolute_minimum(settings, input_absolute_minimum);
+    jrk_settings_set_input_error_minimum(settings, input_error_minimum);
   }
-  else if (!strcmp(key, "input_absolute_maximum"))
+  else if (!strcmp(key, "input_error_maximum"))
   {
-    int64_t input_absolute_maximum;
-    if (jrk_string_to_i64(value, &input_absolute_maximum))
+    int64_t input_error_maximum;
+    if (jrk_string_to_i64(value, &input_error_maximum))
     {
-      return jrk_error_create("Invalid input_absolute_maximum value.");
+      return jrk_error_create("Invalid input_error_maximum value.");
     }
-    if (input_absolute_maximum < 0 || input_absolute_maximum > UINT16_MAX)
+    if (input_error_maximum < 0 || input_error_maximum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The input_absolute_maximum value is out of range.");
+        "The input_error_maximum value is out of range.");
     }
-    jrk_settings_set_input_absolute_maximum(settings, input_absolute_maximum);
+    jrk_settings_set_input_error_maximum(settings, input_error_maximum);
   }
   else if (!strcmp(key, "input_minimum"))
   {
@@ -255,33 +255,33 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_feedback_mode(settings, feedback_mode);
   }
-  else if (!strcmp(key, "feedback_absolute_minimum"))
+  else if (!strcmp(key, "feedback_error_minimum"))
   {
-    int64_t feedback_absolute_minimum;
-    if (jrk_string_to_i64(value, &feedback_absolute_minimum))
+    int64_t feedback_error_minimum;
+    if (jrk_string_to_i64(value, &feedback_error_minimum))
     {
-      return jrk_error_create("Invalid feedback_absolute_minimum value.");
+      return jrk_error_create("Invalid feedback_error_minimum value.");
     }
-    if (feedback_absolute_minimum < 0 || feedback_absolute_minimum > UINT16_MAX)
+    if (feedback_error_minimum < 0 || feedback_error_minimum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The feedback_absolute_minimum value is out of range.");
+        "The feedback_error_minimum value is out of range.");
     }
-    jrk_settings_set_feedback_absolute_minimum(settings, feedback_absolute_minimum);
+    jrk_settings_set_feedback_error_minimum(settings, feedback_error_minimum);
   }
-  else if (!strcmp(key, "feedback_absolute_maximum"))
+  else if (!strcmp(key, "feedback_error_maximum"))
   {
-    int64_t feedback_absolute_maximum;
-    if (jrk_string_to_i64(value, &feedback_absolute_maximum))
+    int64_t feedback_error_maximum;
+    if (jrk_string_to_i64(value, &feedback_error_maximum))
     {
-      return jrk_error_create("Invalid feedback_absolute_maximum value.");
+      return jrk_error_create("Invalid feedback_error_maximum value.");
     }
-    if (feedback_absolute_maximum < 0 || feedback_absolute_maximum > UINT16_MAX)
+    if (feedback_error_maximum < 0 || feedback_error_maximum > UINT16_MAX)
     {
       return jrk_error_create(
-        "The feedback_absolute_maximum value is out of range.");
+        "The feedback_error_maximum value is out of range.");
     }
-    jrk_settings_set_feedback_absolute_maximum(settings, feedback_absolute_maximum);
+    jrk_settings_set_feedback_error_maximum(settings, feedback_error_maximum);
   }
   else if (!strcmp(key, "feedback_minimum"))
   {

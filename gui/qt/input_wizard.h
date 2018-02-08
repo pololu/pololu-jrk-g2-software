@@ -27,12 +27,12 @@ public:
   struct result
   {
     bool invert = false;
-    uint16_t absolute_minimum = 0;
-    uint16_t absolute_maximum = 4095;
-    uint16_t minimum = 0;
+    uint16_t error_maximum = 4095;
     uint16_t maximum = 4095;
-    uint16_t neutral_minimum = 2048;
     uint16_t neutral_maximum = 2048;
+    uint16_t neutral_minimum = 2048;
+    uint16_t minimum = 0;
+    uint16_t error_minimum = 0;
   };
 
   result result;

@@ -31,7 +31,7 @@ algorithm.
 EOF
   },
   {
-    name: 'input_absolute_minimum',
+    name: 'input_error_minimum',
     type: :uint16_t,
     range: 0..4095,
     comment: <<EOF
@@ -40,7 +40,7 @@ error.
 EOF
   },
   {
-    name: 'input_absolute_maximum',
+    name: 'input_error_maximum',
     type: :uint16_t,
     range: 0..4095,
     default: 4095,
@@ -199,7 +199,7 @@ measure that feedback.
 EOF
   },
   {
-    name: 'feedback_absolute_minimum',
+    name: 'feedback_error_minimum',
     type: :uint16_t,
     range: 0..4095,
     comment: <<EOF
@@ -208,7 +208,7 @@ If the raw feedback value is below this value, it causes a
 EOF
   },
   {
-    name: 'feedback_absolute_maximum',
+    name: 'feedback_error_maximum',
     type: :uint16_t,
     range: 0..4095,
     default: 4095,
@@ -625,8 +625,8 @@ EOF
     range: 1..600,
     default: 600,
     comment: <<EOF
-If the feedback is beyond the range specified by the feedback absolute
-minimum and feedback absolute maximum values, then the duty cycle's magnitude
+If the feedback is beyond the range specified by the feedback error
+minimum and feedback error maximum values, then the duty cycle's magnitude
 cannot exceed this value.
 EOF
   },

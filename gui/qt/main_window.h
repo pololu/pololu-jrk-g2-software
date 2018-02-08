@@ -133,8 +133,8 @@ public:
   void set_input_serial_timeout(uint16_t value);
   void set_input_compact_protocol(bool enabled);
   void set_input_never_sleep(bool enabled);
-  void set_input_absolute_minimum(uint16_t input_absolute_minimum);
-  void set_input_absolute_maximum(uint16_t input_absolute_maximum);
+  void set_input_error_minimum(uint16_t input_error_minimum);
+  void set_input_error_maximum(uint16_t input_error_maximum);
   void set_input_minimum(uint16_t input_minimum);
   void set_input_maximum(uint16_t input_maximum);
   void set_input_neutral_minimum(uint16_t input_neutral_minimum);
@@ -148,8 +148,8 @@ public:
 
   void set_feedback_mode(uint8_t feedback_mode);
   void set_feedback_invert(bool feedback_invert);
-  void set_feedback_absolute_minimum(uint16_t value);
-  void set_feedback_absolute_maximum(uint16_t value);
+  void set_feedback_error_minimum(uint16_t value);
+  void set_feedback_error_maximum(uint16_t value);
   void set_feedback_minimum(uint16_t value);
   void set_feedback_maximum(uint16_t value);
   void set_feedback_scaling_order_warning_label();
@@ -276,8 +276,8 @@ private slots:
   void on_input_timeout_spinbox_valueChanged(double value);
   void on_input_disable_compact_protocol_checkbox_stateChanged(int state);
   void on_input_never_sleep_checkbox_stateChanged(int state);
-  void on_input_absolute_minimum_spinbox_valueChanged(int value);
-  void on_input_absolute_maximum_spinbox_valueChanged(int value);
+  void on_input_error_minimum_spinbox_valueChanged(int value);
+  void on_input_error_maximum_spinbox_valueChanged(int value);
   void on_input_minimum_spinbox_valueChanged(int value);
   void on_input_maximum_spinbox_valueChanged(int value);
   void on_input_neutral_minimum_spinbox_valueChanged(int value);
@@ -291,8 +291,8 @@ private slots:
 
   void on_feedback_mode_combobox_currentIndexChanged(int index);
   void on_feedback_invert_checkbox_stateChanged(int state);
-  void on_feedback_absolute_minimum_spinbox_valueChanged(int value);
-  void on_feedback_absolute_maximum_spinbox_valueChanged(int value);
+  void on_feedback_error_minimum_spinbox_valueChanged(int value);
+  void on_feedback_error_maximum_spinbox_valueChanged(int value);
   void on_feedback_maximum_spinbox_valueChanged(int value);
   void on_feedback_minimum_spinbox_valueChanged(int value);
   void on_feedback_reset_range_button_clicked();
@@ -481,8 +481,8 @@ private:
 
   QGroupBox *input_scaling_groupbox;
   QLabel *input_scaling_order_warning_label;
-  QLabel *input_absolute_max_label;
-  QSpinBox *input_absolute_maximum_spinbox;
+  QLabel *input_error_max_label;
+  QSpinBox *input_error_maximum_spinbox;
   QLabel *input_maximum_label;
   QSpinBox *input_maximum_spinbox;
   QLabel *input_neutral_max_label;
@@ -491,8 +491,8 @@ private:
   QSpinBox *input_neutral_minimum_spinbox;
   QLabel *input_minimum_label;
   QSpinBox *input_minimum_spinbox;
-  QLabel *input_absolute_min_label;
-  QSpinBox *input_absolute_minimum_spinbox;
+  QLabel *input_error_min_label;
+  QSpinBox *input_error_minimum_spinbox;
   QLabel *input_degree_label;
   QComboBox *input_scaling_degree_combobox;
   QCheckBox *input_invert_checkbox;
@@ -532,16 +532,16 @@ private:
 
   QGroupBox *feedback_scaling_groupbox;
   QCheckBox *feedback_invert_checkbox;
-  QLabel *feedback_absolute_max_label;
+  QLabel *feedback_error_max_label;
   QLabel *feedback_maximum_label;
   QLabel *feedback_minimum_label;
-  QLabel *feedback_absolute_min_label;
+  QLabel *feedback_error_min_label;
   QLabel *feedback_calibration_label;
   QLabel *feedback_scaling_order_warning_label;
-  QSpinBox *feedback_absolute_maximum_spinbox;
+  QSpinBox *feedback_error_maximum_spinbox;
   QSpinBox *feedback_maximum_spinbox;
   QSpinBox *feedback_minimum_spinbox;
-  QSpinBox *feedback_absolute_minimum_spinbox;
+  QSpinBox *feedback_error_minimum_spinbox;
   QPushButton *feedback_learn_button;
   QPushButton *feedback_reset_range_button;
 

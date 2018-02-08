@@ -7,8 +7,8 @@ struct jrk_settings
   // Beginning of auto-generated settings struct members.
 
   uint8_t input_mode;
-  uint16_t input_absolute_minimum;
-  uint16_t input_absolute_maximum;
+  uint16_t input_error_minimum;
+  uint16_t input_error_maximum;
   uint16_t input_minimum;
   uint16_t input_maximum;
   uint16_t input_neutral_minimum;
@@ -21,8 +21,8 @@ struct jrk_settings
   bool input_detect_disconnect;
   uint8_t input_analog_samples_exponent;
   uint8_t feedback_mode;
-  uint16_t feedback_absolute_minimum;
-  uint16_t feedback_absolute_maximum;
+  uint16_t feedback_error_minimum;
+  uint16_t feedback_error_maximum;
   uint16_t feedback_minimum;
   uint16_t feedback_maximum;
   bool feedback_invert;
@@ -100,7 +100,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
 
   // Beginning of auto-generated settings defaults.
 
-  jrk_settings_set_input_absolute_maximum(settings, 4095);
+  jrk_settings_set_input_error_maximum(settings, 4095);
   jrk_settings_set_input_maximum(settings, 4095);
   jrk_settings_set_input_neutral_minimum(settings, 2048);
   jrk_settings_set_input_neutral_maximum(settings, 2048);
@@ -108,7 +108,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_output_maximum(settings, 4095);
   jrk_settings_set_input_analog_samples_exponent(settings, 7);
   jrk_settings_set_feedback_mode(settings, JRK_FEEDBACK_MODE_ANALOG);
-  jrk_settings_set_feedback_absolute_maximum(settings, 4095);
+  jrk_settings_set_feedback_error_maximum(settings, 4095);
   jrk_settings_set_feedback_maximum(settings, 4095);
   jrk_settings_set_feedback_analog_samples_exponent(settings, 7);
   jrk_settings_set_serial_device_number(settings, 11);
@@ -228,28 +228,28 @@ uint8_t jrk_settings_get_input_mode(const jrk_settings * settings)
   return settings->input_mode;
 }
 
-void jrk_settings_set_input_absolute_minimum(jrk_settings * settings, uint16_t input_absolute_minimum)
+void jrk_settings_set_input_error_minimum(jrk_settings * settings, uint16_t input_error_minimum)
 {
   if (settings == NULL) { return; }
-  settings->input_absolute_minimum = input_absolute_minimum;
+  settings->input_error_minimum = input_error_minimum;
 }
 
-uint16_t jrk_settings_get_input_absolute_minimum(const jrk_settings * settings)
+uint16_t jrk_settings_get_input_error_minimum(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->input_absolute_minimum;
+  return settings->input_error_minimum;
 }
 
-void jrk_settings_set_input_absolute_maximum(jrk_settings * settings, uint16_t input_absolute_maximum)
+void jrk_settings_set_input_error_maximum(jrk_settings * settings, uint16_t input_error_maximum)
 {
   if (settings == NULL) { return; }
-  settings->input_absolute_maximum = input_absolute_maximum;
+  settings->input_error_maximum = input_error_maximum;
 }
 
-uint16_t jrk_settings_get_input_absolute_maximum(const jrk_settings * settings)
+uint16_t jrk_settings_get_input_error_maximum(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->input_absolute_maximum;
+  return settings->input_error_maximum;
 }
 
 void jrk_settings_set_input_minimum(jrk_settings * settings, uint16_t input_minimum)
@@ -396,28 +396,28 @@ uint8_t jrk_settings_get_feedback_mode(const jrk_settings * settings)
   return settings->feedback_mode;
 }
 
-void jrk_settings_set_feedback_absolute_minimum(jrk_settings * settings, uint16_t feedback_absolute_minimum)
+void jrk_settings_set_feedback_error_minimum(jrk_settings * settings, uint16_t feedback_error_minimum)
 {
   if (settings == NULL) { return; }
-  settings->feedback_absolute_minimum = feedback_absolute_minimum;
+  settings->feedback_error_minimum = feedback_error_minimum;
 }
 
-uint16_t jrk_settings_get_feedback_absolute_minimum(const jrk_settings * settings)
+uint16_t jrk_settings_get_feedback_error_minimum(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->feedback_absolute_minimum;
+  return settings->feedback_error_minimum;
 }
 
-void jrk_settings_set_feedback_absolute_maximum(jrk_settings * settings, uint16_t feedback_absolute_maximum)
+void jrk_settings_set_feedback_error_maximum(jrk_settings * settings, uint16_t feedback_error_maximum)
 {
   if (settings == NULL) { return; }
-  settings->feedback_absolute_maximum = feedback_absolute_maximum;
+  settings->feedback_error_maximum = feedback_error_maximum;
 }
 
-uint16_t jrk_settings_get_feedback_absolute_maximum(const jrk_settings * settings)
+uint16_t jrk_settings_get_feedback_error_maximum(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->feedback_absolute_maximum;
+  return settings->feedback_error_maximum;
 }
 
 void jrk_settings_set_feedback_minimum(jrk_settings * settings, uint16_t feedback_minimum)

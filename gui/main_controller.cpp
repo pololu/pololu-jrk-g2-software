@@ -563,8 +563,8 @@ void main_controller::handle_settings_changed()
   window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
   window->set_input_never_sleep(settings.get_never_sleep());
   window->set_input_invert(settings.get_input_invert());
-  window->set_input_absolute_minimum(settings.get_input_absolute_minimum());
-  window->set_input_absolute_maximum(settings.get_input_absolute_maximum());
+  window->set_input_error_minimum(settings.get_input_error_minimum());
+  window->set_input_error_maximum(settings.get_input_error_maximum());
   window->set_input_minimum(settings.get_input_minimum());
   window->set_input_maximum(settings.get_input_maximum());
   window->set_input_neutral_minimum(settings.get_input_neutral_minimum());
@@ -576,8 +576,8 @@ void main_controller::handle_settings_changed()
   window->set_input_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_invert(settings.get_feedback_invert());
-  window->set_feedback_absolute_minimum(settings.get_feedback_absolute_minimum());
-  window->set_feedback_absolute_maximum(settings.get_feedback_absolute_maximum());
+  window->set_feedback_error_minimum(settings.get_feedback_error_minimum());
+  window->set_feedback_error_maximum(settings.get_feedback_error_maximum());
   window->set_feedback_maximum(settings.get_feedback_maximum());
   window->set_feedback_minimum(settings.get_feedback_minimum());
   window->set_feedback_scaling_order_warning_label();
@@ -899,18 +899,18 @@ void main_controller::handle_input_invert_input(bool input_invert)
   handle_settings_changed();
 }
 
-void main_controller::handle_input_absolute_minimum_input(uint16_t input_absolute_minimum)
+void main_controller::handle_input_error_minimum_input(uint16_t input_error_minimum)
 {
   if (!connected()) { return; }
-  settings.set_input_absolute_minimum(input_absolute_minimum);
+  settings.set_input_error_minimum(input_error_minimum);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_input_absolute_maximum_input(uint16_t input_absolute_maximum)
+void main_controller::handle_input_error_maximum_input(uint16_t input_error_maximum)
 {
   if (!connected()) { return; }
-  settings.set_input_absolute_maximum(input_absolute_maximum);
+  settings.set_input_error_maximum(input_error_maximum);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1039,18 +1039,18 @@ void main_controller::handle_feedback_invert_input(bool invert_feedback)
   handle_settings_changed();
 }
 
-void main_controller::handle_feedback_absolute_minimum_input(uint16_t value)
+void main_controller::handle_feedback_error_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
-  settings.set_feedback_absolute_minimum(value);
+  settings.set_feedback_error_minimum(value);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_feedback_absolute_maximum_input(uint16_t value)
+void main_controller::handle_feedback_error_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
-  settings.set_feedback_absolute_maximum(value);
+  settings.set_feedback_error_maximum(value);
   settings_modified = true;
   handle_settings_changed();
 }

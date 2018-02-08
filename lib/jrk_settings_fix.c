@@ -17,27 +17,27 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t input_absolute_minimum = jrk_settings_get_input_absolute_minimum(settings);
-    if (input_absolute_minimum > 4095)
+    uint16_t input_error_minimum = jrk_settings_get_input_error_minimum(settings);
+    if (input_error_minimum > 4095)
     {
-      input_absolute_minimum = 4095;
+      input_error_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input absolute minimum was too high "
-        "so it will be changed to %u.\n", input_absolute_minimum);
+        "Warning: The input error minimum was too high "
+        "so it will be changed to %u.\n", input_error_minimum);
     }
-    jrk_settings_set_input_absolute_minimum(settings, input_absolute_minimum);
+    jrk_settings_set_input_error_minimum(settings, input_error_minimum);
   }
 
   {
-    uint16_t input_absolute_maximum = jrk_settings_get_input_absolute_maximum(settings);
-    if (input_absolute_maximum > 4095)
+    uint16_t input_error_maximum = jrk_settings_get_input_error_maximum(settings);
+    if (input_error_maximum > 4095)
     {
-      input_absolute_maximum = 4095;
+      input_error_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input absolute maximum was too high "
-        "so it will be changed to %u.\n", input_absolute_maximum);
+        "Warning: The input error maximum was too high "
+        "so it will be changed to %u.\n", input_error_maximum);
     }
-    jrk_settings_set_input_absolute_maximum(settings, input_absolute_maximum);
+    jrk_settings_set_input_error_maximum(settings, input_error_maximum);
   }
 
   {
@@ -161,27 +161,27 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t feedback_absolute_minimum = jrk_settings_get_feedback_absolute_minimum(settings);
-    if (feedback_absolute_minimum > 4095)
+    uint16_t feedback_error_minimum = jrk_settings_get_feedback_error_minimum(settings);
+    if (feedback_error_minimum > 4095)
     {
-      feedback_absolute_minimum = 4095;
+      feedback_error_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The feedback absolute minimum was too high "
-        "so it will be changed to %u.\n", feedback_absolute_minimum);
+        "Warning: The feedback error minimum was too high "
+        "so it will be changed to %u.\n", feedback_error_minimum);
     }
-    jrk_settings_set_feedback_absolute_minimum(settings, feedback_absolute_minimum);
+    jrk_settings_set_feedback_error_minimum(settings, feedback_error_minimum);
   }
 
   {
-    uint16_t feedback_absolute_maximum = jrk_settings_get_feedback_absolute_maximum(settings);
-    if (feedback_absolute_maximum > 4095)
+    uint16_t feedback_error_maximum = jrk_settings_get_feedback_error_maximum(settings);
+    if (feedback_error_maximum > 4095)
     {
-      feedback_absolute_maximum = 4095;
+      feedback_error_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The feedback absolute maximum was too high "
-        "so it will be changed to %u.\n", feedback_absolute_maximum);
+        "Warning: The feedback error maximum was too high "
+        "so it will be changed to %u.\n", feedback_error_maximum);
     }
-    jrk_settings_set_feedback_absolute_maximum(settings, feedback_absolute_maximum);
+    jrk_settings_set_feedback_error_maximum(settings, feedback_error_maximum);
   }
 
   {
