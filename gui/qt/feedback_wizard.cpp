@@ -166,15 +166,18 @@ void feedback_wizard::focus_changed()
   // we don't want to trigger the "Next" button.  So whenever the focus changes,
   // we use 'setDefault' to change whether the "Next" button is the default button
   // (i.e. the one that 'Enter' acts on).
-  bool next_is_default = !duty_cycle_input->hasFocus();
   QAbstractButton * next_button = button(NextButton);
-  if (next_button->inherits("QPushButton"))
+  if (next_button->isVisible())
   {
-    qobject_cast<QPushButton *>(next_button)->setDefault(next_is_default);
-  }
-  else
-  {
-    assert(0);
+    bool next_is_default = !duty_cycle_input->hasFocus();
+    if (next_button->inherits("QPushButton"))
+    {
+      qobject_cast<QPushButton *>(next_button)->setDefault(next_is_default);
+    }
+    else
+    {
+      assert(0);
+    }
   }
 }
 
