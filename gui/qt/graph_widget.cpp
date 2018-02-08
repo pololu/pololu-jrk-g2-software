@@ -73,8 +73,6 @@ void graph_widget::setup_ui()
 {
   pause_run_button = new QPushButton(this);
   pause_run_button->setObjectName("pause_run_button");
-  pause_run_button->setCheckable(true);
-  pause_run_button->setChecked(false);
   pause_run_button->setText(tr("&Pause"));
   pause_run_button->setMinimumSize(pause_run_button->sizeHint());
 
@@ -260,10 +258,10 @@ void graph_widget::change_ranges()
   custom_plot->replot();
 }
 
-void graph_widget::on_pause_run_button_toggled(bool checked)
+void graph_widget::on_pause_run_button_clicked()
 {
-  pause_run_button->setText(checked ? "R&un" : "&Pause");
-  graph_paused = checked;
+  graph_paused = !graph_paused;
+  pause_run_button->setText(graph_paused ? "R&un" : "&Pause");
   custom_plot->replot();
 }
 

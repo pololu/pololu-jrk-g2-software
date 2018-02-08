@@ -82,7 +82,7 @@ private:
 
 private slots:
   void change_ranges();
-  void on_pause_run_button_toggled(bool checked);
+  void on_pause_run_button_clicked();
   void set_line_visible();
   void show_all_none_clicked();
 };
