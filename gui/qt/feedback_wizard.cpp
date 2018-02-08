@@ -72,6 +72,8 @@ void run_feedback_wizard(main_window * window)
 
   if (result != QDialog::Accepted) { return; }
 
+  // TODO: really should validate these setting and apply them before leaving
+  // the wizard
   controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
   controller->handle_feedback_absolute_minimum_input(wizard.result.error_minimum);
@@ -623,7 +625,12 @@ void feedback_wizard::update_learn_page_completeness()
 // them and edit them.
 void feedback_wizard::copy_result_into_form()
 {
-  // TODO
+  final_motor_invert_checkbox->setChecked(result.motor_invert);
+  final_invert_checkbox->setChecked(result.invert);
+  final_error_max_spinbox->setValue(result.error_maximum);
+  final_max_spinbox->setValue(result.maximum);
+  final_min_spinbox->setValue(result.minimum);
+  final_error_min_spinbox->setValue(result.error_minimum);
 }
 
 // This is called when the user is done with the wizard.  In case they
@@ -631,7 +638,12 @@ void feedback_wizard::copy_result_into_form()
 // chose from the form back into the result struct.
 void feedback_wizard::copy_form_into_result()
 {
-  // TODO
+  result.motor_invert = final_motor_invert_checkbox->isChecked();
+  result.invert = final_invert_checkbox->isChecked();
+  result.error_maximum = final_error_max_spinbox->value();
+  result.maximum = final_max_spinbox->value();
+  result.minimum = final_min_spinbox->value();
+  result.error_minimum = final_error_min_spinbox->value();
 }
 
 int feedback_wizard::forward_duty_cycle()
@@ -930,20 +942,64 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
 
 nice_wizard_page * feedback_wizard::setup_conclusion_page()
 {
-  nice_wizard_page * page = conclusion_page = new nice_wizard_page();
-  QVBoxLayout * layout = new QVBoxLayout();
-
-  page->setTitle(tr("Feedback setup finished"));
-
-  // TODO: better text here to explain what's going on
-  QLabel * completed_label = new QLabel(
-    "You have successfully completed this wizard.");
+  QLabel * completed_label = new QLabel();
+  completed_label->setText(tr(
+    "You have successfully completed this wizard.  "
+    "You can review and edit your new settings below."));
   completed_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   completed_label->setWordWrap(true);
-  layout->addWidget(completed_label);
 
+  final_motor_invert_checkbox = new QCheckBox();
+  final_motor_invert_checkbox->setText(tr("Invert motor direction"));
+
+  final_invert_checkbox = new QCheckBox();
+  final_invert_checkbox->setText(tr("Invert feedback direction"));
+
+  QLabel * final_error_max_label = new QLabel();
+  final_error_max_label->setText(tr("Feedback error max:"));
+
+  final_error_max_spinbox = new QSpinBox();
+  final_error_max_spinbox->setRange(0, 4095);
+
+  QLabel * final_max_label = new QLabel();
+  final_max_label->setText(tr("Feedback max:"));
+
+  final_max_spinbox = new QSpinBox();
+  final_max_spinbox->setRange(0, 4095);
+
+  QLabel * final_min_label = new QLabel();
+  final_min_label->setText(tr("Feedback min:"));
+
+  final_min_spinbox = new QSpinBox();
+  final_min_spinbox->setRange(0, 4095);
+
+  QLabel * final_error_min_label = new QLabel();
+  final_error_min_label->setText(tr("Feedback error min:"));
+
+  final_error_min_spinbox = new QSpinBox();
+  final_error_min_spinbox->setRange(0, 4095);
+
+  QGridLayout * scaling_layout = new QGridLayout();
+  scaling_layout->addWidget(final_error_max_label, 0, 0);
+  scaling_layout->addWidget(final_error_max_spinbox, 0, 1);
+  scaling_layout->addWidget(final_max_label, 1, 0);
+  scaling_layout->addWidget(final_max_spinbox, 1, 1);
+  scaling_layout->addWidget(final_min_label, 2, 0);
+  scaling_layout->addWidget(final_min_spinbox, 2, 1);
+  scaling_layout->addWidget(final_error_min_label, 3, 0);
+  scaling_layout->addWidget(final_error_min_spinbox, 3, 1);
+  scaling_layout->setColumnStretch(2, 1);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addWidget(completed_label);
+  layout->addItem(new QSpacerItem(1, fontMetrics().height()));
+  layout->addWidget(final_motor_invert_checkbox);
+  layout->addWidget(final_invert_checkbox);
+  layout->addLayout(scaling_layout);
   layout->addStretch(1);
 
+  nice_wizard_page * page = conclusion_page = new nice_wizard_page();
+  page->setTitle(tr("Review"));
   page->setLayout(layout);
   return page;
 }
