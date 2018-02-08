@@ -6,8 +6,9 @@
 #include "main_window.h"
 #include "main_controller.h"
 
-class uint16_range;
 class nice_wizard_page;
+class uint16_range;
+class QIntValidator;
 class QLabel;
 class QProgressBar;
 
@@ -24,9 +25,9 @@ class feedback_wizard : public QWizard
   static const int DUTY_CYCLE_FACTOR = JRK_MAX_ALLOWED_DUTY_CYCLE / 100;
 
   enum page { INTRO, LEARN, CONCLUSION };
-  enum learn_step { MOTOR_DIR, MAX, MIN };
+  enum learn_step { MOTOR_DIR, FEEDBACK_DIR, MAXMIN };
   const int FIRST_STEP = MOTOR_DIR;
-  const int LAST_STEP = MIN;
+  const int LAST_STEP = MAXMIN;
 
 public:
   feedback_wizard(QWidget * parent, main_controller *);
@@ -35,8 +36,8 @@ public:
   {
     bool motor_invert = false;
     bool invert = false;
-    uint16_t absolute_minimum = 0;
-    uint16_t absolute_maximum = 4095;
+    uint16_t error_minimum = 0;
+    uint16_t error_maximum = 4095;
     uint16_t minimum = 0;
     uint16_t maximum = 4095;
   };
@@ -52,7 +53,10 @@ public slots:
   void set_feedback(uint16_t);
   void set_duty_cycle(int16_t);
   void controller_updated();
-  void motor_invert_changed(bool);
+  void motor_invert_changed();
+  void feedback_invert_changed();
+  void learn_max_button_pressed();
+  void learn_min_button_pressed();
   void duty_cycle_input_changed();
   void reverse_button_pressed();
   void forward_button_pressed();
@@ -60,11 +64,11 @@ public slots:
 
 private:
   void set_next_button_enabled(bool enabled);
-  void set_progress_visible(bool visible);
 
   bool handle_next_on_intro_page();
   bool handle_back_on_learn_page();
   bool handle_next_on_learn_page();
+  void start_sampling(QLineEdit *);
   void handle_new_sample();
   void handle_sampling_complete();
   bool learn_max();
@@ -74,8 +78,13 @@ private:
   const uint16_t full_range = 4095;
 
   void update_learn_page();
+  void update_learn_page_for_sampling();
   int forward_duty_cycle();
-  void throw_if_not_connected();
+
+  void copy_result_into_form();
+  void copy_form_into_result();
+
+  bool disconnected_error();
 
   // This class needs to hold a pointer to the main_controller since there are a
   // variety of commands it needs to send to the jrk to control the motor, which
@@ -84,27 +93,54 @@ private:
 
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
+  QWidget * setup_motor_invert_widget();
+  QWidget * setup_feedback_invert_widget();
+  QWidget * setup_maxmin_widget();
   QWidget * setup_feedback_widget();
-  QWidget * setup_motor_control_widget();
+  QGroupBox * setup_motor_control_box();
   nice_wizard_page * setup_conclusion_page();
+
+  nice_wizard_page * intro_page;
+  nice_wizard_page * conclusion_page;
 
   // Controls on the 'Learn' page
   nice_wizard_page * learn_page;
-  QLabel * instruction_label;
+  QIntValidator * int_validator;
+  QLabel * top_instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
-  QCheckBox * motor_invert_checkbox;
+  QWidget * motor_invert_widget;
+  QRadioButton * motor_invert_radio_false;
+  QRadioButton * motor_invert_radio_true;
+  QWidget * feedback_invert_widget;
+  QRadioButton * feedback_invert_radio_false;
+  QRadioButton * feedback_invert_radio_true;
+  QWidget * maxmin_widget;
+  QLabel * learn_max_label;
+  QLineEdit * learn_max_value;
+  QPushButton * learn_max_button;
+  QLabel * learn_min_label;
+  QLineEdit * learn_min_value;
+  QPushButton * learn_min_button;
   QWidget * feedback_widget;
   QLabel * feedback_value;
   QLabel * feedback_pretty;
-  QWidget * motor_control_widget;
+  QGroupBox * motor_control_box;
+  QLabel * motor_instruction_label;
   QPushButton * reverse_button;
   QPushButton * forward_button;
   QSpinBox * duty_cycle_input;
   QLabel * max_duty_cycle_note;
   QLabel * duty_cycle_value;
   QLabel * motor_status_value;
-  QLabel * bottom_instruction_label;
+
+  // TODO: Controls on the 'Conclusion' page.
+  //QCheckBox * final_motor_invert_checkbox;
+  //QSpinBox * final_feedback_invert_checkbox;
+  //QSpinBox * final_feedback_error_max_spinbox;
+  //QSpinBox * final_feedback_max_spinbox;
+  //QSpinBox * final_feedback_min_spinbox;
+  //QSpinBox * final_feedback_error_min_spinbox;
 
   // The jrk's current settings.
   uint8_t feedback_mode;
@@ -116,8 +152,8 @@ private:
 
   // Current state of the wizard.
   int learn_step = FIRST_STEP;
-  bool learn_step_succeeded = false;
   bool sampling = false;
+  QLineEdit * sampling_input = NULL;
   std::vector<uint16_t> samples;
   uint16_range learned_max;
   uint16_range learned_min;

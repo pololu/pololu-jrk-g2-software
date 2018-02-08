@@ -1824,7 +1824,7 @@ QWidget * main_window::setup_status_tab()
   return status_page_widget;
 }
 
-QWidget * main_window::setup_preview_plot()
+QWidget * main_window::setup_graph()
 {
   graph = new graph_widget();
   graph->setObjectName(QStringLiteral("graph"));
@@ -1834,13 +1834,10 @@ QWidget * main_window::setup_preview_plot()
   preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
   preview_frame->setLineWidth(1);
 
-  preview_plot = new QWidget();
-  preview_plot = graph->custom_plot;
-
   horizontal_layout = new QHBoxLayout();
-  horizontal_layout->addWidget(preview_plot, 1);
+  horizontal_layout->addWidget(graph->custom_plot, 1);
 
-  connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
+  connect(graph->custom_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(preview_pane_clicked()));
 
   preview_frame->setLayout(horizontal_layout);
@@ -3080,31 +3077,29 @@ void pid_constant_control::pid_constant_lineedit_editingFinished()
     pid_exponent_spinbox->value());
 }
 
-void elided_label::setText(const QString& txt)
+void elided_label::setText(const QString & text)
 {
-  setToolTip(txt);
-  QLabel::setText(txt);
-  cache_elided_text(geometry().width());
+  setToolTip(text);
+  QLabel::setText(text);
+  compute_elided_text();
   setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 }
 
-void elided_label::cache_elided_text(int w)
+void elided_label::compute_elided_text()
 {
-  elided_text = fontMetrics().elidedText(text(),
-    Qt::ElideRight, w);
+  elided_text = fontMetrics().elidedText(text(), Qt::ElideRight, width());
 }
 
-void elided_label::resizeEvent(QResizeEvent* e)
+void elided_label::resizeEvent(QResizeEvent * e)
 {
   QLabel::resizeEvent(e);
-  cache_elided_text(e->size().width());
+  compute_elided_text();
 }
 
-void elided_label::paintEvent(QPaintEvent* e)
+void elided_label::paintEvent(QPaintEvent * e)
 {
   QPainter p(this);
-
-  p.drawText(0, 0, geometry().width(), geometry().height(),
+  p.drawText(0, 0, width(), height(),
     QStyle::visualAlignment(Qt::LeftToRight, Qt::AlignVCenter),
       elided_text);
 }

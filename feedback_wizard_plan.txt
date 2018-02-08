@@ -9,4 +9,3 @@ TODO:
 TODO:
   Nice "Feedback setup wizard..." button under the "n" of "Invert motor direction"
 
-TODO: look into justifying text and making margins even on the sides
