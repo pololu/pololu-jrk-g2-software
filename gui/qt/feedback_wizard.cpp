@@ -639,19 +639,21 @@ nice_wizard_page * feedback_wizard::setup_intro_page()
   page->setTitle("Welcome to the feedback setup wizard");
 
   QLabel * intro_label = new QLabel();
+  intro_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   intro_label->setWordWrap(true);
   intro_label->setText(tr(
     "This wizard will help you quickly detect your motor direction "
     "and set up the feedback scaling parameters."));
   layout->addWidget(intro_label);
 
-  QLabel * stopped_label = new QLabel();
-  stopped_label->setWordWrap(true);
-  stopped_label->setText(tr(
+  QLabel * stop_label = new QLabel();
+  stop_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
+  stop_label->setWordWrap(true);
+  stop_label->setText(tr(
     "NOTE: When you click Next, this wizard will stop the motor "
     "and clear any latched errors.  To restart the motor later, "
     "you can click the \"Run motor\" button (after fixing any errors)."));
-  layout->addWidget(stopped_label);
+  layout->addWidget(stop_label);
 
   layout->addStretch(1);
 
@@ -665,7 +667,7 @@ nice_wizard_page * feedback_wizard::setup_learn_page()
   int_validator->setRange(0, 4095);
 
   top_instruction_label = new QLabel();
-  top_instruction_label->setAlignment(Qt::AlignTop);
+  top_instruction_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   top_instruction_label->setWordWrap(true);
 
   sampling_label = new QLabel(tr("Sampling..."));
@@ -829,7 +831,7 @@ QWidget * feedback_wizard::setup_feedback_widget()
 QGroupBox * feedback_wizard::setup_motor_control_box()
 {
   motor_instruction_label = new QLabel();
-  motor_instruction_label->setAlignment(Qt::AlignTop);
+  motor_instruction_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   motor_instruction_label->setWordWrap(true);
 
   reverse_button = new QPushButton(tr("Drive reverse"));
@@ -906,6 +908,7 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   // TODO: better text here to explain what's going on
   QLabel * completed_label = new QLabel(
     "You have successfully completed this wizard.");
+  completed_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   completed_label->setWordWrap(true);
   layout->addWidget(completed_label);
 
