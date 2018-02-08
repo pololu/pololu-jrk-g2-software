@@ -36,7 +36,6 @@
 
 // TODO: Custom button for "Back"
 
-
 void run_feedback_wizard(main_window * window)
 {
   main_controller * controller = window->controller;
@@ -140,6 +139,21 @@ void feedback_wizard::showEvent(QShowEvent * event)
     {
       connect(button, SIGNAL(clicked()), this, SLOT(handle_back()));
     }
+  }
+
+  // Make the margins symmetric instead of having the left margin be larger than
+  // the right margin.  In qwizard.cpp, there is a hardcoded margin of 18 for
+  // the QFrame object.  It's hard to override the margins for the QFrame
+  // because it gets set at different times, so just add a margin to our pages.
+  QWidget * frame = qobject_cast<QWidget *>(learn_page->parent());
+  if (frame)
+  {
+    int left, top, right, bottom;
+    frame->getContentsMargins(&left, &top, &right, &bottom);
+    int fudge = left - right;
+    intro_page->setContentsMargins(0, 0, fudge, 0);
+    learn_page->setContentsMargins(0, 0, fudge, 0);
+    conclusion_page->setContentsMargins(0, 0, fudge, 0);
   }
 #endif
 }
@@ -579,7 +593,7 @@ void feedback_wizard::update_learn_page_for_sampling()
 }
 
 // This is called when we are about to show the conclusion page.  It copies the
-// settings in the result struct into the form on that pageso the user can see
+// settings in the result struct into the form on that page so the user can see
 // them and edit them.
 void feedback_wizard::copy_result_into_form()
 {
@@ -617,7 +631,9 @@ bool feedback_wizard::disconnected_error()
 
 nice_wizard_page * feedback_wizard::setup_intro_page()
 {
-  nice_wizard_page * page = new nice_wizard_page();
+  nice_wizard_page * page = intro_page = new nice_wizard_page();
+  page->setObjectName("intro_page");
+
   QVBoxLayout * layout = new QVBoxLayout();
 
   page->setTitle("Welcome to the feedback setup wizard");
@@ -882,7 +898,7 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
 
 nice_wizard_page * feedback_wizard::setup_conclusion_page()
 {
-  nice_wizard_page * page = new nice_wizard_page();
+  nice_wizard_page * page = conclusion_page = new nice_wizard_page();
   QVBoxLayout * layout = new QVBoxLayout();
 
   page->setTitle(tr("Feedback setup finished"));

@@ -100,6 +100,9 @@ private:
   QGroupBox * setup_motor_control_box();
   nice_wizard_page * setup_conclusion_page();
 
+  nice_wizard_page * intro_page;
+  nice_wizard_page * conclusion_page;
+
   // Controls on the 'Learn' page
   nice_wizard_page * learn_page;
   QIntValidator * int_validator;
