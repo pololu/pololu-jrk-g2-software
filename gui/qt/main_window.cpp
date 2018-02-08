@@ -977,27 +977,26 @@ void main_window::on_update_timer_timeout()
   emit controller_updated();
 }
 
-void main_window::receive_widget(graph_widget *widget)
+void main_window::restore_graph_preview()
 {
-  widget->set_preview_mode(true);
+  graph->set_preview_mode(true);
 
-  horizontal_layout->addWidget(widget->custom_plot, 1);
+  horizontal_layout->addWidget(graph->custom_plot, 1);
   preview_frame->setFrameShape(QFrame::Box);
 }
 
 void main_window::preview_pane_clicked()
 {
-  graph_widget *red = graph;
-  horizontal_layout->removeWidget(red);
+  horizontal_layout->removeWidget(graph);
   preview_frame->setFrameShape(QFrame::NoFrame);
   if(popout_graph_window == 0)
   {
     popout_graph_window = new graph_window(this);
-    connect(popout_graph_window, SIGNAL(pass_widget(graph_widget*)), this,
-    SLOT(receive_widget(graph_widget*)));
+    connect(popout_graph_window, SIGNAL(pass_widget()), this,
+    SLOT(restore_graph_preview()));
   }
 
-  popout_graph_window->receive_widget(red);
+  popout_graph_window->receive_widget(graph);
   popout_graph_window->raise_window();
 }
 

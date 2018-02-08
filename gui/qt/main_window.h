@@ -223,7 +223,6 @@ private:
   void set_check_box(QCheckBox * check, bool value);
 
 signals:
-  void pass_widget(graph_widget *widget);
   void input_changed(uint16_t);
   void feedback_changed(uint16_t);
   void duty_cycle_changed(int16_t);
@@ -242,7 +241,7 @@ protected:
 
 private slots:
   void on_update_timer_timeout();
-  void receive_widget(graph_widget * widget);
+  void restore_graph_preview();
   void preview_pane_clicked();
   void on_device_name_value_linkActivated();
   void on_documentation_action_triggered();

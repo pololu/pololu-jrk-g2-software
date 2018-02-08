@@ -5,7 +5,6 @@
 graph_window::graph_window(QWidget *parent)
 {
   setup_ui();
-  grabbed_widget = 0;
 }
 
 void graph_window::setup_ui()
@@ -17,15 +16,12 @@ void graph_window::setup_ui()
   central_layout = new QGridLayout();
 
   setLayout(central_layout);
-
-  QMetaObject::connectSlotsByName(this);
 }
 
 void graph_window::closeEvent(QCloseEvent *event)
 {
   central_layout->removeWidget(grabbed_widget);
-  emit pass_widget(grabbed_widget);
-  grabbed_widget = 0;
+  emit pass_widget();
 
   QWidget::closeEvent(event);
 }
@@ -33,6 +29,8 @@ void graph_window::closeEvent(QCloseEvent *event)
 void graph_window::receive_widget(graph_widget *widget)
 {
   grabbed_widget = widget;
+
+  grabbed_widget->set_preview_mode(false);
 
   grabbed_widget->bottom_control_layout->setParent(0);
   grabbed_widget->plot_visible_layout->setParent(0);
@@ -46,8 +44,6 @@ void graph_window::receive_widget(graph_widget *widget)
 
    central_layout->setColumnStretch(1, 3);
    central_layout->setRowStretch(1, 3);
-
-   grabbed_widget->set_preview_mode(false);
 }
 
 // Shows the window and directs focus to it.
