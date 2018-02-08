@@ -6,6 +6,7 @@
 #include "input_wizard.h"
 #include "feedback_wizard.h"
 #include "message_box.h"
+#include "elided_label.h"
 
 #include <to_string.h>
 
@@ -3075,31 +3076,4 @@ void pid_constant_control::pid_constant_lineedit_editingFinished()
   if (window_suppress_events()) { return; }
   window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(),
     pid_exponent_spinbox->value());
-}
-
-void elided_label::setText(const QString & text)
-{
-  setToolTip(text);
-  QLabel::setText(text);
-  compute_elided_text();
-  setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-}
-
-void elided_label::compute_elided_text()
-{
-  elided_text = fontMetrics().elidedText(text(), Qt::ElideRight, width());
-}
-
-void elided_label::resizeEvent(QResizeEvent * e)
-{
-  QLabel::resizeEvent(e);
-  compute_elided_text();
-}
-
-void elided_label::paintEvent(QPaintEvent * e)
-{
-  QPainter p(this);
-  p.drawText(0, 0, width(), height(),
-    QStyle::visualAlignment(Qt::LeftToRight, Qt::AlignVCenter),
-      elided_text);
 }

@@ -3,6 +3,7 @@
 #include "qcustomplot.h"
 #include "graph_widget.h"
 #include "graph_window.h"
+#include "elided_label.h"
 #include "jrk.hpp"
 
 #include <QMainWindow>
@@ -30,7 +31,6 @@ class QSpinBox;
 
 class pid_constant_control;
 class pid_constant_validator;
-class elided_label;
 class main_controller;
 
 class main_window : public QMainWindow
@@ -733,27 +733,4 @@ public:
       return QValidator::Invalid;
     }
   }
-};
-
-// QLabel subclass to make a label that elides if it is too long,
-// instead of changing the size of the parent layout.
-class elided_label : public QLabel
-{
-  Q_OBJECT
-
-private:
-  QString elided_text;
-
-public:
-  elided_label(QWidget* parent = NULL)
-    : QLabel(parent) {}
-
-  void setText(const QString &);
-
-protected:
-  virtual void paintEvent(QPaintEvent *) override;
-  virtual void resizeEvent(QResizeEvent *) override;
-
-protected:
-  void compute_elided_text();
 };
