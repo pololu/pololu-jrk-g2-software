@@ -441,7 +441,10 @@ void feedback_wizard::handle_sampling_complete()
   sampling = false;
   update_learn_page_for_sampling();
 
-  // TODO
+  uint16_range range = uint16_range::from_samples(samples);
+  if (!check_range_not_too_big(range)) { return; }
+
+  sampling_input->setText(QString::number(range.average));
 }
 
 // TODO: probably remove this function
@@ -504,9 +507,9 @@ bool feedback_wizard::check_range_not_too_big(const uint16_range & range)
   if (range.range() > (full_range * 3 + 20) / 40)
   {
     show_error_message(
-      "The output value varied too widely (" + range.min_max_string() + ") "
+      "The feedback value varied too widely (" + range.min_max_string() + ") "
       "during the sampling time.  "
-      "Please hold the feedback still and try again.", this);
+      "Please hold the output still and try again.", this);
     return false;
   }
   return true;
