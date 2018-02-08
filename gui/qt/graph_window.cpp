@@ -2,8 +2,6 @@
 #include "main_window.h"
 #include "graph_widget.h"
 
-#include <iostream>
-
 graph_window::graph_window(QWidget *parent)
 {
   setup_ui();
@@ -52,16 +50,19 @@ void graph_window::receive_widget(graph_widget *widget)
    grabbed_widget->set_preview_mode(false);
 }
 
-// Directs focus to graph_window.
+// Shows the window and directs focus to it.
+//
+// We use "showNormal" instead of "show" to fix a Qt bug that happens when the
+// window is maximized, closed, and then reopened.  The bug causes the window be
+// maximized while only painting controls in its upper left corner.
 void graph_window::raise_window()
 {
-  // Shows graph_window if not already shown.
-  // Reverts graph_window state to normal to fix Qt bug when window is
-  // maximized, closed, and then reopened.
-  if (!this->isVisible())
-    this->showNormal();
+  if (!isVisible())
+  {
+    showNormal();
+  }
 
-  this->raise();
+  raise();
 
-  this->activateWindow();
+  activateWindow();
 }

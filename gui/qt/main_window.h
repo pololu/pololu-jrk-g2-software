@@ -342,7 +342,7 @@ private:
   QSpacerItem * setup_vertical_spacer();
 
   QWidget * setup_status_tab();
-  QWidget * setup_preview_plot();
+  QWidget * setup_graph();
   QWidget * setup_variables_box();
   QWidget * setup_manual_target_box();
 
@@ -371,7 +371,6 @@ private:
   QHBoxLayout *horizontal_layout;
   graph_widget *graph;
   graph_window *popout_graph_window;
-  QWidget * preview_plot;
   QFrame * preview_frame;
 
   QMenuBar * menu_bar;
@@ -736,27 +735,25 @@ public:
   }
 };
 
-// QLabel subclass to make a label that elides
-// if it is too long, instead of changing the
-// size of the parent layout.
+// QLabel subclass to make a label that elides if it is too long,
+// instead of changing the size of the parent layout.
 class elided_label : public QLabel
 {
   Q_OBJECT
 
 private:
-  Qt::TextElideMode elide_mode;
   QString elided_text;
 
 public:
   elided_label(QWidget* parent = NULL)
     : QLabel(parent) {}
 
-  void setText(const QString&);
+  void setText(const QString &);
 
 protected:
-  virtual void paintEvent(QPaintEvent*) override;
-  virtual void resizeEvent(QResizeEvent*) override;
+  virtual void paintEvent(QPaintEvent *) override;
+  virtual void resizeEvent(QResizeEvent *) override;
 
 protected:
-  void cache_elided_text(int w);
+  void compute_elided_text();
 };
