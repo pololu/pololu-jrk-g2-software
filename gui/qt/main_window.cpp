@@ -980,7 +980,7 @@ void main_window::receive_widget(graph_widget *widget)
 {
   widget->set_preview_mode(true);
 
-  horizontal_layout->addWidget(widget->custom_plot);
+  horizontal_layout->addWidget(widget->custom_plot, 1);
   preview_frame->setFrameShape(QFrame::Box);
 }
 
@@ -997,9 +997,7 @@ void main_window::preview_pane_clicked()
   }
 
   popout_graph_window->receive_widget(red);
-  popout_graph_window->show();
-
-  connect(graph_action, SIGNAL(triggered()), popout_graph_window, SLOT(raise()));
+  popout_graph_window->raise_window();
 }
 
 void main_window::on_device_name_value_linkActivated()
@@ -1585,8 +1583,8 @@ void main_window::setup_ui()
     device_list_value->setMinimumWidth(tmp_box.sizeHint().width() * 105 / 100);
   }
 
-  grid_layout = new QGridLayout();
-  grid_layout->setObjectName("grid_layout");
+  main_window_layout = new QVBoxLayout();
+  main_window_layout->setObjectName("main_window_layout");
 
   tab_widget = new QTabWidget();
   tab_widget->addTab(setup_status_tab(), tr("Status"));
@@ -1612,26 +1610,28 @@ void main_window::setup_ui()
   run_motor_button->setStyleSheet(
     ":enabled { background-color: green; color: white; font-weight: bold; }");
 
-  motor_status_value = new QLabel();
+  motor_status_value = new elided_label();
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
 
-  QHBoxLayout *stop_and_run_buttons = new QHBoxLayout();
-  stop_and_run_buttons->addWidget(stop_motor_button, 0, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(run_motor_button, 0, Qt::AlignLeft);
-  stop_and_run_buttons->addWidget(motor_status_value, 1);
-  stop_and_run_buttons->addWidget(apply_settings_button, 0, Qt::AlignRight);
+  QHBoxLayout *footer_layout = new QHBoxLayout();
+  footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);
+  footer_layout->addWidget(run_motor_button, 0, Qt::AlignLeft);
+  footer_layout->addStretch(0);
+  footer_layout->addWidget(motor_status_value, 1);
+  footer_layout->addStretch(0);
+  footer_layout->addWidget(apply_settings_button, 0, Qt::AlignRight);
 
   QHBoxLayout *header_layout = new QHBoxLayout();
   header_layout->addWidget(device_list_label, 0);
   header_layout->addWidget(device_list_value, 0);
-  header_layout->addWidget(connection_status_value, 0);
+  header_layout->addWidget(connection_status_value, 1);
 
-  grid_layout->addLayout(header_layout, 0, 0, 1, 1, Qt::AlignLeft);
-  grid_layout->addWidget(tab_widget, 1, 0, 1, 1);
-  grid_layout->addLayout(stop_and_run_buttons, 2, 0, 1, 1);
+  main_window_layout->addLayout(header_layout, 0);
+  main_window_layout->addWidget(tab_widget, 0);
+  main_window_layout->addLayout(footer_layout, 0);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -1642,7 +1642,7 @@ void main_window::setup_ui()
   connect(apply_settings_button, SIGNAL(clicked()),
     apply_settings_action, SLOT(trigger()));
 
-  central_widget->setLayout(grid_layout);
+  central_widget->setLayout(main_window_layout);
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -1816,10 +1816,11 @@ QWidget * main_window::setup_status_tab()
   QGridLayout * layout = new QGridLayout();
 
   layout->addWidget(setup_variables_box(), 0, 0);
-  layout->addWidget(setup_preview_plot(), 0, 1, Qt::AlignCenter);
+  layout->addWidget(setup_preview_plot(), 0, 1);
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
+  layout->setColumnStretch(1, 1);
 
   status_page_widget->setLayout(layout);
   return status_page_widget;
@@ -1839,7 +1840,7 @@ QWidget * main_window::setup_preview_plot()
   preview_plot = graph->custom_plot;
 
   horizontal_layout = new QHBoxLayout();
-  horizontal_layout->addWidget(preview_plot);
+  horizontal_layout->addWidget(preview_plot, 1);
 
   connect(preview_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(preview_pane_clicked()));
@@ -1853,7 +1854,6 @@ QWidget * main_window::setup_variables_box()
 {
   variables_box = new QGroupBox();
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
-  variables_box->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
   QGridLayout * layout = new QGridLayout();
 
@@ -3078,6 +3078,35 @@ void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
   if (window_suppress_events()) { return; }
-  window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(), pid_exponent_spinbox->value());
+  window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(),
+    pid_exponent_spinbox->value());
 }
 
+void elided_label::setText(const QString& txt)
+{
+  setToolTip(txt);
+  QLabel::setText(txt);
+  cache_elided_text(geometry().width());
+  setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+}
+
+void elided_label::cache_elided_text(int w)
+{
+  elided_text = fontMetrics().elidedText(text(),
+    Qt::ElideRight, w);
+}
+
+void elided_label::resizeEvent(QResizeEvent* e)
+{
+  QLabel::resizeEvent(e);
+  cache_elided_text(e->size().width());
+}
+
+void elided_label::paintEvent(QPaintEvent* e)
+{
+  QPainter p(this);
+
+  p.drawText(0, 0, geometry().width(), geometry().height(),
+    QStyle::visualAlignment(Qt::LeftToRight, Qt::AlignVCenter),
+      elided_text);
+}

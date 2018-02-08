@@ -77,20 +77,11 @@ void graph_widget::setup_ui()
   pause_run_button->setChecked(false);
   pause_run_button->setText(tr("&Pause"));
   pause_run_button->setMinimumSize(pause_run_button->sizeHint());
-  pause_run_button->
-    setStyleSheet(
-      "QPushButton {color: white; background-color: red;\
-        border: 2px outset red; font-weight: bold;}"
-
-      "QPushButton:checked{background-color: green;\
-        border: 2px outset green;}");
 
   label1 = new QLabel();
   label1->setText(tr("    Range (\u0025):"));
 
   custom_plot = new QCustomPlot();
-  custom_plot->setMinimumSize(300, 300);
-  custom_plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   label2 = new QLabel();
   label2->setText(tr("    Time (s):"));

@@ -9,7 +9,6 @@
 #include <QGroupBox>
 #include <QButtonGroup>
 #include <QValidator>
-#include <QGraphicsDropShadowEffect>
 
 #include <array>
 
@@ -31,6 +30,7 @@ class QSpinBox;
 
 class pid_constant_control;
 class pid_constant_validator;
+class elided_label;
 class main_controller;
 
 class main_window : public QMainWindow
@@ -118,7 +118,8 @@ public:
 
   void set_never_sleep(bool never_sleep);
 
-  void set_motor_status_message(std::string const & message, uint16_t error_flag);
+  void set_motor_status_message(std::string const & message,
+    uint16_t error_flag = 0);
 
   void set_input_mode(uint8_t input_mode);
   void set_input_invert(bool input_invert);
@@ -366,7 +367,7 @@ private:
   QTimer *update_timer = NULL;
 
   QWidget *central_widget;
-  QGridLayout *grid_layout;
+  QVBoxLayout *main_window_layout;
   QHBoxLayout *horizontal_layout;
   graph_widget *graph;
   graph_window *popout_graph_window;
@@ -397,7 +398,7 @@ private:
   QLabel * device_list_label;
   QComboBox * device_list_value;
   QLabel * connection_status_value;
-  QLabel * motor_status_value;
+  elided_label * motor_status_value;
 
   QTabWidget *tab_widget;
 
@@ -733,4 +734,29 @@ public:
       return QValidator::Invalid;
     }
   }
+};
+
+// QLabel subclass to make a label that elides
+// if it is too long, instead of changing the
+// size of the parent layout.
+class elided_label : public QLabel
+{
+  Q_OBJECT
+
+private:
+  Qt::TextElideMode elide_mode;
+  QString elided_text;
+
+public:
+  elided_label(QWidget* parent = NULL)
+    : QLabel(parent) {}
+
+  void setText(const QString&);
+
+protected:
+  virtual void paintEvent(QPaintEvent*) override;
+  virtual void resizeEvent(QResizeEvent*) override;
+
+protected:
+  void cache_elided_text(int w);
 };
