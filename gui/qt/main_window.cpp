@@ -1814,7 +1814,7 @@ QWidget * main_window::setup_status_tab()
   QGridLayout * layout = new QGridLayout();
 
   layout->addWidget(setup_variables_box(), 0, 0);
-  layout->addWidget(setup_preview_plot(), 0, 1);
+  layout->addWidget(setup_graph(), 0, 1);
   layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
