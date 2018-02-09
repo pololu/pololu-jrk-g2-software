@@ -510,8 +510,8 @@ static bool ordered(QList<int> p)
 
 void main_window::set_input_scaling_order_warning_label()
 {
-  bool enabled =
-  !ordered({input_error_minimum_spinbox->value(), input_minimum_spinbox->value(),
+  bool enabled = !ordered({
+    input_error_minimum_spinbox->value(), input_minimum_spinbox->value(),
     input_neutral_minimum_spinbox->value(), input_neutral_maximum_spinbox->value(),
     input_maximum_spinbox->value(), input_error_maximum_spinbox->value()});
   input_scaling_order_warning_label->setVisible(enabled);
@@ -2288,14 +2288,18 @@ QWidget * main_window::setup_input_scaling_groupbox()
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  input_scaling_order_warning_label = new QLabel(
-    tr("Warning: some of the values\nare not in the correct order."));
+  input_scaling_order_warning_label = new QLabel();
   input_scaling_order_warning_label->setObjectName("input_scaling_order_warning_label");
   input_scaling_order_warning_label->setStyleSheet("color: red;");
+  input_scaling_order_warning_label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   input_scaling_order_warning_label->setSizePolicy(p);
+  input_scaling_order_warning_label->setText(tr(
+    "Warning: Each input scaling\n"
+    "setting should be less than or\n"
+    "equal to the setting above it."));
 
   QGridLayout *input_scaling_layout = new QGridLayout();
-  input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
+  input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 3, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_input_label, 1, 1, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_target_label, 1, 2, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_error_max_label, 2, 0, Qt::AlignLeft);
@@ -2316,9 +2320,9 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_layout->addItem(setup_vertical_spacer(), 8, 0);
   input_scaling_layout->addWidget(input_degree_label, 9, 0, Qt::AlignLeft);
   input_scaling_layout->addWidget(input_scaling_degree_combobox, 9, 1, 1, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_learn_button, 0, 4, Qt::AlignRight);
-  input_scaling_layout->addWidget(input_reset_range_button, 1, 4, Qt::AlignRight);
-  input_scaling_layout->addWidget(input_scaling_order_warning_label, 2, 3, 7, 2, Qt::AlignCenter);
+  input_scaling_layout->addWidget(input_learn_button, 0, 3, Qt::AlignRight);
+  input_scaling_layout->addWidget(input_reset_range_button, 1, 3, Qt::AlignRight);
+  input_scaling_layout->addWidget(input_scaling_order_warning_label, 2, 3, 6, 1);
 
   input_scaling_groupbox->setLayout(input_scaling_layout);
 
