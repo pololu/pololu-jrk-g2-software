@@ -2355,7 +2355,7 @@ QWidget * main_window::setup_feedback_tab()
 
 QWidget * main_window::setup_feedback_scaling_groupbox()
 {
-  QSizePolicy p = this->sizePolicy();
+  QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
   feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and tachometer mode only)"));
@@ -2379,11 +2379,15 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_calibration_label = new QLabel(tr("Calibration"));
   feedback_calibration_label->setObjectName("feedback_calibration_label");
 
-  feedback_scaling_order_warning_label = new QLabel(
-    tr("Warning: some of the values\nare not in the correct order"));
+  feedback_scaling_order_warning_label = new QLabel();
   feedback_scaling_order_warning_label->setObjectName("feedback_scaling_order_warning_label");
-  feedback_scaling_order_warning_label->setStyleSheet("color: red;");
+  feedback_scaling_order_warning_label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   feedback_scaling_order_warning_label->setSizePolicy(p);
+  feedback_scaling_order_warning_label->setStyleSheet("color: red;");
+  feedback_scaling_order_warning_label->setText(tr(
+    "Warning: Each feedback scaling\n"
+    "setting should be less than or\n"
+    "equal to the setting above it."));
 
   feedback_error_maximum_spinbox = new QSpinBox();
   feedback_error_maximum_spinbox->setObjectName("feedback_error_maximum_spinbox");
@@ -2408,7 +2412,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_reset_range_button->setObjectName("feedback_reset_range_button");
 
   QGridLayout *feedback_scaling_layout = new QGridLayout();
-  feedback_scaling_layout->addWidget(feedback_invert_checkbox, 0, 0, 1, 2, Qt::AlignLeft);
+  feedback_scaling_layout->addWidget(feedback_invert_checkbox, 0, 0, 1, 3, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_calibration_label, 1, 1, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_error_max_label, 2, 0, Qt::AlignLeft);
   feedback_scaling_layout->addWidget(feedback_error_maximum_spinbox, 2, 1, Qt::AlignLeft);
