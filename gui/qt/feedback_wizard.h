@@ -79,6 +79,7 @@ private:
   void update_learn_page_completeness();
   int forward_duty_cycle();
 
+  void update_order_warning();
   void copy_result_into_form();
   void copy_form_into_result();
 
@@ -139,6 +140,7 @@ private:
   QSpinBox * final_max_spinbox;
   QSpinBox * final_min_spinbox;
   QSpinBox * final_error_min_spinbox;
+  QLabel * order_warning_label;
 
   // The jrk's current settings.
   uint8_t feedback_mode;

@@ -626,6 +626,28 @@ void feedback_wizard::update_learn_page_completeness()
   }
 }
 
+// Warn if the scaling values on the last screen are out of order.
+void feedback_wizard::update_order_warning()
+{
+  bool show_warning = false;
+
+  if (final_max_spinbox->value() > final_error_max_spinbox->value())
+  {
+    show_warning = true;
+  }
+
+  if (final_min_spinbox->value() > final_max_spinbox->value())
+  {
+    show_warning = true;
+  }
+
+  if (final_error_min_spinbox->value() > final_min_spinbox->value())
+  {
+    show_warning = true;
+  }
+
+  order_warning_label->setVisible(show_warning);
+}
 
 // This is called when we are about to show the conclusion page.  It copies the
 // settings in the result struct into the form on that page so the user can see
@@ -953,14 +975,14 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   conclusion_page->setTitle(tr("Review new settings"));
 
   QLabel * completed_label = new QLabel();
+  completed_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
+  completed_label->setWordWrap(true);
   completed_label->setText(tr(
     "You have successfully completed this wizard.  "
     "You can review and edit your new settings below.  "
     "Click \"Finsh and apply settings\" to close this wizard and apply "
     "these new settings to the device."
   ));
-  completed_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
-  completed_label->setWordWrap(true);
 
   final_motor_invert_checkbox = new QCheckBox();
   final_motor_invert_checkbox->setText(tr("Invert motor direction"));
@@ -1003,12 +1025,29 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   scaling_layout->addWidget(final_error_min_spinbox, 3, 1);
   scaling_layout->setColumnStretch(2, 1);
 
+  order_warning_label = new QLabel();
+  order_warning_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
+  order_warning_label->setWordWrap(true);
+  order_warning_label->setStyleSheet("color: red;");
+  order_warning_label->setText("Warning: Each feedback scaling parameter "
+    "should be less than or equal to the parameter above it.");
+
+  connect(final_error_max_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &update_order_warning);
+  connect(final_max_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &update_order_warning);
+  connect(final_min_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &update_order_warning);
+  connect(final_error_min_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &update_order_warning);
+
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(completed_label);
   layout->addItem(new QSpacerItem(1, fontMetrics().height()));
   layout->addWidget(final_motor_invert_checkbox);
   layout->addWidget(final_invert_checkbox);
   layout->addLayout(scaling_layout);
+  layout->addWidget(order_warning_label);
   layout->addStretch(1);
 
   conclusion_page->setLayout(layout);
