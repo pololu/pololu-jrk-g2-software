@@ -949,10 +949,16 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
 
 nice_wizard_page * feedback_wizard::setup_conclusion_page()
 {
+  conclusion_page = new nice_wizard_page();
+  conclusion_page->setTitle(tr("Review new settings"));
+
   QLabel * completed_label = new QLabel();
   completed_label->setText(tr(
     "You have successfully completed this wizard.  "
-    "You can review and edit your new settings below."));
+    "You can review and edit your new settings below.  "
+    "Click \"Finsh and apply settings\" to close this wizard and apply "
+    "these new settings to the device."
+  ));
   completed_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   completed_label->setWordWrap(true);
 
@@ -963,25 +969,25 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   final_invert_checkbox->setText(tr("Invert feedback direction"));
 
   QLabel * final_error_max_label = new QLabel();
-  final_error_max_label->setText(tr("Feedback error max:"));
+  final_error_max_label->setText(tr("Error max:"));
 
   final_error_max_spinbox = new QSpinBox();
   final_error_max_spinbox->setRange(0, 4095);
 
   QLabel * final_max_label = new QLabel();
-  final_max_label->setText(tr("Feedback max:"));
+  final_max_label->setText(tr("Maximum:"));
 
   final_max_spinbox = new QSpinBox();
   final_max_spinbox->setRange(0, 4095);
 
   QLabel * final_min_label = new QLabel();
-  final_min_label->setText(tr("Feedback min:"));
+  final_min_label->setText(tr("Minimum:"));
 
   final_min_spinbox = new QSpinBox();
   final_min_spinbox->setRange(0, 4095);
 
   QLabel * final_error_min_label = new QLabel();
-  final_error_min_label->setText(tr("Feedback error min:"));
+  final_error_min_label->setText(tr("Error min:"));
 
   final_error_min_spinbox = new QSpinBox();
   final_error_min_spinbox->setRange(0, 4095);
@@ -1005,8 +1011,6 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   layout->addLayout(scaling_layout);
   layout->addStretch(1);
 
-  nice_wizard_page * page = conclusion_page = new nice_wizard_page();
-  page->setTitle(tr("Review"));
-  page->setLayout(layout);
-  return page;
+  conclusion_page->setLayout(layout);
+  return conclusion_page;
 }
