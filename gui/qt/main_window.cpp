@@ -1560,7 +1560,7 @@ void main_window::setup_ui()
 
   central_widget = new QWidget();
   central_widget->setObjectName("central_widget");
-  this->setCentralWidget(central_widget);
+  setCentralWidget(central_widget);
 
   setup_menu_bar();
 
@@ -1664,7 +1664,7 @@ void main_window::setup_style_sheet()
 void main_window::setup_menu_bar()
 {
   menu_bar = new QMenuBar();
-  this->setMenuBar(menu_bar);
+  setMenuBar(menu_bar);
 
   file_menu = menu_bar->addMenu("");
   file_menu->setTitle(tr("&File"));
@@ -2285,7 +2285,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_reset_range_button->setText(tr("R&eset to full range"));
 
   // used so layout does not change when item is hidden
-  QSizePolicy p = this->sizePolicy();
+  QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
   input_scaling_order_warning_label = new QLabel(
