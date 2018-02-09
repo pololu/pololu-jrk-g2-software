@@ -197,6 +197,10 @@ void feedback_wizard::handle_next()
     if (handle_next_on_learn_page())
     {
       next();
+
+      // We don't want a checkbox to get visibly highlighted on the final
+      // screen, it puts too much emphasis on something that is optional.
+      focusWidget()->clearFocus();
     }
   }
   else
