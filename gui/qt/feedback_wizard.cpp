@@ -1014,6 +1014,14 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   final_error_min_spinbox = new QSpinBox();
   final_error_min_spinbox->setRange(0, 4095);
 
+  order_warning_label = new QLabel();
+  order_warning_label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+  order_warning_label->setStyleSheet("color: red;");
+  order_warning_label->setText(tr(
+    "Warning: Each feedback scaling\n"
+    "setting should be less than or\n"
+    "equal to the setting above it."));
+
   QGridLayout * scaling_layout = new QGridLayout();
   scaling_layout->addWidget(final_error_max_label, 0, 0);
   scaling_layout->addWidget(final_error_max_spinbox, 0, 1);
@@ -1023,14 +1031,8 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   scaling_layout->addWidget(final_min_spinbox, 2, 1);
   scaling_layout->addWidget(final_error_min_label, 3, 0);
   scaling_layout->addWidget(final_error_min_spinbox, 3, 1);
+  scaling_layout->addWidget(order_warning_label, 0, 2, 4, 1);
   scaling_layout->setColumnStretch(2, 1);
-
-  order_warning_label = new QLabel();
-  order_warning_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
-  order_warning_label->setWordWrap(true);
-  order_warning_label->setStyleSheet("color: red;");
-  order_warning_label->setText("Warning: Each feedback scaling parameter "
-    "should be less than or equal to the parameter above it.");
 
   connect(final_error_max_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
     this, &update_order_warning);
