@@ -785,11 +785,11 @@ QWidget * feedback_wizard::setup_feedback_invert_widget()
 {
   feedback_invert_radio_false = new QRadioButton();
   feedback_invert_radio_false->setText(tr(
-    "Standard feedback direction (\"forward\" means increasing reading)"));
+    "Standard feedback direction (feedack increases during forward motion)"));
 
   feedback_invert_radio_true = new QRadioButton();
   feedback_invert_radio_true->setText(tr(
-    "Inverted feedback direction (\"forward\" means decreasing reading)"));
+    "Inverted feedback direction (feedback decreases during forward motion)"));
   connect(feedback_invert_radio_true, &QRadioButton::toggled,
     this, &feedback_invert_changed);
 
