@@ -3039,18 +3039,6 @@ void pid_constant_control::setup(QGroupBox * groupbox)
   group_box_layout->addWidget(pid_constant_lineedit,1,9,3,1,Qt::AlignCenter);
 
   groupbox->setLayout(group_box_layout);
-
-  QMetaObject::connectSlotsByName(this);
-}
-
-bool pid_constant_control::window_suppress_events() const
-{
-  return ((main_window *)parent())->suppress_events;
-}
-
-void pid_constant_control::set_window_suppress_events(bool suppress_events)
-{
-  ((main_window *)parent())->suppress_events = suppress_events;
 }
 
 main_controller * pid_constant_control::window_controller() const
@@ -3060,19 +3048,16 @@ main_controller * pid_constant_control::window_controller() const
 
 void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
 {
-  if (window_suppress_events()) { return; }
   window_controller()->handle_pid_constant_control_multiplier(index, value);
 }
 
 void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
 {
-  if (window_suppress_events()) { return; }
   window_controller()->handle_pid_constant_control_exponent(index, value);
 }
 
 void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 {
-  if (window_suppress_events()) { return; }
   double value = pid_constant_lineedit->displayText().toDouble();
 
   window_controller()->handle_pid_constant_control_constant(index, value);
@@ -3080,7 +3065,6 @@ void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 
 void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
-  if (window_suppress_events()) { return; }
   window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(),
     pid_exponent_spinbox->value());
 }

@@ -658,21 +658,18 @@ class pid_constant_control : public QObject
   Q_OBJECT
 
 public:
-  explicit pid_constant_control(QObject * parent = Q_NULLPTR) : QObject(parent)
+  pid_constant_control(QObject * parent = Q_NULLPTR) : QObject(parent)
     {}
-  explicit pid_constant_control(int index, QObject * parent = Q_NULLPTR)
+  pid_constant_control(int index, QObject * parent = Q_NULLPTR)
     : index(index), QObject(parent)
     {}
+
   void setup(QGroupBox * groupbox);
   int index;
 
 private:
-  bool window_suppress_events() const;
-  void set_window_suppress_events(bool suppress_events);
   main_controller * window_controller() const;
 
-  QFocusEvent *pid_focus_event;
-  QWidget *central_widget;
   QFrame *pid_control_frame;
   QFrame *pid_proportion_frame;
   QLineEdit *pid_constant_lineedit;
