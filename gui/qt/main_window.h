@@ -4,12 +4,12 @@
 #include "graph_widget.h"
 #include "graph_window.h"
 #include "elided_label.h"
+#include "pid_constant_control.h"
 #include "jrk.hpp"
 
 #include <QMainWindow>
 #include <QGroupBox>
 #include <QButtonGroup>
-#include <QValidator>
 
 #include <array>
 
@@ -650,81 +650,6 @@ private:
 
   QString directory_hint;
 
-  friend class pid_constant_control;
+  // friend class pid_constant_control;
 };
 
-class pid_constant_control : public QObject
-{
-  Q_OBJECT
-
-public:
-  pid_constant_control(int index, QGroupBox * groupbox,
-    QObject * parent);
-
-private:
-  main_controller * window_controller() const;
-
-  QFrame *pid_control_frame;
-  QFrame *pid_proportion_frame;
-  QLineEdit *pid_constant_lineedit;
-  QLabel *pid_equal_label;
-  QSpinBox *pid_multiplier_spinbox;
-  QLabel *pid_base_label;
-  QSpinBox *pid_exponent_spinbox;
-
-  int index;
-
-private slots:
-  void pid_multiplier_spinbox_valueChanged(int value);
-  void pid_exponent_spinbox_valueChanged(int value);
-  void pid_constant_lineedit_textEdited(const QString&);
-  void pid_constant_lineedit_editingFinished();
-
-private:
-  friend class main_window;
-};
-
-class pid_constant_validator : public QDoubleValidator
-{
-public:
-  pid_constant_validator(double bottom, double top, int decimals,
-    QObject * parent)
-    : QDoubleValidator(bottom, top, decimals, parent)
-  {}
-
-  QValidator::State validate(QString &s, int &i) const
-  {
-    if (s.isEmpty())
-    {
-      return QValidator::Intermediate;
-    }
-
-    if (s == "-")
-    {
-      return QValidator::Invalid;
-    }
-
-    QChar decimalPoint = locale().decimalPoint();
-
-    if(s.indexOf(decimalPoint) != -1)
-    {
-      int charsAfterPoint = s.length() - s.indexOf(decimalPoint) - 1;
-
-      if (charsAfterPoint > decimals())
-      {
-        return QValidator::Invalid;
-      }
-    }
-
-    bool ok;
-    double d = locale().toDouble(s, &ok);
-    if (ok && d >= bottom() && d <= top())
-    {
-      return QValidator::Acceptable;
-    }
-    else
-    {
-      return QValidator::Invalid;
-    }
-  }
-};
