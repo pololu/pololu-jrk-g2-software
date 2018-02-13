@@ -2490,18 +2490,18 @@ QWidget * main_window::setup_pid_tab()
 
   pid_proportional_coefficient_groupbox = new QGroupBox();
   pid_proportional_coefficient_groupbox->setTitle("Proportional coefficient");
-  pid_constant_controls[0] = new pid_constant_control(0, this);
-  pid_constant_controls[0]->setup(pid_proportional_coefficient_groupbox);
+  pid_constant_controls[0] = new pid_constant_control(0,
+    pid_proportional_coefficient_groupbox, this);
 
   pid_integral_coefficient_groupbox = new QGroupBox();
   pid_integral_coefficient_groupbox->setTitle("Integral coefficient");
-  pid_constant_controls[1] = new pid_constant_control(1, this);
-  pid_constant_controls[1]->setup(pid_integral_coefficient_groupbox);
+  pid_constant_controls[1] = new pid_constant_control(1,
+    pid_integral_coefficient_groupbox, this);
 
   pid_derivative_coefficient_groupbox = new QGroupBox();
   pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
-  pid_constant_controls[2] = new pid_constant_control(2, this);
-  pid_constant_controls[2]->setup(pid_derivative_coefficient_groupbox);
+  pid_constant_controls[2] = new pid_constant_control(2,
+    pid_derivative_coefficient_groupbox, this);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -2968,7 +2968,8 @@ void main_window::setup_error_row(int error_number,
   row.enabled_radio->setVisible(!always_latched);
 }
 
-void pid_constant_control::setup(QGroupBox * groupbox)
+pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox,
+  QObject * parent) : index(index), QObject(parent)
 {
   QFont font;
   font.setPointSize(16);

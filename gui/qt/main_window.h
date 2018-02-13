@@ -658,14 +658,8 @@ class pid_constant_control : public QObject
   Q_OBJECT
 
 public:
-  pid_constant_control(QObject * parent = Q_NULLPTR) : QObject(parent)
-    {}
-  pid_constant_control(int index, QObject * parent = Q_NULLPTR)
-    : index(index), QObject(parent)
-    {}
-
-  void setup(QGroupBox * groupbox);
-  int index;
+  pid_constant_control(int index, QGroupBox * groupbox,
+    QObject * parent);
 
 private:
   main_controller * window_controller() const;
@@ -677,6 +671,8 @@ private:
   QSpinBox *pid_multiplier_spinbox;
   QLabel *pid_base_label;
   QSpinBox *pid_exponent_spinbox;
+
+  int index;
 
 private slots:
   void pid_multiplier_spinbox_valueChanged(int value);
@@ -691,8 +687,10 @@ private:
 class pid_constant_validator : public QDoubleValidator
 {
 public:
-  pid_constant_validator(double bottom, double top, int decimals, QObject * parent) :
-    QDoubleValidator(bottom, top, decimals, parent) {}
+  pid_constant_validator(double bottom, double top, int decimals,
+    QObject * parent)
+    : QDoubleValidator(bottom, top, decimals, parent)
+  {}
 
   QValidator::State validate(QString &s, int &i) const
   {
