@@ -15,24 +15,12 @@
 #include <algorithm>
 #include <cassert>
 
-// TODO: Move to the most forward position, which will be the minimum feedback
-// value because you.
-
-// TODO: learn steps: blank text box, force them to enter something
-// between Next button gets enabled.
-// "Determine the minimum feedback value at the forward extreme"
-
-// TODO: let people manually type max feedback, or click sample button
-
 // TODO: Learn raw feedback polarity based on first time they drive the buttons
 // Based on that, flip the raw value on step 2.  Step 2 has raw feedback value
 // and radio buttons for inverting it or not.  Default is based on last
-// behavior in step 1.
+// behavior in step 1. ?
 // Say drive forward should correspond to number going up, if not, switch feedback
 // polarity.  Step 2 is learn feedback polarity.  Step 3 is maximum.  Step 4 is minimum.
-
-// TODO: Click Finish to Apply settings, allow users to edit the
-// settings before applying
 
 // TODO: Custom button for "Back"
 
@@ -797,11 +785,11 @@ QWidget * feedback_wizard::setup_feedback_invert_widget()
 {
   feedback_invert_radio_false = new QRadioButton();
   feedback_invert_radio_false->setText(tr(
-    "Standard feedback direction (\"forward\" means increasing reading)"));
+    "Standard feedback direction (feedack increases during forward motion)"));
 
   feedback_invert_radio_true = new QRadioButton();
   feedback_invert_radio_true->setText(tr(
-    "Inverted feedback direction (\"forward\" means decreasing reading)"));
+    "Inverted feedback direction (feedback decreases during forward motion)"));
   connect(feedback_invert_radio_true, &QRadioButton::toggled,
     this, &feedback_invert_changed);
 
