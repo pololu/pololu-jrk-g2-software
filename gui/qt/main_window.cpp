@@ -608,7 +608,8 @@ void main_window::set_pid_exponent(int index, uint16_t value)
 
 void main_window::set_pid_constant(int index, double value)
 {
-  suppress_events = true;
+  if (suppress_events) { return; }
+
   QLineEdit *spin = pid_constant_controls[index]->pid_constant_lineedit;
 
   if (value < 0.0001 && value != 0)
@@ -617,7 +618,6 @@ void main_window::set_pid_constant(int index, double value)
   }
   else
     spin->setText(QString::number(value, 'f', 5));
-  suppress_events = false;
 }
 
 void main_window::set_pid_period(uint16_t value)
@@ -2495,17 +2495,17 @@ QWidget * main_window::setup_pid_tab()
   pid_proportional_coefficient_groupbox = new QGroupBox();
   pid_proportional_coefficient_groupbox->setTitle("Proportional coefficient");
   pid_constant_controls[0] = new pid_constant_control(0,
-    pid_proportional_coefficient_groupbox, this);
+    pid_proportional_coefficient_groupbox);
 
   pid_integral_coefficient_groupbox = new QGroupBox();
   pid_integral_coefficient_groupbox->setTitle("Integral coefficient");
   pid_constant_controls[1] = new pid_constant_control(1,
-    pid_integral_coefficient_groupbox, this);
+    pid_integral_coefficient_groupbox);
 
   pid_derivative_coefficient_groupbox = new QGroupBox();
   pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
   pid_constant_controls[2] = new pid_constant_control(2,
-    pid_derivative_coefficient_groupbox, this);
+    pid_derivative_coefficient_groupbox);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -2530,30 +2530,36 @@ QWidget * main_window::setup_pid_tab()
   feedback_dead_zone_spinbox = new QSpinBox();
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
 
-  QGridLayout *group_box_row = new QGridLayout();
-  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0);
-  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1);
-  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2);
+  QHBoxLayout *group_box_row = new QHBoxLayout();
+  group_box_row->addWidget(pid_proportional_coefficient_groupbox);
+  group_box_row->addWidget(pid_integral_coefficient_groupbox);
+  group_box_row->addWidget(pid_derivative_coefficient_groupbox);
+  group_box_row->setAlignment(Qt::AlignLeft);
+  group_box_row->addStretch(1);
 
   QHBoxLayout *period_row_layout = new QHBoxLayout();
   period_row_layout->addWidget(pid_period_label);
   period_row_layout->addWidget(pid_period_spinbox);
+  period_row_layout->addStretch(1);
 
   QHBoxLayout *integral_row_layout = new QHBoxLayout();
   integral_row_layout->addWidget(integral_limit_label);
   integral_row_layout->addWidget(integral_limit_spinbox);
+  integral_row_layout->addStretch(1);
 
   QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
   deadzone_row_layout->addWidget(feedback_dead_zone_label);
   deadzone_row_layout->addWidget(feedback_dead_zone_spinbox);
+  deadzone_row_layout->addStretch(1);
 
-  QGridLayout *layout = pid_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(group_box_row, 0, 0, 1, 3);
-  layout->addLayout(period_row_layout, 1, 0, 1, 1, Qt::AlignLeft);
-  layout->addLayout(integral_row_layout, 2, 0, 1, 1, Qt::AlignLeft);
-  layout->addWidget(reset_integral_checkbox, 3, 0, 1, 1, Qt::AlignLeft);
-  layout->addLayout(deadzone_row_layout, 4, 0, 1, 1, Qt::AlignLeft);
+  QVBoxLayout *layout = pid_page_layout = new QVBoxLayout();
+  layout->addLayout(group_box_row);
+  layout->addLayout(period_row_layout);
+  layout->addLayout(integral_row_layout);
+  layout->addWidget(reset_integral_checkbox);
+  layout->addLayout(deadzone_row_layout);
+  layout->addStretch(1);
+  layout->setAlignment(Qt::AlignLeft);
 
   pid_page_widget->setLayout(layout);
   return pid_page_widget;

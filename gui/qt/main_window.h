@@ -560,7 +560,7 @@ private:
   // pid tab
 
   QWidget * pid_page_widget;
-  QGridLayout * pid_page_layout;
+  QVBoxLayout * pid_page_layout;
   QLabel * pid_period_label;
   QSpinBox * pid_period_spinbox;
   QLabel * integral_limit_label;
@@ -649,7 +649,5 @@ private:
   bool start_event_reported = false;
 
   QString directory_hint;
-
-  // friend class pid_constant_control;
 };
 

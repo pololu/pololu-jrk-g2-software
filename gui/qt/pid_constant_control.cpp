@@ -1,7 +1,7 @@
 #include "pid_constant_control.h"
 
-pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox,
-  QObject * parent) : index(index), QObject(parent)
+pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox)
+ : index(index)
 {
   QFont font;
   font.setPointSize(16);
@@ -16,7 +16,7 @@ pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox,
   pid_base_label->setFont(font);
   pid_base_label->setLayoutDirection(Qt::LeftToRight);
   pid_base_label->setAlignment(Qt::AlignCenter);
-  pid_base_label->setText(tr("2"));
+  pid_base_label->setText("2");
 
   pid_control_frame = new QFrame();
   pid_control_frame->setObjectName("pid_control_frame");
@@ -29,16 +29,16 @@ pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox,
   pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
   pid_multiplier_spinbox->setRange(0, 1023);
 
-  connect(pid_multiplier_spinbox, SIGNAL(valueChanged(int)), this,
-    SLOT(pid_multiplier_spinbox_valueChanged(int)));
+  connect(pid_multiplier_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &pid_multiplier_spinbox_valueChanged);
 
   pid_exponent_spinbox = new QSpinBox();
   pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
   pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
   pid_exponent_spinbox->setRange(0, 18);
 
-  connect(pid_exponent_spinbox, SIGNAL(valueChanged(int)), this,
-    SLOT(pid_exponent_spinbox_valueChanged(int)));
+  connect(pid_exponent_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+    this, &pid_exponent_spinbox_valueChanged);
 
   pid_equal_label = new QLabel();
   pid_equal_label->setObjectName("pid_equal_label");
@@ -50,28 +50,28 @@ pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox,
   pid_constant_lineedit = new QLineEdit();
   pid_constant_lineedit->setObjectName("pid_constant_lineedit");
 
-  QFontMetrics metrics(QApplication::font());
-  pid_constant_lineedit->setFixedWidth(metrics.width("0000.00000000"));
-
+  // This prevents the user from entering invalid characters.
   pid_constant_validator *constant_validator =
     new pid_constant_validator(0, 1023, 7, pid_constant_lineedit);
   pid_constant_lineedit->setValidator(constant_validator);
 
-  connect(pid_constant_lineedit, SIGNAL(textEdited(const QString&)), this,
-    SLOT(pid_constant_lineedit_textEdited(const QString&)));
+  connect(pid_constant_lineedit, &QLineEdit::textEdited,
+    this, &pid_constant_lineedit_textEdited);
 
-  connect(pid_constant_lineedit, SIGNAL(editingFinished()),
-    this, SLOT(pid_constant_lineedit_editingFinished()));
+  connect(pid_constant_lineedit, &QLineEdit::editingFinished,
+    this, &pid_constant_lineedit_editingFinished);
 
   QGridLayout *group_box_layout = new QGridLayout();
-  group_box_layout->addWidget(pid_base_label,3,1,3,2);
-  group_box_layout->addWidget(pid_control_frame,2,1,1,5);
-  group_box_layout->addWidget(pid_multiplier_spinbox,1,2,1,3);
-  group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
-  group_box_layout->addWidget(pid_equal_label,2,7,1,2);
-  group_box_layout->addWidget(pid_constant_lineedit,1,9,3,1,Qt::AlignCenter);
+  group_box_layout->addWidget(pid_base_label, 2, 0, 3, 1, Qt::AlignBottom);
+  group_box_layout->addWidget(pid_control_frame, 1, 0, 1, 3);
+  group_box_layout->addWidget(pid_multiplier_spinbox, 0, 0, 1, 3, Qt::AlignCenter);
+  group_box_layout->addWidget(pid_exponent_spinbox, 2, 1, 1, 1, Qt::AlignCenter);
+  group_box_layout->addWidget(pid_equal_label, 0, 4, 3, 1, Qt::AlignCenter);
+  group_box_layout->addWidget(pid_constant_lineedit, 0, 5, 3, 1, Qt::AlignVCenter);
+  group_box_layout->setColumnStretch(6, 1);
 
   groupbox->setLayout(group_box_layout);
+  groupbox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
