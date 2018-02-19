@@ -68,9 +68,6 @@ main_window::main_window(QWidget * parent)
 void main_window::set_controller(main_controller * controller)
 {
   this->controller = controller;
-
-  for (auto pid_control : pid_constant_controls)
-    pid_control->controller = controller;
 }
 
 void main_window::set_update_timer_interval(uint32_t interval_ms)
@@ -2506,6 +2503,9 @@ QWidget * main_window::setup_pid_tab()
   pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
   pid_constant_controls[2] = new pid_constant_control(2,
     pid_derivative_coefficient_groupbox);
+
+  for (auto pid_control : pid_constant_controls)
+    pid_control->set_controller(this->controller);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");

@@ -1,7 +1,7 @@
 #include "pid_constant_control.h"
 
 pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox)
- : index(index)
+ : index(index), QObject(groupbox)
 {
   QFont font;
   font.setPointSize(16);
@@ -72,6 +72,11 @@ pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox)
 
   groupbox->setLayout(group_box_layout);
   groupbox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+}
+
+void pid_constant_control::set_controller(main_controller * controller)
+{
+  this->controller = controller;
 }
 
 void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)

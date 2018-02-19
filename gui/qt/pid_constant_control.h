@@ -17,6 +17,8 @@ class pid_constant_control : public QObject
 public:
   pid_constant_control(int index, QGroupBox * groupbox);
 
+  void set_controller(main_controller * controller = NULL);
+
 private:
   main_controller * controller;
 
