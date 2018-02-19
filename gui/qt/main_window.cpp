@@ -68,6 +68,9 @@ main_window::main_window(QWidget * parent)
 void main_window::set_controller(main_controller * controller)
 {
   this->controller = controller;
+
+  for (auto pid_control : pid_constant_controls)
+    pid_control->set_controller(controller);
 }
 
 void main_window::set_update_timer_interval(uint32_t interval_ms)
@@ -593,28 +596,17 @@ void main_window::set_feedback_wraparound(bool value)
 
 void main_window::set_pid_multiplier(int index, uint16_t value)
 {
-  QSpinBox *spin = pid_constant_controls[index]->pid_multiplier_spinbox;
-  set_spin_box(spin, value);
+  pid_constant_controls[index]->set_multiplier_spinbox(value);
 }
 
 void main_window::set_pid_exponent(int index, uint16_t value)
 {
-  QSpinBox *spin = pid_constant_controls[index]->pid_exponent_spinbox;
-  set_spin_box(spin, value);
+  pid_constant_controls[index]->set_exponent_spinbox(value);
 }
 
 void main_window::set_pid_constant(int index, double value)
 {
-  if (suppress_events) { return; }
-
-  QLineEdit *spin = pid_constant_controls[index]->pid_constant_lineedit;
-
-  if (value < 0.0001 && value != 0)
-  {
-    spin->setText(QString::number(value, 'f', 7));
-  }
-  else
-    spin->setText(QString::number(value, 'f', 5));
+  pid_constant_controls[index]->set_constant(value);
 }
 
 void main_window::set_pid_period(uint16_t value)
@@ -2503,9 +2495,6 @@ QWidget * main_window::setup_pid_tab()
   pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
   pid_constant_controls[2] = new pid_constant_control(2,
     pid_derivative_coefficient_groupbox);
-
-  for (auto pid_control : pid_constant_controls)
-    pid_control->set_controller(this->controller);
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");

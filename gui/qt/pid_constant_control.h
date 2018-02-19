@@ -19,6 +19,10 @@ public:
 
   void set_controller(main_controller * controller = NULL);
 
+  void set_multiplier_spinbox(uint16_t value);
+  void set_exponent_spinbox(uint16_t value);
+  void set_constant(double value);
+
 private:
   main_controller * controller;
 
@@ -30,6 +34,8 @@ private:
   QLabel *pid_base_label;
   QSpinBox *pid_exponent_spinbox;
 
+  bool suppress_events = false;
+
   int index;
 
 private slots:
@@ -37,9 +43,6 @@ private slots:
   void pid_exponent_spinbox_valueChanged(int value);
   void pid_constant_lineedit_textEdited(const QString&);
   void pid_constant_lineedit_editingFinished();
-
-private:
-  friend class main_window;
 };
 
 class pid_constant_validator : public QDoubleValidator

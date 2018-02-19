@@ -79,18 +79,56 @@ void pid_constant_control::set_controller(main_controller * controller)
   this->controller = controller;
 }
 
+void pid_constant_control::set_multiplier_spinbox(uint16_t value)
+{
+  if (pid_multiplier_spinbox->value() != value)
+  {
+    suppress_events = true;
+    pid_multiplier_spinbox->setValue(value);
+    suppress_events = false;
+  }
+}
+
+void pid_constant_control::set_exponent_spinbox(uint16_t value)
+{
+  if (pid_exponent_spinbox->value() != value)
+  {
+    suppress_events = true;
+    pid_exponent_spinbox->setValue(value);
+    suppress_events = false;
+  }
+}
+
+void pid_constant_control::set_constant(double value)
+{
+  suppress_events = true;
+  if (value < 0.0001 && value != 0)
+  {
+    pid_constant_lineedit->setText(QString::number(value, 'f', 7));
+  }
+  else
+    pid_constant_lineedit->setText(QString::number(value, 'f', 5));
+  suppress_events = false;
+}
+
 void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
 {
+  if (suppress_events) { return; }
+
   controller->handle_pid_constant_control_multiplier(index, value);
 }
 
 void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
 {
+  if (suppress_events) { return; }
+
   controller->handle_pid_constant_control_exponent(index, value);
 }
 
 void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 {
+  if (suppress_events) { return; }
+
   double value = pid_constant_lineedit->displayText().toDouble();
 
   controller->handle_pid_constant_control_constant(index, value);
@@ -98,6 +136,8 @@ void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 
 void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
+  if (suppress_events) { return; }
+
   controller->recompute_constant(index, pid_multiplier_spinbox->value(),
     pid_exponent_spinbox->value());
 }
