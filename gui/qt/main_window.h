@@ -572,10 +572,6 @@ private:
   // pid tab constant controls
   std::array<pid_constant_control *, 3> pid_constant_controls;
 
-  QGroupBox *pid_proportional_coefficient_groupbox;
-  QGroupBox *pid_integral_coefficient_groupbox;
-  QGroupBox *pid_derivative_coefficient_groupbox;
-
   // motor tab
 
   QWidget * motor_page_widget;

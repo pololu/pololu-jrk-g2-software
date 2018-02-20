@@ -1,7 +1,7 @@
 #include "pid_constant_control.h"
 
-pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox)
- : index(index), QObject(groupbox)
+pid_constant_control::pid_constant_control(int index, QWidget * parent)
+ : index(index), QGroupBox(parent)
 {
   QFont font;
   font.setPointSize(16);
@@ -70,8 +70,8 @@ pid_constant_control::pid_constant_control(int index, QGroupBox * groupbox)
   group_box_layout->addWidget(pid_constant_lineedit, 0, 5, 3, 1, Qt::AlignVCenter);
   group_box_layout->setColumnStretch(6, 1);
 
-  groupbox->setLayout(group_box_layout);
-  groupbox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  setLayout(group_box_layout);
+  setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 void pid_constant_control::set_controller(main_controller * controller)

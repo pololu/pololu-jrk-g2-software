@@ -10,12 +10,12 @@
 #include <QGridLayout>
 #include "main_controller.h"
 
-class pid_constant_control : public QObject
+class pid_constant_control : public QGroupBox
 {
   Q_OBJECT
 
 public:
-  pid_constant_control(int index, QGroupBox * groupbox);
+  pid_constant_control(int index = -1, QWidget * parent = Q_NULLPTR);
 
   void set_controller(main_controller * controller = NULL);
 

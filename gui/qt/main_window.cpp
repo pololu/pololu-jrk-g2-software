@@ -2481,20 +2481,14 @@ QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
 
-  pid_proportional_coefficient_groupbox = new QGroupBox();
-  pid_proportional_coefficient_groupbox->setTitle("Proportional coefficient");
-  pid_constant_controls[0] = new pid_constant_control(0,
-    pid_proportional_coefficient_groupbox);
+  pid_constant_controls[0] = new pid_constant_control(0, this);
+  pid_constant_controls[0]->setTitle("Proportional coefficient");
 
-  pid_integral_coefficient_groupbox = new QGroupBox();
-  pid_integral_coefficient_groupbox->setTitle("Integral coefficient");
-  pid_constant_controls[1] = new pid_constant_control(1,
-    pid_integral_coefficient_groupbox);
+  pid_constant_controls[1] = new pid_constant_control(1, this);
+  pid_constant_controls[1]->setTitle("Integral coefficient");
 
-  pid_derivative_coefficient_groupbox = new QGroupBox();
-  pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
-  pid_constant_controls[2] = new pid_constant_control(2,
-    pid_derivative_coefficient_groupbox);
+  pid_constant_controls[2] = new pid_constant_control(2, this);
+  pid_constant_controls[2]->setTitle("Derivative coefficient");
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -2520,9 +2514,9 @@ QWidget * main_window::setup_pid_tab()
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
 
   QHBoxLayout *group_box_row = new QHBoxLayout();
-  group_box_row->addWidget(pid_proportional_coefficient_groupbox);
-  group_box_row->addWidget(pid_integral_coefficient_groupbox);
-  group_box_row->addWidget(pid_derivative_coefficient_groupbox);
+  group_box_row->addWidget(pid_constant_controls[0]);
+  group_box_row->addWidget(pid_constant_controls[1]);
+  group_box_row->addWidget(pid_constant_controls[2]);
   group_box_row->setAlignment(Qt::AlignLeft);
   group_box_row->addStretch(1);
 
