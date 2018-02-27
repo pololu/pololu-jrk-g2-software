@@ -19,6 +19,7 @@ public:
 
   void set_controller(main_controller * controller = NULL);
 
+  // These functions are used to set the values from the parent class
   void set_multiplier_spinbox(uint16_t value);
   void set_exponent_spinbox(uint16_t value);
   void set_constant(double value);
@@ -45,6 +46,8 @@ private slots:
   void pid_constant_lineedit_editingFinished();
 };
 
+// This class is used to prevent user from entering invalid
+// characters and values into the QLineEdit.
 class pid_constant_validator : public QDoubleValidator
 {
 public:
@@ -60,13 +63,16 @@ public:
       return QValidator::Intermediate;
     }
 
-    if (s == "-")
+    // User can not enter "-" into the QLineEdit
+    if (s == "\u2212")
     {
       return QValidator::Invalid;
     }
 
     QChar decimalPoint = locale().decimalPoint();
 
+    // Prevents user from entering too many digits
+    // after the decimal point
     if(s.indexOf(decimalPoint) != -1)
     {
       int charsAfterPoint = s.length() - s.indexOf(decimalPoint) - 1;
@@ -79,6 +85,8 @@ public:
 
     bool ok;
     double d = locale().toDouble(s, &ok);
+    // Disallows entering a value which is outside of the
+    // declared range.
     if (ok && d >= bottom() && d <= top())
     {
       return QValidator::Acceptable;

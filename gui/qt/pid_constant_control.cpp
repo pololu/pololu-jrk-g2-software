@@ -125,6 +125,8 @@ void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
   controller->handle_pid_constant_control_exponent(index, value);
 }
 
+// Uses the main_controller to calculate optimal exponent and multiplier
+// while user is entering a constant into the QLineEdit.
 void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 {
   if (suppress_events) { return; }
@@ -134,6 +136,8 @@ void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
   controller->handle_pid_constant_control_constant(index, value);
 }
 
+// Uses the main_controller to calculate the exact constant give the desired
+// multiplier and exponent.
 void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
   if (suppress_events) { return; }
