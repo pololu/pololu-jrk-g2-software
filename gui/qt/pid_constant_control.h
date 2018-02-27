@@ -46,8 +46,12 @@ private slots:
   void pid_constant_lineedit_editingFinished();
 };
 
-// This class is used to prevent user from entering invalid
-// characters and values into the QLineEdit.
+// This subclass of QDoubleValidator was designed to disallow user input of invalid
+// digits and characters.  QDoubleValidator allows the user to input values which
+// are outside of a desired range by assigning  a QValidator state of
+// "Intermediate" during input and validating the string as a whole upon
+// completion. In this subclass, each character entered is validated based on
+// assigned parameters and the input is not accepted if "Invalid".
 class pid_constant_validator : public QDoubleValidator
 {
 public:
@@ -61,12 +65,6 @@ public:
     if (s.isEmpty())
     {
       return QValidator::Intermediate;
-    }
-
-    // User can not enter "-" into the QLineEdit
-    if (s == "\u2212")
-    {
-      return QValidator::Invalid;
     }
 
     QChar decimalPoint = locale().decimalPoint();
