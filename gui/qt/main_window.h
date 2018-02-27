@@ -5,6 +5,7 @@
 #include "graph_window.h"
 #include "elided_label.h"
 #include "pid_constant_control.h"
+#include "nice_spin_box.h"
 #include "jrk.hpp"
 
 #include <QMainWindow>
@@ -213,6 +214,9 @@ public:
   bool suppress_events = false;
   main_controller * controller;
 
+  void set_current_limit_spinbox(uint16_t value);
+  void set_current_limit_spinbox_values(uint16_t value);
+
 private:
   // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified
@@ -334,6 +338,8 @@ private slots:
   void on_errors_reset_counts_clicked();
 
 private:
+  nice_spin_box * temp_nice_box; //tmphax
+
   void setup_ui();
   void setup_style_sheet();
   void setup_menu_bar();

@@ -8,6 +8,7 @@
 #include "message_box.h"
 #include "elided_label.h"
 #include "pid_constant_control.h"
+#include "nice_spin_box.h"
 
 #include <to_string.h>
 
@@ -71,6 +72,9 @@ void main_window::set_controller(main_controller * controller)
 
   for (auto pid_control : pid_constant_controls)
     pid_control->set_controller(controller);
+
+  temp_nice_box->set_controller(controller);
+
 }
 
 void main_window::set_update_timer_interval(uint32_t interval_ms)
@@ -754,6 +758,16 @@ void main_window::set_coast_when_off(bool value)
     assert(0);
   }
   suppress_events = false;
+}
+
+void main_window::set_current_limit_spinbox(uint16_t value)
+{
+  temp_nice_box->set_possible_values(value);
+}
+
+void main_window::set_current_limit_spinbox_values(uint16_t value)
+{
+   temp_nice_box->set_possible_values(value);
 }
 
 void main_window::set_error_enable(uint16_t enable, uint16_t latch)
@@ -2790,6 +2804,9 @@ QWidget *main_window::setup_motor_tab()
   layout->addLayout(motor_controls_layout);
   layout->addLayout(deceleration_layout);
   layout->addLayout(motor_off_layout);
+
+  temp_nice_box = new nice_spin_box(this); //tmphax
+  layout->addWidget(temp_nice_box, ++row, 0);
 
   motor_page_widget->setLayout(layout);
 

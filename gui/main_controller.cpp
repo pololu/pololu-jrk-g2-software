@@ -461,6 +461,7 @@ void main_controller::handle_device_changed()
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
     window->set_connection_status("", false);
+
   }
   else
   {
@@ -633,6 +634,8 @@ void main_controller::handle_settings_changed()
     window->set_current_limit_meaning(meaning.str().c_str());
   }
 
+  window->set_current_limit_spinbox(settings.get_current_limit_code_forward());
+
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
   window->set_current_samples_exponent(settings.get_current_samples_exponent());
@@ -683,6 +686,11 @@ void main_controller::recompute_constant(int index, uint16_t multiplier, uint16_
   window->set_pid_constant(index, x);
   window->set_pid_multiplier(index, multiplier);
   window->set_pid_exponent(index, exponent);
+}
+
+double main_controller::get_current_limit_value(uint16_t value)
+{
+  return jrk::current_limit_code_to_ma(settings, value);
 }
 
 // Note: Really this function should just update the model and not the window,
@@ -1243,6 +1251,18 @@ void main_controller::handle_brake_duration_reverse_input(uint32_t deceleration)
 }
 
 void main_controller::handle_current_limit_forward_input(uint16_t current)
+{
+  if (!connected()) { return; }
+  settings.set_current_limit_code_forward(current);
+  if (!motor_asymmetric)
+  {
+    settings.set_current_limit_code_reverse(current);
+  }
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_current_limit_forward_spinbox_input(uint16_t current)
 {
   if (!connected()) { return; }
   settings.set_current_limit_code_forward(current);

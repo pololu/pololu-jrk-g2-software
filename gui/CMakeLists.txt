@@ -36,6 +36,7 @@ add_executable (gui
   qt/qcustomplot.cpp
   qt/elided_label.cpp
   qt/pid_constant_control.cpp
+  qt/nice_spin_box.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/gui_info.rc
   ${ICON_QRC}
   ${ICON_FILE}

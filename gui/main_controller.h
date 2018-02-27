@@ -132,6 +132,7 @@ public:
   void handle_brake_duration_forward_input(uint32_t);
   void handle_brake_duration_reverse_input(uint32_t);
   void handle_current_limit_forward_input(uint16_t);
+  void handle_current_limit_forward_spinbox_input(uint16_t);
   void handle_current_limit_reverse_input(uint16_t);
   void handle_max_current_forward_input(uint16_t);
   void handle_max_current_reverse_input(uint16_t);
@@ -153,6 +154,8 @@ public:
   void handle_upload_complete();
 
   void recompute_constant(int index, uint16_t multiplier, uint16_t exponent);
+
+  double get_current_limit_value(uint16_t value);
 
 private:
   // This is called whenever it is possible that we have connected to a
