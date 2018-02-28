@@ -634,7 +634,8 @@ void main_controller::handle_settings_changed()
     window->set_current_limit_meaning(meaning.str().c_str());
   }
 
-  window->set_current_limit_spinbox(settings.get_current_limit_code_forward());
+  window->set_current_limit_forward_spinbox(settings.get_current_limit_code_forward());
+  window->set_current_limit_reverse_spinbox(settings.get_current_limit_code_reverse());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
@@ -1262,16 +1263,14 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_forward_spinbox_input(uint16_t current)
+void main_controller::handle_current_limit_amps_spinbox_input(int index, uint16_t current)
 {
-  if (!connected()) { return; }
-  settings.set_current_limit_code_forward(current);
-  if (!motor_asymmetric)
+  switch (index)
   {
-    settings.set_current_limit_code_reverse(current);
+    case 0: handle_current_limit_forward_input(current);
+    case 1: handle_current_limit_reverse_input(current);
+    default: break;
   }
-  settings_modified = true;
-  handle_settings_changed();
 }
 
 void main_controller::handle_current_limit_reverse_input(uint16_t current)

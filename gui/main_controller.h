@@ -132,7 +132,7 @@ public:
   void handle_brake_duration_forward_input(uint32_t);
   void handle_brake_duration_reverse_input(uint32_t);
   void handle_current_limit_forward_input(uint16_t);
-  void handle_current_limit_forward_spinbox_input(uint16_t);
+  void handle_current_limit_amps_spinbox_input(int, uint16_t);
   void handle_current_limit_reverse_input(uint16_t);
   void handle_max_current_forward_input(uint16_t);
   void handle_max_current_reverse_input(uint16_t);

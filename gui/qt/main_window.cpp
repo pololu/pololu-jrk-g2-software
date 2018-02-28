@@ -73,8 +73,8 @@ void main_window::set_controller(main_controller * controller)
   for (auto pid_control : pid_constant_controls)
     pid_control->set_controller(controller);
 
-  temp_nice_box->set_controller(controller);
-
+  current_limit_forward_amps->set_controller(controller);
+  current_limit_reverse_amps->set_controller(controller);
 }
 
 void main_window::set_update_timer_interval(uint32_t interval_ms)
@@ -652,6 +652,7 @@ void main_window::set_motor_asymmetric(bool checked)
   brake_duration_reverse_spinbox->setEnabled(checked);
   current_limit_reverse_spinbox->setEnabled(checked);
   max_current_reverse_spinbox->setEnabled(checked);
+  current_limit_reverse_amps->setEnabled(checked);
 }
 
 void main_window::set_max_duty_cycle_forward(uint16_t duty_cycle)
@@ -760,9 +761,14 @@ void main_window::set_coast_when_off(bool value)
   suppress_events = false;
 }
 
-void main_window::set_current_limit_spinbox(uint16_t value)
+void main_window::set_current_limit_forward_spinbox(uint16_t value)
 {
-  temp_nice_box->set_possible_values(value);
+  current_limit_forward_amps->set_possible_values(value);
+}
+
+void main_window::set_current_limit_reverse_spinbox(uint16_t value)
+{
+  current_limit_reverse_amps->set_possible_values(value);
 }
 
 void main_window::set_error_enable(uint16_t enable, uint16_t latch)
@@ -2800,8 +2806,17 @@ QWidget *main_window::setup_motor_tab()
   layout->addLayout(deceleration_layout);
   layout->addLayout(motor_off_layout);
 
-  temp_nice_box = new nice_spin_box(this); //tmphax
-  layout->addWidget(temp_nice_box, ++row, 0);
+  current_limit_amps = new QLabel(tr("Current limit (A):"));
+  current_limit_forward_amps = new nice_spin_box(0, this); //tmphax
+  current_limit_reverse_amps = new nice_spin_box(1, this); //tmphax
+
+  QHBoxLayout * current_limit_layout = new QHBoxLayout();
+  current_limit_layout->setAlignment(Qt::AlignLeft);
+  current_limit_layout->addWidget(current_limit_amps, 0);
+  current_limit_layout->addWidget(current_limit_forward_amps, 0);
+  current_limit_layout->addWidget(current_limit_reverse_amps, 0);
+
+  layout->addLayout(current_limit_layout, 0);
 
   motor_page_widget->setLayout(layout);
 

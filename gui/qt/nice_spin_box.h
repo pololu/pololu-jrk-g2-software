@@ -10,7 +10,7 @@ class nice_spin_box : public QDoubleSpinBox
   Q_OBJECT
 
 public:
-  nice_spin_box(QWidget* parent = Q_NULLPTR);
+  nice_spin_box(int index = -1, QWidget* parent = Q_NULLPTR);
 
   void set_controller(main_controller * controller = NULL);
 
@@ -25,7 +25,7 @@ private:
   main_controller * controller;
   QList<QPair<int, double>> mapping;
   int current_index = 0;
-
+  int index;
   bool suppress_events = false;
 
   // Reimplemented QDoubleSpinBox functions

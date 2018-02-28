@@ -6,8 +6,8 @@
 
 #include <iostream> //tmphax
 
-nice_spin_box::nice_spin_box(QWidget* parent)
-  : QDoubleSpinBox(parent)
+nice_spin_box::nice_spin_box(int index, QWidget* parent)
+  : index(index), QDoubleSpinBox(parent)
 {
   connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
     this, &set_code);
@@ -99,5 +99,5 @@ QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 void nice_spin_box::set_code()
 {
   if (suppress_events) { return; }
-  controller->handle_current_limit_forward_input(mapping.at(current_index).first);
+  controller->handle_current_limit_amps_spinbox_input(index, mapping.at(current_index).first);
 }

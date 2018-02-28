@@ -214,7 +214,8 @@ public:
   bool suppress_events = false;
   main_controller * controller;
 
-  void set_current_limit_spinbox(uint16_t value);
+  void set_current_limit_forward_spinbox(uint16_t value);
+  void set_current_limit_reverse_spinbox(uint16_t value);
 
 private:
   // Helper method for setting the index of a combo box, given the desired
@@ -337,7 +338,9 @@ private slots:
   void on_errors_reset_counts_clicked();
 
 private:
-  nice_spin_box * temp_nice_box; //tmphax
+  QLabel * current_limit_amps;
+  nice_spin_box * current_limit_forward_amps; //tmphax
+  nice_spin_box * current_limit_reverse_amps; //tmphax
 
   void setup_ui();
   void setup_style_sheet();
