@@ -765,11 +765,6 @@ void main_window::set_current_limit_spinbox(uint16_t value)
   temp_nice_box->set_possible_values(value);
 }
 
-void main_window::set_current_limit_spinbox_values(uint16_t value)
-{
-   temp_nice_box->set_possible_values(value);
-}
-
 void main_window::set_error_enable(uint16_t enable, uint16_t latch)
 {
   suppress_events = true;

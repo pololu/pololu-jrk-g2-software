@@ -25,27 +25,28 @@ void nice_spin_box::set_controller(main_controller * controller)
 
 void nice_spin_box::editing_finished()
 {
+  if (suppress_events) { return; }
   for(int i = 0; i < mapping.size() - 1; i++)
   {
-    if (value() > mapping.at(i).second && value() < mapping.at(i + 1).second)
+    if (value() >= mapping.at(i).second && value() < mapping.at(i + 1).second)
     {
-      setValue(mapping.at(i).second);
+      current_index = mapping.at(i).first;
     }
-    else if (value() == mapping.at(i).second)
-      setValue(mapping.at(i).second);
-    current_index = i;
   }
 
   if (value() > mapping.last().second)
   {
-    setValue(mapping.last().second);
     current_index = mapping.size() - 1;
   }
+
+  set_display_value();
 }
 
 void nice_spin_box::set_display_value()
 {
+  suppress_events = true;
   setValue(mapping.at(current_index).second);
+  suppress_events = false;
 }
 
 void nice_spin_box::set_possible_values(uint16_t value)
@@ -57,16 +58,12 @@ void nice_spin_box::set_possible_values(uint16_t value)
   {
     double display_value = (controller->get_current_limit_value(i)/1000);
 
-    // if (display_value >= mapping.last().second)
-    // {
-      mapping.append(qMakePair(i, display_value));
-    // }
+    mapping.append(qMakePair(i, display_value));
   }
 
   current_index = value;
 
-  setValue(mapping.at(current_index).second);
-  // set_display_value();
+  set_display_value();
 
 }
 
@@ -99,9 +96,8 @@ QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
   return enabled;
 }
 
-void nice_spin_box::set_code(int index)
+void nice_spin_box::set_code()
 {
-  std::cout << mapping.at(current_index).first << " set code " << mapping.at(current_index).second << std::endl; //tmphax
-
-  controller->handle_current_limit_forward_input(current_index);
+  if (suppress_events) { return; }
+  controller->handle_current_limit_forward_input(mapping.at(current_index).first);
 }

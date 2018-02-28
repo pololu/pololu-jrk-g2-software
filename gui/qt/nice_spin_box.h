@@ -19,12 +19,10 @@ public:
 private slots:
   void editing_finished();
   void set_display_value();
-  void set_code(int index);
+  void set_code();
 
 private:
   main_controller * controller;
-  QList<double> display_values;
-  QList<uint16_t> codes;
   QList<QPair<int, double>> mapping;
   int current_index = 0;
 

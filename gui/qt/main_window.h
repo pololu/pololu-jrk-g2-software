@@ -215,7 +215,6 @@ public:
   main_controller * controller;
 
   void set_current_limit_spinbox(uint16_t value);
-  void set_current_limit_spinbox_values(uint16_t value);
 
 private:
   // Helper method for setting the index of a combo box, given the desired
