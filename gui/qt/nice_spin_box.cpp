@@ -11,11 +11,11 @@
 nice_spin_box::nice_spin_box(int index, QWidget* parent)
   : index(index), QDoubleSpinBox(parent)
 {
-  connect(this, QOverload<const QString&>::of(&QDoubleSpinBox::valueChanged), this, &editing_finished);
+  connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &editing_finished);
 
   setRange(-1, 10000);
   setKeyboardTracking(false);
-  setDecimals(2);
+  setDecimals(3);
 }
 
 void nice_spin_box::set_controller(main_controller * controller)
@@ -23,25 +23,23 @@ void nice_spin_box::set_controller(main_controller * controller)
   this->controller = controller;
 }
 
-void nice_spin_box::editing_finished(const QString& text)
+void nice_spin_box::editing_finished(double entered_value)
 {
   if (suppress_events) { return; }
 
-  qDebug() << text;
-
-  entered_value = text.toDouble();
-
-  double smallest_diff = qFabs(entered_value - mapping.values().at(0));
-
-  for(int i = 1; i < mapping.size() - 1; i++)
-  {
-    double current_diff = qFabs(entered_value - mapping.values().at(i));
-    if (current_diff < smallest_diff)
+  if (entered_value != 0)
+    for (int i = 1; i < map_values.size() - 1; ++i)
     {
-      smallest_diff = current_diff;
-      int closest = i;
-      current_index = closest;
+      if (entered_value >= map_values.at(i) && entered_value < map_values.at(i + 1))
+      {
+        current_index = mapping.key(map_values.at(i));
+      }
     }
+
+  if (entered_value == 0)
+  {
+    while (mapping.value(current_index) != 0)
+      current_index--;
   }
 
   if (entered_value > mapping.values().last())
@@ -70,6 +68,10 @@ void nice_spin_box::set_possible_values(uint16_t value)
 
     mapping.insert(i, display_value);
   }
+
+  map_values = mapping.values();
+
+  std::sort(map_values.begin(), map_values.end());
 
   current_index = value;
 

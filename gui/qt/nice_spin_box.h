@@ -17,7 +17,7 @@ public:
   void set_possible_values(uint16_t value);
 
 private slots:
-  void editing_finished(const QString&);
+  void editing_finished(double entered_value);
   void set_display_value();
   void set_code();
 
@@ -28,6 +28,7 @@ private:
   int index;
   bool suppress_events = false;
   double entered_value = -1;
+  QList<double> map_values;
 
   // Reimplemented QDoubleSpinBox functions
   virtual void stepBy(int step_value);
