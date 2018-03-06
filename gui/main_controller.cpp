@@ -88,7 +88,7 @@ bool main_controller::disconnect_device()
 
 void main_controller::connect_device(jrk::device const & device)
 {
-  assert(device);
+  assert(device.is_present());
 
   try
   {
@@ -269,10 +269,10 @@ void main_controller::upgrade_firmware_complete()
 
 // Returns true if the device list includes the specified device.
 static bool device_list_includes(
-  std::vector<jrk::device> const & device_list,
-  jrk::device const & device)
+  const std::vector<jrk::device> & device_list,
+  const jrk::device & device)
 {
-  return device_with_os_id(device_list, device.get_os_id());
+  return device_with_os_id(device_list, device.get_os_id()).is_present();
 }
 
 void main_controller::update()
@@ -541,7 +541,7 @@ void main_controller::handle_variables_changed()
   window->set_stop_motor_enabled(connected());
   window->set_run_motor_enabled(connected() && error_active);
 
-  if (connected() && variables)
+  if (connected() && variables.is_present())
   {
     window->update_graph(variables.get_up_time());
     window->set_motor_status_message(jrk::diagnose(cached_settings, variables),

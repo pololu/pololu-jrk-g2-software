@@ -232,7 +232,7 @@ private:
 public:
 
   // Returns true if we are currently connected to a device.
-  bool connected() const { return device_handle; }
+  bool connected() const { return device_handle.is_present(); }
 
 private:
 

@@ -197,7 +197,7 @@ static uint16_t jrk_get_vilim(uint32_t product, uint8_t dac_level)
   return table[dac_level & 0x1F];
 }
 
-static uint16_t * jrk_get_recommended_codes(uint32_t product)
+static const uint16_t * jrk_get_recommended_codes(uint32_t product)
 {
   if (product == JRK_PRODUCT_UMC04A_40V)
   {
@@ -319,7 +319,7 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma
   uint32_t product = jrk_settings_get_product(settings);
   if (product == 0) { return 0; }
 
-  for (uint16_t * c = jrk_get_recommended_codes(product); *c; c++)
+  for (const uint16_t * c = jrk_get_recommended_codes(product); *c; c++)
   {
     if (jrk_current_limit_code_to_ma(settings, *c) <= ma)
     {

@@ -136,9 +136,13 @@ namespace jrk
       pointer_reset();
     }
 
-    /// Implicit conversion to bool.  Returns true if the underlying pointer is
-    /// not NULL.
-    operator bool() const noexcept
+    /// Returns true if this object is wrapping something real (i.e. the
+    /// underlying pointer is not NULL).
+    ///
+    /// We don't want to allow implicit conversion to bool because that weakens
+    /// the type-checker a lot, allowing code like 'int x = some_object;' to
+    /// compile.
+    bool is_present() const noexcept
     {
       return pointer != NULL;
     }

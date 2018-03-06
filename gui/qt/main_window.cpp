@@ -283,7 +283,7 @@ void main_window::set_device_list_selected(const jrk::device & device)
   // (findData returned -1)?
   suppress_events = true;
   int index = 0;
-  if (device)
+  if (device.is_present())
   {
     index = device_list_value->findData(QString::fromStdString(device.get_os_id()));
   }
