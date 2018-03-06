@@ -271,6 +271,20 @@ namespace jrk
     {
     }
 
+    /// Wrapper for jrk_settings_create().
+    static settings create()
+    {
+      jrk_settings * p;
+      throw_if_needed(jrk_settings_create(&p));
+      return settings(p);
+    }
+
+    /// Wrapper for jrk_settings_fill_with_defaults().
+    void fill_with_defaults()
+    {
+      jrk_settings_fill_with_defaults(pointer);
+    }
+
     /// Wrapper for jrk_settings_fix().
     ///
     /// If a non-NULL warnings pointer is provided, and this function does not
