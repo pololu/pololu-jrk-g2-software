@@ -321,7 +321,7 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma
 
   for (uint16_t * c = jrk_get_recommended_codes(product); *c; c++)
   {
-    if (jrk_current_limit_code_to_ma(settings, *c) < ma)
+    if (jrk_current_limit_code_to_ma(settings, *c) <= ma)
     {
       return *c;
     }
