@@ -30,8 +30,12 @@ private:
   double entered_value = -1;
   QList<double> map_values;
 
+protected:
   // Reimplemented QDoubleSpinBox functions
   virtual void stepBy(int step_value);
   virtual StepEnabled stepEnabled();
+  double valueFromText(const QString& text) const;
+  QString textFromValue(double val) const;
+  QValidator::State validate(QString& input, int& pos) const;
 };
 

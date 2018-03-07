@@ -112,3 +112,35 @@ void nice_spin_box::set_code()
   if (suppress_events) { return; }
   controller->handle_current_limit_amps_spinbox_input(index, current_index);
 }
+
+double nice_spin_box::valueFromText(const QString& text) const
+{
+  QString copy = text.toUpper();
+  if (copy.contains("M"))
+  {
+    copy.remove(QRegExp("(M|MA)"));
+    double temp_num = copy.toDouble();
+    temp_num /=1000;
+    return temp_num;
+  }
+  return copy.toDouble();
+}
+
+QString nice_spin_box::textFromValue(double val) const
+{
+  return QString::number(val, 'f', 2);
+}
+
+QValidator::State nice_spin_box::validate(QString& input, int& pos) const
+{
+  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,4})?(\\s*)(m|ma|Ma|mA|MA)?");
+
+  if (r.exactMatch(input))
+  {
+    return QValidator::Acceptable;
+  }
+  else
+  {
+    return QValidator::Invalid;
+  }
+}
