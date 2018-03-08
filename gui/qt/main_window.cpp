@@ -72,9 +72,6 @@ void main_window::set_controller(main_controller * controller)
 
   for (auto pid_control : pid_constant_controls)
     pid_control->set_controller(controller);
-
-  current_limit_forward_amps->set_controller(controller);
-  current_limit_reverse_amps->set_controller(controller);
 }
 
 void main_window::set_update_timer_interval(uint32_t interval_ms)
@@ -761,14 +758,40 @@ void main_window::set_coast_when_off(bool value)
   suppress_events = false;
 }
 
-void main_window::set_current_limit_forward_spinbox(uint16_t value)
+void main_window::set_current_limit_forward_spinbox(uint16_t code)
 {
-  current_limit_forward_amps->set_possible_values(value);
+  suppress_events = true;
+
+  current_limit_forward_amps->mapping->clear();
+
+  for (int i = 0; i < 96; i++)
+  {
+    double display_value = (controller->get_current_limit_value(i)/1000);
+
+    current_limit_forward_amps->mapping->insertMulti(display_value, i);
+  }
+
+  current_limit_forward_amps->set_possible_values(code);
+
+  suppress_events = false;
 }
 
-void main_window::set_current_limit_reverse_spinbox(uint16_t value)
+void main_window::set_current_limit_reverse_spinbox(uint16_t code)
 {
-  current_limit_reverse_amps->set_possible_values(value);
+  suppress_events = true;
+
+  current_limit_reverse_amps->mapping->clear();
+
+  for (int i = 0; i < 96; i++)
+  {
+    double display_value = (controller->get_current_limit_value(i)/1000);
+
+    current_limit_reverse_amps->mapping->insertMulti(display_value, i);
+  }
+
+  current_limit_reverse_amps->set_possible_values(code);
+
+  suppress_events = false;
 }
 
 void main_window::set_error_enable(uint16_t enable, uint16_t latch)
@@ -1487,6 +1510,19 @@ void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_current_limit_reverse_input(value);
 }
 
+void main_window::current_limit_amps_spinbox_forward_valueChanged(int value)
+{
+
+  if (suppress_events) { return; }
+  controller->handle_current_limit_amps_forward_spinbox_input(value);
+}
+
+void main_window::current_limit_amps_spinbox_reverse_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_current_limit_amps_reverse_spinbox_input(value);
+}
+
 void main_window::on_max_current_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1839,6 +1875,7 @@ QWidget * main_window::setup_graph()
   graph->set_preview_mode(true);
 
   preview_frame = new QFrame();
+  preview_frame->setStyleSheet("color: blue"); //tmphax
   preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
   preview_frame->setLineWidth(1);
 
@@ -2807,8 +2844,12 @@ QWidget *main_window::setup_motor_tab()
   layout->addLayout(motor_off_layout);
 
   current_limit_amps = new QLabel(tr("Current limit (A):"));
-  current_limit_forward_amps = new nice_spin_box(0, this); //tmphax
-  current_limit_reverse_amps = new nice_spin_box(1, this); //tmphax
+  current_limit_forward_amps = new nice_spin_box(this); //tmphax
+  current_limit_reverse_amps = new nice_spin_box(this); //tmphax
+  connect(current_limit_forward_amps, &nice_spin_box::send_code,
+    this, &current_limit_amps_spinbox_forward_valueChanged);
+  connect(current_limit_reverse_amps, &nice_spin_box::send_code,
+    this, &current_limit_amps_spinbox_reverse_valueChanged);
 
   QHBoxLayout * current_limit_layout = new QHBoxLayout();
   current_limit_layout->setAlignment(Qt::AlignLeft);

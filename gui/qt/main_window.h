@@ -214,8 +214,8 @@ public:
   bool suppress_events = false;
   main_controller * controller;
 
-  void set_current_limit_forward_spinbox(uint16_t value);
-  void set_current_limit_reverse_spinbox(uint16_t value);
+  void set_current_limit_forward_spinbox(uint16_t code);
+  void set_current_limit_reverse_spinbox(uint16_t code);
 
 private:
   // Helper method for setting the index of a combo box, given the desired
@@ -324,6 +324,8 @@ private slots:
   void on_brake_duration_reverse_spinbox_valueChanged(int value);
   void on_current_limit_forward_spinbox_valueChanged(int value);
   void on_current_limit_reverse_spinbox_valueChanged(int value);
+  void current_limit_amps_spinbox_forward_valueChanged(int value);
+  void current_limit_amps_spinbox_reverse_valueChanged(int value);
   void on_max_current_forward_spinbox_valueChanged(int value);
   void on_max_current_reverse_spinbox_valueChanged(int value);
   void on_current_offset_calibration_spinbox_valueChanged(int value);

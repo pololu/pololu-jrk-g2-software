@@ -1263,14 +1263,15 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_amps_spinbox_input(int index, uint16_t current)
+void main_controller::handle_current_limit_amps_forward_spinbox_input(int value)
 {
-  switch (index)
-  {
-    case 0: handle_current_limit_forward_input(current);
-    case 1: handle_current_limit_reverse_input(current);
-    default: break;
-  }
+  // value *= 1000;
+  handle_current_limit_forward_input(value);
+}
+
+void main_controller::handle_current_limit_amps_reverse_spinbox_input(int value)
+{
+  handle_current_limit_forward_input(value);
 }
 
 void main_controller::handle_current_limit_reverse_input(uint16_t current)
