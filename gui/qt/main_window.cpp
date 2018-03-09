@@ -762,14 +762,9 @@ void main_window::set_current_limit_forward_spinbox(uint16_t code)
 {
   suppress_events = true;
 
-  current_limit_forward_amps->mapping->clear();
+  current_limit_forward_amps->mapping.clear();
 
-  for (int i = 0; i < 96; i++)
-  {
-    double display_value = (controller->get_current_limit_value(i)/1000);
-
-    current_limit_forward_amps->mapping->insertMulti(display_value, i);
-  }
+  current_limit_forward_amps->mapping = recommended_current_limit_codes;
 
   current_limit_forward_amps->set_possible_values(code);
 
@@ -780,18 +775,27 @@ void main_window::set_current_limit_reverse_spinbox(uint16_t code)
 {
   suppress_events = true;
 
-  current_limit_reverse_amps->mapping->clear();
+  current_limit_reverse_amps->mapping.clear();
 
-  for (int i = 0; i < 96; i++)
-  {
-    double display_value = (controller->get_current_limit_value(i)/1000);
-
-    current_limit_reverse_amps->mapping->insertMulti(display_value, i);
-  }
+  current_limit_reverse_amps->mapping = recommended_current_limit_codes;
 
   current_limit_reverse_amps->set_possible_values(code);
 
   suppress_events = false;
+}
+
+void main_window::recommended_codes()
+{
+  recommended_current_limit_codes.clear();
+  recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0)/1000);
+  for (int i = 1; i < 96; i++)
+  {
+    double display_value = (controller->get_current_limit_value(i)/1000);
+    if (display_value >= recommended_current_limit_codes.values().last())
+    {
+      recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i)/1000);
+    }
+  }
 }
 
 void main_window::set_error_enable(uint16_t enable, uint16_t latch)

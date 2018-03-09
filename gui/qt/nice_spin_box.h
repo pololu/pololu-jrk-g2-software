@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDoubleSpinBox>
+#include <QMapIterator>
 
 #include "main_controller.h"
 
@@ -14,7 +15,7 @@ public:
 
   void set_possible_values(uint16_t value);
 
-  QMap<double, int> * mapping;
+  QMultiMap<int, double> mapping;
 
 signals:
   void send_code(uint16_t index);
@@ -24,14 +25,10 @@ private slots:
   void set_display_value();
 
 private:
-  main_controller * controller;
-  QMultiMap<int, double> step_map;
-  int step_index = 0;
-  int current_index = 0;
-  int index;
+  QMultiMap<int, double>::iterator i;
+
   bool suppress_events = false;
   double entered_value = -1;
-  QList<double> map_values;
 
 protected:
   // Reimplemented QDoubleSpinBox functions

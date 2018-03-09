@@ -13,84 +13,51 @@ nice_spin_box::nice_spin_box(QWidget* parent)
 {
   connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &editing_finished);
 
-  setRange(-1, 10000);
   setKeyboardTracking(false);
   setDecimals(3);
-
-  mapping = new QMultiMap<double, int>();
 }
 
 void nice_spin_box::editing_finished(double entered_value)
 {
-  if (entered_value != 0)
-    for (int i = 1; i < step_map.size() - 1; ++i)
+  if (suppress_events) { return; }
+    for (int j = 0; j < mapping.size(); ++j)
     {
-      if (entered_value >= step_map.values().at(i) && entered_value < step_map.values().at(i + 1))
+      if (entered_value >= mapping.values().at(j))
       {
-        current_index = mapping->value(step_map.values().at(i));
+        int new_key = mapping.keys().at(j);
+        i = mapping.find(new_key);
       }
     }
 
-  if (entered_value == 0)
-  {
-    current_index = 0;
-  }
-
-  if (entered_value > step_map.values().last())
-  {
-    current_index = mapping->size() - 1;
-  }
-
-  emit send_code(current_index);
+  emit send_code(i.key());
 }
 
 void nice_spin_box::set_display_value()
 {
-  setValue(mapping->key(current_index));
+  suppress_events = true;
+  setValue(i.value());
+  suppress_events = false;
 }
 
 void nice_spin_box::set_possible_values(uint16_t value)
 {
-  step_map.clear();
-  for (int i = 0; i < 96; i++)
-  {
-    step_map.insert(i, mapping->keys().at(i));
-  }
+  setRange(mapping.first(), mapping.last());
 
-  current_index = value;
-
-  step_index = step_map.key(mapping->key(current_index));
+  i = mapping.find(value);
 
   set_display_value();
 }
 
 void nice_spin_box::stepBy(int step_value)
 {
-  if (step_map.values().at(qBound(0, (step_index + step_value),
-    step_map.size() - 1)) == value())
-  {
-    step_index += (step_value * 2);
-  }
-  else
-    step_index += step_value;
+  i += step_value;
 
-  current_index = mapping->value(step_map.value(step_index));
-
-  set_display_value();
+  setValue(i.value());
 }
 
 QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 {
-  StepEnabled enabled = StepUpEnabled | StepDownEnabled;
-  if (qBound(0, current_index, mapping->size() - 1) == 0)
-  {
-    enabled ^= StepDownEnabled;
-  }
-  if (qBound(0, current_index, mapping->size() - 1) == step_map.size() - 1)
-  {
-    enabled ^= StepUpEnabled;
-  }
-  return enabled;
+  return  StepUpEnabled | StepDownEnabled;
 }
 
 double nice_spin_box::valueFromText(const QString& text) const

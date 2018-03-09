@@ -634,6 +634,8 @@ void main_controller::handle_settings_changed()
     window->set_current_limit_meaning(meaning.str().c_str());
   }
 
+  window->recommended_codes();
+
   window->set_current_limit_forward_spinbox(settings.get_current_limit_code_forward());
   window->set_current_limit_reverse_spinbox(settings.get_current_limit_code_reverse());
 
@@ -1265,7 +1267,6 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
 
 void main_controller::handle_current_limit_amps_forward_spinbox_input(int value)
 {
-  // value *= 1000;
   handle_current_limit_forward_input(value);
 }
 
