@@ -1879,7 +1879,6 @@ QWidget * main_window::setup_graph()
   graph->set_preview_mode(true);
 
   preview_frame = new QFrame();
-  preview_frame->setStyleSheet("color: blue"); //tmphax
   preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
   preview_frame->setLineWidth(1);
 
