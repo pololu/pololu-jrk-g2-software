@@ -1,58 +1,72 @@
 #include "nice_spin_box.h"
-#include "main_controller.h"
 
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QtMath>
-#include <QRegExpValidator>
-#include <QDebug>
 #include <iostream> //tmphax
 
 nice_spin_box::nice_spin_box(QWidget* parent)
   : QDoubleSpinBox(parent)
 {
-  connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &editing_finished);
+  connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &set_code_from_value);
 
   setKeyboardTracking(false);
   setDecimals(3);
 }
 
-void nice_spin_box::editing_finished(double entered_value)
+void nice_spin_box::set_code_from_value(double entered_value)
 {
-  if (suppress_events) { return; }
-    for (int j = 0; j < mapping.size(); ++j)
+  for (int j = 0; j < mapping.size(); ++j)
+  {
+    if (entered_value == 0)
     {
-      if (entered_value >= mapping.values().at(j))
-      {
-        int new_key = mapping.keys().at(j);
-        i = mapping.find(new_key);
-      }
+      code = 0;
     }
+    else if (entered_value >= mapping.values().at(j))
+    {
+      code = mapping.keys().at(j);
+    }
+  }
 
-  emit send_code(i.key());
+  emit send_code(code);
+}
+
+void nice_spin_box::editing_finished()
+{
+  entered_value = value();
+  std::cout << entered_value << std::endl;
+  for (int j = 0; j < mapping.size() - 1; ++j)
+  {
+    if (entered_value >= mapping.values().at(j))
+    {
+      code = mapping.keys().at(j);
+    }
+  }
+
+  emit send_code(code);
 }
 
 void nice_spin_box::set_display_value()
 {
-  suppress_events = true;
-  setValue(i.value());
-  suppress_events = false;
+  setValue(mapping.value(code, 0));
 }
 
-void nice_spin_box::set_possible_values(uint16_t value)
+void nice_spin_box::set_possible_values(QMultiMap<int, int>& sent_maps, uint16_t value)
 {
-  setRange(mapping.first(), mapping.last());
+  mapping.clear();
+  mapping = sent_maps;
+  setRange(0, mapping.last());
 
-  i = mapping.find(value);
+  code = value;
 
   set_display_value();
 }
 
 void nice_spin_box::stepBy(int step_value)
 {
-  i += step_value;
-
-  setValue(i.value());
+  QMultiMap<int, int>::const_iterator it;
+  it = mapping.find(code);
+  it += step_value;
+  code = it.key();
+  set_display_value();
+  selectAll();
 }
 
 QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
@@ -63,24 +77,25 @@ QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 double nice_spin_box::valueFromText(const QString& text) const
 {
   QString copy = text.toUpper();
+  double temp_num = copy.toDouble();
   if (copy.contains("M"))
   {
     copy.remove(QRegExp("(M|MA)"));
-    double temp_num = copy.toDouble();
-    temp_num /=1000;
+    temp_num = copy.toDouble();
     return temp_num;
   }
-  return copy.toDouble();
+  else
+    return temp_num * 1000;
 }
 
 QString nice_spin_box::textFromValue(double val) const
 {
-  return QString::number(val, 'f', 2);
+  return QString::number(val/1000, 'f', 3);
 }
 
 QValidator::State nice_spin_box::validate(QString& input, int& pos) const
 {
-  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,4})?(\\s*)(m|ma|Ma|mA|MA)?");
+  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,4})?(\\s*)(m|ma|Ma|mA|MA|a|A)?");
 
   if (r.exactMatch(input))
   {

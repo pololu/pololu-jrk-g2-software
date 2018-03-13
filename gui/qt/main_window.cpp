@@ -762,11 +762,7 @@ void main_window::set_current_limit_forward_spinbox(uint16_t code)
 {
   suppress_events = true;
 
-  current_limit_forward_amps->mapping.clear();
-
-  current_limit_forward_amps->mapping = recommended_current_limit_codes;
-
-  current_limit_forward_amps->set_possible_values(code);
+  current_limit_forward_amps->set_possible_values(recommended_current_limit_codes, code);
 
   suppress_events = false;
 }
@@ -775,11 +771,7 @@ void main_window::set_current_limit_reverse_spinbox(uint16_t code)
 {
   suppress_events = true;
 
-  current_limit_reverse_amps->mapping.clear();
-
-  current_limit_reverse_amps->mapping = recommended_current_limit_codes;
-
-  current_limit_reverse_amps->set_possible_values(code);
+  current_limit_reverse_amps->set_possible_values(recommended_current_limit_codes, code);
 
   suppress_events = false;
 }
@@ -787,13 +779,13 @@ void main_window::set_current_limit_reverse_spinbox(uint16_t code)
 void main_window::recommended_codes()
 {
   recommended_current_limit_codes.clear();
-  recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0)/1000);
+  recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0));
   for (int i = 1; i < 96; i++)
   {
-    double display_value = (controller->get_current_limit_value(i)/1000);
+    int display_value = (controller->get_current_limit_value(i));
     if (display_value >= recommended_current_limit_codes.values().last())
     {
-      recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i)/1000);
+      recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i));
     }
   }
 }
@@ -2847,8 +2839,8 @@ QWidget *main_window::setup_motor_tab()
   layout->addLayout(motor_off_layout);
 
   current_limit_amps = new QLabel(tr("Current limit (A):"));
-  current_limit_forward_amps = new nice_spin_box(this); //tmphax
-  current_limit_reverse_amps = new nice_spin_box(this); //tmphax
+  current_limit_forward_amps = new nice_spin_box(); //tmphax
+  current_limit_reverse_amps = new nice_spin_box(); //tmphax
   connect(current_limit_forward_amps, &nice_spin_box::send_code,
     this, &current_limit_amps_spinbox_forward_valueChanged);
   connect(current_limit_reverse_amps, &nice_spin_box::send_code,

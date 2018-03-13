@@ -217,7 +217,7 @@ public:
   void set_current_limit_forward_spinbox(uint16_t code);
   void set_current_limit_reverse_spinbox(uint16_t code);
   void recommended_codes();
-  QMultiMap<int, double> recommended_current_limit_codes;
+  QMultiMap<int, int> recommended_current_limit_codes;
 
 private:
   // Helper method for setting the index of a combo box, given the desired
