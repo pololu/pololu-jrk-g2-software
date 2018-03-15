@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDoubleSpinBox>
-#include <QMapIterator>
 
 class nice_spin_box : public QDoubleSpinBox
 {
@@ -10,25 +9,22 @@ class nice_spin_box : public QDoubleSpinBox
 public:
   nice_spin_box(QWidget* parent = Q_NULLPTR);
 
-  void set_possible_values(QMultiMap<int, int>&, uint16_t value);
-
-  QMultiMap<int, int> mapping;
+  void set_mapping(QMultiMap<int, int>&, uint16_t value);
 
 signals:
-  void send_code(uint16_t index);
+  void send_code(int value);
 
 private slots:
-  void editing_finished();
-  void set_display_value();
-  void set_code_from_value(double entered_value);
+  void set_value_from_code();
+  void set_code_from_value();
 
 private:
-  bool suppress_events = false;
-  double entered_value = -1;
+  QMultiMap<int, int> mapping;
+  QString set_suffix;
   int code = -1;
 
 protected:
-  // Reimplemented QDoubleSpinBox functions
+  // Reimplemented QSpinBox functions
   virtual void stepBy(int step_value);
   virtual StepEnabled stepEnabled();
   double valueFromText(const QString& text) const;

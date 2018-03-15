@@ -4,6 +4,10 @@
 #include "main_controller.h"
 #include "main_window.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 int main(int argc, char ** argv)
 {
   // AA_EnableHighDpiScaling was added in Qt 5.6.
@@ -11,11 +15,16 @@ int main(int argc, char ** argv)
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling); // todo: check if/when this actually helps
 #endif
 
+#ifdef _WIN32
+  SetProcessDPIAware();
+#endif
+
   QApplication app(argc, argv);
   main_controller controller;
   main_window window;
   controller.set_window(&window);
   window.set_controller(&controller);
+
 
   // makes application open intially in center of primary display
   QRect screenGeometry = QApplication::desktop()->screenGeometry();

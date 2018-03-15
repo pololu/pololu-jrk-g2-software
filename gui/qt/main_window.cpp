@@ -762,7 +762,7 @@ void main_window::set_current_limit_forward_spinbox(uint16_t code)
 {
   suppress_events = true;
 
-  current_limit_forward_amps->set_possible_values(recommended_current_limit_codes, code);
+  current_limit_forward_amps->set_mapping(recommended_current_limit_codes, code);
 
   suppress_events = false;
 }
@@ -771,7 +771,7 @@ void main_window::set_current_limit_reverse_spinbox(uint16_t code)
 {
   suppress_events = true;
 
-  current_limit_reverse_amps->set_possible_values(recommended_current_limit_codes, code);
+  current_limit_reverse_amps->set_mapping(recommended_current_limit_codes, code);
 
   suppress_events = false;
 }
@@ -1506,14 +1506,14 @@ void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_current_limit_reverse_input(value);
 }
 
-void main_window::current_limit_amps_spinbox_forward_valueChanged(int value)
+void main_window::on_current_limit_forward_amps_send_code(int value)
 {
 
   if (suppress_events) { return; }
   controller->handle_current_limit_amps_forward_spinbox_input(value);
 }
 
-void main_window::current_limit_amps_spinbox_reverse_valueChanged(int value)
+void main_window::on_current_limit_reverse_amps_send_code(int value)
 {
   if (suppress_events) { return; }
   controller->handle_current_limit_amps_reverse_spinbox_input(value);
@@ -2840,11 +2840,9 @@ QWidget *main_window::setup_motor_tab()
 
   current_limit_amps = new QLabel(tr("Current limit (A):"));
   current_limit_forward_amps = new nice_spin_box(); //tmphax
+  current_limit_forward_amps->setObjectName("current_limit_forward_amps");
   current_limit_reverse_amps = new nice_spin_box(); //tmphax
-  connect(current_limit_forward_amps, &nice_spin_box::send_code,
-    this, &current_limit_amps_spinbox_forward_valueChanged);
-  connect(current_limit_reverse_amps, &nice_spin_box::send_code,
-    this, &current_limit_amps_spinbox_reverse_valueChanged);
+  current_limit_reverse_amps->setObjectName("current_limit_reverse_amps");
 
   QHBoxLayout * current_limit_layout = new QHBoxLayout();
   current_limit_layout->setAlignment(Qt::AlignLeft);
@@ -2852,7 +2850,7 @@ QWidget *main_window::setup_motor_tab()
   current_limit_layout->addWidget(current_limit_forward_amps, 0);
   current_limit_layout->addWidget(current_limit_reverse_amps, 0);
 
-  layout->addLayout(current_limit_layout, 0);
+  layout->addLayout(current_limit_layout);
 
   motor_page_widget->setLayout(layout);
 
