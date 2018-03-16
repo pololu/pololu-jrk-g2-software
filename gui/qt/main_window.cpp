@@ -783,7 +783,7 @@ void main_window::recommended_codes()
   for (int i = 1; i < 96; i++)
   {
     int display_value = (controller->get_current_limit_value(i));
-    if (display_value >= recommended_current_limit_codes.values().last())
+    if (display_value > recommended_current_limit_codes.values().last())
     {
       recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i));
     }

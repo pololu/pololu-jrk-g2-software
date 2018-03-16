@@ -1,7 +1,5 @@
 #include "nice_spin_box.h"
 
-#include <QFocusEvent>
-
 nice_spin_box::nice_spin_box(QWidget* parent)
   : QDoubleSpinBox(parent)
 {
@@ -43,6 +41,11 @@ void nice_spin_box::set_value_from_code()
 {
   double entered_value = value();
 
+  if (entered_value == -1)
+  {
+    return;
+  }
+
   for (int j = 0; j < mapping.size(); ++j)
   {
     int temp_value = mapping.values().at(j);
@@ -53,15 +56,13 @@ void nice_spin_box::set_value_from_code()
     // = [(4920) == (4923 - 3)] = [4920 == 4920] (returns true)
     temp_value = temp_value - (temp_value % 10);
 
-    if (entered_value == 0)
-    {
-      code = 0;
-    }
-    else if (entered_value >= temp_value)
+    if (entered_value >= temp_value)
     {
       code = mapping.keys().at(j);
     }
   }
+
+  current_index = code;
 
   setValue(mapping.value(code));
   emit send_code(code);
@@ -74,19 +75,30 @@ void nice_spin_box::set_value_from_code()
 // manually.
 void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
 {
-  double temp_value = mapping.value(code);
+  double temp_value;
+  if (!mapping.isEmpty() && mapping.contains(code))
+  {
+    temp_value = mapping.value(code);
+  }
+  else
+    temp_value = -1;
+
   mapping.clear();
   mapping = sent_map;
-  setRange(0, mapping.last());
+
+  // Minimum range is set less than zero to allow the value of -1 to be set
+  // if the value is not present in the mapping.
+  setRange(-2, mapping.last());
 
   int new_code = value;
+  current_index = new_code;
 
   // temp_value comparison is in case the display value changes but the code
   // stays the same.
-  if (new_code != code || temp_value != mapping.value(new_code))
+  if (new_code != code || temp_value != mapping.value(new_code, -1))
   {
     code = new_code;
-    setValue(mapping.value(new_code, 0));
+    setValue(mapping.value(new_code, -1));
   }
 }
 
@@ -95,27 +107,45 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
 void nice_spin_box::stepBy(int step_value)
 {
   QMultiMap<int, int>::const_iterator it;
-  it = mapping.find(code);
-  double temp_num = it.value();
-  it += step_value;
-  while (it.value() == temp_num)
+
+  bool code_searched;
+
+  if (current_index == 0 && step_value == -1)
   {
+    return;
+  }
+
+  if (!mapping.contains(code))
+  {
+    code_searched = true;
+    do {
+    code += step_value;
+    current_index += step_value;
+    } while (!mapping.contains(code));
+  }
+  else
+    code_searched = false;
+
+  it = mapping.find(code);
+  if (!code_searched)
+  {
+    double temp_num = it.value();
+    current_index += step_value;
     it += step_value;
   }
 
-  if (it.value() == 0)
-    code = 0;
-  else
-    code = it.key();
+  code = it.key();
 
-  setValue(mapping.value(code, 0));
+  setValue(mapping.value(code));
   selectAll();
 }
 
 // Necessary for use with stepBy function.
 QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 {
-  return  StepUpEnabled | StepDownEnabled;
+  StepEnabled enabled  = StepUpEnabled | StepDownEnabled;
+
+  return  enabled;
 }
 
 // Evaluates text entered into the nice_spin_box and returns a value without
@@ -123,6 +153,12 @@ QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 double nice_spin_box::valueFromText(const QString& text) const
 {
   QString copy = text.toUpper();
+
+  if (copy == "INVALID")
+  {
+    return -1;
+  }
+
   double temp_num;
   if (copy.contains("M"))
   {
@@ -141,7 +177,10 @@ double nice_spin_box::valueFromText(const QString& text) const
 // Creates the string which is set in the nice_spin_box.
 QString nice_spin_box::textFromValue(double val) const
 {
-  return QString::number(val/1000, 'f', 2) + set_suffix;
+  if (val < 0)
+    return "Invalid";
+  else
+    return QString::number(val/1000, 'f', 2) + set_suffix;
 }
 
 // Changes the validator which is native to QDoubleSpinBox. This validator
