@@ -1,7 +1,9 @@
 #include "pid_constant_control.h"
 
-pid_constant_control::pid_constant_control(int index, QWidget * parent)
- : index(index), QGroupBox(parent)
+#include <cmath>
+
+pid_constant_control::pid_constant_control(QWidget * parent)
+ : QGroupBox(parent)
 {
   QFont font;
   font.setPointSize(16);
@@ -49,6 +51,7 @@ pid_constant_control::pid_constant_control(int index, QWidget * parent)
 
   pid_constant_lineedit = new QLineEdit();
   pid_constant_lineedit->setObjectName("pid_constant_lineedit");
+  pid_constant_lineedit->setFocusPolicy(Qt::StrongFocus);
 
   // This prevents the user from entering invalid characters.
   pid_constant_validator *constant_validator =
@@ -74,70 +77,82 @@ pid_constant_control::pid_constant_control(int index, QWidget * parent)
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-void pid_constant_control::set_controller(main_controller * controller)
+void pid_constant_control::set_spinboxes(int multiplier, int exponent)
 {
-  this->controller = controller;
-}
+  pid_multiplier_spinbox->setValue(multiplier);
+  pid_exponent_spinbox->setValue(exponent);
 
-void pid_constant_control::set_multiplier_spinbox(uint16_t value)
-{
-  if (pid_multiplier_spinbox->value() != value)
+  // Prevents constant from being recalculated while user is entering a value.
+  if (!pid_constant_lineedit->hasFocus())
   {
-    suppress_events = true;
-    pid_multiplier_spinbox->setValue(value);
-    suppress_events = false;
+    set_constant();
   }
 }
 
-void pid_constant_control::set_exponent_spinbox(uint16_t value)
+// Calculates value based on multiplier and exponent values.
+void pid_constant_control::set_constant()
 {
-  if (pid_exponent_spinbox->value() != value)
+  double constant = static_cast<double> (pid_multiplier_spinbox->value());
+  for (int i = 0; i < pid_exponent_spinbox->value(); i++)
   {
-    suppress_events = true;
-    pid_exponent_spinbox->setValue(value);
-    suppress_events = false;
+    constant /= 2;
   }
-}
 
-void pid_constant_control::set_constant(double value)
-{
-  suppress_events = true;
-  if (value < 0.0001 && value != 0)
+  if (constant < 0.0001 && constant != 0)
   {
-    pid_constant_lineedit->setText(QString::number(value, 'f', 7));
+    pid_constant_lineedit->setText(QString::number(constant, 'f', 7));
   }
   else
-    pid_constant_lineedit->setText(QString::number(value, 'f', 5));
-  suppress_events = false;
+    pid_constant_lineedit->setText(QString::number(constant, 'f', 5));
 }
 
 void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
 {
-  if (suppress_events) { return; }
-
-  controller->handle_pid_constant_control_multiplier(index, value);
+  emit send_new_values(value, pid_exponent_spinbox->value());
 }
 
 void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
 {
-  if (suppress_events) { return; }
-
-  controller->handle_pid_constant_control_exponent(index, value);
+  emit send_new_values(pid_multiplier_spinbox->value(), value);
 }
 
+// Uses the main_controller to calculate optimal exponent and multiplier
+// while user is entering a constant into the QLineEdit.
 void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
 {
-  if (suppress_events) { return; }
+  QString copy = text;
 
-  double value = pid_constant_lineedit->displayText().toDouble();
+  double value = 0;
 
-  controller->handle_pid_constant_control_constant(index, value);
+  value = copy.toDouble();
+
+  double input = value;
+  int i;
+  int largest_divisor = 1;
+  for (i = 0; i < 18; i++)
+  {
+    largest_divisor *= 2;
+    if (std::rint(largest_divisor * input) > 1023)
+    {
+      largest_divisor /= 2;
+      break;
+    }
+  }
+  int multiplier = std::rint(largest_divisor * input);
+  int exponent = i;
+
+  while (multiplier % 2 == 0 && exponent != 0)
+  {
+    multiplier /= 2;
+    exponent -= 1;
+  }
+
+  set_spinboxes(multiplier, exponent);
 }
 
+// Uses the main_controller to calculate the exact constant give the desired
+// multiplier and exponent.
 void pid_constant_control::pid_constant_lineedit_editingFinished()
 {
-  if (suppress_events) { return; }
-
-  controller->recompute_constant(index, pid_multiplier_spinbox->value(),
-    pid_exponent_spinbox->value());
+  set_constant();
 }

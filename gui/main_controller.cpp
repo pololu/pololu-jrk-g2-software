@@ -592,6 +592,13 @@ void main_controller::handle_settings_changed()
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
+  window->set_pid_proportional_groupbox(settings.get_proportional_multiplier(),
+    settings.get_proportional_exponent());
+  window->set_pid_integral_groupbox(settings.get_integral_multiplier(),
+    settings.get_integral_exponent());
+  window->set_pid_derivative_groupbox(settings.get_derivative_multiplier(),
+    settings.get_derivative_exponent());
+
   window->set_pwm_frequency(settings.get_pwm_frequency());
   window->set_motor_invert(settings.get_motor_invert());
 
@@ -665,11 +672,11 @@ void main_controller::handle_settings_loaded()
     window->set_manual_target_range(0, 4095);
   }
 
-  recompute_constant(0, settings.get_proportional_multiplier(),
+  window->set_pid_proportional_groupbox(settings.get_proportional_multiplier(),
     settings.get_proportional_exponent());
-  recompute_constant(1, settings.get_integral_multiplier(),
+  window->set_pid_integral_groupbox(settings.get_integral_multiplier(),
     settings.get_integral_exponent());
-  recompute_constant(2, settings.get_derivative_multiplier(),
+  window->set_pid_derivative_groupbox(settings.get_derivative_multiplier(),
     settings.get_derivative_exponent());
 
   cached_settings = settings;
@@ -677,124 +684,9 @@ void main_controller::handle_settings_loaded()
   settings_modified = false;
 }
 
-// Note: Really this function should just update the model and not the window,
-// we like to have a separation between those two tasks.
-void main_controller::recompute_constant(int index, uint16_t multiplier, uint16_t exponent)
-{
-  double x = multiplier;
-  for (int i = 0; i < exponent; i++)
-  {
-    x /= 2;
-  }
-  window->set_pid_constant(index, x);
-  window->set_pid_multiplier(index, multiplier);
-  window->set_pid_exponent(index, exponent);
-}
-
 double main_controller::get_current_limit_value(uint16_t value)
 {
   return jrk::current_limit_code_to_ma(settings, value);
-}
-
-// Note: Really this function should just update the model and not the window,
-// we like to have a separation between those two tasks.
-void main_controller::handle_pid_constant_control_constant(int index, double constant)
-{
-  double input = constant;
-  int i;
-  int largest_divisor = 1;
-  for (i = 0; i < 18; i++)
-  {
-    largest_divisor *= 2;
-    if (std::rint(largest_divisor * input) > 1023)
-    {
-      largest_divisor /= 2;
-      break;
-    }
-  }
-  int multiplier = std::rint(largest_divisor * input);
-  int exponent = i;
-
-  while (multiplier % 2 == 0 && exponent != 0)
-  {
-    multiplier /= 2;
-    exponent -= 1;
-  }
-
-  switch (index)
-  {
-    case 0:
-      settings.set_proportional_multiplier(multiplier);
-      settings.set_proportional_exponent(exponent);
-      window->set_pid_exponent(index, exponent);
-      window->set_pid_multiplier(index, multiplier);
-      break;
-    case 1:
-      settings.set_integral_multiplier(multiplier);
-      settings.set_integral_exponent(exponent);
-      window->set_pid_exponent(index, exponent);
-      window->set_pid_multiplier(index, multiplier);
-      break;
-    case 2:
-      settings.set_derivative_multiplier(multiplier);
-      settings.set_derivative_exponent(exponent);
-      window->set_pid_exponent(index, exponent);
-      window->set_pid_multiplier(index, multiplier);
-      break;
-    default:
-      break;
-  }
-
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_pid_constant_control_multiplier(int index, uint16_t multiplier)
-{
-  uint16_t exponent = 0;
-  switch (index)
-  {
-  case 0:
-    exponent = settings.get_proportional_exponent();
-    settings.set_proportional_multiplier(multiplier);
-    break;
-  case 1:
-    exponent = settings.get_integral_exponent();
-    settings.set_integral_multiplier(multiplier);
-    break;
-  case 2:
-    exponent = settings.get_derivative_exponent();
-    settings.set_derivative_multiplier(multiplier);
-    break;
-  }
-
-  recompute_constant(index, multiplier, exponent);
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_pid_constant_control_exponent(int index, uint16_t exponent)
-{
-  uint16_t multiplier = 0;
-  switch (index)
-  {
-  case 0:
-    multiplier = settings.get_proportional_multiplier();
-    settings.set_proportional_exponent(exponent);
-    break;
-  case 1:
-    multiplier = settings.get_integral_multiplier();
-    settings.set_integral_exponent(exponent);
-    break;
-  case 2:
-    multiplier = settings.get_derivative_multiplier();
-    settings.set_derivative_exponent(exponent);
-    break;
-  }
-
-  recompute_constant(index, multiplier, exponent);
-  settings_modified = true;
-  handle_settings_changed();
 }
 
 void main_controller::recalculate_motor_asymmetric()
@@ -1102,6 +994,33 @@ void main_controller::handle_feedback_wraparound_input(bool value)
 {
   if (!connected()) { return; }
   settings.set_feedback_wraparound(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_proportional_values(uint16_t multiplier, uint16_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_proportional_multiplier(multiplier);
+  settings.set_proportional_exponent(exponent);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_integral_values(uint16_t multiplier, uint16_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_integral_multiplier(multiplier);
+  settings.set_integral_exponent(exponent);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_pid_derivative_values(uint16_t multiplier, uint16_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_derivative_multiplier(multiplier);
+  settings.set_derivative_exponent(exponent);
   settings_modified = true;
   handle_settings_changed();
 }

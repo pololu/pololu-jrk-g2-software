@@ -111,9 +111,9 @@ public:
   void handle_feedback_detect_disconnect_input(bool);
   void handle_feedback_wraparound_input(bool);
 
-  void handle_pid_constant_control_multiplier(int index, uint16_t multiplier);
-  void handle_pid_constant_control_exponent(int index, uint16_t exponent);
-  void handle_pid_constant_control_constant(int index, double constant);
+  void handle_pid_proportional_values(uint16_t multiplier, uint16_t exponent);
+  void handle_pid_integral_values(uint16_t multiplier, uint16_t exponent);
+  void handle_pid_derivative_values(uint16_t multiplier, uint16_t exponent);
   void handle_pid_period_input(uint16_t);
   void handle_integral_limit_input(uint16_t);
   void handle_reset_integral_input(bool);
@@ -153,8 +153,6 @@ public:
   void handle_vin_calibration_input(int16_t vin_calibration);
 
   void handle_upload_complete();
-
-  void recompute_constant(int index, uint16_t multiplier, uint16_t exponent);
 
   double get_current_limit_value(uint16_t value);
 

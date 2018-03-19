@@ -8,23 +8,18 @@
 #include <QSpinBox>
 #include <QApplication>
 #include <QGridLayout>
-#include "main_controller.h"
 
 class pid_constant_control : public QGroupBox
 {
   Q_OBJECT
 
 public:
-  pid_constant_control(int index = -1, QWidget * parent = Q_NULLPTR);
+  pid_constant_control(QWidget * parent = Q_NULLPTR);
 
-  void set_controller(main_controller * controller = NULL);
-
-  void set_multiplier_spinbox(uint16_t value);
-  void set_exponent_spinbox(uint16_t value);
-  void set_constant(double value);
+  void set_spinboxes(int multiplier, int exponent);
 
 private:
-  main_controller * controller;
+  void set_constant();
 
   QFrame *pid_control_frame;
   QFrame *pid_proportion_frame;
@@ -34,9 +29,8 @@ private:
   QLabel *pid_base_label;
   QSpinBox *pid_exponent_spinbox;
 
-  bool suppress_events = false;
-
-  int index;
+signals:
+  void send_new_values(int multiplier, int exponent);
 
 private slots:
   void pid_multiplier_spinbox_valueChanged(int value);
