@@ -1521,6 +1521,16 @@ void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_current_limit_reverse_input(value);
 }
 
+void main_window::on_current_limit_forward_spinbox_editingFinished()
+{
+  controller->handle_current_limit_forward_input(current_limit_forward_amps->value());
+}
+
+void main_window::on_current_limit_reverse_spinbox_editingFinished()
+{
+  controller->handle_current_limit_reverse_input(current_limit_reverse_amps->value());
+}
+
 void main_window::on_current_limit_forward_amps_send_code(int value)
 {
 

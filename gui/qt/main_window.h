@@ -329,6 +329,8 @@ private slots:
   void on_brake_duration_reverse_spinbox_valueChanged(int value);
   void on_current_limit_forward_spinbox_valueChanged(int value);
   void on_current_limit_reverse_spinbox_valueChanged(int value);
+  void on_current_limit_forward_spinbox_editingFinished();
+  void on_current_limit_reverse_spinbox_editingFinished();
   void on_current_limit_forward_amps_send_code(int value);
   void on_current_limit_reverse_amps_send_code(int value);
   void on_max_current_forward_spinbox_valueChanged(int value);
