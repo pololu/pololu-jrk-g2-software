@@ -1521,14 +1521,29 @@ void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_current_limit_reverse_input(value);
 }
 
+// The below two functions are necessary to update the current_limit_code
+// to the first key in the recommended_current_limit_codes mapping if the
+// code is not recommended.
 void main_window::on_current_limit_forward_spinbox_editingFinished()
 {
-  controller->handle_current_limit_forward_input(current_limit_forward_amps->value());
+  if (recommended_current_limit_codes.contains(
+    current_limit_forward_spinbox->value()))
+    controller->handle_current_limit_forward_input(
+      current_limit_forward_spinbox->value());
+  else
+    controller->handle_current_limit_forward_input(
+      recommended_current_limit_codes.firstKey());
 }
 
 void main_window::on_current_limit_reverse_spinbox_editingFinished()
 {
-  controller->handle_current_limit_reverse_input(current_limit_reverse_amps->value());
+  if (recommended_current_limit_codes.contains(
+    current_limit_reverse_spinbox->value()))
+    controller->handle_current_limit_reverse_input(
+      current_limit_reverse_spinbox->value());
+  else
+    controller->handle_current_limit_reverse_input(
+      recommended_current_limit_codes.firstKey());
 }
 
 void main_window::on_current_limit_forward_amps_send_code(int value)
