@@ -125,7 +125,7 @@ double nice_spin_box::valueFromText(const QString& text) const
   }
   else
   {
-    copy.remove(QRegExp("[^0-9]"));
+    copy.remove(QRegExp("[^(0-9|.)]"));
     temp_num = copy.toDouble();
     return temp_num * 1000;
   }
