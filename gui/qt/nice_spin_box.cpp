@@ -125,7 +125,7 @@ double nice_spin_box::valueFromText(const QString& text) const
   }
   else
   {
-    copy.remove(" A");
+    copy.remove(QRegExp("[^0-9]"));
     temp_num = copy.toDouble();
     return temp_num * 1000;
   }
@@ -142,7 +142,7 @@ QString nice_spin_box::textFromValue(double val) const
 // of digits which can be entered and the allowed letters.
 QValidator::State nice_spin_box::validate(QString& input, int& pos) const
 {
-  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,2})?(\\s*)(m|ma|Ma|mA|MA|a|A)?");
+  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,2})?(\\s*)(m|M|ma|Ma|mA|MA|a|A)?");
 
   if (input.isEmpty())
     {
