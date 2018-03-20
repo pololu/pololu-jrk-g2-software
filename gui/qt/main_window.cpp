@@ -50,8 +50,11 @@
 Q_IMPORT_PLUGIN (QWindowsIntegrationPlugin);
 #endif
 #ifdef __linux__
-Q_IMPORT_PLUGIN (QLinuxFbIntegrationPlugin);
 Q_IMPORT_PLUGIN (QXcbIntegrationPlugin);
+Q_IMPORT_PLUGIN (QLinuxFbIntegrationPlugin);
+#endif
+#ifdef __APPLE__
+Q_IMPORT_PLUGIN (QCocoaIntegrationPlugin);
 #endif
 #endif
 
