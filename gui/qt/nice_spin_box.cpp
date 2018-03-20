@@ -76,14 +76,13 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
 
   code = value;
 
-  if (!mapping.contains(value))
-  {
-    code = 0;
-  }
 
   // Prevents the control from updating itself when the user is entering a value
   if (!this->hasFocus())
   {
+    if (!mapping.contains(value))
+      code = mapping.firstKey();
+
     setValue(mapping.value(code));
   }
 }
