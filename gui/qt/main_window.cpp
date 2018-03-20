@@ -1525,13 +1525,13 @@ void main_window::on_current_limit_forward_amps_send_code(int value)
 {
 
   if (suppress_events) { return; }
-  controller->handle_current_limit_amps_forward_spinbox_input(value);
+  controller->handle_current_limit_forward_input(value);
 }
 
 void main_window::on_current_limit_reverse_amps_send_code(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_current_limit_amps_reverse_spinbox_input(value);
+  controller->handle_current_limit_reverse_input(value);
 }
 
 void main_window::on_max_current_forward_spinbox_valueChanged(int value)

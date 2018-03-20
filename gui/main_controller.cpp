@@ -1186,12 +1186,22 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
 
 void main_controller::handle_current_limit_amps_forward_spinbox_input(int value)
 {
-  handle_current_limit_forward_input(value);
+  if (!connected()) { return; }
+  settings.set_current_limit_code_forward(value);
+  if (!motor_asymmetric)
+  {
+    settings.set_current_limit_code_reverse(value);
+  }
+  settings_modified = true;
+  handle_settings_changed();
 }
 
 void main_controller::handle_current_limit_amps_reverse_spinbox_input(int value)
 {
-  handle_current_limit_reverse_input(value);
+  if (!connected()) { return; }
+  settings.set_current_limit_code_reverse(value);
+  settings_modified = true;
+  handle_settings_changed();
 }
 
 void main_controller::handle_current_limit_reverse_input(uint16_t current)

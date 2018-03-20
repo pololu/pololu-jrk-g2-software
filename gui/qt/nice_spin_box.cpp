@@ -21,6 +21,8 @@ nice_spin_box::nice_spin_box(QWidget* parent)
 
   setDecimals(3);
   set_suffix = " A";
+
+  setFocusPolicy(Qt::StrongFocus);
 }
 
 // This slot which connected in this class sends the "code" value to the
@@ -75,14 +77,6 @@ void nice_spin_box::set_value_from_code()
 // manually.
 void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
 {
-  double temp_value;
-  if (!mapping.isEmpty() && mapping.contains(code))
-  {
-    temp_value = mapping.value(code);
-  }
-  else
-    temp_value = -1;
-
   mapping.clear();
   mapping = sent_map;
 
@@ -93,12 +87,28 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
   int new_code = value;
   current_index = new_code;
 
-  // temp_value comparison is in case the display value changes but the code
-  // stays the same.
-  if (new_code != code || temp_value != mapping.value(new_code, -1))
+
+  if (!mapping.contains(new_code))
+  {
+    for (int i = 0; i < mapping.size() - 1; ++i)
+    {
+      if (mapping.keys().at(i) < new_code && mapping.keys().at(i + 1) > new_code)
+      {
+        int diff_low = new_code - mapping.keys().at(i);
+        int diff_high = mapping.keys().at(i + 1) - new_code;
+        if (diff_low <= diff_high)
+          new_code = mapping.keys().at(i);
+        else
+          new_code = mapping.keys().at(i + 1);
+      }
+    }
+  }
+
+  // Prevents the control from updating itself when the user is entering a value
+  if (!this->hasFocus())
   {
     code = new_code;
-    setValue(mapping.value(new_code, -1));
+    setValue(mapping.value(code));
   }
 }
 
@@ -154,11 +164,6 @@ double nice_spin_box::valueFromText(const QString& text) const
 {
   QString copy = text.toUpper();
 
-  if (copy == "INVALID")
-  {
-    return -1;
-  }
-
   double temp_num;
   if (copy.contains("M"))
   {
@@ -177,10 +182,7 @@ double nice_spin_box::valueFromText(const QString& text) const
 // Creates the string which is set in the nice_spin_box.
 QString nice_spin_box::textFromValue(double val) const
 {
-  if (val < 0)
-    return "Invalid";
-  else
-    return QString::number(val/1000, 'f', 2) + set_suffix;
+  return QString::number(val/1000, 'f', 2) + set_suffix;
 }
 
 // Changes the validator which is native to QDoubleSpinBox. This validator
