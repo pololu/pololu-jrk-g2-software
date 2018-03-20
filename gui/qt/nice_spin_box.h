@@ -22,7 +22,6 @@ private:
   QMultiMap<int, int> mapping;
   QString set_suffix;
   int code = -1;
-  int current_index = -1;
 
 protected:
   // Reimplemented QSpinBox functions

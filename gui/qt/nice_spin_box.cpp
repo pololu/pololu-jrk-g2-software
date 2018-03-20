@@ -64,8 +64,6 @@ void nice_spin_box::set_value_from_code()
     }
   }
 
-  current_index = code;
-
   setValue(mapping.value(code));
   emit send_code(code);
 }
@@ -80,23 +78,19 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
   mapping.clear();
   mapping = sent_map;
 
-  // Minimum range is set less than zero to allow the value of -1 to be set
-  // if the value is not present in the mapping.
-  setRange(-2, mapping.last());
+  setRange(0, mapping.last());
 
-  int new_code = value;
-  current_index = new_code;
+  code = value;
 
-
-  if (!mapping.contains(new_code))
+  if (!mapping.contains(value))
   {
     code = 0;
+    setValue(0);
   }
 
   // Prevents the control from updating itself when the user is entering a value
   if (!this->hasFocus())
   {
-    code = new_code;
     setValue(mapping.value(code));
   }
 }
@@ -107,31 +101,8 @@ void nice_spin_box::stepBy(int step_value)
 {
   QMultiMap<int, int>::const_iterator it;
 
-  bool code_searched;
-
-  if (current_index == 0 && step_value == -1)
-  {
-    return;
-  }
-
-  if (!mapping.contains(code))
-  {
-    code_searched = true;
-    do {
-    code += step_value;
-    current_index += step_value;
-    } while (!mapping.contains(code));
-  }
-  else
-    code_searched = false;
-
   it = mapping.find(code);
-  if (!code_searched)
-  {
-    double temp_num = it.value();
-    current_index += step_value;
-    it += step_value;
-  }
+  it += step_value;
 
   code = it.key();
 
