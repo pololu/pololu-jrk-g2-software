@@ -90,18 +90,7 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
 
   if (!mapping.contains(new_code))
   {
-    for (int i = 0; i < mapping.size() - 1; ++i)
-    {
-      if (mapping.keys().at(i) < new_code && mapping.keys().at(i + 1) > new_code)
-      {
-        int diff_low = new_code - mapping.keys().at(i);
-        int diff_high = mapping.keys().at(i + 1) - new_code;
-        if (diff_low <= diff_high)
-          new_code = mapping.keys().at(i);
-        else
-          new_code = mapping.keys().at(i + 1);
-      }
-    }
+    code = 0;
   }
 
   // Prevents the control from updating itself when the user is entering a value
