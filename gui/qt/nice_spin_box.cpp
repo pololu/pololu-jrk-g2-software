@@ -19,7 +19,6 @@ nice_spin_box::nice_spin_box(QWidget* parent)
     this, &set_code_from_value);
   connect(this, &QDoubleSpinBox::editingFinished, this, &set_value_from_code);
 
-  setDecimals(3);
   set_suffix = " A";
 
   setFocusPolicy(Qt::StrongFocus);
@@ -42,11 +41,6 @@ void nice_spin_box::set_code_from_value()
 void nice_spin_box::set_value_from_code()
 {
   double entered_value = value();
-
-  if (entered_value == -1)
-  {
-    return;
-  }
 
   for (int j = 0; j < mapping.size(); ++j)
   {
@@ -85,7 +79,6 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
   if (!mapping.contains(value))
   {
     code = 0;
-    setValue(0);
   }
 
   // Prevents the control from updating itself when the user is entering a value
