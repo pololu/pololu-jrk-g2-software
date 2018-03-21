@@ -2540,34 +2540,34 @@ QWidget * main_window::setup_pid_tab()
   feedback_dead_zone_spinbox = new QSpinBox();
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
 
-  QHBoxLayout *group_box_row = new QHBoxLayout();
-  group_box_row->addWidget(pid_proportional_control);
-  group_box_row->addWidget(pid_integral_control);
-  group_box_row->addWidget(pid_derivative_control);
-  group_box_row->setAlignment(Qt::AlignLeft);
-  group_box_row->addStretch(1);
+  QHBoxLayout * coefficient_layout = new QHBoxLayout();
+  coefficient_layout->addWidget(pid_proportional_control);
+  coefficient_layout->addWidget(pid_integral_control);
+  coefficient_layout->addWidget(pid_derivative_control);
+  coefficient_layout->setAlignment(Qt::AlignLeft);
+  coefficient_layout->addStretch(1);
 
-  QHBoxLayout *period_row_layout = new QHBoxLayout();
-  period_row_layout->addWidget(pid_period_label);
-  period_row_layout->addWidget(pid_period_spinbox);
-  period_row_layout->addStretch(1);
+  QHBoxLayout * period_layout = new QHBoxLayout();
+  period_layout->addWidget(pid_period_label);
+  period_layout->addWidget(pid_period_spinbox);
+  period_layout->addStretch(1);
 
-  QHBoxLayout *integral_row_layout = new QHBoxLayout();
-  integral_row_layout->addWidget(integral_limit_label);
-  integral_row_layout->addWidget(integral_limit_spinbox);
-  integral_row_layout->addStretch(1);
+  QHBoxLayout * integral_layout = new QHBoxLayout();
+  integral_layout->addWidget(integral_limit_label);
+  integral_layout->addWidget(integral_limit_spinbox);
+  integral_layout->addStretch(1);
 
-  QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
-  deadzone_row_layout->addWidget(feedback_dead_zone_label);
-  deadzone_row_layout->addWidget(feedback_dead_zone_spinbox);
-  deadzone_row_layout->addStretch(1);
+  QHBoxLayout * deadzone_layout = new QHBoxLayout();
+  deadzone_layout->addWidget(feedback_dead_zone_label);
+  deadzone_layout->addWidget(feedback_dead_zone_spinbox);
+  deadzone_layout->addStretch(1);
 
-  QVBoxLayout *layout = pid_page_layout = new QVBoxLayout();
-  layout->addLayout(group_box_row);
-  layout->addLayout(period_row_layout);
-  layout->addLayout(integral_row_layout);
+  QVBoxLayout * layout = pid_page_layout = new QVBoxLayout();
+  layout->addLayout(coefficient_layout);
+  layout->addLayout(period_layout);
+  layout->addLayout(integral_layout);
   layout->addWidget(reset_integral_checkbox);
-  layout->addLayout(deadzone_row_layout);
+  layout->addLayout(deadzone_layout);
   layout->addStretch(1);
 
   pid_page_widget->setLayout(layout);
