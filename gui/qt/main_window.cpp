@@ -2569,7 +2569,6 @@ QWidget * main_window::setup_pid_tab()
   layout->addWidget(reset_integral_checkbox);
   layout->addLayout(deadzone_row_layout);
   layout->addStretch(1);
-  layout->setAlignment(Qt::AlignLeft);
 
   pid_page_widget->setLayout(layout);
   return pid_page_widget;
