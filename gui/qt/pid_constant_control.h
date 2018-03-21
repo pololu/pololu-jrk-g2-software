@@ -39,6 +39,13 @@ private slots:
   void pid_constant_lineedit_editingFinished();
 };
 
+// This subclass of QDoubleValidator was designed to disallow user input of invalid
+// digits and characters. QDoubleValidator allows the user to input values which
+// are outside of a desired range by assigning a QValidator state of "Intermediate"
+// during input and validating the digit string as a whole, upon completion.
+// In this subclass, each digit entered is validated, when entered, immediately,
+// based on assigned parameters. If the digit entered would make the value greater/less
+// than the assigned range, the input is declared "Invalid" and is not accepted.
 class pid_constant_validator : public QDoubleValidator
 {
 public:
