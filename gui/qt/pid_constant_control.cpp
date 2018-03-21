@@ -40,7 +40,7 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   multiplier_spinbox->setRange(0, 1023);
 
   connect(multiplier_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &multiplier_spinbox_valueChanged);
+    this, &pid_constant_control::multiplier_spinbox_valueChanged);
 
   exponent_spinbox = new QSpinBox();
   exponent_spinbox->setObjectName("pid_exponent_spinbox");
@@ -48,7 +48,7 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   exponent_spinbox->setRange(0, 18);
 
   connect(exponent_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &exponent_spinbox_valueChanged);
+    this, &pid_constant_control::exponent_spinbox_valueChanged);
 
   QLabel * equal_label = new QLabel();
   equal_label->setObjectName("pid_equal_label");
