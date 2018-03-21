@@ -597,21 +597,21 @@ void main_window::set_feedback_wraparound(bool value)
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
 {
   suppress_events = true;
-  pid_proportional_groupbox->set_values(multiplier, exponent);
+  pid_proportional_control->set_values(multiplier, exponent);
   suppress_events = false;
 }
 
 void main_window::set_pid_integral(uint16_t multiplier, uint8_t exponent)
 {
   suppress_events = true;
-  pid_integral_groupbox->set_values(multiplier, exponent);
+  pid_integral_control->set_values(multiplier, exponent);
   suppress_events = false;
 }
 
 void main_window::set_pid_derivative(uint16_t multiplier, uint8_t exponent)
 {
   suppress_events = true;
-  pid_derivative_groupbox->set_values(multiplier, exponent);
+  pid_derivative_control->set_values(multiplier, exponent);
   suppress_events = false;
 }
 
@@ -1375,19 +1375,19 @@ void main_window::on_feedback_learn_button_clicked()
   run_feedback_wizard(this);
 }
 
-void main_window::on_pid_proportional_groupbox_values_changed(int multiplier, int exponent)
+void main_window::on_pid_proportional_control_values_changed(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
   controller->handle_pid_proportional_input(multiplier, exponent);
 }
 
-void main_window::on_pid_integral_groupbox_values_changed(int multiplier, int exponent)
+void main_window::on_pid_integral_control_values_changed(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
   controller->handle_pid_integral_input(multiplier, exponent);
 }
 
-void main_window::on_pid_derivative_groupbox_values_changed(int multiplier, int exponent)
+void main_window::on_pid_derivative_control_values_changed(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
   controller->handle_pid_derivative_input(multiplier, exponent);
@@ -2505,17 +2505,17 @@ QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
 
-  pid_proportional_groupbox = new pid_constant_control();
-  pid_proportional_groupbox->setObjectName("pid_proportional_groupbox");
-  pid_proportional_groupbox->setTitle("Proportional coefficient");
+  pid_proportional_control = new pid_constant_control();
+  pid_proportional_control->setObjectName("pid_proportional_control");
+  pid_proportional_control->setTitle("Proportional coefficient");
 
-  pid_integral_groupbox = new pid_constant_control();
-  pid_integral_groupbox->setObjectName("pid_integral_groupbox");
-  pid_integral_groupbox->setTitle("Integral coefficient");
+  pid_integral_control = new pid_constant_control();
+  pid_integral_control->setObjectName("pid_integral_control");
+  pid_integral_control->setTitle("Integral coefficient");
 
-  pid_derivative_groupbox = new pid_constant_control();
-  pid_derivative_groupbox->setObjectName("pid_derivative_groupbox");
-  pid_derivative_groupbox->setTitle("Derivative coefficient");
+  pid_derivative_control = new pid_constant_control();
+  pid_derivative_control->setObjectName("pid_derivative_control");
+  pid_derivative_control->setTitle("Derivative coefficient");
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -2541,9 +2541,9 @@ QWidget * main_window::setup_pid_tab()
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
 
   QHBoxLayout *group_box_row = new QHBoxLayout();
-  group_box_row->addWidget(pid_proportional_groupbox);
-  group_box_row->addWidget(pid_integral_groupbox);
-  group_box_row->addWidget(pid_derivative_groupbox);
+  group_box_row->addWidget(pid_proportional_control);
+  group_box_row->addWidget(pid_integral_control);
+  group_box_row->addWidget(pid_derivative_control);
   group_box_row->setAlignment(Qt::AlignLeft);
   group_box_row->addStretch(1);
 

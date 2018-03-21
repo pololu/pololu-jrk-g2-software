@@ -301,9 +301,9 @@ private slots:
   void on_feedback_wraparound_checkbox_stateChanged(int state);
   void on_feedback_learn_button_clicked();
 
-  void on_pid_proportional_groupbox_values_changed(int multiplier, int exponent);
-  void on_pid_integral_groupbox_values_changed(int multiplier, int exponent);
-  void on_pid_derivative_groupbox_values_changed(int multiplier, int exponent);
+  void on_pid_proportional_control_values_changed(int multiplier, int exponent);
+  void on_pid_integral_control_values_changed(int multiplier, int exponent);
+  void on_pid_derivative_control_values_changed(int multiplier, int exponent);
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
@@ -573,9 +573,9 @@ private:
   QSpinBox * feedback_dead_zone_spinbox;
 
   // pid tab constant controls
-  pid_constant_control * pid_proportional_groupbox;
-  pid_constant_control * pid_integral_groupbox;
-  pid_constant_control * pid_derivative_groupbox;
+  pid_constant_control * pid_proportional_control;
+  pid_constant_control * pid_integral_control;
+  pid_constant_control * pid_derivative_control;
 
   // motor tab
 
