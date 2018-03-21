@@ -646,7 +646,6 @@ void main_window::set_motor_asymmetric(bool checked)
   brake_duration_reverse_spinbox->setEnabled(checked);
   current_limit_reverse_spinbox->setEnabled(checked);
   max_current_reverse_spinbox->setEnabled(checked);
-  current_limit_reverse_amps->setEnabled(checked);
 }
 
 void main_window::set_max_duty_cycle_forward(uint16_t duty_cycle)
@@ -689,19 +688,36 @@ void main_window::set_brake_duration_reverse(uint32_t brake_duration)
   set_spin_box(brake_duration_reverse_spinbox, brake_duration);
 }
 
-void main_window::set_current_limit_code_forward(uint16_t current)
+void main_window::set_current_limit_code_forward(uint16_t code)
 {
-  set_spin_box(current_limit_forward_spinbox, current);
+  suppress_events = true;
+
+  current_limit_forward_spinbox->set_mapping(recommended_current_limit_codes, code);
+
+  suppress_events = false;
 }
 
-void main_window::set_current_limit_code_reverse(uint16_t current)
+void main_window::set_current_limit_code_reverse(uint16_t code)
 {
-  set_spin_box(current_limit_reverse_spinbox, current);
+  suppress_events = true;
+
+  current_limit_reverse_spinbox->set_mapping(recommended_current_limit_codes, code);
+
+  suppress_events = false;
 }
 
-void main_window::set_current_limit_meaning(const char * str)
+void main_window::recommended_codes()
 {
-  current_limit_means_label->setText(str);
+  recommended_current_limit_codes.clear();
+  recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0));
+  for (int i = 1; i < 96; i++)
+  {
+    int display_value = (controller->get_current_limit_value(i));
+    if (display_value > recommended_current_limit_codes.values().last())
+    {
+      recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i));
+    }
+  }
 }
 
 void main_window::set_max_current_forward(uint16_t current)
@@ -753,38 +769,6 @@ void main_window::set_coast_when_off(bool value)
     assert(0);
   }
   suppress_events = false;
-}
-
-void main_window::set_current_limit_forward_spinbox(uint16_t code)
-{
-  suppress_events = true;
-
-  current_limit_forward_amps->set_mapping(recommended_current_limit_codes, code);
-
-  suppress_events = false;
-}
-
-void main_window::set_current_limit_reverse_spinbox(uint16_t code)
-{
-  suppress_events = true;
-
-  current_limit_reverse_amps->set_mapping(recommended_current_limit_codes, code);
-
-  suppress_events = false;
-}
-
-void main_window::recommended_codes()
-{
-  recommended_current_limit_codes.clear();
-  recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0));
-  for (int i = 1; i < 96; i++)
-  {
-    int display_value = (controller->get_current_limit_value(i));
-    if (display_value > recommended_current_limit_codes.values().last())
-    {
-      recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i));
-    }
-  }
 }
 
 void main_window::set_error_enable(uint16_t enable, uint16_t latch)
@@ -1509,51 +1493,13 @@ void main_window::on_brake_duration_reverse_spinbox_valueChanged(int value)
   controller->handle_brake_duration_reverse_input(value);
 }
 
-void main_window::on_current_limit_forward_spinbox_valueChanged(int value)
+void main_window::on_current_limit_forward_spinbox_send_code(int value)
 {
   if (suppress_events) { return; }
   controller->handle_current_limit_forward_input(value);
 }
 
-void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
-{
-  if (suppress_events) { return; }
-  controller->handle_current_limit_reverse_input(value);
-}
-
-// The below two functions are necessary to update the current_limit_code
-// to the first key in the recommended_current_limit_codes mapping if the
-// code is not recommended.
-void main_window::on_current_limit_forward_spinbox_editingFinished()
-{
-  if (recommended_current_limit_codes.contains(
-    current_limit_forward_spinbox->value()))
-    controller->handle_current_limit_forward_input(
-      current_limit_forward_spinbox->value());
-  else
-    controller->handle_current_limit_forward_input(
-      recommended_current_limit_codes.firstKey());
-}
-
-void main_window::on_current_limit_reverse_spinbox_editingFinished()
-{
-  if (recommended_current_limit_codes.contains(
-    current_limit_reverse_spinbox->value()))
-    controller->handle_current_limit_reverse_input(
-      current_limit_reverse_spinbox->value());
-  else
-    controller->handle_current_limit_reverse_input(
-      recommended_current_limit_codes.firstKey());
-}
-
-void main_window::on_current_limit_forward_amps_send_code(int value)
-{
-
-  if (suppress_events) { return; }
-  controller->handle_current_limit_forward_input(value);
-}
-
-void main_window::on_current_limit_reverse_amps_send_code(int value)
+void main_window::on_current_limit_reverse_spinbox_send_code(int value)
 {
   if (suppress_events) { return; }
   controller->handle_current_limit_reverse_input(value);
@@ -2721,20 +2667,14 @@ QWidget *main_window::setup_motor_tab()
   brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  // TODO: let people enter current limits in A instead of with codes
-  current_limit_label = new QLabel(tr("Current limit code:"));
+  current_limit_label = new QLabel(tr("Current limit (A):"));
   current_limit_label->setObjectName("current_limit_label");
 
-  current_limit_forward_spinbox = new QSpinBox();
+  current_limit_forward_spinbox = new nice_spin_box();
   current_limit_forward_spinbox->setObjectName("current_limit_forward_spinbox");
-  current_limit_forward_spinbox->setRange(0, 95);
 
-  current_limit_reverse_spinbox = new QSpinBox();
+  current_limit_reverse_spinbox = new nice_spin_box();
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
-  current_limit_reverse_spinbox->setRange(0, 95);
-
-  current_limit_means_label = new QLabel(tr("(0 to 95)"));
-  current_limit_means_label->setObjectName("current_limit_means_label");
 
   // TODO: let people enter max currents in A instead of mA
   max_current_label = new QLabel(tr("Max current (mA):"));
@@ -2800,7 +2740,6 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(current_limit_label, ++row, 0);
   motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2);
-  motor_controls_layout->addWidget(current_limit_means_label, row, 3);
   motor_controls_layout->addWidget(max_current_label, ++row, 0);
   motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2);
@@ -2880,20 +2819,6 @@ QWidget *main_window::setup_motor_tab()
   layout->addLayout(motor_controls_layout);
   layout->addLayout(deceleration_layout);
   layout->addLayout(motor_off_layout);
-
-  current_limit_amps = new QLabel(tr("Current limit (A):"));
-  current_limit_forward_amps = new nice_spin_box(); //tmphax
-  current_limit_forward_amps->setObjectName("current_limit_forward_amps");
-  current_limit_reverse_amps = new nice_spin_box(); //tmphax
-  current_limit_reverse_amps->setObjectName("current_limit_reverse_amps");
-
-  QHBoxLayout * current_limit_layout = new QHBoxLayout();
-  current_limit_layout->setAlignment(Qt::AlignLeft);
-  current_limit_layout->addWidget(current_limit_amps, 0);
-  current_limit_layout->addWidget(current_limit_forward_amps, 0);
-  current_limit_layout->addWidget(current_limit_reverse_amps, 0);
-
-  layout->addLayout(current_limit_layout);
 
   motor_page_widget->setLayout(layout);
 

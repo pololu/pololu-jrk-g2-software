@@ -11,17 +11,13 @@ nice_spin_box::nice_spin_box(QWidget* parent)
   // values.
   {
     QAbstractSpinBox temp_box;
-    temp_box.setSpecialValueText("000000.000 XX");
+    temp_box.setSpecialValueText("0000000");
     this->setMinimumSize(temp_box.sizeHint());
   }
 
   connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
     this, &set_code_from_value);
   connect(this, &QDoubleSpinBox::editingFinished, this, &set_value_from_code);
-
-  set_suffix = " A";
-
-  setFocusPolicy(Qt::StrongFocus);
 }
 
 // This slot which connected in this class sends the "code" value to the
@@ -134,7 +130,7 @@ double nice_spin_box::valueFromText(const QString& text) const
 // Creates the string which is set in the nice_spin_box.
 QString nice_spin_box::textFromValue(double val) const
 {
-  return QString::number(val/1000, 'f', 2) + set_suffix;
+  return QString::number(val/1000, 'f', 2);
 }
 
 // Changes the validator which is native to QDoubleSpinBox. This validator

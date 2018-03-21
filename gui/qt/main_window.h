@@ -179,7 +179,7 @@ public:
   void set_brake_duration_reverse(uint32_t);
   void set_current_limit_code_forward(uint16_t);
   void set_current_limit_code_reverse(uint16_t);
-  void set_current_limit_meaning(const char *);
+  void recommended_codes();
   void set_max_current_forward(uint16_t);
   void set_max_current_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
@@ -214,10 +214,6 @@ public:
   bool suppress_events = false;
   main_controller * controller;
 
-  void set_current_limit_forward_spinbox(uint16_t code);
-  void set_current_limit_reverse_spinbox(uint16_t code);
-  void recommended_codes();
-  QMultiMap<int, int> recommended_current_limit_codes;
 
 private:
   // Helper method for setting the index of a combo box, given the desired
@@ -327,12 +323,8 @@ private slots:
   void on_max_deceleration_reverse_spinbox_valueChanged(int value);
   void on_brake_duration_forward_spinbox_valueChanged(int value);
   void on_brake_duration_reverse_spinbox_valueChanged(int value);
-  void on_current_limit_forward_spinbox_valueChanged(int value);
-  void on_current_limit_reverse_spinbox_valueChanged(int value);
-  void on_current_limit_forward_spinbox_editingFinished();
-  void on_current_limit_reverse_spinbox_editingFinished();
-  void on_current_limit_forward_amps_send_code(int value);
-  void on_current_limit_reverse_amps_send_code(int value);
+  void on_current_limit_forward_spinbox_send_code(int value);
+  void on_current_limit_reverse_spinbox_send_code(int value);
   void on_max_current_forward_spinbox_valueChanged(int value);
   void on_max_current_reverse_spinbox_valueChanged(int value);
   void on_current_offset_calibration_spinbox_valueChanged(int value);
@@ -347,10 +339,6 @@ private slots:
   void on_errors_reset_counts_clicked();
 
 private:
-  QLabel * current_limit_amps;
-  nice_spin_box * current_limit_forward_amps; //tmphax
-  nice_spin_box * current_limit_reverse_amps; //tmphax
-
   void setup_ui();
   void setup_style_sheet();
   void setup_menu_bar();
@@ -619,8 +607,9 @@ private:
   QSpinBox * brake_duration_forward_spinbox;
   QSpinBox * brake_duration_reverse_spinbox;
   QLabel * current_limit_label;
-  QSpinBox * current_limit_forward_spinbox;
-  QSpinBox * current_limit_reverse_spinbox;
+  QMultiMap<int, int> recommended_current_limit_codes;
+  nice_spin_box * current_limit_forward_spinbox;
+  nice_spin_box * current_limit_reverse_spinbox;
   QLabel * current_limit_means_label;
   QLabel * max_current_label;
   QSpinBox * max_current_forward_spinbox;

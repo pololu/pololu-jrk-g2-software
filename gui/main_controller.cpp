@@ -610,6 +610,7 @@ void main_controller::handle_settings_changed()
 
   window->set_motor_asymmetric(motor_asymmetric);
 
+  window->recommended_codes();
   window->set_max_duty_cycle_reverse(settings.get_max_duty_cycle_reverse());
   window->set_max_acceleration_reverse(settings.get_max_acceleration_reverse());
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
@@ -623,28 +624,6 @@ void main_controller::handle_settings_changed()
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_current_limit_code_forward(settings.get_current_limit_code_forward());
   window->set_max_current_forward(settings.get_max_current_forward());
-
-  {
-    std::ostringstream meaning;
-    meaning << "(";
-    meaning << convert_current_limit_ma_to_string(
-      jrk::current_limit_code_to_ma(
-        settings, settings.get_current_limit_code_forward()));
-    if (motor_asymmetric)
-    {
-      meaning << ", ";
-      meaning << convert_current_limit_ma_to_string(
-        jrk::current_limit_code_to_ma(
-          settings, settings.get_current_limit_code_reverse()));
-    }
-    meaning << ")";
-    window->set_current_limit_meaning(meaning.str().c_str());
-  }
-
-  window->recommended_codes();
-
-  window->set_current_limit_forward_spinbox(settings.get_current_limit_code_forward());
-  window->set_current_limit_reverse_spinbox(settings.get_current_limit_code_reverse());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
@@ -1184,7 +1163,7 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_amps_forward_spinbox_input(int value)
+void main_controller::handle_current_limit_label_forward_spinbox_input(int value)
 {
   if (!connected()) { return; }
   settings.set_current_limit_code_forward(value);
@@ -1196,7 +1175,7 @@ void main_controller::handle_current_limit_amps_forward_spinbox_input(int value)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_amps_reverse_spinbox_input(int value)
+void main_controller::handle_current_limit_label_reverse_spinbox_input(int value)
 {
   if (!connected()) { return; }
   settings.set_current_limit_code_reverse(value);
