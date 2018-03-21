@@ -98,7 +98,7 @@ void pid_constant_control::set_values(int multiplier, int exponent)
 // Calculates value based on multiplier and exponent values.
 void pid_constant_control::set_constant()
 {
-  double constant = static_cast<double>(multiplier_spinbox->value());
+  double constant = multiplier_spinbox->value();
   for (int i = 0; i < exponent_spinbox->value(); i++)
   {
     constant /= 2;
