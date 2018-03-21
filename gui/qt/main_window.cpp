@@ -1372,19 +1372,19 @@ void main_window::on_feedback_learn_button_clicked()
 void main_window::on_pid_proportional_groupbox_send_new_values(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
-  controller->handle_pid_proportional_values(multiplier, exponent);
+  controller->handle_pid_proportional_input(multiplier, exponent);
 }
 
 void main_window::on_pid_integral_groupbox_send_new_values(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
-  controller->handle_pid_integral_values(multiplier, exponent);
+  controller->handle_pid_integral_input(multiplier, exponent);
 }
 
 void main_window::on_pid_derivative_groupbox_send_new_values(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
-  controller->handle_pid_derivative_values(multiplier, exponent);
+  controller->handle_pid_derivative_input(multiplier, exponent);
 }
 
 void main_window::on_pid_period_spinbox_valueChanged(int value)

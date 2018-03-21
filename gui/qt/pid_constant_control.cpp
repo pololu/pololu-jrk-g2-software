@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+// TODO: better size for line edits, they are way too twide
+
 pid_constant_control::pid_constant_control(QWidget * parent)
  : QGroupBox(parent)
 {

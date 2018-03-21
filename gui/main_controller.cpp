@@ -666,6 +666,7 @@ void main_controller::handle_settings_loaded()
     window->set_manual_target_range(0, 4095);
   }
 
+  // TODO: remove this
   window->set_pid_proportional(settings.get_proportional_multiplier(),
     settings.get_proportional_exponent());
   window->set_pid_integral(settings.get_integral_multiplier(),
@@ -987,7 +988,7 @@ void main_controller::handle_feedback_wraparound_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_proportional_values(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_proportional_input(uint16_t multiplier, uint16_t exponent)
 {
   if (!connected()) { return; }
   settings.set_proportional_multiplier(multiplier);
@@ -996,7 +997,7 @@ void main_controller::handle_pid_proportional_values(uint16_t multiplier, uint16
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_integral_values(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_integral_input(uint16_t multiplier, uint16_t exponent)
 {
   if (!connected()) { return; }
   settings.set_integral_multiplier(multiplier);
@@ -1005,7 +1006,7 @@ void main_controller::handle_pid_integral_values(uint16_t multiplier, uint16_t e
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_derivative_values(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_derivative_input(uint16_t multiplier, uint16_t exponent)
 {
   if (!connected()) { return; }
   settings.set_derivative_multiplier(multiplier);
