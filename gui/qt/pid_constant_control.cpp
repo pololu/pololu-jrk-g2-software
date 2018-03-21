@@ -128,13 +128,7 @@ void pid_constant_control::exponent_spinbox_valueChanged(int value)
 // while user is entering a constant into the QLineEdit.
 void pid_constant_control::constant_lineedit_textEdited(const QString & text)
 {
-  QString copy = text;
-
-  double value = 0;
-
-  value = copy.toDouble();
-
-  double input = value;
+  double input = text.toDouble();
   int i;
   int largest_divisor = 1;
   for (i = 0; i < 18; i++)
