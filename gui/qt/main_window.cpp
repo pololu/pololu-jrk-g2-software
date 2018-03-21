@@ -2562,7 +2562,7 @@ QWidget * main_window::setup_pid_tab()
   deadzone_layout->addWidget(feedback_dead_zone_spinbox);
   deadzone_layout->addStretch(1);
 
-  QVBoxLayout * layout = pid_page_layout = new QVBoxLayout();
+  QVBoxLayout * layout = new QVBoxLayout();
   layout->addLayout(coefficient_layout);
   layout->addLayout(period_layout);
   layout->addLayout(integral_layout);
