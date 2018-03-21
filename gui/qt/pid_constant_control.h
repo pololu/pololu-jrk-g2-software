@@ -21,22 +21,18 @@ public:
 private:
   void set_constant();
 
-  QFrame *pid_control_frame;
-  QFrame *pid_proportion_frame;
-  QLineEdit *pid_constant_lineedit;
-  QLabel *pid_equal_label;
-  QSpinBox *pid_multiplier_spinbox;
-  QLabel *pid_base_label;
-  QSpinBox *pid_exponent_spinbox;
+  QSpinBox * multiplier_spinbox;
+  QSpinBox * exponent_spinbox;
+  QLineEdit * constant_lineedit;
 
 signals:
   void values_changed(int multiplier, int exponent);
 
 private slots:
-  void pid_multiplier_spinbox_valueChanged(int value);
-  void pid_exponent_spinbox_valueChanged(int value);
-  void pid_constant_lineedit_textEdited(const QString&);
-  void pid_constant_lineedit_editingFinished();
+  void multiplier_spinbox_valueChanged(int value);
+  void exponent_spinbox_valueChanged(int value);
+  void constant_lineedit_textEdited(const QString&);
+  void constant_lineedit_editingFinished();
 };
 
 // This subclass of QDoubleValidator was designed to disallow user input of invalid
