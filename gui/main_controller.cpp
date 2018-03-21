@@ -666,14 +666,6 @@ void main_controller::handle_settings_loaded()
     window->set_manual_target_range(0, 4095);
   }
 
-  // TODO: remove this
-  window->set_pid_proportional(settings.get_proportional_multiplier(),
-    settings.get_proportional_exponent());
-  window->set_pid_integral(settings.get_integral_multiplier(),
-    settings.get_integral_exponent());
-  window->set_pid_derivative(settings.get_derivative_multiplier(),
-    settings.get_derivative_exponent());
-
   cached_settings = settings;
 
   settings_modified = false;

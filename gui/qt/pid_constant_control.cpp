@@ -84,7 +84,7 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-void pid_constant_control::set_spinboxes(int multiplier, int exponent)
+void pid_constant_control::set_values(int multiplier, int exponent)
 {
   pid_multiplier_spinbox->setValue(multiplier);
   pid_exponent_spinbox->setValue(exponent);
@@ -125,7 +125,7 @@ void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
 
 // Uses the main_controller to calculate optimal exponent and multiplier
 // while user is entering a constant into the QLineEdit.
-void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
+void pid_constant_control::pid_constant_lineedit_textEdited(const QString & text)
 {
   QString copy = text;
 
@@ -154,7 +154,7 @@ void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
     exponent -= 1;
   }
 
-  set_spinboxes(multiplier, exponent);
+  set_values(multiplier, exponent);
 }
 
 // Uses the main_controller to calculate the exact constant give the desired

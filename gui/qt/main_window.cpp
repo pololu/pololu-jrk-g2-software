@@ -596,17 +596,23 @@ void main_window::set_feedback_wraparound(bool value)
 
 void main_window::set_pid_proportional(uint16_t multiplier, uint16_t exponent)
 {
-  pid_proportional_groupbox->set_spinboxes(multiplier, exponent);
+  suppress_events = true;
+  pid_proportional_groupbox->set_values(multiplier, exponent);
+  suppress_events = false;
 }
 
 void main_window::set_pid_integral(uint16_t multiplier, uint16_t exponent)
 {
-  pid_integral_groupbox->set_spinboxes(multiplier, exponent);
+  suppress_events = true;
+  pid_integral_groupbox->set_values(multiplier, exponent);
+  suppress_events = false;
 }
 
 void main_window::set_pid_derivative(uint16_t multiplier, uint16_t exponent)
 {
-  pid_derivative_groupbox->set_spinboxes(multiplier, exponent);
+  suppress_events = true;
+  pid_derivative_groupbox->set_values(multiplier, exponent);
+  suppress_events = false;
 }
 
 void main_window::set_pid_period(uint16_t value)

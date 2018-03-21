@@ -16,7 +16,7 @@ class pid_constant_control : public QGroupBox
 public:
   pid_constant_control(QWidget * parent = Q_NULLPTR);
 
-  void set_spinboxes(int multiplier, int exponent);
+  void set_values(int multiplier, int exponent);
 
 private:
   void set_constant();
@@ -54,7 +54,7 @@ public:
     : QDoubleValidator(bottom, top, decimals, parent)
   {}
 
-  QValidator::State validate(QString &s, int &i) const
+  QValidator::State validate(QString & s, int & i) const
   {
     if (s.isEmpty())
     {
