@@ -54,13 +54,10 @@ public:
       return QValidator::Intermediate;
     }
 
-    if (s == "-")
-    {
-      return QValidator::Invalid;
-    }
-
     QChar decimalPoint = locale().decimalPoint();
 
+    // Prevents user from entering too many digits
+    // after the decimal point
     if(s.indexOf(decimalPoint) != -1)
     {
       int charsAfterPoint = s.length() - s.indexOf(decimalPoint) - 1;
@@ -73,6 +70,8 @@ public:
 
     bool ok;
     double d = locale().toDouble(s, &ok);
+    // Disallows entering a value which is outside of the
+    // declared range.
     if (ok && d >= bottom() && d <= top())
     {
       return QValidator::Acceptable;
