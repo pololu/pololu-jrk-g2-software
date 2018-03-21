@@ -980,7 +980,7 @@ void main_controller::handle_feedback_wraparound_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_proportional_input(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_proportional_multiplier(multiplier);
@@ -989,7 +989,7 @@ void main_controller::handle_pid_proportional_input(uint16_t multiplier, uint16_
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_integral_input(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_integral_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_integral_multiplier(multiplier);
@@ -998,7 +998,7 @@ void main_controller::handle_pid_integral_input(uint16_t multiplier, uint16_t ex
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_derivative_input(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_derivative_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_derivative_multiplier(multiplier);

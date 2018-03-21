@@ -157,9 +157,9 @@ public:
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
 
-  void set_pid_proportional(uint16_t multiplier, uint16_t exponent);
-  void set_pid_integral(uint16_t multiplier, uint16_t exponent);
-  void set_pid_derivative(uint16_t multiplier, uint16_t exponent);
+  void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
+  void set_pid_integral(uint16_t multiplier, uint8_t exponent);
+  void set_pid_derivative(uint16_t multiplier, uint8_t exponent);
   void set_pid_period(uint16_t value);
   void set_integral_limit(uint16_t value);
   void set_reset_integral(bool enabled);
