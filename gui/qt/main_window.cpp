@@ -594,17 +594,17 @@ void main_window::set_feedback_wraparound(bool value)
   set_check_box(feedback_wraparound_checkbox, value);
 }
 
-void main_window::set_pid_proportional_groupbox(uint16_t multiplier, uint16_t exponent)
+void main_window::set_pid_proportional(uint16_t multiplier, uint16_t exponent)
 {
   pid_proportional_groupbox->set_spinboxes(multiplier, exponent);
 }
 
-void main_window::set_pid_integral_groupbox(uint16_t multiplier, uint16_t exponent)
+void main_window::set_pid_integral(uint16_t multiplier, uint16_t exponent)
 {
   pid_integral_groupbox->set_spinboxes(multiplier, exponent);
 }
 
-void main_window::set_pid_derivative_groupbox(uint16_t multiplier, uint16_t exponent)
+void main_window::set_pid_derivative(uint16_t multiplier, uint16_t exponent)
 {
   pid_derivative_groupbox->set_spinboxes(multiplier, exponent);
 }

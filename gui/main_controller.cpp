@@ -591,11 +591,11 @@ void main_controller::handle_settings_changed()
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
-  window->set_pid_proportional_groupbox(settings.get_proportional_multiplier(),
+  window->set_pid_proportional(settings.get_proportional_multiplier(),
     settings.get_proportional_exponent());
-  window->set_pid_integral_groupbox(settings.get_integral_multiplier(),
+  window->set_pid_integral(settings.get_integral_multiplier(),
     settings.get_integral_exponent());
-  window->set_pid_derivative_groupbox(settings.get_derivative_multiplier(),
+  window->set_pid_derivative(settings.get_derivative_multiplier(),
     settings.get_derivative_exponent());
 
   window->set_pwm_frequency(settings.get_pwm_frequency());
@@ -666,11 +666,11 @@ void main_controller::handle_settings_loaded()
     window->set_manual_target_range(0, 4095);
   }
 
-  window->set_pid_proportional_groupbox(settings.get_proportional_multiplier(),
+  window->set_pid_proportional(settings.get_proportional_multiplier(),
     settings.get_proportional_exponent());
-  window->set_pid_integral_groupbox(settings.get_integral_multiplier(),
+  window->set_pid_integral(settings.get_integral_multiplier(),
     settings.get_integral_exponent());
-  window->set_pid_derivative_groupbox(settings.get_derivative_multiplier(),
+  window->set_pid_derivative(settings.get_derivative_multiplier(),
     settings.get_derivative_exponent());
 
   cached_settings = settings;
