@@ -4,12 +4,12 @@
 #include "graph_widget.h"
 #include "graph_window.h"
 #include "elided_label.h"
+#include "pid_constant_control.h"
 #include "jrk.hpp"
 
 #include <QMainWindow>
 #include <QGroupBox>
 #include <QButtonGroup>
-#include <QValidator>
 
 #include <array>
 
@@ -157,9 +157,9 @@ public:
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
 
-  void set_pid_multiplier(int index, uint16_t value);
-  void set_pid_exponent(int index, uint16_t value);
-  void set_pid_constant(int index, double value);
+  void set_pid_proportional_groupbox(uint16_t multiplier, uint16_t exponent);
+  void set_pid_integral_groupbox(uint16_t multiplier, uint16_t exponent);
+  void set_pid_derivative_groupbox(uint16_t multiplier, uint16_t exponent);
   void set_pid_period(uint16_t value);
   void set_integral_limit(uint16_t value);
   void set_reset_integral(bool enabled);
@@ -301,6 +301,9 @@ private slots:
   void on_feedback_wraparound_checkbox_stateChanged(int state);
   void on_feedback_learn_button_clicked();
 
+  void on_pid_proportional_groupbox_send_new_values(int multiplier, int exponent);
+  void on_pid_integral_groupbox_send_new_values(int multiplier, int exponent);
+  void on_pid_derivative_groupbox_send_new_values(int multiplier, int exponent);
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
@@ -560,7 +563,7 @@ private:
   // pid tab
 
   QWidget * pid_page_widget;
-  QGridLayout * pid_page_layout;
+  QVBoxLayout * pid_page_layout;
   QLabel * pid_period_label;
   QSpinBox * pid_period_spinbox;
   QLabel * integral_limit_label;
@@ -570,11 +573,9 @@ private:
   QSpinBox * feedback_dead_zone_spinbox;
 
   // pid tab constant controls
-  std::array<pid_constant_control *, 3> pid_constant_controls;
-
-  QGroupBox *pid_proportional_coefficient_groupbox;
-  QGroupBox *pid_integral_coefficient_groupbox;
-  QGroupBox *pid_derivative_coefficient_groupbox;
+  pid_constant_control * pid_proportional_groupbox;
+  pid_constant_control * pid_integral_groupbox;
+  pid_constant_control * pid_derivative_groupbox;
 
   // motor tab
 
@@ -649,87 +650,5 @@ private:
   bool start_event_reported = false;
 
   QString directory_hint;
-
-  friend class pid_constant_control;
 };
 
-class pid_constant_control : public QObject
-{
-  Q_OBJECT
-
-public:
-  explicit pid_constant_control(QObject * parent = Q_NULLPTR) : QObject(parent)
-    {}
-  explicit pid_constant_control(int index, QObject * parent = Q_NULLPTR)
-    : index(index), QObject(parent)
-    {}
-  void setup(QGroupBox * groupbox);
-  int index;
-
-private:
-  bool window_suppress_events() const;
-  void set_window_suppress_events(bool suppress_events);
-  main_controller * window_controller() const;
-
-  QFocusEvent *pid_focus_event;
-  QWidget *central_widget;
-  QFrame *pid_control_frame;
-  QFrame *pid_proportion_frame;
-  QLineEdit *pid_constant_lineedit;
-  QLabel *pid_equal_label;
-  QSpinBox *pid_multiplier_spinbox;
-  QLabel *pid_base_label;
-  QSpinBox *pid_exponent_spinbox;
-
-private slots:
-  void pid_multiplier_spinbox_valueChanged(int value);
-  void pid_exponent_spinbox_valueChanged(int value);
-  void pid_constant_lineedit_textEdited(const QString&);
-  void pid_constant_lineedit_editingFinished();
-
-private:
-  friend class main_window;
-};
-
-class pid_constant_validator : public QDoubleValidator
-{
-public:
-  pid_constant_validator(double bottom, double top, int decimals, QObject * parent) :
-    QDoubleValidator(bottom, top, decimals, parent) {}
-
-  QValidator::State validate(QString &s, int &i) const
-  {
-    if (s.isEmpty())
-    {
-      return QValidator::Intermediate;
-    }
-
-    if (s == "-")
-    {
-      return QValidator::Invalid;
-    }
-
-    QChar decimalPoint = locale().decimalPoint();
-
-    if(s.indexOf(decimalPoint) != -1)
-    {
-      int charsAfterPoint = s.length() - s.indexOf(decimalPoint) - 1;
-
-      if (charsAfterPoint > decimals())
-      {
-        return QValidator::Invalid;
-      }
-    }
-
-    bool ok;
-    double d = locale().toDouble(s, &ok);
-    if (ok && d >= bottom() && d <= top())
-    {
-      return QValidator::Acceptable;
-    }
-    else
-    {
-      return QValidator::Invalid;
-    }
-  }
-};

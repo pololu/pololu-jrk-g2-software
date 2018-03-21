@@ -7,6 +7,7 @@
 #include "feedback_wizard.h"
 #include "message_box.h"
 #include "elided_label.h"
+#include "pid_constant_control.h"
 
 #include <to_string.h>
 
@@ -593,30 +594,19 @@ void main_window::set_feedback_wraparound(bool value)
   set_check_box(feedback_wraparound_checkbox, value);
 }
 
-void main_window::set_pid_multiplier(int index, uint16_t value)
+void main_window::set_pid_proportional_groupbox(uint16_t multiplier, uint16_t exponent)
 {
-  QSpinBox *spin = pid_constant_controls[index]->pid_multiplier_spinbox;
-  set_spin_box(spin, value);
+  pid_proportional_groupbox->set_spinboxes(multiplier, exponent);
 }
 
-void main_window::set_pid_exponent(int index, uint16_t value)
+void main_window::set_pid_integral_groupbox(uint16_t multiplier, uint16_t exponent)
 {
-  QSpinBox *spin = pid_constant_controls[index]->pid_exponent_spinbox;
-  set_spin_box(spin, value);
+  pid_integral_groupbox->set_spinboxes(multiplier, exponent);
 }
 
-void main_window::set_pid_constant(int index, double value)
+void main_window::set_pid_derivative_groupbox(uint16_t multiplier, uint16_t exponent)
 {
-  suppress_events = true;
-  QLineEdit *spin = pid_constant_controls[index]->pid_constant_lineedit;
-
-  if (value < 0.0001 && value != 0)
-  {
-    spin->setText(QString::number(value, 'f', 7));
-  }
-  else
-    spin->setText(QString::number(value, 'f', 5));
-  suppress_events = false;
+  pid_derivative_groupbox->set_spinboxes(multiplier, exponent);
 }
 
 void main_window::set_pid_period(uint16_t value)
@@ -1377,6 +1367,24 @@ void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
 void main_window::on_feedback_learn_button_clicked()
 {
   run_feedback_wizard(this);
+}
+
+void main_window::on_pid_proportional_groupbox_send_new_values(int multiplier, int exponent)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_proportional_values(multiplier, exponent);
+}
+
+void main_window::on_pid_integral_groupbox_send_new_values(int multiplier, int exponent)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_integral_values(multiplier, exponent);
+}
+
+void main_window::on_pid_derivative_groupbox_send_new_values(int multiplier, int exponent)
+{
+  if (suppress_events) { return; }
+  controller->handle_pid_derivative_values(multiplier, exponent);
 }
 
 void main_window::on_pid_period_spinbox_valueChanged(int value)
@@ -2491,20 +2499,17 @@ QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
 
-  pid_proportional_coefficient_groupbox = new QGroupBox();
-  pid_proportional_coefficient_groupbox->setTitle("Proportional coefficient");
-  pid_constant_controls[0] = new pid_constant_control(0, this);
-  pid_constant_controls[0]->setup(pid_proportional_coefficient_groupbox);
+  pid_proportional_groupbox = new pid_constant_control();
+  pid_proportional_groupbox->setObjectName("pid_proportional_groupbox");
+  pid_proportional_groupbox->setTitle("Proportional coefficient");
 
-  pid_integral_coefficient_groupbox = new QGroupBox();
-  pid_integral_coefficient_groupbox->setTitle("Integral coefficient");
-  pid_constant_controls[1] = new pid_constant_control(1, this);
-  pid_constant_controls[1]->setup(pid_integral_coefficient_groupbox);
+  pid_integral_groupbox = new pid_constant_control();
+  pid_integral_groupbox->setObjectName("pid_integral_groupbox");
+  pid_integral_groupbox->setTitle("Integral coefficient");
 
-  pid_derivative_coefficient_groupbox = new QGroupBox();
-  pid_derivative_coefficient_groupbox->setTitle("Derivative coefficient");
-  pid_constant_controls[2] = new pid_constant_control(2, this);
-  pid_constant_controls[2]->setup(pid_derivative_coefficient_groupbox);
+  pid_derivative_groupbox = new pid_constant_control();
+  pid_derivative_groupbox->setObjectName("pid_derivative_groupbox");
+  pid_derivative_groupbox->setTitle("Derivative coefficient");
 
   pid_period_label = new QLabel(tr("PID period (ms):"));
   pid_period_label->setObjectName("pid_period_label");
@@ -2529,30 +2534,36 @@ QWidget * main_window::setup_pid_tab()
   feedback_dead_zone_spinbox = new QSpinBox();
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
 
-  QGridLayout *group_box_row = new QGridLayout();
-  group_box_row->addWidget(pid_proportional_coefficient_groupbox, 0, 0);
-  group_box_row->addWidget(pid_integral_coefficient_groupbox, 0, 1);
-  group_box_row->addWidget(pid_derivative_coefficient_groupbox, 0, 2);
+  QHBoxLayout *group_box_row = new QHBoxLayout();
+  group_box_row->addWidget(pid_proportional_groupbox);
+  group_box_row->addWidget(pid_integral_groupbox);
+  group_box_row->addWidget(pid_derivative_groupbox);
+  group_box_row->setAlignment(Qt::AlignLeft);
+  group_box_row->addStretch(1);
 
   QHBoxLayout *period_row_layout = new QHBoxLayout();
   period_row_layout->addWidget(pid_period_label);
   period_row_layout->addWidget(pid_period_spinbox);
+  period_row_layout->addStretch(1);
 
   QHBoxLayout *integral_row_layout = new QHBoxLayout();
   integral_row_layout->addWidget(integral_limit_label);
   integral_row_layout->addWidget(integral_limit_spinbox);
+  integral_row_layout->addStretch(1);
 
   QHBoxLayout *deadzone_row_layout = new QHBoxLayout();
   deadzone_row_layout->addWidget(feedback_dead_zone_label);
   deadzone_row_layout->addWidget(feedback_dead_zone_spinbox);
+  deadzone_row_layout->addStretch(1);
 
-  QGridLayout *layout = pid_page_layout = new QGridLayout();
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addLayout(group_box_row, 0, 0, 1, 3);
-  layout->addLayout(period_row_layout, 1, 0, 1, 1, Qt::AlignLeft);
-  layout->addLayout(integral_row_layout, 2, 0, 1, 1, Qt::AlignLeft);
-  layout->addWidget(reset_integral_checkbox, 3, 0, 1, 1, Qt::AlignLeft);
-  layout->addLayout(deadzone_row_layout, 4, 0, 1, 1, Qt::AlignLeft);
+  QVBoxLayout *layout = pid_page_layout = new QVBoxLayout();
+  layout->addLayout(group_box_row);
+  layout->addLayout(period_row_layout);
+  layout->addLayout(integral_row_layout);
+  layout->addWidget(reset_integral_checkbox);
+  layout->addLayout(deadzone_row_layout);
+  layout->addStretch(1);
+  layout->setAlignment(Qt::AlignLeft);
 
   pid_page_widget->setLayout(layout);
   return pid_page_widget;
@@ -2699,41 +2710,43 @@ QWidget *main_window::setup_motor_tab()
   overcurrent_threshold_spinbox->setRange(1, 255);
 
   int row = 0;
-  motor_controls_layout->addWidget(motor_asymmetric_checkbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_forward_label, ++row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(motor_reverse_label, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_forward_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_reverse_spinbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_duty_cycle_means_label, row, 3, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_forward_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_reverse_spinbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_acceleration_means_label, row, 3, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_forward_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_reverse_spinbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_deceleration_means_label, row, 3, Qt::AlignLeft);
-  motor_controls_layout->addWidget(brake_duration_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(brake_duration_forward_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(brake_duration_reverse_spinbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_limit_means_label, row, 3, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_current_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2, Qt::AlignLeft);
-  motor_controls_layout->addWidget(max_current_means_label, row, 3, Qt::AlignLeft);
-  motor_controls_layout->addItem(setup_vertical_spacer(), ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_offset_calibration_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_offset_calibration_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_scale_calibration_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_scale_calibration_spinbox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_samples_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(current_samples_combobox, row, 1, Qt::AlignLeft);
-  motor_controls_layout->addWidget(overcurrent_threshold_label, ++row, 0, Qt::AlignLeft);
-  motor_controls_layout->addWidget(overcurrent_threshold_spinbox, row, 1, Qt::AlignLeft);
+  motor_controls_layout->addWidget(motor_asymmetric_checkbox, row, 2, 1, 2);
+  motor_controls_layout->addWidget(motor_forward_label, ++row, 1);
+  motor_controls_layout->addWidget(motor_reverse_label, row, 2);
+  motor_controls_layout->addWidget(max_duty_cycle_label, ++row, 0);
+  motor_controls_layout->addWidget(max_duty_cycle_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(max_duty_cycle_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(max_duty_cycle_means_label, row, 3);
+  motor_controls_layout->addWidget(max_acceleration_label, ++row, 0);
+  motor_controls_layout->addWidget(max_acceleration_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(max_acceleration_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(max_acceleration_means_label, row, 3);
+  motor_controls_layout->addWidget(max_deceleration_label, ++row, 0);
+  motor_controls_layout->addWidget(max_deceleration_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(max_deceleration_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(max_deceleration_means_label, row, 3);
+  motor_controls_layout->addWidget(brake_duration_label, ++row, 0);
+  motor_controls_layout->addWidget(brake_duration_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(brake_duration_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(current_limit_label, ++row, 0);
+  motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(current_limit_means_label, row, 3);
+  motor_controls_layout->addWidget(max_current_label, ++row, 0);
+  motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(max_current_means_label, row, 3);
+  motor_controls_layout->addItem(setup_vertical_spacer(), ++row, 0);
+  motor_controls_layout->addWidget(current_offset_calibration_label, ++row, 0);
+  motor_controls_layout->addWidget(current_offset_calibration_spinbox, row, 1);
+  motor_controls_layout->addWidget(current_scale_calibration_label, ++row, 0);
+  motor_controls_layout->addWidget(current_scale_calibration_spinbox, row, 1);
+  motor_controls_layout->addWidget(current_samples_label, ++row, 0);
+  motor_controls_layout->addWidget(current_samples_combobox, row, 1);
+  motor_controls_layout->addWidget(overcurrent_threshold_label, ++row, 0);
+  motor_controls_layout->addWidget(overcurrent_threshold_spinbox, row, 1);
+
+  motor_controls_layout->setAlignment(Qt::AlignLeft);
 
   max_duty_cycle_while_feedback_out_of_range_label =
     new QLabel(tr("Max. duty cycle while feedback is out of range:"));
@@ -2971,119 +2984,3 @@ void main_window::setup_error_row(int error_number,
   row.enabled_radio->setVisible(!always_latched);
 }
 
-void pid_constant_control::setup(QGroupBox * groupbox)
-{
-  QFont font;
-  font.setPointSize(16);
-  font.setBold(true);
-
-  QFont font1;
-  font1.setPointSize(12);
-  font1.setBold(true);
-
-  pid_base_label = new QLabel();
-  pid_base_label->setObjectName("pid_base_label");
-  pid_base_label->setFont(font);
-  pid_base_label->setLayoutDirection(Qt::LeftToRight);
-  pid_base_label->setAlignment(Qt::AlignCenter);
-  pid_base_label->setText(tr("2"));
-
-  pid_control_frame = new QFrame();
-  pid_control_frame->setObjectName("pid_control_frame");
-  pid_control_frame->setFrameShadow(QFrame::Plain);
-  pid_control_frame->setLineWidth(4);
-  pid_control_frame->setFrameShape(QFrame::HLine);
-
-  pid_multiplier_spinbox = new QSpinBox();
-  pid_multiplier_spinbox->setObjectName("pid_multiplier_spinbox");
-  pid_multiplier_spinbox->setAlignment(Qt::AlignCenter);
-  pid_multiplier_spinbox->setRange(0, 1023);
-
-  connect(pid_multiplier_spinbox, SIGNAL(valueChanged(int)), this,
-    SLOT(pid_multiplier_spinbox_valueChanged(int)));
-
-  pid_exponent_spinbox = new QSpinBox();
-  pid_exponent_spinbox->setObjectName("pid_exponent_spinbox");
-  pid_exponent_spinbox->setAlignment(Qt::AlignCenter);
-  pid_exponent_spinbox->setRange(0, 18);
-
-  connect(pid_exponent_spinbox, SIGNAL(valueChanged(int)), this,
-    SLOT(pid_exponent_spinbox_valueChanged(int)));
-
-  pid_equal_label = new QLabel();
-  pid_equal_label->setObjectName("pid_equal_label");
-  pid_equal_label->setText(tr("="));
-
-  pid_equal_label->setFont(font1);
-  pid_equal_label->setAlignment(Qt::AlignCenter);
-
-  pid_constant_lineedit = new QLineEdit();
-  pid_constant_lineedit->setObjectName("pid_constant_lineedit");
-
-  QFontMetrics metrics(QApplication::font());
-  pid_constant_lineedit->setFixedWidth(metrics.width("0000.00000000"));
-
-  pid_constant_validator *constant_validator =
-    new pid_constant_validator(0, 1023, 7, pid_constant_lineedit);
-  pid_constant_lineedit->setValidator(constant_validator);
-
-  connect(pid_constant_lineedit, SIGNAL(textEdited(const QString&)), this,
-    SLOT(pid_constant_lineedit_textEdited(const QString&)));
-
-  connect(pid_constant_lineedit, SIGNAL(editingFinished()),
-    this, SLOT(pid_constant_lineedit_editingFinished()));
-
-  QGridLayout *group_box_layout = new QGridLayout();
-  group_box_layout->addWidget(pid_base_label,3,1,3,2);
-  group_box_layout->addWidget(pid_control_frame,2,1,1,5);
-  group_box_layout->addWidget(pid_multiplier_spinbox,1,2,1,3);
-  group_box_layout->addWidget(pid_exponent_spinbox,3,3,1,3);
-  group_box_layout->addWidget(pid_equal_label,2,7,1,2);
-  group_box_layout->addWidget(pid_constant_lineedit,1,9,3,1,Qt::AlignCenter);
-
-  groupbox->setLayout(group_box_layout);
-
-  QMetaObject::connectSlotsByName(this);
-}
-
-bool pid_constant_control::window_suppress_events() const
-{
-  return ((main_window *)parent())->suppress_events;
-}
-
-void pid_constant_control::set_window_suppress_events(bool suppress_events)
-{
-  ((main_window *)parent())->suppress_events = suppress_events;
-}
-
-main_controller * pid_constant_control::window_controller() const
-{
-  return ((main_window *)parent())->controller;
-}
-
-void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
-{
-  if (window_suppress_events()) { return; }
-  window_controller()->handle_pid_constant_control_multiplier(index, value);
-}
-
-void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
-{
-  if (window_suppress_events()) { return; }
-  window_controller()->handle_pid_constant_control_exponent(index, value);
-}
-
-void pid_constant_control::pid_constant_lineedit_textEdited(const QString& text)
-{
-  if (window_suppress_events()) { return; }
-  double value = pid_constant_lineedit->displayText().toDouble();
-
-  window_controller()->handle_pid_constant_control_constant(index, value);
-}
-
-void pid_constant_control::pid_constant_lineedit_editingFinished()
-{
-  if (window_suppress_events()) { return; }
-  window_controller()->recompute_constant(index, pid_multiplier_spinbox->value(),
-    pid_exponent_spinbox->value());
-}
