@@ -30,7 +30,7 @@ private:
   QSpinBox *pid_exponent_spinbox;
 
 signals:
-  void send_new_values(int multiplier, int exponent);
+  void values_changed(int multiplier, int exponent);
 
 private slots:
   void pid_multiplier_spinbox_valueChanged(int value);

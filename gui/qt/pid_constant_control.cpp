@@ -4,6 +4,12 @@
 
 // TODO: better size for line edits, they are way too twide
 
+// Note: This control sometimes sends the values_changed signal twice for one
+// keystroke.  For example, when the box says "2.2" and you type a "5" at the
+// end.  The first time the signal is sent, only one of the values will be
+// correct and the other will be old.  This is not ideal but does not cause any
+// problems in our application.
+
 pid_constant_control::pid_constant_control(QWidget * parent)
  : QGroupBox(parent)
 {
@@ -109,12 +115,12 @@ void pid_constant_control::set_constant()
 
 void pid_constant_control::pid_multiplier_spinbox_valueChanged(int value)
 {
-  emit send_new_values(value, pid_exponent_spinbox->value());
+  emit values_changed(value, pid_exponent_spinbox->value());
 }
 
 void pid_constant_control::pid_exponent_spinbox_valueChanged(int value)
 {
-  emit send_new_values(pid_multiplier_spinbox->value(), value);
+  emit values_changed(pid_multiplier_spinbox->value(), value);
 }
 
 // Uses the main_controller to calculate optimal exponent and multiplier

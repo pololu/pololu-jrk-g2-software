@@ -1369,19 +1369,19 @@ void main_window::on_feedback_learn_button_clicked()
   run_feedback_wizard(this);
 }
 
-void main_window::on_pid_proportional_groupbox_send_new_values(int multiplier, int exponent)
+void main_window::on_pid_proportional_groupbox_values_changed(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
   controller->handle_pid_proportional_input(multiplier, exponent);
 }
 
-void main_window::on_pid_integral_groupbox_send_new_values(int multiplier, int exponent)
+void main_window::on_pid_integral_groupbox_values_changed(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
   controller->handle_pid_integral_input(multiplier, exponent);
 }
 
-void main_window::on_pid_derivative_groupbox_send_new_values(int multiplier, int exponent)
+void main_window::on_pid_derivative_groupbox_values_changed(int multiplier, int exponent)
 {
   if (suppress_events) { return; }
   controller->handle_pid_derivative_input(multiplier, exponent);
