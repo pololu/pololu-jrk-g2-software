@@ -51,7 +51,6 @@ pid_constant_control::pid_constant_control(QWidget * parent)
 
   pid_constant_lineedit = new QLineEdit();
   pid_constant_lineedit->setObjectName("pid_constant_lineedit");
-  pid_constant_lineedit->setFocusPolicy(Qt::StrongFocus);
 
   // This prevents the user from entering invalid characters.
   pid_constant_validator *constant_validator =
