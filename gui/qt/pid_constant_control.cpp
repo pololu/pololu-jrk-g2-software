@@ -13,17 +13,17 @@
 pid_constant_control::pid_constant_control(QWidget * parent)
  : QGroupBox(parent)
 {
-  QFont font;
-  font.setPointSize(16);
-  font.setBold(true);
+  QFont base_font;
+  base_font.setPointSize(16);
+  base_font.setBold(true);
 
-  QFont font1;
-  font1.setPointSize(12);
-  font1.setBold(true);
+  QFont equal_font;
+  equal_font.setPointSize(12);
+  equal_font.setBold(true);
 
   QLabel * base_label = new QLabel();
   base_label->setObjectName("base_label");
-  base_label->setFont(font);
+  base_label->setFont(base_font);
   base_label->setLayoutDirection(Qt::LeftToRight);
   base_label->setAlignment(Qt::AlignCenter);
   base_label->setText("2");
@@ -53,7 +53,7 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   QLabel * equal_label = new QLabel();
   equal_label->setObjectName("pid_equal_label");
   equal_label->setText(tr("="));
-  equal_label->setFont(font1);
+  equal_label->setFont(equal_font);
   equal_label->setAlignment(Qt::AlignCenter);
 
   constant_lineedit = new QLineEdit();
