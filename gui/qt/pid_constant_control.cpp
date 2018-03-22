@@ -75,10 +75,8 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   group_box_layout->addWidget(exponent_spinbox, 2, 1, 1, 1, Qt::AlignCenter);
   group_box_layout->addWidget(equal_label, 0, 4, 3, 1, Qt::AlignCenter);
   group_box_layout->addWidget(constant_line_edit, 0, 5, 3, 1, Qt::AlignVCenter);
-  group_box_layout->setColumnStretch(6, 1);
 
   setLayout(group_box_layout);
-  setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   set_constant_from_values();
 }
