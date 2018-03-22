@@ -4,12 +4,6 @@
 
 // TODO: better size for line edits, they are way too wide
 
-// Note: This control sometimes sends the values_changed signal twice for one
-// keystroke.  For example, when the box says "2.2" and you type a "5" at the
-// end.  The first time the signal is sent, only one of the values will be
-// correct and the other will be old.  This is not ideal but does not cause any
-// problems in our application.
-
 pid_constant_control::pid_constant_control(QWidget * parent)
  : QGroupBox(parent)
 {
@@ -65,10 +59,10 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   constant_line_edit->setValidator(constant_validator);
 
   connect(constant_line_edit, &QLineEdit::textEdited,
-    this, &pid_constant_control::set_values_from_constant);
+    this, &pid_constant_control::constant_text_edited);
 
   connect(constant_line_edit, &QLineEdit::editingFinished,
-    this, &pid_constant_control::set_constant_from_values);
+    this, &pid_constant_control::constant_editing_finished);
 
   QGridLayout * group_box_layout = new QGridLayout();
   group_box_layout->addWidget(base_label, 2, 0, 3, 1, Qt::AlignBottom);
@@ -81,31 +75,42 @@ pid_constant_control::pid_constant_control(QWidget * parent)
 
   setLayout(group_box_layout);
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+  set_constant_from_values();
 }
 
 void pid_constant_control::set_values(int multiplier, int exponent)
 {
-  bool changed = false;
-  if (multiplier != multiplier_spinbox->value())
-  {
-    multiplier_spinbox->setValue(multiplier);
-    changed = true;
-  }
-  if (exponent != exponent_spinbox->value())
-  {
-    exponent_spinbox->setValue(exponent);
-    changed = true;
-  }
+  bool changed = set_values_core(multiplier, exponent);
 
-  // Only call set_constant if one of the values actually changed.  This
-  // prevents constant from being recalculated while user is entering a value.
+  // Only call set_constant_from_values if one of the values actually changed.
+  // This prevents the constant from being recalculated while user is typing.
   if (changed)
   {
     set_constant_from_values();
   }
 }
 
-// Calculates value based on multiplier and exponent values.
+void pid_constant_control::constant_text_edited()
+{
+  set_values_from_constant();
+}
+
+void pid_constant_control::constant_editing_finished()
+{
+  set_constant_from_values();
+}
+
+void pid_constant_control::multiplier_or_exponent_changed()
+{
+  if (suppress_events) { return; }
+
+  set_constant_from_values();
+
+  emit values_changed(multiplier_spinbox->value(), exponent_spinbox->value());
+}
+
+// Set the constant based on the multiplier and exponent.
 void pid_constant_control::set_constant_from_values()
 {
   double constant = multiplier_spinbox->value();
@@ -119,11 +124,7 @@ void pid_constant_control::set_constant_from_values()
   constant_line_edit->setText(QString::number(constant, 'f', precision));
 }
 
-void pid_constant_control::multiplier_or_exponent_changed()
-{
-  emit values_changed(multiplier_spinbox->value(), exponent_spinbox->value());
-}
-
+// Set the multiplier and exponent based on the constant.
 void pid_constant_control::set_values_from_constant()
 {
   double input = constant_line_edit->text().toDouble();
@@ -147,12 +148,32 @@ void pid_constant_control::set_values_from_constant()
     exponent -= 1;
   }
 
+  set_values_core(multiplier, exponent);
+}
+
+// Now change the spinboxes to display new values, while making sure to emit the
+// value_changed signal at most once.
+bool pid_constant_control::set_values_core(int multiplier, int exponent)
+{
+  bool changed = false;
+  suppress_events = true;
+
   if (multiplier != multiplier_spinbox->value())
   {
     multiplier_spinbox->setValue(multiplier);
+    changed = true;
   }
   if (exponent != exponent_spinbox->value())
   {
     exponent_spinbox->setValue(exponent);
+    changed = true;
   }
+  suppress_events = false;
+
+  if (changed)
+  {
+    emit values_changed(multiplier_spinbox->value(), exponent_spinbox->value());
+  }
+
+  return changed;
 }
