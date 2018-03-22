@@ -155,9 +155,9 @@ void pid_constant_control::set_values_from_constant()
 // value_changed signal at most once.
 bool pid_constant_control::set_values_core(int multiplier, int exponent)
 {
-  bool changed = false;
   suppress_events = true;
 
+  bool changed = false;
   if (multiplier != multiplier_spinbox->value())
   {
     multiplier_spinbox->setValue(multiplier);
@@ -168,6 +168,7 @@ bool pid_constant_control::set_values_core(int multiplier, int exponent)
     exponent_spinbox->setValue(exponent);
     changed = true;
   }
+
   suppress_events = false;
 
   if (changed)
