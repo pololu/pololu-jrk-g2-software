@@ -2,8 +2,6 @@
 
 #include <cmath>
 
-// TODO: better size for line edits, they are way too wide
-
 pid_constant_control::pid_constant_control(QWidget * parent)
  : QGroupBox(parent)
 {
@@ -52,6 +50,12 @@ pid_constant_control::pid_constant_control(QWidget * parent)
 
   constant_line_edit = new QLineEdit();
   constant_line_edit->setObjectName("constant_line_edit");
+
+  // QLineEdit::sizeHint() is not useful.
+  {
+    QLabel tmp("0.0000000mmm");
+    constant_line_edit->setFixedWidth(tmp.sizeHint().width());
+  }
 
   // This prevents the user from entering invalid characters.
   pid_constant_validator * constant_validator =
