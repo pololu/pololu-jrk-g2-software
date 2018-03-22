@@ -106,14 +106,8 @@ void pid_constant_control::set_constant()
     constant /= 2;
   }
 
-  if (constant < 0.0001 && constant != 0)
-  {
-    constant_lineedit->setText(QString::number(constant, 'f', 7));
-  }
-  else
-  {
-    constant_lineedit->setText(QString::number(constant, 'f', 5));
-  }
+  int precision = (constant < 0.0001 && constant != 0) ? 7 : 5;
+  constant_lineedit->setText(QString::number(constant, 'f', precision));
 }
 
 void pid_constant_control::multiplier_spinbox_valueChanged(int value)
