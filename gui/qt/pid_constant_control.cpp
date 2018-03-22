@@ -29,7 +29,7 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   base_label->setText("2");
 
   QFrame * division_frame = new QFrame();
-  division_frame->setObjectName("pid_control_frame");
+  division_frame->setObjectName("division_frame");
   division_frame->setFrameShadow(QFrame::Plain);
   division_frame->setLineWidth(4);
   division_frame->setFrameShape(QFrame::HLine);
@@ -40,35 +40,35 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   multiplier_spinbox->setRange(0, 1023);
 
   connect(multiplier_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &pid_constant_control::multiplier_spinbox_valueChanged);
+    this, &pid_constant_control::multiplier_or_exponent_changed);
 
   exponent_spinbox = new QSpinBox();
-  exponent_spinbox->setObjectName("pid_exponent_spinbox");
+  exponent_spinbox->setObjectName("exponent_spinbox");
   exponent_spinbox->setAlignment(Qt::AlignCenter);
   exponent_spinbox->setRange(0, 18);
 
   connect(exponent_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &pid_constant_control::exponent_spinbox_valueChanged);
+    this, &pid_constant_control::multiplier_or_exponent_changed);
 
   QLabel * equal_label = new QLabel();
-  equal_label->setObjectName("pid_equal_label");
+  equal_label->setObjectName("equal_label");
   equal_label->setText(tr("="));
   equal_label->setFont(equal_font);
   equal_label->setAlignment(Qt::AlignCenter);
 
-  constant_lineedit = new QLineEdit();
-  constant_lineedit->setObjectName("pid_constant_lineedit");
+  constant_line_edit = new QLineEdit();
+  constant_line_edit->setObjectName("constant_line_edit");
 
   // This prevents the user from entering invalid characters.
   pid_constant_validator * constant_validator =
-    new pid_constant_validator(0, 1023, 7, constant_lineedit);
-  constant_lineedit->setValidator(constant_validator);
+    new pid_constant_validator(0, 1023, 7, constant_line_edit);
+  constant_line_edit->setValidator(constant_validator);
 
-  connect(constant_lineedit, &QLineEdit::textEdited,
-    this, &pid_constant_control::constant_lineedit_textEdited);
+  connect(constant_line_edit, &QLineEdit::textEdited,
+    this, &pid_constant_control::set_values_from_constant);
 
-  connect(constant_lineedit, &QLineEdit::editingFinished,
-    this, &pid_constant_control::constant_lineedit_editingFinished);
+  connect(constant_line_edit, &QLineEdit::editingFinished,
+    this, &pid_constant_control::set_constant_from_values);
 
   QGridLayout * group_box_layout = new QGridLayout();
   group_box_layout->addWidget(base_label, 2, 0, 3, 1, Qt::AlignBottom);
@@ -76,7 +76,7 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   group_box_layout->addWidget(multiplier_spinbox, 0, 0, 1, 3, Qt::AlignCenter);
   group_box_layout->addWidget(exponent_spinbox, 2, 1, 1, 1, Qt::AlignCenter);
   group_box_layout->addWidget(equal_label, 0, 4, 3, 1, Qt::AlignCenter);
-  group_box_layout->addWidget(constant_lineedit, 0, 5, 3, 1, Qt::AlignVCenter);
+  group_box_layout->addWidget(constant_line_edit, 0, 5, 3, 1, Qt::AlignVCenter);
   group_box_layout->setColumnStretch(6, 1);
 
   setLayout(group_box_layout);
@@ -101,12 +101,12 @@ void pid_constant_control::set_values(int multiplier, int exponent)
   // prevents constant from being recalculated while user is entering a value.
   if (changed)
   {
-    set_constant();
+    set_constant_from_values();
   }
 }
 
 // Calculates value based on multiplier and exponent values.
-void pid_constant_control::set_constant()
+void pid_constant_control::set_constant_from_values()
 {
   double constant = multiplier_spinbox->value();
   for (int i = 0; i < exponent_spinbox->value(); i++)
@@ -116,22 +116,17 @@ void pid_constant_control::set_constant()
 
   int precision = (constant < 0.0001 && constant != 0) ? 7 : 5;
 
-  constant_lineedit->setText(QString::number(constant, 'f', precision));
+  constant_line_edit->setText(QString::number(constant, 'f', precision));
 }
 
-void pid_constant_control::multiplier_spinbox_valueChanged(int value)
+void pid_constant_control::multiplier_or_exponent_changed()
 {
-  emit values_changed(value, exponent_spinbox->value());
+  emit values_changed(multiplier_spinbox->value(), exponent_spinbox->value());
 }
 
-void pid_constant_control::exponent_spinbox_valueChanged(int value)
+void pid_constant_control::set_values_from_constant()
 {
-  emit values_changed(multiplier_spinbox->value(), value);
-}
-
-void pid_constant_control::constant_lineedit_textEdited(const QString & text)
-{
-  double input = text.toDouble();
+  double input = constant_line_edit->text().toDouble();
   int i;
   int largest_divisor = 1;
   for (i = 0; i < 18; i++)
@@ -160,9 +155,4 @@ void pid_constant_control::constant_lineedit_textEdited(const QString & text)
   {
     exponent_spinbox->setValue(exponent);
   }
-}
-
-void pid_constant_control::constant_lineedit_editingFinished()
-{
-  set_constant();
 }

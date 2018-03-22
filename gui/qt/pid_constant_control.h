@@ -19,20 +19,18 @@ public:
   void set_values(int multiplier, int exponent);
 
 private:
-  void set_constant();
+  void set_constant_from_values();
 
   QSpinBox * multiplier_spinbox;
   QSpinBox * exponent_spinbox;
-  QLineEdit * constant_lineedit;
+  QLineEdit * constant_line_edit;
 
 signals:
   void values_changed(int multiplier, int exponent);
 
 private slots:
-  void multiplier_spinbox_valueChanged(int value);
-  void exponent_spinbox_valueChanged(int value);
-  void constant_lineedit_textEdited(const QString&);
-  void constant_lineedit_editingFinished();
+  void multiplier_or_exponent_changed();
+  void set_values_from_constant();
 };
 
 class pid_constant_validator : public QDoubleValidator
