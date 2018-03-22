@@ -87,18 +87,21 @@ pid_constant_control::pid_constant_control(QWidget * parent)
 
 void pid_constant_control::set_values(int multiplier, int exponent)
 {
-  multiplier_spinbox->setValue(multiplier);
-  exponent_spinbox->setValue(exponent);
+  bool changed = false;
+  if (multiplier != multiplier_spinbox->value())
+  {
+    multiplier_spinbox->setValue(multiplier);
+    changed = true;
+  }
+  if (exponent != exponent_spinbox->value())
+  {
+    exponent_spinbox->setValue(exponent);
+    changed = true;
+  }
 
-  // Prevents constant from being recalculated while user is entering a value.
-  //
-  // Note: It would probably be better to always call set_constant() here, and
-  // avoid the issue that causes by only sending a values_changed signal after
-  // the user is done editing.  We can send some other, simpler signal while
-  // they are editing in order to tell the higher-level code to enable the Apply
-  // Settings button.  That would be like the old jrk utility.  Or maybe, don't
-  // call set_constant unless the multiplier or exponent actually changed.
-  if (!constant_lineedit->hasFocus())
+  // Only call set_constant if one of the values actually changed.  This
+  // prevents constant from being recalculated while user is entering a value.
+  if (changed)
   {
     set_constant();
   }
@@ -151,7 +154,14 @@ void pid_constant_control::constant_lineedit_textEdited(const QString & text)
     exponent -= 1;
   }
 
-  set_values(multiplier, exponent);
+  if (multiplier != multiplier_spinbox->value())
+  {
+    multiplier_spinbox->setValue(multiplier);
+  }
+  if (exponent != exponent_spinbox->value())
+  {
+    exponent_spinbox->setValue(exponent);
+  }
 }
 
 void pid_constant_control::constant_lineedit_editingFinished()
