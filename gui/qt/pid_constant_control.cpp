@@ -123,7 +123,7 @@ void pid_constant_control::set_constant_from_values()
     constant /= 2;
   }
 
-  int precision = (constant < 0.0001 && constant != 0) ? 7 : 5;
+  int precision = (constant < 0.001 && constant != 0) ? 7 : 5;
 
   constant_line_edit->setText(QString::number(constant, 'f', precision));
 }
