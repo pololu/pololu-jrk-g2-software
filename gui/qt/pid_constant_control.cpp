@@ -2,7 +2,9 @@
 
 #include <cmath>
 
-// TODO: better size for line edits, they are way too twide
+// TODO: better size for line edits, they are way too wide
+
+// TODO: don't let user change the focus of the control while lineedit is empty.
 
 // Note: This control sometimes sends the values_changed signal twice for one
 // keystroke.  For example, when the box says "2.2" and you type a "5" at the
