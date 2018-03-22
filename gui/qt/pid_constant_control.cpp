@@ -57,7 +57,6 @@ pid_constant_control::pid_constant_control(QWidget * parent)
     constant_line_edit->setFixedWidth(tmp.sizeHint().width());
   }
 
-  // This prevents the user from entering invalid characters.
   pid_constant_validator * constant_validator =
     new pid_constant_validator(0, 1023, 7, constant_line_edit);
   constant_line_edit->setValidator(constant_validator);
