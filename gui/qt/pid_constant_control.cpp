@@ -151,7 +151,7 @@ void pid_constant_control::set_values_from_constant()
   set_values_core(multiplier, exponent);
 }
 
-// Now change the spinboxes to display new values, while making sure to emit the
+// Change the spinboxes to display new values, while making sure to emit the
 // value_changed signal at most once.
 bool pid_constant_control::set_values_core(int multiplier, int exponent)
 {
