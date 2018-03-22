@@ -35,53 +35,33 @@ private slots:
   void constant_lineedit_editingFinished();
 };
 
-// This subclass of QDoubleValidator was designed to disallow user input of invalid
-// digits and characters. QDoubleValidator allows the user to input values which
-// are outside of a desired range by assigning a QValidator state of "Intermediate"
-// during input and validating the digit string as a whole, upon completion.
-// In this subclass, each digit entered is validated, when entered, immediately,
-// based on assigned parameters. If the digit entered would make the value greater/less
-// than the assigned range, the input is declared "Invalid" and is not accepted.
+// QDoubleValidator::validate returns "Intermediate" for numbers that are
+// outside the allowed range.  We want to return "Invalid" instead so that
+// people cannot type those numbers, even temporarily.
 class pid_constant_validator : public QDoubleValidator
 {
 public:
   pid_constant_validator(double bottom, double top, int decimals,
     QObject * parent)
     : QDoubleValidator(bottom, top, decimals, parent)
-  {}
+  {
+    setNotation(QDoubleValidator::StandardNotation);
+  }
 
   QValidator::State validate(QString & s, int & i) const
   {
-    if (s.isEmpty())
+    QValidator::State state = QDoubleValidator::validate(s, i);
+
+    if (state == QValidator::Intermediate)
     {
-      return QValidator::Intermediate;
-    }
-
-    QChar decimalPoint = locale().decimalPoint();
-
-    // Prevents user from entering too many digits
-    // after the decimal point
-    if(s.indexOf(decimalPoint) != -1)
-    {
-      int charsAfterPoint = s.length() - s.indexOf(decimalPoint) - 1;
-
-      if (charsAfterPoint > decimals())
+      bool ok;
+      double d = locale().toDouble(s, &ok);
+      if (ok && (d < bottom() || d > top()))
       {
-        return QValidator::Invalid;
+        state = QValidator::Invalid;
       }
     }
 
-    bool ok;
-    double d = locale().toDouble(s, &ok);
-    // Disallows entering a value which is outside of the
-    // declared range.
-    if (ok && d >= bottom() && d <= top())
-    {
-      return QValidator::Acceptable;
-    }
-    else
-    {
-      return QValidator::Invalid;
-    }
+    return state;
   }
 };
