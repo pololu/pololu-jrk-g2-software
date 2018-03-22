@@ -35,9 +35,6 @@ private slots:
   void constant_lineedit_editingFinished();
 };
 
-// QDoubleValidator::validate returns "Intermediate" for numbers that are
-// outside the allowed range.  We want to return "Invalid" instead so that
-// people cannot type those numbers, even temporarily.
 class pid_constant_validator : public QDoubleValidator
 {
 public:
@@ -48,14 +45,17 @@ public:
     setNotation(QDoubleValidator::StandardNotation);
   }
 
-  QValidator::State validate(QString & s, int & i) const
+  // QDoubleValidator::validate returns "Intermediate" for numbers that are
+  // outside the allowed range.  We want to return "Invalid" instead so that
+  // people cannot type those numbers, even temporarily.
+  QValidator::State validate(QString & input, int & pos) const
   {
-    QValidator::State state = QDoubleValidator::validate(s, i);
+    QValidator::State state = QDoubleValidator::validate(input, pos);
 
     if (state == QValidator::Intermediate)
     {
       bool ok;
-      double d = locale().toDouble(s, &ok);
+      double d = locale().toDouble(input, &ok);
       if (ok && (d < bottom() || d > top()))
       {
         state = QValidator::Invalid;
@@ -63,5 +63,17 @@ public:
     }
 
     return state;
+  }
+
+  // QDoubleValidator::fixup does nothing.  If we don't override it, then the
+  // user can change focus out of the lineedit while the lineedit is empty, and
+  // the editingFinished signal does not fire, so our code does not fix the
+  // lineedit to display a value.
+  //
+  // Because of the validator above, I think the only intermediate states we
+  // could be in are "." and "".
+  void fixup(QString & input) const
+  {
+    input = "0";
   }
 };
