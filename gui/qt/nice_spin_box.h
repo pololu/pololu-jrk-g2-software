@@ -1,34 +1,31 @@
 #pragma once
 
-#include <QDoubleSpinBox>
+#include <QSpinBox>
 
-class nice_spin_box : public QDoubleSpinBox
+class nice_spin_box : public QSpinBox
 {
   Q_OBJECT
 
 public:
-  nice_spin_box(QWidget* parent = Q_NULLPTR);
+  nice_spin_box(bool display_in_milli = false, QWidget* parent = Q_NULLPTR);
 
-  void set_mapping(QMultiMap<int, int>&, uint16_t value);
-
-signals:
-  void send_code(int value);
+  void set_mapping(QMultiMap<int, int>&);
 
 private slots:
-  void set_value_from_code();
   void set_code_from_value();
 
 private:
   QMultiMap<int, int> mapping;
-  QString set_suffix;
   int code = -1;
+  bool suppress_events = false;
+  bool display_in_milli;
 
 protected:
   // Reimplemented QSpinBox functions
   virtual void stepBy(int step_value);
   virtual StepEnabled stepEnabled();
-  double valueFromText(const QString& text) const;
-  QString textFromValue(double val) const;
+  int valueFromText(const QString& text) const;
+  QString textFromValue(int val) const;
   QValidator::State validate(QString& input, int& pos) const;
 };
 

@@ -688,36 +688,34 @@ void main_window::set_brake_duration_reverse(uint32_t brake_duration)
   set_spin_box(brake_duration_reverse_spinbox, brake_duration);
 }
 
-void main_window::set_current_limit_code_forward(uint16_t code)
+void main_window::set_current_limit_code_forward(uint16_t current_limit)
 {
-  suppress_events = true;
-
-  current_limit_forward_spinbox->set_mapping(recommended_current_limit_codes, code);
-
-  suppress_events = false;
+  set_spin_box(current_limit_forward_spinbox, current_limit);
 }
 
-void main_window::set_current_limit_code_reverse(uint16_t code)
+void main_window::set_current_limit_code_reverse(uint16_t current_limit)
 {
-  suppress_events = true;
-
-  current_limit_reverse_spinbox->set_mapping(recommended_current_limit_codes, code);
-
-  suppress_events = false;
+  set_spin_box(current_limit_reverse_spinbox, current_limit);
 }
 
 void main_window::recommended_codes()
 {
+  //tmphax
+  // This code will be replaced by a function in the JRK_API that created the table
+  // of recommended codes and the current limit values.
   recommended_current_limit_codes.clear();
   recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0));
   for (int i = 1; i < 96; i++)
   {
     int display_value = (controller->get_current_limit_value(i));
-    if (display_value > recommended_current_limit_codes.values().last())
+    if (display_value > recommended_current_limit_codes.last())
     {
       recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i));
     }
   }
+
+  current_limit_forward_spinbox->set_mapping(recommended_current_limit_codes);
+  current_limit_reverse_spinbox->set_mapping(recommended_current_limit_codes);
 }
 
 void main_window::set_max_current_forward(uint16_t current)
@@ -1493,13 +1491,13 @@ void main_window::on_brake_duration_reverse_spinbox_valueChanged(int value)
   controller->handle_brake_duration_reverse_input(value);
 }
 
-void main_window::on_current_limit_forward_spinbox_send_code(int value)
+void main_window::on_current_limit_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
   controller->handle_current_limit_forward_input(value);
 }
 
-void main_window::on_current_limit_reverse_spinbox_send_code(int value)
+void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
   controller->handle_current_limit_reverse_input(value);

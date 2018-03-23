@@ -623,6 +623,7 @@ void main_controller::handle_settings_changed()
   window->set_max_deceleration_forward(settings.get_max_deceleration_forward());
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_current_limit_code_forward(settings.get_current_limit_code_forward());
+
   window->set_max_current_forward(settings.get_max_current_forward());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
@@ -1159,26 +1160,6 @@ void main_controller::handle_current_limit_forward_input(uint16_t current)
   {
     settings.set_current_limit_code_reverse(current);
   }
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_current_limit_label_forward_spinbox_input(int value)
-{
-  if (!connected()) { return; }
-  settings.set_current_limit_code_forward(value);
-  if (!motor_asymmetric)
-  {
-    settings.set_current_limit_code_reverse(value);
-  }
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_current_limit_label_reverse_spinbox_input(int value)
-{
-  if (!connected()) { return; }
-  settings.set_current_limit_code_reverse(value);
   settings_modified = true;
   handle_settings_changed();
 }

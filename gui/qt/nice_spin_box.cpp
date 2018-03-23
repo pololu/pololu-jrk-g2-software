@@ -1,7 +1,9 @@
 #include "nice_spin_box.h"
 
-nice_spin_box::nice_spin_box(QWidget* parent)
-  : QDoubleSpinBox(parent)
+#include <iostream>
+
+nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
+  : display_in_milli(display_in_milli), QSpinBox(parent)
 {
   // Since the range of the nice_spin_box can be changed based on the mapped
   // values, the minimum size is based on the default size of a QDoubleSpinBox
@@ -15,47 +17,22 @@ nice_spin_box::nice_spin_box(QWidget* parent)
     this->setMinimumSize(temp_box.sizeHint());
   }
 
-  connect(this, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+  connect(this, QOverload<int>::of(&QSpinBox::valueChanged),
     this, &set_code_from_value);
-  connect(this, &QDoubleSpinBox::editingFinished, this, &set_value_from_code);
-}
-
-// This slot which connected in this class sends the "code" value to the
-// main_window. This function is necessary to send the new code value when the
-// up/down buttons are used in the spinbox, but if the user is manually entering
-// a digits, the code will not change so the original code will be sent to
-// main_window.
-void nice_spin_box::set_code_from_value()
-{
-  emit send_code(code);
 }
 
 // When enter/return is pressed, or when the control loses focus, the value
 // entered is used to determine the closest value in the map that is not greater
 // than the entered value. The determined value is then set in the nice_spin_box
 // and the code mapped to the value is sent to the main_window.
-void nice_spin_box::set_value_from_code()
+void nice_spin_box::set_code_from_value()
 {
-  double entered_value = value();
+  int entered_value = value();
 
-  for (int j = 0; j < mapping.size(); ++j)
+  if (entered_value > 0)
   {
-    int temp_value = mapping.values().at(j);
-
-    // Used to compare the value to the hundredth times 1000 to an int value
-    // ex.  does (4.92 * 1000) == 4923 (would be false without calculation below)
-    // with formula below becomes does [(4.92 * 1000) == (4923 - (4923 % 10))]
-    // = [(4920) == (4923 - 3)] = [4920 == 4920] (returns true)
-    temp_value = temp_value - (temp_value % 10);
-
-    if (entered_value >= temp_value)
-    {
-      code = mapping.keys().at(j);
-    }
+    code = entered_value;
   }
-
-  setValue(mapping.value(code));
-  emit send_code(code);
 }
 
 // The main_window uses this public function to sent the updated map to the
@@ -63,24 +40,12 @@ void nice_spin_box::set_value_from_code()
 // determine whether to change the value in the control. The conditional in the
 // function is used to prevent the value from being set while the user is entering
 // manually.
-void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map, uint16_t value)
+void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map)
 {
   mapping.clear();
   mapping = sent_map;
 
-  setRange(0, mapping.last());
-
-  code = value;
-
-
-  // Prevents the control from updating itself when the user is entering a value
-  if (!this->hasFocus())
-  {
-    if (!mapping.contains(value))
-      code = mapping.firstKey();
-
-    setValue(mapping.value(code));
-  }
+  setRange(mapping.firstKey(), mapping.lastKey());
 }
 
 // Reimplemented from QSpinBox to use the iterator for steps since the values
@@ -90,47 +55,68 @@ void nice_spin_box::stepBy(int step_value)
   QMultiMap<int, int>::const_iterator it;
 
   it = mapping.find(code);
-  it += step_value;
+
+  while (it.value() == mapping.value(value()))
+    it += step_value;
 
   code = it.key();
 
-  setValue(mapping.value(code));
+  setValue(code);
   selectAll();
 }
 
 // Necessary for use with stepBy function.
 QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 {
-  StepEnabled enabled  = StepUpEnabled | StepDownEnabled;
-
-  return  enabled;
+  return StepUpEnabled | StepDownEnabled;
 }
 
 // Evaluates text entered into the nice_spin_box and returns a value without
 // a suffix which can be used in other functions and comparisons.
-double nice_spin_box::valueFromText(const QString& text) const
+int nice_spin_box::valueFromText(const QString& text) const
 {
   QString copy = text.toUpper();
 
-  double temp_num;
-  if (copy.contains("M"))
+  bool value_in_milli = copy.contains("M");
+  bool value_in_unit = (copy.contains("A") && !copy.contains("M"));
+  double entered_value = copy.remove(QRegExp("[^(0-9|.)]")).toDouble();
+
+  if ((!value_in_milli && !display_in_milli)
+    || (value_in_unit && display_in_milli))
   {
-    copy.remove(QRegExp("[^0-9]"));
-    temp_num = copy.toDouble();
-    return temp_num;
+    entered_value *= 1000;
   }
-  else
+
+  double return_value;
+
+  for (int j = 0; j < mapping.size(); ++j)
   {
-    copy.remove(QRegExp("[^(0-9|.)]"));
-    temp_num = copy.toDouble();
-    return temp_num * 1000;
+    int temp_value = mapping.values().at(j);
+
+    // Used to compare the entered_value to the hundredth times 1000 to an int entered_value
+    // ex.  does (4.92 * 1000) == 4923 (would be false without calculation below)
+    // with formula below becomes does [(4.92 * 1000) == (4923 - (4923 % 10))]
+    // = [(4920) == (4923 - 3)] = [4920 == 4920] (returns true)
+    temp_value = temp_value - (temp_value % 10);
+
+    if (entered_value >= temp_value)
+    {
+      return_value = mapping.keys().at(j);
+    }
   }
+
+  return return_value;
 }
 
 // Creates the string which is set in the nice_spin_box.
-QString nice_spin_box::textFromValue(double val) const
+QString nice_spin_box::textFromValue(int val) const
 {
-  return QString::number(val/1000, 'f', 2);
+  if (display_in_milli)
+  {
+    return QString::number(mapping.value(val));
+  }
+  else
+    return QString::number(mapping.value(val)/1000.0, 'f', 2);
 }
 
 // Changes the validator which is native to QDoubleSpinBox. This validator
@@ -138,7 +124,7 @@ QString nice_spin_box::textFromValue(double val) const
 // of digits which can be entered and the allowed letters.
 QValidator::State nice_spin_box::validate(QString& input, int& pos) const
 {
-  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,2})?(\\s*)(m|M|ma|Ma|mA|MA|a|A)?");
+  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,2})?(\\s*)(([m|M][a|A]?)|[a|A])?");
 
   if (input.isEmpty())
     {
