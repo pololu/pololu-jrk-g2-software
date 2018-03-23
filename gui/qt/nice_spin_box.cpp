@@ -1,16 +1,12 @@
 #include "nice_spin_box.h"
 
-#include <iostream>
-
 nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
   : display_in_milli(display_in_milli), QSpinBox(parent)
 {
   // Since the range of the nice_spin_box can be changed based on the mapped
-  // values, the minimum size is based on the default size of a QDoubleSpinBox
-  // with the range 0.0-99.99. The suffix is not set using the setSuffix()
-  // function so that is not included in the sizeHint() of the nice_spin_box.
-  // This is used to set the minimum size of the nice_spin_box to fit entered
-  // values.
+  // values, the minimum size is based on the default size of a QSpinBox
+  // with the range 0-99. This is used to set the minimum size of the
+  // nice_spin_box to fit entered values.
   {
     QAbstractSpinBox temp_box;
     temp_box.setSpecialValueText("0000000");
@@ -21,25 +17,17 @@ nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
     this, &set_code_from_value);
 }
 
-// When enter/return is pressed, or when the control loses focus, the value
-// entered is used to determine the closest value in the map that is not greater
-// than the entered value. The determined value is then set in the nice_spin_box
-// and the code mapped to the value is sent to the main_window.
-void nice_spin_box::set_code_from_value()
-{
-  int entered_value = value();
 
-  if (entered_value > 0)
+void nice_spin_box::set_code_from_value(int value)
+{
+  if (value > 0)
   {
-    code = entered_value;
+    code = value;
   }
 }
 
-// The main_window uses this public function to sent the updated map to the
-// nice_spin_box the recent code is sent using the value parameter and used to
-// determine whether to change the value in the control. The conditional in the
-// function is used to prevent the value from being set while the user is entering
-// manually.
+// The main_window uses this public function to send the updated map to the
+// nice_spin_box and set the range of the QSpinBox.
 void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map)
 {
   mapping.clear();

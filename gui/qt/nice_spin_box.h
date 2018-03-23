@@ -7,17 +7,18 @@ class nice_spin_box : public QSpinBox
   Q_OBJECT
 
 public:
+  // The "display_in_milli" variable is so the user can set the QSpinBox to
+  // display milli-units and use it with the same functionality.
   nice_spin_box(bool display_in_milli = false, QWidget* parent = Q_NULLPTR);
 
   void set_mapping(QMultiMap<int, int>&);
 
 private slots:
-  void set_code_from_value();
+  void set_code_from_value(int value);
 
 private:
   QMultiMap<int, int> mapping;
   int code = -1;
-  bool suppress_events = false;
   bool display_in_milli;
 
 protected:
