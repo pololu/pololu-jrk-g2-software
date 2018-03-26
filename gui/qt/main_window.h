@@ -85,7 +85,7 @@ public:
   void set_up_time(uint32_t);
   void set_input(uint16_t, uint8_t);
   void set_target(uint16_t);
-  void set_feedback(uint16_t);
+  void set_feedback(uint16_t, uint8_t);
   void set_scaled_feedback(uint16_t);
   void set_feedback_not_applicable();
   void set_error(int16_t);

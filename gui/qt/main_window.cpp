@@ -189,10 +189,19 @@ void main_window::set_target(uint16_t target)
   target_value->setText(QString::number(target));
 }
 
-void main_window::set_feedback(uint16_t feedback)
+void main_window::set_feedback(uint16_t feedback, uint8_t feedback_mode)
 {
   graph->feedback.plot_value = feedback;
-  feedback_value->setText(QString::number(feedback));
+
+  QString feedback_pretty = "";
+
+  if (feedback_mode == JRK_FEEDBACK_MODE_ANALOG)
+  {
+    feedback_pretty = " (" + QString::fromStdString(
+      convert_analog_12bit_to_v_string(feedback)) + ")";
+  }
+
+  feedback_value->setText(QString::number(feedback) + feedback_pretty);
   emit feedback_changed(feedback);
 }
 

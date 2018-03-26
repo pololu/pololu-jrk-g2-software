@@ -479,6 +479,7 @@ void main_controller::handle_device_changed()
       window->set_connection_status(connection_error_message, true);
     }
     else
+
     {
       window->set_connection_status("", false);
     }
@@ -505,8 +506,7 @@ void main_controller::handle_variables_changed()
   }
   else
   {
-    window->set_feedback(variables.get_feedback());
-    // TODO: also show version with nice units in parentheses
+    window->set_feedback(variables.get_feedback(), cached_settings.get_feedback_mode());
 
     window->set_scaled_feedback(variables.get_scaled_feedback());
     window->set_error(variables.get_error());
