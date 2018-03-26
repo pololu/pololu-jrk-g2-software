@@ -2676,7 +2676,6 @@ QWidget *main_window::setup_motor_tab()
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
   current_limit_reverse_spinbox->set_decimals(2);
 
-  // TODO: let people enter max currents in A instead of mA
   max_current_label = new QLabel(tr("Max current (A):"));
   max_current_label->setObjectName("max_current_label");
 
