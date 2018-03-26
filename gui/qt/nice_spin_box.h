@@ -17,6 +17,7 @@ public:
   nice_spin_box(bool display_in_milli = false, QWidget* parent = Q_NULLPTR);
 
   void set_mapping(QMultiMap<int, int>&);
+  void set_decimals(int m_decimals = 0) { decimals = m_decimals; }
 
 private slots:
   void set_code_from_value(int value);
@@ -27,6 +28,7 @@ private:
   QMultiMap<int, int> mapping;
   int code = -1;
   bool display_in_milli;
+  int decimals = 0;
 
 protected:
   // Reimplemented QSpinBox functions
