@@ -63,14 +63,11 @@ QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 // a suffix which can be used in other functions and comparisons.
 int nice_spin_box::valueFromText(const QString& text) const
 {
-  QString copy = text.toUpper();
-
-  bool value_in_milli = copy.contains("M");
-  bool value_in_unit = (copy.contains("A") && !copy.contains("M"));
+  bool value_in_milli = copy.contains("M") || (copy.contains("A") && !copy.contains("M"));
   double entered_value = copy.remove(QRegExp("[^(0-9|.)]")).toDouble();
 
   if ((!value_in_milli && !display_in_milli)
-    || (value_in_unit && display_in_milli))
+    || (value_in_milli && display_in_milli))
   {
     entered_value *= 1000;
   }
