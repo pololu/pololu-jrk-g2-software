@@ -495,8 +495,7 @@ void main_controller::handle_variables_changed()
 {
   window->set_up_time(variables.get_up_time());
 
-  window->set_input(variables.get_input());
-  // TODO: also show nice units in parentheses
+  window->set_input(variables.get_input(), cached_settings.get_input_mode());
 
   window->set_target(variables.get_target());
 

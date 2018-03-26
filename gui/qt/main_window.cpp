@@ -161,10 +161,25 @@ void main_window::set_up_time(uint32_t up_time)
     convert_up_time_to_string(up_time)));
 }
 
-void main_window::set_input(uint16_t input)
+void main_window::set_input(uint16_t input, uint8_t input_mode)
 {
   graph->input.plot_value = input;
-  input_value->setText(QString::number(input));
+
+  QString input_pretty = "";
+
+  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    input_pretty = " (" + QString::fromStdString(
+      convert_rc_12bit_to_us_string(input)) + ")";
+  }
+  else if (input_mode == JRK_INPUT_MODE_ANALOG)
+  {
+    input_pretty = " (" + QString::fromStdString(
+      convert_analog_12bit_to_v_string(input)) + ")";
+  }
+
+  input_value->setText(QString::number(input) + input_pretty);
+
   emit input_changed(input);
 }
 
