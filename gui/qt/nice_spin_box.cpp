@@ -33,6 +33,8 @@ void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map)
   mapping.clear();
   mapping = sent_map;
 
+  // The "key" values can be within any range so the range of the
+  // spin box must dynamic based on the key values mapped to the control.
   setRange(mapping.firstKey(), mapping.lastKey());
 }
 
@@ -63,6 +65,8 @@ QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 // a suffix which can be used in other functions and comparisons.
 int nice_spin_box::valueFromText(const QString& text) const
 {
+  QString copy = text.toUpper();
+
   bool value_in_milli = copy.contains("M") || (copy.contains("A") && !copy.contains("M"));
   double entered_value = copy.remove(QRegExp("[^(0-9|.)]")).toDouble();
 
