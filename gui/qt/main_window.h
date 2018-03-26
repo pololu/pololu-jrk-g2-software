@@ -612,8 +612,8 @@ private:
   nice_spin_box * current_limit_reverse_spinbox;
   QLabel * current_limit_means_label;
   QLabel * max_current_label;
-  QSpinBox * max_current_forward_spinbox;
-  QSpinBox * max_current_reverse_spinbox;
+  nice_spin_box * max_current_forward_spinbox;
+  nice_spin_box * max_current_reverse_spinbox;
   QLabel * max_current_means_label;
   QLabel * current_offset_calibration_label;
   QSpinBox * current_offset_calibration_spinbox;
