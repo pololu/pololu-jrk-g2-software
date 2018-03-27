@@ -42,12 +42,13 @@ public:
   // the program is actually allowed to exit.
   bool exit();
 
+
+private:
   // This is called whenever something in the model has changed that might
   // require the window to be updated.  It includes no details about what
   // exactly changed.
-  void handle_model_changed();  // TODO: make this private
+  void handle_model_changed();
 
-private:
   void connect_device(jrk::device const & device);
   void disconnect_device_by_error(std::string const & error_message);
   void really_disconnect();
