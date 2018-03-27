@@ -461,7 +461,6 @@ void main_controller::handle_device_changed()
       jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
 
     window->set_connection_status("", false);
-
   }
   else
   {

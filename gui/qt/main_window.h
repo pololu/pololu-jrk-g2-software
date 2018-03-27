@@ -214,7 +214,6 @@ public:
   bool suppress_events = false;
   main_controller * controller;
 
-
 private:
   // Helper method for setting the index of a combo box, given the desired
   // uint8_t item value. Sets index of -1 for no selection if the specified

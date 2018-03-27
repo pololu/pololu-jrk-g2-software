@@ -25,7 +25,6 @@ int main(int argc, char ** argv)
   controller.set_window(&window);
   window.set_controller(&controller);
 
-
   // makes application open intially in center of primary display
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
   int x = (screenGeometry.width()-window.width()) / 2;
