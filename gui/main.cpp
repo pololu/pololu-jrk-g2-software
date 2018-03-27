@@ -19,10 +19,6 @@ int main(int argc, char ** argv)
   SetProcessDPIAware();
 #endif
 
-#ifdef _WIN32
-  SetProcessDPIAware();
-#endif
-
   QApplication app(argc, argv);
   main_controller controller;
   main_window window;
