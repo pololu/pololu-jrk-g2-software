@@ -76,107 +76,107 @@ static const uint16_t jrk_umc04a_40v_vilim_table[32] =
 
 static const uint16_t jrk_umc04a_30v_recommended_codes[] =
 {
-  95,  // VILIM = 1.569 V, Current limit = 75.93 A
-  94,  // VILIM = 1.433 V, Current limit = 69.14 A
-  93,  // VILIM = 1.316 V, Current limit = 63.31 A
-  92,  // VILIM = 1.215 V, Current limit = 58.24 A
-  91,  // VILIM = 1.126 V, Current limit = 53.79 A
-  90,  // VILIM = 1.047 V, Current limit = 49.85 A
-  89,  // VILIM = 0.976 V, Current limit = 46.32 A
-  88,  // VILIM = 0.913 V, Current limit = 43.14 A
-  87,  // VILIM = 0.855 V, Current limit = 40.25 A
-  63,  // VILIM = 0.784 V, Current limit = 36.71 A
-  62,  // VILIM = 0.716 V, Current limit = 33.32 A
-  61,  // VILIM = 0.658 V, Current limit = 30.40 A
-  60,  // VILIM = 0.607 V, Current limit = 27.87 A
-  59,  // VILIM = 0.563 V, Current limit = 25.65 A
-  58,  // VILIM = 0.524 V, Current limit = 23.68 A
-  57,  // VILIM = 0.488 V, Current limit = 21.91 A
-  56,  // VILIM = 0.456 V, Current limit = 20.32 A
-  55,  // VILIM = 0.427 V, Current limit = 18.87 A
-  31,  // VILIM = 0.392 V, Current limit = 17.11 A
-  30,  // VILIM = 0.358 V, Current limit = 15.41 A
-  29,  // VILIM = 0.329 V, Current limit = 13.95 A
-  28,  // VILIM = 0.304 V, Current limit = 12.69 A
-  27,  // VILIM = 0.281 V, Current limit = 11.57 A
-  26,  // VILIM = 0.262 V, Current limit = 10.59 A
-  25,  // VILIM = 0.244 V, Current limit =  9.71 A
-  24,  // VILIM = 0.228 V, Current limit =  8.91 A
-  23,  // VILIM = 0.214 V, Current limit =  8.19 A
-  22,  // VILIM = 0.201 V, Current limit =  7.53 A
-  21,  // VILIM = 0.188 V, Current limit =  6.92 A
-  20,  // VILIM = 0.177 V, Current limit =  6.35 A
-  19,  // VILIM = 0.167 V, Current limit =  5.83 A
-  18,  // VILIM = 0.157 V, Current limit =  5.33 A
-  17,  // VILIM = 0.147 V, Current limit =  4.87 A
-  16,  // VILIM = 0.138 V, Current limit =  4.42 A
-  15,  // VILIM = 0.130 V, Current limit =  4.00 A
-  14,  // VILIM = 0.122 V, Current limit =  3.59 A
-  13,  // VILIM = 0.114 V, Current limit =  3.20 A
-  12,  // VILIM = 0.106 V, Current limit =  2.81 A
-  11,  // VILIM = 0.099 V, Current limit =  2.43 A
-  10,  // VILIM = 0.091 V, Current limit =  2.06 A
-  9,   // VILIM = 0.084 V, Current limit =  1.68 A
-  8,   // VILIM = 0.076 V, Current limit =  1.30 A
-  7,   // VILIM = 0.068 V, Current limit =  0.92 A
-  6,   // VILIM = 0.060 V, Current limit =  0.52 A
-  5,   // VILIM = 0.052 V, Current limit =  0.11 A
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
+  5,   // VILIM = 0.052 V, Current limit =  0.11 A
+  6,   // VILIM = 0.060 V, Current limit =  0.52 A
+  7,   // VILIM = 0.068 V, Current limit =  0.92 A
+  8,   // VILIM = 0.076 V, Current limit =  1.30 A
+  9,   // VILIM = 0.084 V, Current limit =  1.68 A
+  10,  // VILIM = 0.091 V, Current limit =  2.06 A
+  11,  // VILIM = 0.099 V, Current limit =  2.43 A
+  12,  // VILIM = 0.106 V, Current limit =  2.81 A
+  13,  // VILIM = 0.114 V, Current limit =  3.20 A
+  14,  // VILIM = 0.122 V, Current limit =  3.59 A
+  15,  // VILIM = 0.130 V, Current limit =  4.00 A
+  16,  // VILIM = 0.138 V, Current limit =  4.42 A
+  17,  // VILIM = 0.147 V, Current limit =  4.87 A
+  18,  // VILIM = 0.157 V, Current limit =  5.33 A
+  19,  // VILIM = 0.167 V, Current limit =  5.83 A
+  20,  // VILIM = 0.177 V, Current limit =  6.35 A
+  21,  // VILIM = 0.188 V, Current limit =  6.92 A
+  22,  // VILIM = 0.201 V, Current limit =  7.53 A
+  23,  // VILIM = 0.214 V, Current limit =  8.19 A
+  24,  // VILIM = 0.228 V, Current limit =  8.91 A
+  25,  // VILIM = 0.244 V, Current limit =  9.71 A
+  26,  // VILIM = 0.262 V, Current limit = 10.59 A
+  27,  // VILIM = 0.281 V, Current limit = 11.57 A
+  28,  // VILIM = 0.304 V, Current limit = 12.69 A
+  29,  // VILIM = 0.329 V, Current limit = 13.95 A
+  30,  // VILIM = 0.358 V, Current limit = 15.41 A
+  31,  // VILIM = 0.392 V, Current limit = 17.11 A
+  55,  // VILIM = 0.427 V, Current limit = 18.87 A
+  56,  // VILIM = 0.456 V, Current limit = 20.32 A
+  57,  // VILIM = 0.488 V, Current limit = 21.91 A
+  58,  // VILIM = 0.524 V, Current limit = 23.68 A
+  59,  // VILIM = 0.563 V, Current limit = 25.65 A
+  60,  // VILIM = 0.607 V, Current limit = 27.87 A
+  61,  // VILIM = 0.658 V, Current limit = 30.40 A
+  62,  // VILIM = 0.716 V, Current limit = 33.32 A
+  63,  // VILIM = 0.784 V, Current limit = 36.71 A
+  87,  // VILIM = 0.855 V, Current limit = 40.25 A
+  88,  // VILIM = 0.913 V, Current limit = 43.14 A
+  89,  // VILIM = 0.976 V, Current limit = 46.32 A
+  90,  // VILIM = 1.047 V, Current limit = 49.85 A
+  91,  // VILIM = 1.126 V, Current limit = 53.79 A
+  92,  // VILIM = 1.215 V, Current limit = 58.24 A
+  93,  // VILIM = 1.316 V, Current limit = 63.31 A
+  94,  // VILIM = 1.433 V, Current limit = 69.14 A
+  95,  // VILIM = 1.569 V, Current limit = 75.93 A
 };
 
 static const uint16_t jrk_umc04a_40v_recommended_codes[] =
 {
-  95,  // VILIM = 2.622 V, Current limit = 64.31 A
-  94,  // VILIM = 2.431 V, Current limit = 59.52 A
-  93,  // VILIM = 2.261 V, Current limit = 55.28 A
-  92,  // VILIM = 2.110 V, Current limit = 51.49 A
-  91,  // VILIM = 1.973 V, Current limit = 48.07 A
-  90,  // VILIM = 1.849 V, Current limit = 44.97 A
-  89,  // VILIM = 1.736 V, Current limit = 42.15 A
-  88,  // VILIM = 1.632 V, Current limit = 39.55 A
-  87,  // VILIM = 1.536 V, Current limit = 37.14 A
-  86,  // VILIM = 1.446 V, Current limit = 34.91 A
-  85,  // VILIM = 1.363 V, Current limit = 32.83 A
-  63,  // VILIM = 1.311 V, Current limit = 31.53 A
-  62,  // VILIM = 1.215 V, Current limit = 29.14 A
-  61,  // VILIM = 1.131 V, Current limit = 27.01 A
-  60,  // VILIM = 1.055 V, Current limit = 25.12 A
-  59,  // VILIM = 0.986 V, Current limit = 23.41 A
-  58,  // VILIM = 0.924 V, Current limit = 21.86 A
-  57,  // VILIM = 0.868 V, Current limit = 20.45 A
-  56,  // VILIM = 0.816 V, Current limit = 19.15 A
-  55,  // VILIM = 0.768 V, Current limit = 17.95 A
-  54,  // VILIM = 0.723 V, Current limit = 16.83 A
-  31,  // VILIM = 0.656 V, Current limit = 15.14 A
-  30,  // VILIM = 0.608 V, Current limit = 13.94 A
-  29,  // VILIM = 0.565 V, Current limit = 12.88 A
-  28,  // VILIM = 0.527 V, Current limit = 11.93 A
-  27,  // VILIM = 0.493 V, Current limit = 11.08 A
-  26,  // VILIM = 0.462 V, Current limit = 10.31 A
-  25,  // VILIM = 0.434 V, Current limit =  9.60 A
-  24,  // VILIM = 0.408 V, Current limit =  8.95 A
-  23,  // VILIM = 0.384 V, Current limit =  8.35 A
-  22,  // VILIM = 0.362 V, Current limit =  7.79 A
-  21,  // VILIM = 0.341 V, Current limit =  7.27 A
-  20,  // VILIM = 0.321 V, Current limit =  6.78 A
-  19,  // VILIM = 0.303 V, Current limit =  6.32 A
-  18,  // VILIM = 0.285 V, Current limit =  5.88 A
-  17,  // VILIM = 0.268 V, Current limit =  5.46 A
-  16,  // VILIM = 0.252 V, Current limit =  5.06 A
-  15,  // VILIM = 0.237 V, Current limit =  4.67 A
-  14,  // VILIM = 0.222 V, Current limit =  4.29 A
-  13,  // VILIM = 0.207 V, Current limit =  3.93 A
-  12,  // VILIM = 0.193 V, Current limit =  3.57 A
-  11,  // VILIM = 0.178 V, Current limit =  3.21 A
-  10,  // VILIM = 0.164 V, Current limit =  2.86 A
-  9,   // VILIM = 0.150 V, Current limit =  2.51 A
-  8,   // VILIM = 0.136 V, Current limit =  2.15 A
-  7,   // VILIM = 0.122 V, Current limit =  1.79 A
-  6,   // VILIM = 0.107 V, Current limit =  1.42 A
-  5,   // VILIM = 0.091 V, Current limit =  1.03 A
-  4,   // VILIM = 0.075 V, Current limit =  0.63 A
-  3,   // VILIM = 0.058 V, Current limit =  0.21 A
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
+  3,   // VILIM = 0.058 V, Current limit =  0.21 A
+  4,   // VILIM = 0.075 V, Current limit =  0.63 A
+  5,   // VILIM = 0.091 V, Current limit =  1.03 A
+  6,   // VILIM = 0.107 V, Current limit =  1.42 A
+  7,   // VILIM = 0.122 V, Current limit =  1.79 A
+  8,   // VILIM = 0.136 V, Current limit =  2.15 A
+  9,   // VILIM = 0.150 V, Current limit =  2.51 A
+  10,  // VILIM = 0.164 V, Current limit =  2.86 A
+  11,  // VILIM = 0.178 V, Current limit =  3.21 A
+  12,  // VILIM = 0.193 V, Current limit =  3.57 A
+  13,  // VILIM = 0.207 V, Current limit =  3.93 A
+  14,  // VILIM = 0.222 V, Current limit =  4.29 A
+  15,  // VILIM = 0.237 V, Current limit =  4.67 A
+  16,  // VILIM = 0.252 V, Current limit =  5.06 A
+  17,  // VILIM = 0.268 V, Current limit =  5.46 A
+  18,  // VILIM = 0.285 V, Current limit =  5.88 A
+  19,  // VILIM = 0.303 V, Current limit =  6.32 A
+  20,  // VILIM = 0.321 V, Current limit =  6.78 A
+  21,  // VILIM = 0.341 V, Current limit =  7.27 A
+  22,  // VILIM = 0.362 V, Current limit =  7.79 A
+  23,  // VILIM = 0.384 V, Current limit =  8.35 A
+  24,  // VILIM = 0.408 V, Current limit =  8.95 A
+  25,  // VILIM = 0.434 V, Current limit =  9.60 A
+  26,  // VILIM = 0.462 V, Current limit = 10.31 A
+  27,  // VILIM = 0.493 V, Current limit = 11.08 A
+  28,  // VILIM = 0.527 V, Current limit = 11.93 A
+  29,  // VILIM = 0.565 V, Current limit = 12.88 A
+  30,  // VILIM = 0.608 V, Current limit = 13.94 A
+  31,  // VILIM = 0.656 V, Current limit = 15.14 A
+  54,  // VILIM = 0.723 V, Current limit = 16.83 A
+  55,  // VILIM = 0.768 V, Current limit = 17.95 A
+  56,  // VILIM = 0.816 V, Current limit = 19.15 A
+  57,  // VILIM = 0.868 V, Current limit = 20.45 A
+  58,  // VILIM = 0.924 V, Current limit = 21.86 A
+  59,  // VILIM = 0.986 V, Current limit = 23.41 A
+  60,  // VILIM = 1.055 V, Current limit = 25.12 A
+  61,  // VILIM = 1.131 V, Current limit = 27.01 A
+  62,  // VILIM = 1.215 V, Current limit = 29.14 A
+  63,  // VILIM = 1.311 V, Current limit = 31.53 A
+  85,  // VILIM = 1.363 V, Current limit = 32.83 A
+  86,  // VILIM = 1.446 V, Current limit = 34.91 A
+  87,  // VILIM = 1.536 V, Current limit = 37.14 A
+  88,  // VILIM = 1.632 V, Current limit = 39.55 A
+  89,  // VILIM = 1.736 V, Current limit = 42.15 A
+  90,  // VILIM = 1.849 V, Current limit = 44.97 A
+  91,  // VILIM = 1.973 V, Current limit = 48.07 A
+  92,  // VILIM = 2.110 V, Current limit = 51.49 A
+  93,  // VILIM = 2.261 V, Current limit = 55.28 A
+  94,  // VILIM = 2.431 V, Current limit = 59.52 A
+  95,  // VILIM = 2.622 V, Current limit = 64.31 A
 };
 
 // Given a jrk product code and 5-bit DAC level, this returns the expected
@@ -206,20 +206,20 @@ const uint16_t * jrk_get_recommended_current_limit_codes(
   if (product == JRK_PRODUCT_UMC04A_40V)
   {
     table = jrk_umc04a_40v_recommended_codes;
-    count = sizeof(jrk_umc04a_40v_recommended_codes);
+    count = sizeof(jrk_umc04a_40v_recommended_codes) / sizeof(uint16_t);
   }
   else
   {
     table = jrk_umc04a_30v_recommended_codes;
-    count = sizeof(jrk_umc04a_30v_recommended_codes);
+    count = sizeof(jrk_umc04a_30v_recommended_codes) / sizeof(uint16_t);
   }
 
   if (code_count) { *code_count = count; }
   return table;
 }
 
-// Gets the rsense resistor value for the jrk, in units of milliohms.
-static uint8_t jrk_get_rsense_mohm(uint32_t product)
+// Gets the rsense resistor value for the jrk, in units of ohms.
+static uint8_t jrk_get_rsense(uint32_t product)
 {
   if (product == JRK_PRODUCT_UMC04A_40V)
   {
@@ -239,7 +239,7 @@ static uint8_t jrk_get_rsense_mohm(uint32_t product)
 // raw_current: From jrk_variables_get_raw_current().
 // current_limit_code: The hardware current limiting configuration, from
 //   from jrk_variables_get_max_current().
-// rsense: Sense resistor resistance, in units of mohms.
+// rsense: Sense resistor resistance, in units of ohms.
 // current_offset_calibration: from jrk_settings_get_current_offset_calibration()
 // current_scale_calibration: from jrk_settings_get_current_scale_calibration()
 static uint16_t jrk_calculate_measured_current_ma_umc04a(
@@ -314,7 +314,7 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t co
       jrk_get_vilim(product, code & 0x1F),
       code,
       600,
-      jrk_get_rsense_mohm(product),
+      jrk_get_rsense(product),
       jrk_settings_get_current_offset_calibration(settings),
       jrk_settings_get_current_scale_calibration(settings)
     );
@@ -329,15 +329,40 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma
   if (product == 0) { return 0; }
 
   size_t count;
+  const uint16_t * codes = jrk_get_recommended_current_limit_codes(product, &count);
 
-  for (const uint16_t * c = jrk_get_recommended_current_limit_codes(product, &count); *c; c++)
+  // Assumption: The table is in ascending order, so we want to return the last
+  // one that is less than or equal to the desired current.
+  // Assumption: 0 is a valid code and a good default to use.
+
+  // Assumption: 0 is one of the recommended codes, so let's use it if we can't
+  // find any other good ones.
+  uint16_t code = 0;
+  uint16_t found_ma = 0;
+
+  for (size_t i = 0; i < count; i++)
   {
-    if (jrk_current_limit_code_to_ma(settings, *c) <= ma)
+    uint8_t candidate = codes[i];
+    uint32_t candidate_ma = jrk_current_limit_code_to_ma(settings, candidate);
+
+    if (candidate_ma > ma)
     {
-      return *c;
+      // The codes are in ascending order so we won't find any better matches
+      // from now on.
+      break;
+    }
+
+    // We want to find a code that gives a current less than or equal to the
+    // target current.  The first part of the if condition takes care of that.
+    // The second part of the if condition ensures that if multiple codes map
+    // to zero then we will pick the smallest one.
+    if (candidate_ma <= ma && candidate_ma > found_ma)
+    {
+      code = candidate;
+      found_ma = candidate_ma;
     }
   }
-  return 0;
+  return code;
 }
 
 uint32_t jrk_calculate_measured_current_ma(
@@ -359,7 +384,7 @@ uint32_t jrk_calculate_measured_current_ma(
           jrk_variables_get_raw_current(vars),
           jrk_variables_get_current_limit_code(vars),
           jrk_variables_get_last_duty_cycle(vars),
-          jrk_get_rsense_mohm(product),
+          jrk_get_rsense(product),
           jrk_settings_get_current_offset_calibration(settings),
           jrk_settings_get_current_scale_calibration(settings)
           );

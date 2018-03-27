@@ -2237,7 +2237,7 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 //// Current limiting and measurment ////////////////////////////////////////////
 
 /// Gets a list of the recommended current limit codes for the specified
-/// product.  TODO: They will be in ascending order by current limit in milliamps.
+/// product.  They will be in ascending order by current limit in milliamps.
 JRK_API
 const uint16_t * jrk_get_recommended_current_limit_codes(
   uint32_t product, size_t * code_count);
@@ -2271,6 +2271,10 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 // settings object and a variables object read from the same device.
 //
 // The function returns the measured current, in milliamps.
+//
+// If you don't want to actually fetch settings from the jrk, you can just
+// create a new settings object, set it to the right product, and fill it with
+// the default settings, using the jrk_settings_* functions of this library.
 //
 // Note for umc04a jrk models: If current chopping happened during the PID
 // period, the value returned here will not be trustable.

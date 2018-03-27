@@ -43,6 +43,12 @@ static const char help[] =
   "  --current-limit-rev NUM      Set reverse current limit in milliamps.\n"
   // TODO: add options for the rest of the overridable settings
   "\n"
+  "Current limit codes:\n"
+  "  --current-codes              Print a CSV with current limit codes and calibrated\n"
+  "                               current limit values in milliamps.\n"
+  "  --current-code-to-ma NUM     Convert current limit code to milliamps.\n"
+  "  --current-ma-to-code NUM     Convert current limit in milliamps to a code.\n"
+  "\n"
   "For more help, see: " DOCUMENTATION_URL "\n"
   "\n";
 
@@ -120,6 +126,14 @@ struct arguments
   bool override_current_limit_reverse = false;
   uint32_t current_limit_reverse_ma = 0;
 
+  bool get_current_limit_codes = false;
+
+  bool convert_current_limit_code_to_ma = false;
+  uint16_t current_limit_code_to_convert;
+
+  bool convert_current_limit_ma_to_code = false;
+  uint32_t current_limit_ma_to_convert;
+
   bool get_debug_data = false;
 
   uint32_t test_procedure = 0;
@@ -142,6 +156,9 @@ struct arguments
       get_settings ||
       fix_settings ||
       override_settings() ||
+      get_current_limit_codes ||
+      convert_current_limit_code_to_ma ||
+      convert_current_limit_ma_to_code ||
       get_debug_data ||
       test_procedure;
   }
@@ -402,6 +419,20 @@ static arguments parse_args(int argc, char ** argv)
       args.override_current_limit_reverse = true;
       args.current_limit_reverse_ma = parse_arg_int<uint32_t>(arg_reader);
     }
+    else if (arg == "--current-codes" || arg == "--current-limit-codes")
+    {
+      args.get_current_limit_codes = true;
+    }
+    else if (arg == "--current-code-to-ma" || arg == "--current-limit-code-to-ma")
+    {
+      args.convert_current_limit_code_to_ma = true;
+      args.current_limit_code_to_convert = parse_arg_int<uint16_t>(arg_reader);
+    }
+    else if (arg == "--current-ma-to-code" || arg == "--current-limit-ma-to-code")
+    {
+      args.convert_current_limit_ma_to_code = true;
+      args.current_limit_ma_to_convert = parse_arg_int<uint32_t>(arg_reader);
+    }
     else if (arg == "--debug")
     {
       // This is an unadvertized option for helping customers troubleshoot
@@ -513,6 +544,38 @@ static void set_settings(device_selector & selector,
   jrk::handle handle(device);
   handle.set_settings(settings);
   handle.reinitialize();
+}
+
+static void get_current_limit_codes(device_selector & selector)
+{
+  jrk::device device = selector.select_device();
+  jrk::handle handle(device);
+  jrk::settings settings = handle.get_settings();
+  std::vector<uint16_t> codes =
+    jrk::get_recommended_current_limit_codes(device.get_product());
+
+  std::cout << "code,ma" << std::endl;
+  for (uint16_t code : codes)
+  {
+    uint32_t ma = jrk::current_limit_code_to_ma(settings, code);
+    std::cout << code << "," << ma << std::endl;
+  }
+}
+
+static void convert_current_limit_code_to_ma(device_selector & selector, uint16_t code)
+{
+  jrk::handle handle(selector.select_device());
+  jrk::settings settings = handle.get_settings();
+  uint32_t ma = jrk::current_limit_code_to_ma(settings, code);
+  std::cout << ma << std::endl;
+}
+
+static void convert_current_limit_ma_to_code(device_selector & selector, uint32_t ma)
+{
+  jrk::handle handle(selector.select_device());
+  jrk::settings settings = handle.get_settings();
+  uint16_t code = jrk::current_limit_ma_to_code(settings, ma);
+  std::cout << code << std::endl;
 }
 
 static void fix_settings(const std::string & input_filename,
@@ -653,6 +716,21 @@ static void run(const arguments & args)
   if (args.set_settings)
   {
     set_settings(selector, args.set_settings_filename);
+  }
+
+  if (args.get_current_limit_codes)
+  {
+    get_current_limit_codes(selector);
+  }
+
+  if (args.convert_current_limit_code_to_ma)
+  {
+    convert_current_limit_code_to_ma(selector, args.current_limit_code_to_convert);
+  }
+
+  if (args.convert_current_limit_ma_to_code)
+  {
+    convert_current_limit_ma_to_code(selector, args.current_limit_ma_to_convert);
   }
 
   if (args.override_settings())
