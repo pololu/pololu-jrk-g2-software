@@ -3,8 +3,6 @@
 #define PIN_COUNT 5
 
 struct jrk_variables {
-  uint8_t avoid_struct_size_zero;  // TODO: remove, put real variables here
-
   // Beginning of auto-generated variables struct members.
 
   uint16_t input;

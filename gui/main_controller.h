@@ -111,9 +111,9 @@ public:
   void handle_feedback_detect_disconnect_input(bool);
   void handle_feedback_wraparound_input(bool);
 
-  void handle_pid_proportional_values(uint16_t multiplier, uint16_t exponent);
-  void handle_pid_integral_values(uint16_t multiplier, uint16_t exponent);
-  void handle_pid_derivative_values(uint16_t multiplier, uint16_t exponent);
+  void handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent);
+  void handle_pid_integral_input(uint16_t multiplier, uint8_t exponent);
+  void handle_pid_derivative_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_period_input(uint16_t);
   void handle_integral_limit_input(uint16_t);
   void handle_reset_integral_input(bool);
@@ -232,7 +232,7 @@ private:
 public:
 
   // Returns true if we are currently connected to a device.
-  bool connected() const { return device_handle; }
+  bool connected() const { return device_handle.is_present(); }
 
 private:
 

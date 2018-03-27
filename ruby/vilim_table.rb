@@ -27,9 +27,12 @@ def print_recommended_codes(config)
   (0..95).each do |code|
     vilim, current_limit = compute_vilim_and_ilim(config, code)
 
-    # TODO: next if current_limit < 3 ?
     next if current_limit <= last_current_limit
+
+    # Skip this code if the DAC reference level changed and the code we are looking at does
+    # not give a significantly higher current limits.
     next if (code & 0x60) != (last_code & 0x60) && current_limit <= last_current_limit + 1.0
+
     table << [code, vilim, current_limit]
     last_code = code
     last_current_limit = current_limit

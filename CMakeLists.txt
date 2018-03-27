@@ -20,6 +20,11 @@ if (POLICY CMP0065)
   cmake_policy(SET CMP0065 NEW)
 endif ()
 
+# Fix a warning in later versions of CMake.
+if (POLICY CMP0071)
+  cmake_policy(SET CMP0071 OLD)
+endif ()
+
 project (jrk2)
 
 set (CLI_NAME "jrk2cmd")

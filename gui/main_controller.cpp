@@ -88,7 +88,7 @@ bool main_controller::disconnect_device()
 
 void main_controller::connect_device(jrk::device const & device)
 {
-  assert(device);
+  assert(device.is_present());
 
   try
   {
@@ -269,10 +269,10 @@ void main_controller::upgrade_firmware_complete()
 
 // Returns true if the device list includes the specified device.
 static bool device_list_includes(
-  std::vector<jrk::device> const & device_list,
-  jrk::device const & device)
+  const std::vector<jrk::device> & device_list,
+  const jrk::device & device)
 {
-  return device_with_os_id(device_list, device.get_os_id());
+  return device_with_os_id(device_list, device.get_os_id()).is_present();
 }
 
 void main_controller::update()
@@ -542,7 +542,7 @@ void main_controller::handle_variables_changed()
   window->set_stop_motor_enabled(connected());
   window->set_run_motor_enabled(connected() && error_active);
 
-  if (connected() && variables)
+  if (connected() && variables.is_present())
   {
     window->update_graph(variables.get_up_time());
     window->set_motor_status_message(jrk::diagnose(cached_settings, variables),
@@ -592,11 +592,11 @@ void main_controller::handle_settings_changed()
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
-  window->set_pid_proportional_groupbox(settings.get_proportional_multiplier(),
+  window->set_pid_proportional(settings.get_proportional_multiplier(),
     settings.get_proportional_exponent());
-  window->set_pid_integral_groupbox(settings.get_integral_multiplier(),
+  window->set_pid_integral(settings.get_integral_multiplier(),
     settings.get_integral_exponent());
-  window->set_pid_derivative_groupbox(settings.get_derivative_multiplier(),
+  window->set_pid_derivative(settings.get_derivative_multiplier(),
     settings.get_derivative_exponent());
 
   window->set_pwm_frequency(settings.get_pwm_frequency());
@@ -651,13 +651,6 @@ void main_controller::handle_settings_loaded()
   {
     window->set_manual_target_range(0, 4095);
   }
-
-  window->set_pid_proportional_groupbox(settings.get_proportional_multiplier(),
-    settings.get_proportional_exponent());
-  window->set_pid_integral_groupbox(settings.get_integral_multiplier(),
-    settings.get_integral_exponent());
-  window->set_pid_derivative_groupbox(settings.get_derivative_multiplier(),
-    settings.get_derivative_exponent());
 
   cached_settings = settings;
 
@@ -978,7 +971,7 @@ void main_controller::handle_feedback_wraparound_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_proportional_values(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_proportional_multiplier(multiplier);
@@ -987,7 +980,7 @@ void main_controller::handle_pid_proportional_values(uint16_t multiplier, uint16
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_integral_values(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_integral_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_integral_multiplier(multiplier);
@@ -996,7 +989,7 @@ void main_controller::handle_pid_integral_values(uint16_t multiplier, uint16_t e
   handle_settings_changed();
 }
 
-void main_controller::handle_pid_derivative_values(uint16_t multiplier, uint16_t exponent)
+void main_controller::handle_pid_derivative_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
   settings.set_derivative_multiplier(multiplier);

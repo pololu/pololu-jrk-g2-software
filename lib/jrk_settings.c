@@ -85,18 +85,17 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
 {
   if (settings == NULL) { return; }
 
-  uint32_t product = settings->product;
-
-  // The product should be set beforehand, and if it is not then we should do
-  // nothing.
-  if (product == 0)
-  {
-    return;
-  }
+  uint32_t product = jrk_settings_get_product(settings);
 
   // Reset all fields to zero and then restore the product.
   memset(settings, 0, sizeof(jrk_settings));
   jrk_settings_set_product(settings, product);
+
+  // The product should be set beforehand, and if it is not then quit.
+  if (product == 0)
+  {
+    return;
+  }
 
   // Beginning of auto-generated settings defaults.
 

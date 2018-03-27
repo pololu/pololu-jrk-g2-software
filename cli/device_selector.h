@@ -35,7 +35,7 @@ public:
 
   jrk::device select_device()
   {
-    if (device) { return device; }
+    if (device.is_present()) { return device; }
 
     auto list = list_devices();
     if (list.size() == 0)

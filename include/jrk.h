@@ -1150,7 +1150,6 @@ uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 //
 // - jrk_current_limit_code_to_ma()
 // - jrk_current_limit_ma_to_code()
-// - jrk_current_limig_code_step()
 JRK_API
 void jrk_settings_set_current_limit_code_forward(jrk_settings *,
   uint16_t current_limit_code_forward);
@@ -2242,14 +2241,18 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 JRK_API
 const uint16_t * jrk_get_recommended_codes(uint32_t product, size_t * code_count);
 
+// TODO: need a function here for getting the list of recommended codes
+// TODO: maybe make versions of these functions that don't need a settings object
+// like the Tic API; they would use calibration values of 0.
+
 // Converts max current codes to milliamps for the specified product.  You can
 // use this to interpret the codes returned by
 // jrk_settings_get_current_limit_code_forward() or
 // jrk_settings_get_current_limit_code_reverse().
 //
-// The raw argument should be a raw current limit value.
+// The code argument should be a current limit code.
 //
-// See also jrk_current_limit_ma_to_raw().
+// See also jrk_current_limit_ma_to_code().
 JRK_API
 uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 
@@ -2261,7 +2264,7 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 // Note that this function only returns codes that are in the recommended set, a
 // subset of the codes supported by the device.
 //
-// The raw argument should be a raw current limit value.
+// The ma argument should be a current limit in milliamps.
 //
 // See also jrk_current_limit_code_to_ma().
 JRK_API

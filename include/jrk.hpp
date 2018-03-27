@@ -136,9 +136,13 @@ namespace jrk
       pointer_reset();
     }
 
-    /// Implicit conversion to bool.  Returns true if the underlying pointer is
-    /// not NULL.
-    operator bool() const noexcept
+    /// Returns true if this object is wrapping something real (i.e. the
+    /// underlying pointer is not NULL).
+    ///
+    /// We don't want to allow implicit conversion to bool because that weakens
+    /// the type-checker a lot, allowing code like 'int x = some_object;' to
+    /// compile.
+    bool is_present() const noexcept
     {
       return pointer != NULL;
     }
@@ -269,6 +273,20 @@ namespace jrk
     explicit settings(jrk_settings * p = NULL) noexcept :
       unique_pointer_wrapper_with_copy(p)
     {
+    }
+
+    /// Wrapper for jrk_settings_create().
+    static settings create()
+    {
+      jrk_settings * p;
+      throw_if_needed(jrk_settings_create(&p));
+      return settings(p);
+    }
+
+    /// Wrapper for jrk_settings_fill_with_defaults().
+    void fill_with_defaults()
+    {
+      jrk_settings_fill_with_defaults(pointer);
     }
 
     /// Wrapper for jrk_settings_fix().
