@@ -717,8 +717,8 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
   QMultiMap<int, int> mapping;
   for (size_t i = 0; i < code_count; i++)
   {
-    uint8_t code = code_table[i];
-    uint32_t current = controller->get_current_limit_value(code);
+    uint16_t code = code_table[i];
+    uint32_t current = controller->current_limit_code_to_ma(code);
     mapping.insert(code, current);
   }
 

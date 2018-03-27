@@ -656,9 +656,9 @@ void main_controller::handle_settings_loaded()
   settings_modified = false;
 }
 
-double main_controller::get_current_limit_value(uint16_t value)
+uint32_t main_controller::current_limit_code_to_ma(uint16_t code)
 {
-  return jrk::current_limit_code_to_ma(settings, value);
+  return jrk::current_limit_code_to_ma(settings, code);
 }
 
 void main_controller::recalculate_motor_asymmetric()

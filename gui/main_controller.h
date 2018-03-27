@@ -152,7 +152,7 @@ public:
 
   void handle_upload_complete();
 
-  double get_current_limit_value(uint16_t value);
+  uint32_t current_limit_code_to_ma(uint16_t code);
 
 private:
   // This is called whenever it is possible that we have connected to a
