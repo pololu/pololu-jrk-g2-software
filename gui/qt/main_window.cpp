@@ -709,9 +709,10 @@ void main_window::set_current_limit_code_reverse(uint16_t current_limit)
 
 void main_window::get_recommended_current_limit_codes(uint32_t product)
 {
+  // TODO: use the C++ version of this function so it gets tested
   size_t code_count;
   const uint16_t * code_table =
-    jrk_get_recommended_codes(product, &code_count);
+    jrk_get_recommended_current_limit_codes(product, &code_count);
 
   QMultiMap<int, int> mapping;
   for (size_t i = 0; i < code_count; i++)
