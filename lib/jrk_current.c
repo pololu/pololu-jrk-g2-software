@@ -197,16 +197,24 @@ static uint16_t jrk_get_vilim(uint32_t product, uint8_t dac_level)
   return table[dac_level & 0x1F];
 }
 
-static uint16_t * jrk_get_recommended_codes(uint32_t product)
+const uint16_t * jrk_get_recommended_codes(uint32_t product, size_t * code_count)
 {
+  size_t count = 0;
+  const uint16_t * table = 0;
+
   if (product == JRK_PRODUCT_UMC04A_40V)
   {
-    return jrk_umc04a_40v_recommended_codes;
+    table = jrk_umc04a_40v_recommended_codes;
+    count = sizeof(jrk_umc04a_40v_recommended_codes);
   }
   else
   {
-    return jrk_umc04a_30v_recommended_codes;
+    table = jrk_umc04a_30v_recommended_codes;
+    count = sizeof(jrk_umc04a_30v_recommended_codes);
   }
+
+  if (code_count) { *code_count = count; }
+  return table;
 }
 
 // Gets the rsense resistor value for the jrk, in units of milliohms.
@@ -319,7 +327,9 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma
   uint32_t product = jrk_settings_get_product(settings);
   if (product == 0) { return 0; }
 
-  for (uint16_t * c = jrk_get_recommended_codes(product); *c; c++)
+  size_t count;
+
+  for (const uint16_t * c = jrk_get_recommended_codes(product, &count); *c; c++)
   {
     if (jrk_current_limit_code_to_ma(settings, *c) < ma)
     {

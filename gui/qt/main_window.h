@@ -179,7 +179,7 @@ public:
   void set_brake_duration_reverse(uint32_t);
   void set_current_limit_code_forward(uint16_t);
   void set_current_limit_code_reverse(uint16_t);
-  void recommended_codes();
+  void get_recommended_current_limit_codes(uint32_t);
   void set_max_current_forward(uint16_t);
   void set_max_current_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
@@ -607,7 +607,6 @@ private:
   QSpinBox * brake_duration_forward_spinbox;
   QSpinBox * brake_duration_reverse_spinbox;
   QLabel * current_limit_label;
-  QMultiMap<int, int> recommended_current_limit_codes;
   nice_spin_box * current_limit_forward_spinbox;
   nice_spin_box * current_limit_reverse_spinbox;
   QLabel * current_limit_means_label;

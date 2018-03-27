@@ -2237,6 +2237,11 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 
 //// Current limiting and measurment ////////////////////////////////////////////
 
+// Returns the recommended codes for the product along with the number of codes
+// in the table.
+JRK_API
+const uint16_t * jrk_get_recommended_codes(uint32_t product, size_t * code_count);
+
 // Converts max current codes to milliamps for the specified product.  You can
 // use this to interpret the codes returned by
 // jrk_settings_get_current_limit_code_forward() or

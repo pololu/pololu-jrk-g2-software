@@ -698,24 +698,22 @@ void main_window::set_current_limit_code_reverse(uint16_t current_limit)
   set_spin_box(current_limit_reverse_spinbox, current_limit);
 }
 
-void main_window::recommended_codes()
+void main_window::get_recommended_current_limit_codes(uint32_t product)
 {
-  //tmphax
-  // This code will be replaced by a function in the JRK_API that created the table
-  // of recommended codes and the current limit values.
-  recommended_current_limit_codes.clear();
-  recommended_current_limit_codes.insert(0, controller->get_current_limit_value(0));
-  for (int i = 1; i < 96; i++)
+  size_t code_count;
+  const uint16_t * code_table =
+    jrk_get_recommended_codes(product, &code_count);
+
+  QMultiMap<int, int> mapping;
+  for (size_t i = 0; i < code_count; i++)
   {
-    int display_value = (controller->get_current_limit_value(i));
-    if (display_value > recommended_current_limit_codes.last())
-    {
-      recommended_current_limit_codes.insert(i, controller->get_current_limit_value(i));
-    }
+    uint8_t code = code_table[i];
+    uint32_t current = controller->get_current_limit_value(code);
+    mapping.insert(code, current);
   }
 
-  current_limit_forward_spinbox->set_mapping(recommended_current_limit_codes);
-  current_limit_reverse_spinbox->set_mapping(recommended_current_limit_codes);
+  current_limit_forward_spinbox->set_mapping(mapping);
+  current_limit_reverse_spinbox->set_mapping(mapping);
 }
 
 void main_window::set_max_current_forward(uint16_t current)

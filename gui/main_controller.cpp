@@ -610,7 +610,7 @@ void main_controller::handle_settings_changed()
 
   window->set_motor_asymmetric(motor_asymmetric);
 
-  window->recommended_codes();
+  window->get_recommended_current_limit_codes(settings.get_product());
   window->set_max_duty_cycle_reverse(settings.get_max_duty_cycle_reverse());
   window->set_max_acceleration_reverse(settings.get_max_acceleration_reverse());
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
