@@ -560,7 +560,6 @@ void main_controller::handle_settings_changed()
   window->set_input_enable_device_number(settings.get_serial_enable_14bit_device_number());
   window->set_input_serial_timeout(settings.get_serial_timeout());
   window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
-  window->set_input_never_sleep(settings.get_never_sleep());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_error_minimum(settings.get_input_error_minimum());
   window->set_input_error_maximum(settings.get_input_error_maximum());
@@ -645,6 +644,9 @@ void main_controller::handle_settings_changed()
   window->set_overcurrent_threshold(settings.get_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+
+  window->set_never_sleep(settings.get_never_sleep());
+  window->set_vin_calibration(settings.get_vin_calibration());
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -763,14 +765,6 @@ void main_controller::handle_input_disable_compact_protocol_input(bool value)
 {
   if (!connected()) { return; }
   settings.set_serial_disable_compact_protocol(value);
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_input_never_sleep_input(bool value)
-{
-  if (!connected()) { return; }
-  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1282,10 +1276,10 @@ void main_controller::handle_reset_counts_input()
   window->reset_error_counts();
 }
 
-void main_controller::handle_never_sleep_input(bool never_sleep)
+void main_controller::handle_never_sleep_input(bool value)
 {
   if (!connected()) { return; }
-  jrk_settings_set_never_sleep(settings.get_pointer(), never_sleep);
+  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1293,7 +1287,7 @@ void main_controller::handle_never_sleep_input(bool never_sleep)
 void main_controller::handle_vin_calibration_input(int16_t vin_calibration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_vin_calibration(settings.get_pointer(), vin_calibration);
+  settings.set_vin_calibration(vin_calibration);
   settings_modified = true;
   handle_settings_changed();
 }

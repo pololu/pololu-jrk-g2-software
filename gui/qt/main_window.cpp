@@ -361,16 +361,6 @@ void main_window::set_apply_settings_enabled(bool enabled)
   apply_settings_action->setEnabled(enabled);
 }
 
-void main_window::set_vin_calibration(int16_t vin_calibration)
-{
-  // TODO: set_spin_box(vin_calibration_value, vin_calibration);
-}
-
-void main_window::set_never_sleep(bool never_sleep)
-{
-  set_check_box(input_never_sleep_checkbox, never_sleep);
-}
-
 void main_window::set_motor_status_message(std::string const & message, uint16_t error_flag)
 {
   // setStyleSheet() is expensive, so only call it if something actually
@@ -469,11 +459,6 @@ void main_window::set_input_serial_timeout(uint16_t value)
 void main_window::set_input_compact_protocol(bool enabled)
 {
   set_check_box(input_disable_compact_protocol_checkbox, enabled);
-}
-
-void main_window::set_input_never_sleep(bool enabled)
-{
-  set_check_box(input_never_sleep_checkbox, enabled);
 }
 
 void main_window::set_input_error_minimum(uint16_t input_error_minimum)
@@ -865,6 +850,16 @@ void main_window::reset_error_counts()
   }
 }
 
+void main_window::set_vin_calibration(int16_t vin_calibration)
+{
+  set_spin_box(vin_calibration_value, vin_calibration);
+}
+
+void main_window::set_never_sleep(bool enabled)
+{
+  set_check_box(never_sleep_checkbox, enabled);
+}
+
 void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
 {
   set_spin_box(input_uart_fixed_baud_spinbox, serial_baud_rate);
@@ -1244,12 +1239,6 @@ void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int st
   controller->handle_input_disable_compact_protocol_input(state == Qt::Checked);
 }
 
-void main_window::on_input_never_sleep_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_never_sleep_input(state == Qt::Checked);
-}
-
 void main_window::on_input_error_minimum_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
@@ -1587,6 +1576,18 @@ void main_window::on_errors_reset_counts_clicked()
   reset_error_counts();
 }
 
+void main_window::on_never_sleep_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_never_sleep_input(state == Qt::Checked);
+}
+
+void main_window::on_vin_calibration_value_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_vin_calibration_input(value);
+}
+
 void main_window::setup_ui()
 {
   setObjectName("main_window");
@@ -1634,6 +1635,7 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_pid_tab(), tr("PID"));
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
+  tab_widget->addTab(setup_advanced_tab(), tr("Advanced"));
 
   // Let the user specify which tab to start on.  Handy for development.
   auto env = QProcessEnvironment::systemEnvironment();
@@ -2196,9 +2198,6 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
   input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
 
-  input_never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
-  input_never_sleep_checkbox->setObjectName("input_never_sleep_checkbox");
-
   QHBoxLayout *uart_fixed_baud = new QHBoxLayout();
   uart_fixed_baud->addWidget(input_uart_fixed_baud_radio, 0, Qt::AlignLeft);
   uart_fixed_baud->addWidget(input_uart_fixed_baud_spinbox, 0, Qt::AlignLeft);
@@ -2222,7 +2221,6 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_serial_layout->addLayout(timeout_layout, 7, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 8, 0, Qt::AlignLeft);
   input_serial_layout->addItem(setup_vertical_spacer(), 9, 0);
-  input_serial_layout->addWidget(input_never_sleep_checkbox, 10, 0, Qt::AlignLeft);
 
   input_serial_groupbox->setLayout(input_serial_layout);
 
@@ -3013,3 +3011,47 @@ void main_window::setup_error_row(int error_number,
   row.enabled_radio->setVisible(!always_latched);
 }
 
+QWidget * main_window::setup_advanced_tab()
+{
+  advanced_page_widget = new QWidget();
+
+  QGridLayout * layout = new QGridLayout();
+
+  layout->addWidget(setup_advanced_miscellaneous_groupbox(), 0, 0);
+
+  layout->setColumnStretch(1, 1);
+  layout->setRowStretch(1, 1);
+
+  advanced_page_widget->setLayout(layout);
+
+  return advanced_page_widget;
+}
+
+QWidget * main_window::setup_advanced_miscellaneous_groupbox()
+{
+  advanced_miscellaneous_groupbox = new QGroupBox(tr("Miscellaneous"));
+  advanced_miscellaneous_groupbox->setObjectName("advanced_miscellaneous_groupbox");
+
+  never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
+  never_sleep_checkbox->setObjectName("never_sleep_checkbox");
+
+  QLabel * vin_calibration_label = new QLabel(tr("VIN measurement calibration:"));
+
+  vin_calibration_value = new QSpinBox();
+  vin_calibration_value->setObjectName("vin_calibration_value");
+  vin_calibration_value->setRange(-500, 500);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+
+  QHBoxLayout * vin_calibration_layout = new QHBoxLayout();
+  vin_calibration_layout->addWidget(vin_calibration_label);
+  vin_calibration_layout->addWidget(vin_calibration_value);
+  vin_calibration_layout->addStretch();
+
+  layout->addWidget(never_sleep_checkbox, Qt::AlignLeft);
+  layout->addLayout(vin_calibration_layout, Qt::AlignLeft);
+
+  advanced_miscellaneous_groupbox->setLayout(layout);
+
+  return advanced_miscellaneous_groupbox;
+}

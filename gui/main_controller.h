@@ -88,7 +88,6 @@ public:
   void handle_input_device_number_input(bool value);
   void handle_input_timeout_input(uint16_t value);
   void handle_input_disable_compact_protocol_input(bool value);
-  void handle_input_never_sleep_input(bool value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_error_minimum_input(uint16_t input_error_minimum);
   void handle_input_error_maximum_input(uint16_t input_error_maximum);
@@ -148,7 +147,7 @@ public:
   void handle_clear_errors_input();
   void handle_reset_counts_input();
 
-  void handle_never_sleep_input(bool never_sleep);
+  void handle_never_sleep_input(bool value);
   void handle_vin_calibration_input(int16_t vin_calibration);
 
   void handle_upload_complete();
