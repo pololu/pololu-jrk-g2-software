@@ -709,13 +709,11 @@ void main_window::set_current_limit_code_reverse(uint16_t current_limit)
 
 void main_window::get_recommended_current_limit_codes(uint32_t product)
 {
-  // TODO: use the C++ version of this function so it gets tested
-  size_t code_count;
-  const uint16_t * code_table =
-    jrk_get_recommended_current_limit_codes(product, &code_count);
+  const std::vector<uint16_t> code_table =
+    jrk::get_recommended_current_limit_codes(product);
 
   QMap<int, int> mapping;
-  for (size_t i = 0; i < code_count; i++)
+  for (size_t i = 0; i < code_table.size(); i++)
   {
     uint16_t code = code_table[i];
     uint32_t current = controller->current_limit_code_to_ma(code);
