@@ -27,9 +27,11 @@ void nice_spin_box::set_code_from_value(int value)
 // nice_spin_box and set the range of the QSpinBox.
 void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map)
 {
-  if (!sent_map.empty())
+  if (!sent_map.empty() && (sent_map != mapping))
   {
     mapping = sent_map;
+
+    setValue(code);
 
     // The "key" values can be within any range so the range of the
     // spin box must dynamic based on the key values mapped to the control.
