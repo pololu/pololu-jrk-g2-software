@@ -25,7 +25,7 @@ void nice_spin_box::set_code_from_value(int value)
 
 // The main_window uses this public function to send the updated map to the
 // nice_spin_box and set the range of the QSpinBox.
-void nice_spin_box::set_mapping(QMultiMap<int, int>& sent_map)
+void nice_spin_box::set_mapping(QMap<int, int>& sent_map)
 {
   if (!sent_map.empty() && (sent_map != mapping))
   {
@@ -50,7 +50,7 @@ void nice_spin_box::stepBy(int step_value)
   }
   else
   {
-    QMultiMap<int, int>::const_iterator it;
+    QMap<int, int>::const_iterator it;
 
     it = mapping.find(code);
 

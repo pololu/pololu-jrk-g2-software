@@ -714,7 +714,7 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
   const uint16_t * code_table =
     jrk_get_recommended_current_limit_codes(product, &code_count);
 
-  QMultiMap<int, int> mapping;
+  QMap<int, int> mapping;
   for (size_t i = 0; i < code_count; i++)
   {
     uint16_t code = code_table[i];
