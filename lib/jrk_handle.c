@@ -190,6 +190,14 @@ jrk_error * jrk_set_target(jrk_handle * handle, uint16_t target)
     return jrk_error_create("Handle is null.");
   }
 
+  // Cap the value since the firmware doesn't cap it, it could concievably
+  // cause some minor problems if people set targets outside of the allowed
+  // range, and the Arduino library does it.
+  if (target > 4095)
+  {
+    target = 4095;
+  }
+
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0x40, JRK_CMD_SET_TARGET_USB, target, 0, NULL, 0, NULL));
 
