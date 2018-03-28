@@ -63,25 +63,25 @@ umc04a_40v_config = {
   r_ilim_bot: 68100,
 }
 
-puts "static const uint16_t jrk_umc04a_30v_vilim_table[32] ="
+puts "static const uint16_t jrk_30v_vilim_table[32] ="
 puts "{"
 print_vilim_table(umc04a_30v_config)
 puts "};"
 puts
 
-puts "static const uint16_t jrk_umc04a_40v_vilim_table[32] ="
+puts "static const uint16_t jrk_40v_vilim_table[32] ="
 puts "{"
 print_vilim_table(umc04a_40v_config)
 puts "};"
 puts
 
-puts "static const uint16_t jrk_umc04a_30v_recommended_codes[] ="
+puts "static const uint16_t jrk_30v_recommended_codes[] ="
 puts "{"
 print_recommended_codes(umc04a_30v_config)
 puts "};"
 puts
 
-puts "static const uint16_t jrk_umc04a_40v_recommended_codes[] ="
+puts "static const uint16_t jrk_40v_recommended_codes[] ="
 puts "{"
 print_recommended_codes(umc04a_40v_config)
 puts "};"

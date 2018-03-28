@@ -19,6 +19,8 @@ extern "C" {
 
 #define JRK_PRODUCT_UMC04A_30V 1
 #define JRK_PRODUCT_UMC04A_40V 2
+#define JRK_PRODUCT_UMC05A_30V 3
+#define JRK_PRODUCT_UMC05A_40V 4
 
 // The maximum firmware major version supported by this library.
 #define JRK_FIRMWARE_VERSION_MAJOR_MAX 1
