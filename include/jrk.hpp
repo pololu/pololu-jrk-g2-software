@@ -1847,6 +1847,15 @@ namespace jrk
     /// \endcond
   };
 
+  /// Wrapper for jrk_get_recommended_current_limit_codes().
+  inline const std::vector<uint16_t> get_recommended_current_limit_codes(
+    uint32_t product)
+  {
+    size_t count;
+    const uint16_t * table = jrk_get_recommended_current_limit_codes(product, &count);
+    return std::vector<uint16_t>(table, table + count);
+  }
+
   /// Wrapper for jrk_current_limit_code_to_ma().
   inline uint32_t current_limit_code_to_ma(const settings & settings, uint16_t code)
   {

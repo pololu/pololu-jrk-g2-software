@@ -2238,18 +2238,20 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 
 //// Current limiting and measurment ////////////////////////////////////////////
 
-// TODO: need a function here for getting the list of recommended codes
-// TODO: maybe make versions of these functions that don't need a settings object
-// like the Tic API; they would use calibration values of 0.
+/// Gets a list of the recommended current limit codes for the specified
+/// product.  They will be in ascending order by current limit in milliamps.
+JRK_API
+const uint16_t * jrk_get_recommended_current_limit_codes(
+  uint32_t product, size_t * code_count);
 
-// Converts max current codes to milliamps for the specified product.  You can
-// use this to interpret the codes returned by
-// jrk_settings_get_current_limit_code_forward() or
-// jrk_settings_get_current_limit_code_reverse().
-//
-// The code argument should be a current limit code.
-//
-// See also jrk_current_limit_ma_to_code().
+/// Converts max current codes to milliamps for the specified product.  You can
+/// use this to interpret the codes returned by
+/// jrk_settings_get_current_limit_code_forward() or
+/// jrk_settings_get_current_limit_code_reverse().
+///
+/// The code argument should be a current limit code.
+///
+/// See also jrk_current_limit_ma_to_code().
 JRK_API
 uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 
@@ -2271,6 +2273,10 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 // settings object and a variables object read from the same device.
 //
 // The function returns the measured current, in milliamps.
+//
+// If you don't want to actually fetch settings from the jrk, you can just
+// create a new settings object, set it to the right product, and fill it with
+// the default settings, using the jrk_settings_* functions of this library.
 //
 // Note for umc04a jrk models: If current chopping happened during the PID
 // period, the value returned here will not be trustable.
