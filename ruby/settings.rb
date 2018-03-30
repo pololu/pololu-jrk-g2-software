@@ -542,7 +542,7 @@ EOF
     name: 'current_samples_exponent',
     type: :uint8_t,
     range: 0..10,
-    default: 7,  # TODO: are we going to reduce this?
+    default: 7,
     comment:
       "This setting specifies how many analog samples to take when measuring\n" \
       "the current.  The number of samples will be 2^x, where x is this setting.",
@@ -571,13 +571,13 @@ EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant amount.
 
-The current sense circuitry on a umc04a jrk produces a constant voltage of
-about 50 mV when the motor driver is powered, even if there is no current
-flowing through the motor.  This offset must be subtracted from analog
-voltages representing current limits or current measurements in order to
-convert those values to amps.
+The current sense circuitry on a umc04a/umc05a jrk produces a constant
+voltage of about 50 mV when the motor driver is powered, even if there is no
+current flowing through the motor.  This offset must be subtracted from
+analog voltages representing current limits or current measurements in order
+to convert those values to amps.
 
-For the umc04a jrk models, this setting is defined by the formula:
+For the umc04a/umc05a jrk models, this setting is defined by the formula:
 
   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 
@@ -714,7 +714,7 @@ EOF
     name: 'current_limit_code_forward',
     type: :uint16_t,
     overridable: true,
-    default: 26,  # about 10 A on umc04a
+    default: 26,
     max: 95,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
@@ -734,7 +734,7 @@ EOF
     name: 'current_limit_code_reverse',
     type: :uint16_t,
     overridable: true,
-    default: 10,
+    default: 26,
     max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
@@ -780,7 +780,7 @@ this value, the jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a jrks, the units of this setting are in milliamps.
+For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 EOF
   },
   {
@@ -794,7 +794,7 @@ this value, the jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a jrks, the units of this setting are in milliamps.
+For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 EOF
   },
   {
