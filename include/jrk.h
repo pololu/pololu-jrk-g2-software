@@ -22,16 +22,6 @@ extern "C" {
 #define JRK_PRODUCT_UMC05A_30V 3
 #define JRK_PRODUCT_UMC05A_40V 4
 
-#define JRK_PIN_NUM_SCL 0
-#define JRK_PIN_NUM_SDA 1
-#define JRK_PIN_NUM_TX 2
-#define JRK_PIN_NUM_RX 3
-#define JRK_PIN_NUM_RC 4
-#define JRK_PIN_NUM_AUX 5
-#define JRK_PIN_NUM_FBA 6
-#define JRK_PIN_NUM_FBT 7
-#define JRK_CONTROL_PIN_COUNT 8
-
 // The maximum firmware major version supported by this library.
 #define JRK_FIRMWARE_VERSION_MAJOR_MAX 1
 
@@ -103,12 +93,6 @@ const char * jrk_look_up_force_mode_name_ui(uint8_t force_mode);
 JRK_API
 const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset);
 
-/// Looks up the string corresponding to the specified pin state, e.g. "Output
-/// low".  The pin_state argument should be one of the JRK_PIN_STATE_* macros,
-/// but if it is not, this functions returns "(Unknown)".  The returned string
-/// will be valid indefinitely and should not be freed.
-JRK_API
-const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state);
 
 // jrk_error ////////////////////////////////////////////////////////////////////
 
@@ -1894,18 +1878,6 @@ uint16_t jrk_variables_get_analog_reading(const jrk_variables *, uint8_t pin);
 // will be 0.  See jrk_variables_get_analog_reading() for those pins.
 JRK_API
 bool jrk_variables_get_digital_reading(const jrk_variables *, uint8_t pin);
-
-/// Gets the pin state for the specified pin, i.e. what kind of input or output
-/// it is.
-///
-/// Note that the state might be misleading if the pin is being used as a serial
-/// or I2C pin.
-///
-/// This pin argument should be one of the JRK_PIN_NUM_* macros.
-///
-/// The return value is one of the JRK_PIN_STATE_* macros.
-JRK_API
-uint8_t jrk_variables_get_pin_state(const jrk_variables *, uint8_t pin);
 
 
 // jrk_device ///////////////////////////////////////////////////////////////////

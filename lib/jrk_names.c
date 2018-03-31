@@ -107,15 +107,6 @@ const jrk_name jrk_device_reset_names_ui[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_pin_state_names_ui[] =
-{
-  { "High impedance", JRK_PIN_STATE_HIGH_IMPEDANCE },
-  { "Pulled up", JRK_PIN_STATE_PULLED_UP },
-  { "Output low", JRK_PIN_STATE_OUTPUT_LOW },
-  { "Output high", JRK_PIN_STATE_OUTPUT_HIGH },
-  { NULL, 0},
-};
-
 const char * jrk_look_up_product_name_short(uint32_t product)
 {
   const char * str = "";
@@ -148,13 +139,6 @@ const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset)
 {
   const char * str = "(Unknown)";
   jrk_code_to_name(jrk_device_reset_names_ui, device_reset, &str);
-  return str;
-}
-
-const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state)
-{
-  const char * str = "(Unknown)";
-  jrk_code_to_name(jrk_pin_state_names_ui, pin_state, &str);
   return str;
 }
 
