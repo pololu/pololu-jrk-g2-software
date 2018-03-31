@@ -1115,6 +1115,54 @@ namespace jrk
       return jrk_settings_get_vin_calibration(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_disable_i2c_pullups().
+    void set_disable_i2c_pullups(bool value) noexcept
+    {
+      jrk_settings_set_disable_i2c_pullups(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_disable_i2c_pullups().
+    bool get_disable_i2c_pullups() const noexcept
+    {
+      return jrk_settings_get_disable_i2c_pullups(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_analog_sda_pullup().
+    void set_analog_sda_pullup(bool value) noexcept
+    {
+      jrk_settings_set_analog_sda_pullup(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_analog_sda_pullup().
+    bool get_analog_sda_pullup() const noexcept
+    {
+      return jrk_settings_get_analog_sda_pullup(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_always_analog_sda().
+    void set_always_analog_sda(bool value) noexcept
+    {
+      jrk_settings_set_always_analog_sda(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_always_analog_sda().
+    bool get_always_analog_sda() const noexcept
+    {
+      return jrk_settings_get_always_analog_sda(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_always_analog_fba().
+    void set_always_analog_fba(bool value) noexcept
+    {
+      jrk_settings_set_always_analog_fba(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_always_analog_fba().
+    bool get_always_analog_fba() const noexcept
+    {
+      return jrk_settings_get_always_analog_fba(pointer);
+    }
+
     // End of auto-generated settings C++ accessors.
   };
 

@@ -865,6 +865,46 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_vin_calibration(settings, vin_calibration);
   }
+  else if (!strcmp(key, "disable_i2c_pullups"))
+  {
+    uint32_t disable_i2c_pullups;
+    if (!jrk_name_to_code(jrk_bool_names, value, &disable_i2c_pullups))
+    {
+      return jrk_error_create("Unrecognized disable_i2c_pullups value.");
+    }
+    jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
+    jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
+  }
+  else if (!strcmp(key, "analog_sda_pullup"))
+  {
+    uint32_t analog_sda_pullup;
+    if (!jrk_name_to_code(jrk_bool_names, value, &analog_sda_pullup))
+    {
+      return jrk_error_create("Unrecognized analog_sda_pullup value.");
+    }
+    jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
+    jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
+  }
+  else if (!strcmp(key, "always_analog_sda"))
+  {
+    uint32_t always_analog_sda;
+    if (!jrk_name_to_code(jrk_bool_names, value, &always_analog_sda))
+    {
+      return jrk_error_create("Unrecognized always_analog_sda value.");
+    }
+    jrk_settings_set_always_analog_sda(settings, always_analog_sda);
+    jrk_settings_set_always_analog_sda(settings, always_analog_sda);
+  }
+  else if (!strcmp(key, "always_analog_fba"))
+  {
+    uint32_t always_analog_fba;
+    if (!jrk_name_to_code(jrk_bool_names, value, &always_analog_fba))
+    {
+      return jrk_error_create("Unrecognized always_analog_fba value.");
+    }
+    jrk_settings_set_always_analog_fba(settings, always_analog_fba);
+    jrk_settings_set_always_analog_fba(settings, always_analog_fba);
+  }
 
   // End of auto-generated settings file parsing code.
 

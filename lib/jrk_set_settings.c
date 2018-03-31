@@ -312,6 +312,26 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     write_int16_t(buf + JRK_SETTING_VIN_CALIBRATION, vin_calibration);
   }
 
+  {
+    bool disable_i2c_pullups = jrk_settings_get_disable_i2c_pullups(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= disable_i2c_pullups << JRK_OPTIONS_BYTE1_DISABLE_I2C_PULLUPS;
+  }
+
+  {
+    bool analog_sda_pullup = jrk_settings_get_analog_sda_pullup(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= analog_sda_pullup << JRK_OPTIONS_BYTE1_ANALOG_SDA_PULLUP;
+  }
+
+  {
+    bool always_analog_sda = jrk_settings_get_always_analog_sda(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_sda << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA;
+  }
+
+  {
+    bool always_analog_fba = jrk_settings_get_always_analog_fba(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_fba << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA;
+  }
+
   // End of auto-generated settings-to-buffer code.
 
   {

@@ -376,6 +376,30 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "vin_calibration: %d\n", vin_calibration);
   }
 
+  {
+    bool disable_i2c_pullups = jrk_settings_get_disable_i2c_pullups(settings);
+    jrk_sprintf(&str, "disable_i2c_pullups: %s\n",
+      disable_i2c_pullups ? "true" : "false");
+  }
+
+  {
+    bool analog_sda_pullup = jrk_settings_get_analog_sda_pullup(settings);
+    jrk_sprintf(&str, "analog_sda_pullup: %s\n",
+      analog_sda_pullup ? "true" : "false");
+  }
+
+  {
+    bool always_analog_sda = jrk_settings_get_always_analog_sda(settings);
+    jrk_sprintf(&str, "always_analog_sda: %s\n",
+      always_analog_sda ? "true" : "false");
+  }
+
+  {
+    bool always_analog_fba = jrk_settings_get_always_analog_fba(settings);
+    jrk_sprintf(&str, "always_analog_fba: %s\n",
+      always_analog_fba ? "true" : "false");
+  }
+
   // End of auto-generated settings file printing code.
 
   if (str.data == NULL)

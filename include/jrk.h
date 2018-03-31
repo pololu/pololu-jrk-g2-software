@@ -968,13 +968,13 @@ uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings *);
 // You can use this current calibration setting to correct current measurements
 // and current limit settings that are off by a constant amount.
 //
-// The current sense circuitry on a umc04a jrk produces a constant voltage of
-// about 50 mV when the motor driver is powered, even if there is no current
-// flowing through the motor.  This offset must be subtracted from analog
-// voltages representing current limits or current measurements in order to
-// convert those values to amps.
+// The current sense circuitry on a umc04a/umc05a jrks produces a constant
+// voltage of about 50 mV when the motor driver is powered, even if there is no
+// current flowing through the motor.  This offset must be subtracted from
+// analog voltages representing current limits or current measurements in order
+// to convert those values to amps.
 //
-// For the umc04a jrk models, this setting is defined by the formula:
+// For the umc04a/umc05a jrk models, this setting is defined by the formula:
 //
 //   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 //
@@ -1146,6 +1146,7 @@ uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 //
 // - jrk_current_limit_code_to_ma()
 // - jrk_current_limit_ma_to_code()
+// - jrk_current_limit_code_step()
 JRK_API
 void jrk_settings_set_current_limit_code_forward(jrk_settings *,
   uint16_t current_limit_code_forward);
@@ -1206,7 +1207,7 @@ uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 //
 // A value of 0 means no limit.
 //
-// For the umc04a jrks, the units of this setting are in milliamps.
+// For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
 void jrk_settings_set_max_current_forward(jrk_settings *,
   uint16_t max_current_forward);
@@ -1223,7 +1224,7 @@ uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
 //
 // A value of 0 means no limit.
 //
-// For the umc04a jrks, the units of this setting are in milliamps.
+// For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
 void jrk_settings_set_max_current_reverse(jrk_settings *,
   uint16_t max_current_reverse);
@@ -1319,6 +1320,58 @@ void jrk_settings_set_vin_calibration(jrk_settings *,
 // jrk_settings_set_vin_calibration.
 JRK_API
 int16_t jrk_settings_get_vin_calibration(const jrk_settings *);
+
+// Sets the disable_i2c_pullups setting.
+//
+// This option disables the internal pull-up resistors on the SDA/AN and SCL
+// pins if those pins are being used for I2C communication.
+JRK_API
+void jrk_settings_set_disable_i2c_pullups(jrk_settings *,
+  bool disable_i2c_pullups);
+
+// Gets the disable_i2c_pullups setting, which is described in
+// jrk_settings_set_disable_i2c_pullups.
+JRK_API
+bool jrk_settings_get_disable_i2c_pullups(const jrk_settings *);
+
+// Sets the analog_sda_pullup setting.
+//
+// This option enables the internal pull-up resistor on the SDA/AN pin if it is
+// being used as an analog input.
+JRK_API
+void jrk_settings_set_analog_sda_pullup(jrk_settings *,
+  bool analog_sda_pullup);
+
+// Gets the analog_sda_pullup setting, which is described in
+// jrk_settings_set_analog_sda_pullup.
+JRK_API
+bool jrk_settings_get_analog_sda_pullup(const jrk_settings *);
+
+// Sets the always_analog_sda setting.
+//
+// This option causes the jrk to perform analog measurements on the SDA/AN pin
+// even if the "Input mode" setting is not "Analog".
+JRK_API
+void jrk_settings_set_always_analog_sda(jrk_settings *,
+  bool always_analog_sda);
+
+// Gets the always_analog_sda setting, which is described in
+// jrk_settings_set_always_analog_sda.
+JRK_API
+bool jrk_settings_get_always_analog_sda(const jrk_settings *);
+
+// Sets the always_analog_fba setting.
+//
+// This option causes the jrk to perform analog measurements on the FBA pin
+// even if the "Feedback mode" setting is not "Analog".
+JRK_API
+void jrk_settings_set_always_analog_fba(jrk_settings *,
+  bool always_analog_fba);
+
+// Gets the always_analog_fba setting, which is described in
+// jrk_settings_set_always_analog_fba.
+JRK_API
+bool jrk_settings_get_always_analog_fba(const jrk_settings *);
 
 // End of auto-generated settings accessor prototypes.
 

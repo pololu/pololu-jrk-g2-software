@@ -571,7 +571,7 @@ EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant amount.
 
-The current sense circuitry on a umc04a/umc05a jrk produces a constant
+The current sense circuitry on a umc04a/umc05a jrks produces a constant
 voltage of about 50 mV when the motor driver is powered, even if there is no
 current flowing through the motor.  This offset must be subtracted from
 analog voltages representing current limits or current measurements in order
@@ -727,7 +727,7 @@ in milliamps depends on what product you are using.  See also:
 
 - jrk_current_limit_code_to_ma()
 - jrk_current_limit_ma_to_code()
-- jrk_current_limig_code_step()
+- jrk_current_limit_code_step()
 EOF
   },
   {
@@ -861,6 +861,46 @@ One of the steps in the process is to multiply the VIN voltage reading by
 
 So for every 8 counts that you add or subtract from the vin_calibration
 setting, you increase or decrease the VIN voltage reading by about 1%.
+EOF
+  },
+  {
+    name: 'disable_i2c_pullups',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_DISABLE_I2C_PULLUPS',
+    comment: <<EOF
+This option disables the internal pull-up resistors on the SDA/AN and SCL
+pins if those pins are being used for I2C communication.
+EOF
+  },
+  {
+    name: 'analog_sda_pullup',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_ANALOG_SDA_PULLUP',
+    comment: <<EOF
+This option enables the internal pull-up resistor on the SDA/AN pin if it is
+being used as an analog input.
+EOF
+  },
+  {
+    name: 'always_analog_sda',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA',
+    comment: <<EOF
+This option causes the jrk to perform analog measurements on the SDA/AN pin
+even if the "Input mode" setting is not "Analog".
+EOF
+  },
+  {
+    name: 'always_analog_fba',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA',
+    comment: <<EOF
+This option causes the jrk to perform analog measurements on the FBA pin
+even if the "Feedback mode" setting is not "Analog".
 EOF
   },
 ]
