@@ -68,18 +68,6 @@ const jrk_name jrk_pwm_frequency_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_pin_func_names[] =
-{
-  { "default", JRK_PIN_FUNC_DEFAULT },
-  { "user_io", JRK_PIN_FUNC_USER_IO },
-  { "user_input", JRK_PIN_FUNC_USER_INPUT },
-  { "pot_power", JRK_PIN_FUNC_POT_POWER },
-  { "serial", JRK_PIN_FUNC_SERIAL },
-  { "rc", JRK_PIN_FUNC_RC },
-  { "tachometer", JRK_PIN_FUNC_TACHOMETER },
-  { NULL, 0 },
-};
-
 const jrk_name jrk_error_names_ui[] =
 {
   { "Awaiting command", 1 << JRK_ERROR_AWAITING_COMMAND },
