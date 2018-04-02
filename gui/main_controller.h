@@ -147,6 +147,10 @@ public:
   void handle_clear_errors_input();
   void handle_reset_counts_input();
 
+  void handle_disable_i2c_pullups_input(bool value);
+  void handle_analog_sda_pullup_input(bool value);
+  void handle_always_analog_sda_input(bool value);
+  void handle_always_analog_fba_input(bool value);
   void handle_never_sleep_input(bool value);
   void handle_vin_calibration_input(int16_t vin_calibration);
 

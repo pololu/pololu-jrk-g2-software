@@ -189,6 +189,10 @@ public:
   void increment_errors_occurred(uint16_t errors_occurred);
   void reset_error_counts();
 
+  void set_disable_i2c_pullups(bool enabled);
+  void set_analog_sda_pullup(bool enabled);
+  void set_always_analog_sda(bool enabled);
+  void set_always_analog_fba(bool enabled);
   void set_never_sleep(bool enabled);
   void set_vin_calibration(int16_t vin_calibration);
 
@@ -334,6 +338,10 @@ private slots:
   void on_errors_clear_errors_clicked();
   void on_errors_reset_counts_clicked();
 
+  void on_disable_i2c_pullups_stateChanged(int state);
+  void on_analog_sda_pullup_stateChanged(int state);
+  void on_always_analog_sda_stateChanged(int state);
+  void on_always_analog_fba_stateChanged(int state);
   void on_never_sleep_checkbox_stateChanged(int state);
   void on_vin_calibration_value_valueChanged(int value);
 
@@ -368,6 +376,7 @@ private:
     bool always_enabled, bool always_latched);
 
   QWidget * setup_advanced_tab();
+  QWidget * setup_pin_configuration_groupbox();
   QWidget * setup_advanced_miscellaneous_groupbox();
 
   QTimer *update_timer = NULL;
@@ -651,6 +660,13 @@ private:
   // advanced tab
 
   QWidget * advanced_page_widget;
+
+  QGroupBox * pin_configuration_groupbox;
+  QCheckBox * disable_i2c_pullups;
+  QCheckBox * analog_sda_pullup;
+  QCheckBox * always_analog_sda;
+  QCheckBox * always_analog_fba;
+
   QGroupBox * advanced_miscellaneous_groupbox;
   QCheckBox * never_sleep_checkbox;
   QSpinBox * vin_calibration_value;

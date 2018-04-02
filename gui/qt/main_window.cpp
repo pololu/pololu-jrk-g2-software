@@ -850,14 +850,34 @@ void main_window::reset_error_counts()
   }
 }
 
-void main_window::set_vin_calibration(int16_t vin_calibration)
+void main_window::set_disable_i2c_pullups(bool enabled)
 {
-  set_spin_box(vin_calibration_value, vin_calibration);
+  set_check_box(disable_i2c_pullups, enabled);
+}
+
+void main_window::set_analog_sda_pullup(bool enabled)
+{
+  set_check_box(analog_sda_pullup, enabled);
+}
+
+void main_window::set_always_analog_sda(bool enabled)
+{
+  set_check_box(always_analog_sda, enabled);
+}
+
+void main_window::set_always_analog_fba(bool enabled)
+{
+  set_check_box(always_analog_fba, enabled);
 }
 
 void main_window::set_never_sleep(bool enabled)
 {
   set_check_box(never_sleep_checkbox, enabled);
+}
+
+void main_window::set_vin_calibration(int16_t vin_calibration)
+{
+  set_spin_box(vin_calibration_value, vin_calibration);
 }
 
 void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
@@ -1574,6 +1594,30 @@ void main_window::on_errors_reset_counts_clicked()
 {
   if (suppress_events) { return; }
   reset_error_counts();
+}
+
+void main_window::on_disable_i2c_pullups_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_disable_i2c_pullups_input(state == Qt::Checked);
+}
+
+void main_window::on_analog_sda_pullup_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_analog_sda_pullup_input(state == Qt::Checked);
+}
+
+void main_window::on_always_analog_sda_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_always_analog_sda_input(state == Qt::Checked);
+}
+
+void main_window::on_always_analog_fba_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_always_analog_fba_input(state == Qt::Checked);
 }
 
 void main_window::on_never_sleep_checkbox_stateChanged(int state)
@@ -3017,14 +3061,51 @@ QWidget * main_window::setup_advanced_tab()
 
   QGridLayout * layout = new QGridLayout();
 
-  layout->addWidget(setup_advanced_miscellaneous_groupbox(), 0, 0);
+  layout->addWidget(setup_pin_configuration_groupbox(), 0, 0);
+  layout->addWidget(setup_advanced_miscellaneous_groupbox(), 1, 0);
 
   layout->setColumnStretch(1, 1);
-  layout->setRowStretch(1, 1);
+  layout->setRowStretch(2, 1);
 
   advanced_page_widget->setLayout(layout);
 
   return advanced_page_widget;
+}
+
+QWidget * main_window::setup_pin_configuration_groupbox()
+{
+  pin_configuration_groupbox = new QGroupBox(tr("Pin configuration"));
+  pin_configuration_groupbox->setObjectName("pin_configuration_groupbox");
+
+  disable_i2c_pullups = new QCheckBox(tr("Disable I\u00B2C pull-ups"));
+  disable_i2c_pullups->setObjectName("disable_i2c_pullups");
+
+  analog_sda_pullup = new QCheckBox(tr("Enable pull-up for analog input on SDA/AN"));
+  analog_sda_pullup->setObjectName("analog_sda_pullup");
+
+  always_analog_sda = new QCheckBox(tr("Always configure SDA/AN for analog input"));
+  always_analog_sda->setObjectName("always_analog_sda");
+  always_analog_sda->setToolTip(
+    tr("This option causes the jrk to perform analog measurements\n"
+      "on the SDA/AN pin and configure SCL as a potentiometer\n"
+      "power pin even if the \"Input mode\" setting is not \"Analog\"."));
+
+  always_analog_fba = new QCheckBox(tr("Always configure FBA for analog input"));
+  always_analog_fba->setObjectName("always_analog_fba");
+  always_analog_fba->setToolTip(
+    tr("This option causes the jrk to perform analog measurements on the\n"
+      "FBA pin even if the \"Feedback mode\" setting is not \"Analog\"."));
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addWidget(disable_i2c_pullups);
+  layout->addWidget(analog_sda_pullup);
+  layout->addWidget(always_analog_sda);
+  layout->addWidget(always_analog_fba);
+  layout->addStretch();
+
+  pin_configuration_groupbox->setLayout(layout);
+
+  return pin_configuration_groupbox;
 }
 
 QWidget * main_window::setup_advanced_miscellaneous_groupbox()

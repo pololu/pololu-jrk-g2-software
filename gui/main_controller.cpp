@@ -645,6 +645,10 @@ void main_controller::handle_settings_changed()
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
 
+  window->set_disable_i2c_pullups(settings.get_disable_i2c_pullups());
+  window->set_analog_sda_pullup(settings.get_analog_sda_pullup());
+  window->set_always_analog_sda(settings.get_always_analog_sda());
+  window->set_always_analog_fba(settings.get_always_analog_fba());
   window->set_never_sleep(settings.get_never_sleep());
   window->set_vin_calibration(settings.get_vin_calibration());
 
@@ -1274,6 +1278,38 @@ void main_controller::handle_reset_counts_input()
 {
   if (!connected()) { return; }
   window->reset_error_counts();
+}
+
+void main_controller::handle_disable_i2c_pullups_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_disable_i2c_pullups(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_analog_sda_pullup_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_analog_sda_pullup(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_always_analog_sda_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_always_analog_sda(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_always_analog_fba_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_always_analog_fba(value);
+  settings_modified = true;
+  handle_settings_changed();
 }
 
 void main_controller::handle_never_sleep_input(bool value)
