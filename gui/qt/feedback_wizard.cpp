@@ -914,7 +914,7 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
   max_duty_cycle_note = new QLabel();
 
   connect(duty_cycle_input, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &duty_cycle_input_changed);
+    this, &feedback_wizard::duty_cycle_input_changed);
 
   // Just in case the input is already at its maximum value.
   duty_cycle_input_changed();

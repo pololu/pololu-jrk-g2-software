@@ -1,45 +1,5 @@
 #include "jrk_internal.h"
 
-static bool jrk_parse_pin_config(const char * input,
-  jrk_settings * settings, uint8_t pin)
-{
-  assert(settings != NULL);
-
-  jrk_settings_set_pin_func(settings, pin, 0);
-  jrk_settings_set_pin_pullup(settings, pin, false);
-  jrk_settings_set_pin_analog(settings, pin, false);
-
-  char str[256];
-  strcpy(str, input);
-
-  char * p = str;
-  while (true)
-  {
-    char * token = strtok(p, " ");
-    p = NULL;
-    if (token == NULL) { break; }
-
-    if (0 == strcmp(token, "pullup"))
-    {
-      jrk_settings_set_pin_pullup(settings, pin, true);
-    }
-    else if (0 == strcmp(token, "analog"))
-    {
-      jrk_settings_set_pin_analog(settings, pin, true);
-    }
-    else
-    {
-      uint32_t pin_func;
-      if (!jrk_name_to_code(jrk_pin_func_names, token, &pin_func))
-      {
-        return false;  // invalid token
-      }
-      jrk_settings_set_pin_func(settings, pin, pin_func);
-    }
-  }
-  return true;
-}
-
 // We apply the product name from the settings file first, and use it to set the
 // defaults.
 static jrk_error * apply_product_name(jrk_settings * settings, const char * product_name)
@@ -905,65 +865,49 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_vin_calibration(settings, vin_calibration);
   }
+  else if (!strcmp(key, "disable_i2c_pullups"))
+  {
+    uint32_t disable_i2c_pullups;
+    if (!jrk_name_to_code(jrk_bool_names, value, &disable_i2c_pullups))
+    {
+      return jrk_error_create("Unrecognized disable_i2c_pullups value.");
+    }
+    jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
+    jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
+  }
+  else if (!strcmp(key, "analog_sda_pullup"))
+  {
+    uint32_t analog_sda_pullup;
+    if (!jrk_name_to_code(jrk_bool_names, value, &analog_sda_pullup))
+    {
+      return jrk_error_create("Unrecognized analog_sda_pullup value.");
+    }
+    jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
+    jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
+  }
+  else if (!strcmp(key, "always_analog_sda"))
+  {
+    uint32_t always_analog_sda;
+    if (!jrk_name_to_code(jrk_bool_names, value, &always_analog_sda))
+    {
+      return jrk_error_create("Unrecognized always_analog_sda value.");
+    }
+    jrk_settings_set_always_analog_sda(settings, always_analog_sda);
+    jrk_settings_set_always_analog_sda(settings, always_analog_sda);
+  }
+  else if (!strcmp(key, "always_analog_fba"))
+  {
+    uint32_t always_analog_fba;
+    if (!jrk_name_to_code(jrk_bool_names, value, &always_analog_fba))
+    {
+      return jrk_error_create("Unrecognized always_analog_fba value.");
+    }
+    jrk_settings_set_always_analog_fba(settings, always_analog_fba);
+    jrk_settings_set_always_analog_fba(settings, always_analog_fba);
+  }
 
   // End of auto-generated settings file parsing code.
 
-  else if (!strcmp(key, "pin_config_scl"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_SCL))
-    {
-      return jrk_error_create("Invalid pin_config_scl value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_sda"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_SDA))
-    {
-      return jrk_error_create("Invalid pin_config_sda value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_tx"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_TX))
-    {
-      return jrk_error_create("Invalid pin_config_tx value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_rx"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_RX))
-    {
-      return jrk_error_create("Invalid pin_config_rx value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_rc"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_RC))
-    {
-      return jrk_error_create("Invalid pin_config_rc value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_aux"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_AUX))
-    {
-      return jrk_error_create("Invalid pin_config_aux value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_fba"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_FBA))
-    {
-      return jrk_error_create("Invalid pin_config_fba value.");
-    }
-  }
-  else if (!strcmp(key, "pin_config_fbt"))
-  {
-    if (!jrk_parse_pin_config(value, settings, JRK_PIN_NUM_FBT))
-    {
-      return jrk_error_create("Invalid pin_config_fbt value.");
-    }
-  }
   else
   {
     return jrk_error_create("Unrecognized key on line %d: \"%s\".", line, key);

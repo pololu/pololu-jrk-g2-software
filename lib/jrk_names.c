@@ -13,6 +13,8 @@ const jrk_name jrk_product_names_short[] =
 {
   { "18v2x", JRK_PRODUCT_UMC04A_30V }, // TODO: real name
   { "24v2x", JRK_PRODUCT_UMC04A_40V }, // TODO: real name
+  { "18v1x", JRK_PRODUCT_UMC05A_30V }, // TODO: real name
+  { "24v1x", JRK_PRODUCT_UMC05A_40V }, // TODO: real name
   { NULL, 0 },
 };
 
@@ -20,6 +22,8 @@ const jrk_name jrk_product_names_ui[] =
 {
   { "Jrk G2 18v2x", JRK_PRODUCT_UMC04A_30V },  // TODO: real name
   { "Jrk G2 24v2x", JRK_PRODUCT_UMC04A_40V },  // TODO: real name
+  { "Jrk G2 18v1x", JRK_PRODUCT_UMC05A_30V },  // TODO: real name
+  { "Jrk G2 24v1x", JRK_PRODUCT_UMC05A_40V },  // TODO: real name
   { NULL, 0 },
 };
 
@@ -64,18 +68,6 @@ const jrk_name jrk_pwm_frequency_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_pin_func_names[] =
-{
-  { "default", JRK_PIN_FUNC_DEFAULT },
-  { "user_io", JRK_PIN_FUNC_USER_IO },
-  { "user_input", JRK_PIN_FUNC_USER_INPUT },
-  { "pot_power", JRK_PIN_FUNC_POT_POWER },
-  { "serial", JRK_PIN_FUNC_SERIAL },
-  { "rc", JRK_PIN_FUNC_RC },
-  { "tachometer", JRK_PIN_FUNC_TACHOMETER },
-  { NULL, 0 },
-};
-
 const jrk_name jrk_error_names_ui[] =
 {
   { "Awaiting command", 1 << JRK_ERROR_AWAITING_COMMAND },
@@ -115,15 +107,6 @@ const jrk_name jrk_device_reset_names_ui[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_pin_state_names_ui[] =
-{
-  { "High impedance", JRK_PIN_STATE_HIGH_IMPEDANCE },
-  { "Pulled up", JRK_PIN_STATE_PULLED_UP },
-  { "Output low", JRK_PIN_STATE_OUTPUT_LOW },
-  { "Output high", JRK_PIN_STATE_OUTPUT_HIGH },
-  { NULL, 0},
-};
-
 const char * jrk_look_up_product_name_short(uint32_t product)
 {
   const char * str = "";
@@ -156,13 +139,6 @@ const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset)
 {
   const char * str = "(Unknown)";
   jrk_code_to_name(jrk_device_reset_names_ui, device_reset, &str);
-  return str;
-}
-
-const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state)
-{
-  const char * str = "(Unknown)";
-  jrk_code_to_name(jrk_pin_state_names_ui, pin_state, &str);
   return str;
 }
 

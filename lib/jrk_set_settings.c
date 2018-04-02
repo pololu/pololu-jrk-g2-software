@@ -312,6 +312,26 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     write_int16_t(buf + JRK_SETTING_VIN_CALIBRATION, vin_calibration);
   }
 
+  {
+    bool disable_i2c_pullups = jrk_settings_get_disable_i2c_pullups(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= disable_i2c_pullups << JRK_OPTIONS_BYTE1_DISABLE_I2C_PULLUPS;
+  }
+
+  {
+    bool analog_sda_pullup = jrk_settings_get_analog_sda_pullup(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= analog_sda_pullup << JRK_OPTIONS_BYTE1_ANALOG_SDA_PULLUP;
+  }
+
+  {
+    bool always_analog_sda = jrk_settings_get_always_analog_sda(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_sda << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA;
+  }
+
+  {
+    bool always_analog_fba = jrk_settings_get_always_analog_fba(settings);
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_fba << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA;
+  }
+
   // End of auto-generated settings-to-buffer code.
 
   {
@@ -336,40 +356,6 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     write_uint16_t(buf + JRK_SETTING_SERIAL_TIMEOUT,
       jrk_settings_get_serial_timeout(settings)
       / JRK_SERIAL_TIMEOUT_UNITS);
-  }
-
-  {
-    buf[JRK_SETTING_PIN_CONFIG_SCL] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_SCL)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_SCL) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_SCL) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_SDA] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_SDA)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_SDA) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_SDA) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_TX] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_TX)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_TX) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_TX) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_RX] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_RX)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_RX) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_RX) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_RC] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_RC)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_RC) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_RC) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_AUX] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_AUX)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_AUX) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_AUX) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_FBA] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_FBA)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_FBA) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_FBA) << JRK_PIN_ANALOG);
-
-    buf[JRK_SETTING_PIN_CONFIG_FBT] = jrk_settings_get_pin_func(settings, JRK_PIN_NUM_FBT)
-      | (jrk_settings_get_pin_pullup(settings, JRK_PIN_NUM_FBT) << JRK_PIN_PULLUP)
-      | (jrk_settings_get_pin_analog(settings, JRK_PIN_NUM_FBT) << JRK_PIN_ANALOG);
   }
 }
 

@@ -33,14 +33,7 @@ static void print_pin_info(const jrk::variables & vars,
 {
   std::cout << pin_name << " pin:" << std::endl;
 
-  if (pin != JRK_PIN_NUM_RC)
-  {
-    std::cout << left_column << "  State: "
-      << jrk_look_up_pin_state_name_ui(vars.get_pin_state(pin))
-      << std::endl;
-  }
-
-  if (pin != JRK_PIN_NUM_RC && pin != JRK_PIN_NUM_FBT)
+  if (pin == JRK_PIN_NUM_SDA || pin == JRK_PIN_NUM_FBA)
   {
     std::cout << left_column << "  Analog reading: "
       << analog_reading_format(vars.get_analog_reading(pin)) << std::endl;

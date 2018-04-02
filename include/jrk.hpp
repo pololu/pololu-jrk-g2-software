@@ -1115,43 +1115,55 @@ namespace jrk
       return jrk_settings_get_vin_calibration(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_disable_i2c_pullups().
+    void set_disable_i2c_pullups(bool value) noexcept
+    {
+      jrk_settings_set_disable_i2c_pullups(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_disable_i2c_pullups().
+    bool get_disable_i2c_pullups() const noexcept
+    {
+      return jrk_settings_get_disable_i2c_pullups(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_analog_sda_pullup().
+    void set_analog_sda_pullup(bool value) noexcept
+    {
+      jrk_settings_set_analog_sda_pullup(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_analog_sda_pullup().
+    bool get_analog_sda_pullup() const noexcept
+    {
+      return jrk_settings_get_analog_sda_pullup(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_always_analog_sda().
+    void set_always_analog_sda(bool value) noexcept
+    {
+      jrk_settings_set_always_analog_sda(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_always_analog_sda().
+    bool get_always_analog_sda() const noexcept
+    {
+      return jrk_settings_get_always_analog_sda(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_always_analog_fba().
+    void set_always_analog_fba(bool value) noexcept
+    {
+      jrk_settings_set_always_analog_fba(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_always_analog_fba().
+    bool get_always_analog_fba() const noexcept
+    {
+      return jrk_settings_get_always_analog_fba(pointer);
+    }
+
     // End of auto-generated settings C++ accessors.
-
-    /// Wrapper for jrk_settings_set_pin_func().
-    void set_pin_func(uint8_t pin, uint8_t func)
-    {
-      jrk_settings_set_pin_func(pointer, pin, func);
-    }
-
-    /// Wrapper for jrk_settings_get_pin_func().
-    uint8_t get_pin_func(uint8_t pin)
-    {
-      return jrk_settings_get_pin_func(pointer, pin);
-    }
-
-    /// Wrapper for jrk_settings_set_pin_pullup().
-    void set_pin_pullup(uint8_t pin, bool pullup)
-    {
-      jrk_settings_set_pin_pullup(pointer, pin, pullup);
-    }
-
-    /// Wrapper for jrk_settings_get_pin_pullup().
-    bool get_pin_pullup(uint8_t pin)
-    {
-      return jrk_settings_get_pin_pullup(pointer, pin);
-    }
-
-    /// Wrapper for jrk_settings_set_pin_analog().
-    void set_pin_analog(uint8_t pin, bool analog)
-    {
-      jrk_settings_set_pin_analog(pointer, pin, analog);
-    }
-
-    /// Wrapper for jrk_settings_get_pin_analog().
-    bool get_pin_analog(uint8_t pin)
-    {
-      return jrk_settings_get_pin_analog(pointer, pin);
-    }
   };
 
   /// Represents the settings that can be changed temporarily at run time
@@ -1624,12 +1636,6 @@ namespace jrk
     {
       return jrk_variables_get_digital_reading(pointer, pin);
     }
-
-    /// Wrapper for jrk_variables_get_pin_state().
-    uint8_t get_pin_state(uint8_t pin) const noexcept
-    {
-      return jrk_variables_get_pin_state(pointer, pin);
-    }
   };
 
   /// Represents a jrk that is or was connected to the computer.  Can also be in
@@ -1846,6 +1852,15 @@ namespace jrk
     }
     /// \endcond
   };
+
+  /// Wrapper for jrk_get_recommended_current_limit_codes().
+  inline const std::vector<uint16_t> get_recommended_current_limit_codes(
+    uint32_t product)
+  {
+    size_t count;
+    const uint16_t * table = jrk_get_recommended_current_limit_codes(product, &count);
+    return std::vector<uint16_t>(table, table + count);
+  }
 
   /// Wrapper for jrk_current_limit_code_to_ma().
   inline uint32_t current_limit_code_to_ma(const settings & settings, uint16_t code)

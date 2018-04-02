@@ -19,6 +19,8 @@ extern "C" {
 
 #define JRK_PRODUCT_UMC04A_30V 1
 #define JRK_PRODUCT_UMC04A_40V 2
+#define JRK_PRODUCT_UMC05A_30V 3
+#define JRK_PRODUCT_UMC05A_40V 4
 
 // The maximum firmware major version supported by this library.
 #define JRK_FIRMWARE_VERSION_MAJOR_MAX 1
@@ -91,12 +93,6 @@ const char * jrk_look_up_force_mode_name_ui(uint8_t force_mode);
 JRK_API
 const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset);
 
-/// Looks up the string corresponding to the specified pin state, e.g. "Output
-/// low".  The pin_state argument should be one of the JRK_PIN_STATE_* macros,
-/// but if it is not, this functions returns "(Unknown)".  The returned string
-/// will be valid indefinitely and should not be freed.
-JRK_API
-const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state);
 
 // jrk_error ////////////////////////////////////////////////////////////////////
 
@@ -972,13 +968,13 @@ uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings *);
 // You can use this current calibration setting to correct current measurements
 // and current limit settings that are off by a constant amount.
 //
-// The current sense circuitry on a umc04a jrk produces a constant voltage of
-// about 50 mV when the motor driver is powered, even if there is no current
-// flowing through the motor.  This offset must be subtracted from analog
-// voltages representing current limits or current measurements in order to
-// convert those values to amps.
+// The current sense circuitry on a umc04a/umc05a jrks produces a constant
+// voltage of about 50 mV when the motor driver is powered, even if there is no
+// current flowing through the motor.  This offset must be subtracted from
+// analog voltages representing current limits or current measurements in order
+// to convert those values to amps.
 //
-// For the umc04a jrk models, this setting is defined by the formula:
+// For the umc04a/umc05a jrk models, this setting is defined by the formula:
 //
 //   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 //
@@ -1150,6 +1146,7 @@ uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 //
 // - jrk_current_limit_code_to_ma()
 // - jrk_current_limit_ma_to_code()
+// - jrk_current_limit_code_step()
 JRK_API
 void jrk_settings_set_current_limit_code_forward(jrk_settings *,
   uint16_t current_limit_code_forward);
@@ -1210,7 +1207,7 @@ uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 //
 // A value of 0 means no limit.
 //
-// For the umc04a jrks, the units of this setting are in milliamps.
+// For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
 void jrk_settings_set_max_current_forward(jrk_settings *,
   uint16_t max_current_forward);
@@ -1227,7 +1224,7 @@ uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
 //
 // A value of 0 means no limit.
 //
-// For the umc04a jrks, the units of this setting are in milliamps.
+// For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
 void jrk_settings_set_max_current_reverse(jrk_settings *,
   uint16_t max_current_reverse);
@@ -1324,53 +1321,64 @@ void jrk_settings_set_vin_calibration(jrk_settings *,
 JRK_API
 int16_t jrk_settings_get_vin_calibration(const jrk_settings *);
 
+// Sets the disable_i2c_pullups setting.
+//
+// This option disables the internal pull-up resistors on the SDA/AN and SCL
+// pins if those pins are being used for I2C communication.
+JRK_API
+void jrk_settings_set_disable_i2c_pullups(jrk_settings *,
+  bool disable_i2c_pullups);
+
+// Gets the disable_i2c_pullups setting, which is described in
+// jrk_settings_set_disable_i2c_pullups.
+JRK_API
+bool jrk_settings_get_disable_i2c_pullups(const jrk_settings *);
+
+// Sets the analog_sda_pullup setting.
+//
+// This option enables the internal pull-up resistor on the SDA/AN pin if it is
+// being used as an analog input.
+JRK_API
+void jrk_settings_set_analog_sda_pullup(jrk_settings *,
+  bool analog_sda_pullup);
+
+// Gets the analog_sda_pullup setting, which is described in
+// jrk_settings_set_analog_sda_pullup.
+JRK_API
+bool jrk_settings_get_analog_sda_pullup(const jrk_settings *);
+
+// Sets the always_analog_sda setting.
+//
+// This option causes the jrk to perform analog measurements on the SDA/AN pin
+// even if the "Input mode" setting is not "Analog".
+JRK_API
+void jrk_settings_set_always_analog_sda(jrk_settings *,
+  bool always_analog_sda);
+
+// Gets the always_analog_sda setting, which is described in
+// jrk_settings_set_always_analog_sda.
+JRK_API
+bool jrk_settings_get_always_analog_sda(const jrk_settings *);
+
+// Sets the always_analog_fba setting.
+//
+// This option causes the jrk to perform analog measurements on the FBA pin
+// even if the "Feedback mode" setting is not "Analog".
+JRK_API
+void jrk_settings_set_always_analog_fba(jrk_settings *,
+  bool always_analog_fba);
+
+// Gets the always_analog_fba setting, which is described in
+// jrk_settings_set_always_analog_fba.
+JRK_API
+bool jrk_settings_get_always_analog_fba(const jrk_settings *);
+
 // End of auto-generated settings accessor prototypes.
 
 /// Returns an acheivable baud rate corresponding to the specified baud rate.
 /// Does not modify the settings object.
 JRK_API
 uint32_t jrk_settings_achievable_serial_baud_rate(const jrk_settings *, uint32_t);
-
-/// Sets the assigned function for a control pin.
-///
-/// The pin argument should be one of the JRK_PIN_NUM_* macros.
-///
-/// The func argument should be one of the JRK_PIN_FUNC_* macros.
-JRK_API
-void jrk_settings_set_pin_func(jrk_settings *, uint8_t pin, uint8_t func);
-
-/// Gets the pin function as described in jrk_settings_get_pin_func().
-JRK_API
-uint8_t jrk_settings_get_pin_func(const jrk_settings *, uint8_t pin);
-
-/// Sets whether the pin will have its internal pull-up enabled (if applicable).
-///
-/// Note that this setting is ignored by the device if the pin function is
-/// JRK_PIN_FUNC_DEFAULT.
-///
-/// The pin argument should be one of the JRK_PIN_NUM_* macros.
-JRK_API
-void jrk_settings_set_pin_pullup(jrk_settings *, uint8_t pin, bool pullup);
-
-/// Gets the pullup flag for a pin as described in jrk_settings_set_pin_pullup().
-JRK_API
-bool jrk_settings_get_pin_pullup(const jrk_settings *, uint8_t pin);
-
-/// Sets whether the pin will be used as an analog input (if applicable).
-///
-/// This flag causes the jrk to disable digital input functionality on that pin
-/// and regularly take analog readings of the pin.
-///
-/// Note that this setting is ignored by the device if the pin function is
-/// JRK_PIN_FUNC_DEFAULT.
-///
-/// The pin argument should be one of the JRK_PIN_NUM_* macros.
-JRK_API
-void jrk_settings_set_pin_analog(jrk_settings *, uint8_t pin, bool analog);
-
-/// Gets the analog flag for a pin as described in jrk_settings_set_pin_analog().
-JRK_API
-bool jrk_settings_get_pin_analog(const jrk_settings *, uint8_t pin);
 
 
 // jrk_overridable_settings /////////////////////////////////////////////////////
@@ -1924,18 +1932,6 @@ uint16_t jrk_variables_get_analog_reading(const jrk_variables *, uint8_t pin);
 JRK_API
 bool jrk_variables_get_digital_reading(const jrk_variables *, uint8_t pin);
 
-/// Gets the pin state for the specified pin, i.e. what kind of input or output
-/// it is.
-///
-/// Note that the state might be misleading if the pin is being used as a serial
-/// or I2C pin.
-///
-/// This pin argument should be one of the JRK_PIN_NUM_* macros.
-///
-/// The return value is one of the JRK_PIN_STATE_* macros.
-JRK_API
-uint8_t jrk_variables_get_pin_state(const jrk_variables *, uint8_t pin);
-
 
 // jrk_device ///////////////////////////////////////////////////////////////////
 
@@ -2236,18 +2232,20 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 
 //// Current limiting and measurment ////////////////////////////////////////////
 
-// TODO: need a function here for getting the list of recommended codes
-// TODO: maybe make versions of these functions that don't need a settings object
-// like the Tic API; they would use calibration values of 0.
+/// Gets a list of the recommended current limit codes for the specified
+/// product.  They will be in ascending order by current limit in milliamps.
+JRK_API
+const uint16_t * jrk_get_recommended_current_limit_codes(
+  uint32_t product, size_t * code_count);
 
-// Converts max current codes to milliamps for the specified product.  You can
-// use this to interpret the codes returned by
-// jrk_settings_get_current_limit_code_forward() or
-// jrk_settings_get_current_limit_code_reverse().
-//
-// The code argument should be a current limit code.
-//
-// See also jrk_current_limit_ma_to_code().
+/// Converts max current codes to milliamps for the specified product.  You can
+/// use this to interpret the codes returned by
+/// jrk_settings_get_current_limit_code_forward() or
+/// jrk_settings_get_current_limit_code_reverse().
+///
+/// The code argument should be a current limit code.
+///
+/// See also jrk_current_limit_ma_to_code().
 JRK_API
 uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
 
@@ -2269,6 +2267,10 @@ uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
 // settings object and a variables object read from the same device.
 //
 // The function returns the measured current, in milliamps.
+//
+// If you don't want to actually fetch settings from the jrk, you can just
+// create a new settings object, set it to the right product, and fill it with
+// the default settings, using the jrk_settings_* functions of this library.
 //
 // Note for umc04a jrk models: If current chopping happened during the PID
 // period, the value returned here will not be trustable.

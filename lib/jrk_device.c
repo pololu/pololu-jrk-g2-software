@@ -72,6 +72,12 @@ jrk_error * jrk_list_connected_devices(
     case JRK_USB_PRODUCT_ID_UMC04A_40V:
       product_code = JRK_PRODUCT_UMC04A_40V;
       break;
+    case JRK_USB_PRODUCT_ID_UMC05A_30V:
+      product_code = JRK_PRODUCT_UMC05A_30V;
+      break;
+    case JRK_USB_PRODUCT_ID_UMC05A_40V:
+      product_code = JRK_PRODUCT_UMC05A_40V;
+      break;
     default:
       // Unrecognized product.
       continue;

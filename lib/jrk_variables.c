@@ -161,39 +161,23 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   }
 
   {
-    vars->pin_info[JRK_PIN_NUM_SCL].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_SCL);
+    vars->pin_info[JRK_PIN_NUM_SCL].analog_reading = 0xFFFF;
 
     vars->pin_info[JRK_PIN_NUM_SDA].analog_reading =
       read_uint16_t(buf + JRK_VAR_ANALOG_READING_SDA);
 
-    vars->pin_info[JRK_PIN_NUM_TX].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_TX);
+    vars->pin_info[JRK_PIN_NUM_TX].analog_reading = 0xFFFF;
 
-    vars->pin_info[JRK_PIN_NUM_RX].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_RX);
+    vars->pin_info[JRK_PIN_NUM_RX].analog_reading = 0xFFFF;
 
     vars->pin_info[JRK_PIN_NUM_RC].analog_reading = 0xFFFF;
 
-    vars->pin_info[JRK_PIN_NUM_AUX].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_AUX);
+    vars->pin_info[JRK_PIN_NUM_AUX].analog_reading = 0xFFFF;
 
     vars->pin_info[JRK_PIN_NUM_FBA].analog_reading =
       read_uint16_t(buf + JRK_VAR_ANALOG_READING_FBA);
 
     vars->pin_info[JRK_PIN_NUM_FBT].analog_reading = 0xFFFF;
-  }
-
-  {
-    uint16_t s = read_uint16_t(buf + JRK_VAR_PIN_STATES);
-    vars->pin_info[JRK_PIN_NUM_SCL].pin_state = s >> (JRK_PIN_NUM_SCL * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_SDA].pin_state = s >> (JRK_PIN_NUM_SDA * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_TX].pin_state = s >> (JRK_PIN_NUM_TX * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_RX].pin_state = s >> (JRK_PIN_NUM_RX * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_RC].pin_state = s >> (JRK_PIN_NUM_RC * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_AUX].pin_state = s >> (JRK_PIN_NUM_AUX * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_FBA].pin_state = s >> (JRK_PIN_NUM_FBA * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_FBT].pin_state = s >> (JRK_PIN_NUM_FBT * 2) & 3;
   }
 }
 
