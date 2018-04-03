@@ -228,6 +228,8 @@ private:
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
 
+  void center_at_startup_if_needed();
+
 signals:
   void input_changed(uint16_t);
   void feedback_changed(uint16_t);
