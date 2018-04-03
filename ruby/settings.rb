@@ -890,7 +890,8 @@ EOF
     bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA',
     comment: <<EOF
 This option causes the jrk to perform analog measurements on the SDA/AN pin
-even if the "Input mode" setting is not "Analog".
+and configure SCL as a potentiometer power pin even if the "Input mode"
+setting is not "Analog".
 EOF
   },
   {

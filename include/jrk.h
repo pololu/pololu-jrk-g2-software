@@ -1350,7 +1350,8 @@ bool jrk_settings_get_analog_sda_pullup(const jrk_settings *);
 // Sets the always_analog_sda setting.
 //
 // This option causes the jrk to perform analog measurements on the SDA/AN pin
-// even if the "Input mode" setting is not "Analog".
+// and configure SCL as a potentiometer power pin even if the "Input mode"
+// setting is not "Analog".
 JRK_API
 void jrk_settings_set_always_analog_sda(jrk_settings *,
   bool always_analog_sda);
