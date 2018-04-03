@@ -45,12 +45,14 @@ class main_window : public QMainWindow
     QRadioButton * disabled_radio = NULL;
     QRadioButton * enabled_radio = NULL;
     QRadioButton * latched_radio = NULL;
+    QCheckBox * error_hard;
     QLabel * stopping_value = NULL;
     QLabel * count_value = NULL;
     QWidget * frame = NULL;
     QButtonGroup * error_enable_group = NULL;
     bool always_enabled = false;
     bool always_latched = false;
+    bool always_hard = false;
     int error_number = 0;
   };
 
@@ -185,6 +187,7 @@ public:
   void set_coast_when_off(bool value);
 
   void set_error_enable(uint16_t enable, uint16_t latch);
+  void set_error_hard(uint16_t hard);
   void set_error_flags_halting(uint16_t error_flags_halting);
   void increment_errors_occurred(uint16_t errors_occurred);
   void reset_error_counts();
@@ -335,6 +338,7 @@ private slots:
   void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
   void error_enable_group_buttonToggled(int id, int index);
+  void error_hard_stateChanged(int state, int index);
   void on_errors_clear_errors_clicked();
   void on_errors_reset_counts_clicked();
 
@@ -373,7 +377,7 @@ private:
 
   QWidget * setup_errors_tab();
   void setup_error_row(int error_number,
-    bool always_enabled, bool always_latched);
+    bool always_enabled, bool always_latched, bool always_hard);
 
   QWidget * setup_advanced_tab();
   QWidget * setup_pin_configuration_groupbox();
@@ -645,6 +649,7 @@ private:
   QLabel * errors_bit_mask_label;
   QLabel * errors_error_label;
   QLabel * errors_setting_label;
+  QLabel * errors_hard_label;
   QLabel * errors_stopping_motor_label;
   QLabel * errors_occurrence_count_label;
   QPushButton * errors_clear_errors;

@@ -797,6 +797,19 @@ void main_window::set_error_enable(uint16_t enable, uint16_t latch)
   suppress_events = false;
 }
 
+void main_window::set_error_hard(uint16_t hard)
+{
+  for (error_row & row : error_rows)
+  {
+    if (hard >> row.error_number & 1)
+    {
+      set_check_box(row.error_hard, true);
+    }
+    else
+      set_check_box(row.error_hard, false);
+  }
+}
+
 void main_window::set_error_flags_halting(uint16_t error_flags_halting)
 {
   error_flags_halting_value->setText(QString::fromStdString(
@@ -1582,6 +1595,12 @@ void main_window::error_enable_group_buttonToggled(int id, int index)
 {
   if (suppress_events) { return; }
   controller->handle_error_enable_input(index, id);
+}
+
+void main_window::error_hard_stateChanged(int state, int index)
+{
+  if (suppress_events) { return; }
+  controller->handle_error_hard_input(index, state == Qt::Checked);
 }
 
 void main_window::on_errors_clear_errors_clicked()
@@ -2915,6 +2934,11 @@ QWidget *main_window::setup_errors_tab()
   errors_setting_label->setFont(font);
   errors_setting_label->setAlignment(Qt::AlignCenter);
 
+  errors_hard_label = new QLabel(tr("Hard?"));
+  errors_hard_label->setObjectName("errors_hard_label");
+  errors_hard_label->setFont(font);
+  errors_hard_label->setAlignment(Qt::AlignCenter);
+
   errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
@@ -2939,31 +2963,32 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_bit_mask_label, 0, 0);
   layout->addWidget(errors_error_label, 0, 1);
   layout->addWidget(errors_setting_label, 0, 2, 1, 3);
-  layout->addWidget(errors_stopping_motor_label, 0, 5);
-  layout->addWidget(errors_occurrence_count_label, 0, 6);
+  layout->addWidget(errors_hard_label, 0, 5);
+  layout->addWidget(errors_stopping_motor_label, 0, 6);
+  layout->addWidget(errors_occurrence_count_label, 0, 7);
 
   // Note: We have to do this before calling setup_error_row or else Qt shows
   // small spurious windows before the main window opens.
   errors_page_widget->setLayout(layout);
 
-  setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true);
-  setup_error_row(JRK_ERROR_NO_POWER, true, false);
-  setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false);
-  setup_error_row(JRK_ERROR_INPUT_INVALID, true, false);
-  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false);
-  setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false);
-  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false);
-  setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_CRC, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true);
-  setup_error_row(JRK_ERROR_OVERCURRENT, false, false);
+  setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true, false);
+  setup_error_row(JRK_ERROR_NO_POWER, true, false, true);
+  setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false, true);
+  setup_error_row(JRK_ERROR_INPUT_INVALID, true, false, false);
+  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false, false);
+  setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false, false);
+  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false, false);
+  setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_CRC, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true, false);
+  setup_error_row(JRK_ERROR_OVERCURRENT, false, false, false);
 
   int last_row = layout->rowCount();
-  layout->addWidget(errors_clear_errors, last_row, 5, 1, 1, Qt::AlignCenter);
-  layout->addWidget(errors_reset_counts, last_row, 6, 1, 1, Qt::AlignLeft);
+  layout->addWidget(errors_clear_errors, last_row, 6, 1, 1, Qt::AlignCenter);
+  layout->addWidget(errors_reset_counts, last_row, 7, 1, 1, Qt::AlignLeft);
 
   layout->setRowStretch(last_row + 1, 1);
 
@@ -2978,7 +3003,7 @@ static void copy_margins(QWidget * dest, const QWidget * src)
 }
 
 void main_window::setup_error_row(int error_number,
-  bool always_enabled, bool always_latched)
+  bool always_enabled, bool always_latched, bool always_hard)
 {
   error_rows.append(error_row());
   error_row & row = error_rows.last();
@@ -3029,6 +3054,14 @@ void main_window::setup_error_row(int error_number,
   connect(row.error_enable_group, QOverload<int>::of(&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
+  row.error_hard = new QCheckBox(tr("Hard"));
+  row.error_hard->setObjectName("error_hard");
+
+  connect(row.error_hard, &QCheckBox::stateChanged,
+    [=] (int state) { error_hard_stateChanged(state, row.error_number); });
+
+  QLabel * always_hard_label = new QLabel(tr("Yes"));
+
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
   row.stopping_value->setAlignment(Qt::AlignCenter);
@@ -3046,8 +3079,14 @@ void main_window::setup_error_row(int error_number,
   errors_page_layout->addWidget(row.disabled_radio, r + 1, 2);
   errors_page_layout->addWidget(row.enabled_radio, r + 1, 3);
   errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
-  errors_page_layout->addWidget(row.stopping_value, r + 1, 5);
-  errors_page_layout->addWidget(row.count_value, r + 1, 6);
+
+  if (always_hard)
+    errors_page_layout->addWidget(always_hard_label, r + 1, 5, Qt::AlignCenter);
+  else
+    errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
+
+  errors_page_layout->addWidget(row.stopping_value, r + 1, 6);
+  errors_page_layout->addWidget(row.count_value, r + 1, 7);
 
   // Note: We have to do this after adding the radio buttons to the layout or
   // else Qt shows small spurious windows before the main window opens.

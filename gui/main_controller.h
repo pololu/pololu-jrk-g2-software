@@ -144,6 +144,7 @@ public:
   void handle_coast_when_off_input(bool);
 
   void handle_error_enable_input(int index, int id);
+  void handle_error_hard_input(int index, bool state);
   void handle_clear_errors_input();
   void handle_reset_counts_input();
 

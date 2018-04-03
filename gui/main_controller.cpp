@@ -644,6 +644,7 @@ void main_controller::handle_settings_changed()
   window->set_overcurrent_threshold(settings.get_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+  window->set_error_hard(settings.get_error_hard());
 
   window->set_disable_i2c_pullups(settings.get_disable_i2c_pullups());
   window->set_analog_sda_pullup(settings.get_analog_sda_pullup());
@@ -1263,6 +1264,24 @@ void main_controller::handle_error_enable_input(int index, int id)
   }
   settings.set_error_enable(enable_value);
   settings.set_error_latch(latch_value);
+
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_error_hard_input(int index, bool state)
+{
+  if (!connected()) { return; }
+  uint16_t hard_value = settings.get_error_hard();
+
+  if (state)
+  {
+    hard_value |= 1 << index;
+  }
+  else
+    hard_value &= ~(1 << index);
+
+  settings.set_error_hard(hard_value);
 
   settings_modified = true;
   handle_settings_changed();
