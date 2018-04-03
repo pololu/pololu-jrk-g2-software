@@ -247,7 +247,11 @@ void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   graph->duty_cycle.plot_value = duty_cycle;
-  duty_cycle_value->setText(QString::number(duty_cycle));
+
+  QString duty_cycle_pretty = " (" + QString::fromStdString(
+      convert_duty_cycle_to_percent_string(duty_cycle)) + ")";
+
+  duty_cycle_value->setText(QString::number(duty_cycle) + duty_cycle_pretty);
   emit duty_cycle_changed(duty_cycle);
 }
 
