@@ -167,6 +167,8 @@ private:
 
   void recalculate_motor_asymmetric();
 
+  void constrain_feedback_scaling();
+
 public:
 
   bool check_settings_applied_before_wizard();
