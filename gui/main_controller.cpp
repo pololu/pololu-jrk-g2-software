@@ -878,12 +878,6 @@ bool main_controller::check_settings_applied_before_wizard()
   return true;
 }
 
-void main_controller::update_motor_status_message(bool prompt_to_resume)
-{
-
-}
-
-
 void main_controller::handle_input_learn()
 {
   if (!connected()) { return; }
