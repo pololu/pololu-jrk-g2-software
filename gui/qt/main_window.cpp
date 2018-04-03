@@ -2934,7 +2934,7 @@ QWidget *main_window::setup_errors_tab()
   errors_setting_label->setFont(font);
   errors_setting_label->setAlignment(Qt::AlignCenter);
 
-  errors_hard_label = new QLabel(tr("Hard?"));
+  errors_hard_label = new QLabel(tr("Hard\nstop?"));
   errors_hard_label->setObjectName("errors_hard_label");
   errors_hard_label->setFont(font);
   errors_hard_label->setAlignment(Qt::AlignCenter);
