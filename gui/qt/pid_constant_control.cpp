@@ -31,7 +31,8 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   multiplier_spinbox->setAlignment(Qt::AlignCenter);
   multiplier_spinbox->setRange(0, 1023);
 
-  connect(multiplier_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+  connect(multiplier_spinbox, static_cast<void (QSpinBox::*)(int)>
+    (&QSpinBox::valueChanged),
     this, &pid_constant_control::multiplier_or_exponent_changed);
 
   exponent_spinbox = new QSpinBox();
@@ -39,7 +40,8 @@ pid_constant_control::pid_constant_control(QWidget * parent)
   exponent_spinbox->setAlignment(Qt::AlignCenter);
   exponent_spinbox->setRange(0, 18);
 
-  connect(exponent_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
+  connect(exponent_spinbox, static_cast<void (QSpinBox::*)(int)>
+    (&QSpinBox::valueChanged),
     this, &pid_constant_control::multiplier_or_exponent_changed);
 
   QLabel * equal_label = new QLabel();
