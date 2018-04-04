@@ -401,8 +401,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t tachometer_divider = jrk_settings_get_tachometer_divider(settings);
-    jrk_sprintf(&str, "tachometer_divider: %u\n", tachometer_divider);
+    uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
+    jrk_sprintf(&str, "tachometer_divider_exponent: %u\n", tachometer_divider_exponent);
   }
 
   // End of auto-generated settings file printing code.

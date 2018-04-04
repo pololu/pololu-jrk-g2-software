@@ -896,11 +896,11 @@ even if the "Feedback mode" setting is not "Analog".
 EOF
   },
   {
-    name: 'tachometer_divider',
+    name: 'tachometer_divider_exponent',
     type: :uint8_t,
     default: 0,
     range: 0..7,
-    address: 'JRK_SETTING_TACHOMETER_DIVIDER',
+    address: 'JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT',
     comment: <<EOF
 This setting specifies how many bits to shift the raw tachomter reading to
 the right before using it to calculate the "feedback" variable.  The

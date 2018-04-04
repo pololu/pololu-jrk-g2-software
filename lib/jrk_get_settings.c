@@ -332,8 +332,8 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t tachometer_divider = buf[JRK_SETTING_TACHOMETER_DIVIDER];
-    jrk_settings_set_tachometer_divider(settings, tachometer_divider);
+    uint8_t tachometer_divider_exponent = buf[JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT];
+    jrk_settings_set_tachometer_divider_exponent(settings, tachometer_divider_exponent);
   }
 
   // End of auto-generated buffer-to-settings code.

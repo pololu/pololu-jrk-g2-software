@@ -1365,7 +1365,7 @@ void jrk_settings_set_always_analog_fba(jrk_settings *,
 JRK_API
 bool jrk_settings_get_always_analog_fba(const jrk_settings *);
 
-// Sets the tachometer_divider setting.
+// Sets the tachometer_divider_exponent setting.
 //
 // This setting specifies how many bits to shift the raw tachomter reading to
 // the right before using it to calculate the "feedback" variable.  The
@@ -1374,13 +1374,13 @@ bool jrk_settings_get_always_analog_fba(const jrk_settings *);
 // This option is intended for systems with tachometer feedback where the
 // tachometer can emit more than 2048 counts per PID period.
 JRK_API
-void jrk_settings_set_tachometer_divider(jrk_settings *,
-  uint8_t tachometer_divider);
+void jrk_settings_set_tachometer_divider_exponent(jrk_settings *,
+  uint8_t tachometer_divider_exponent);
 
-// Gets the tachometer_divider setting, which is described in
-// jrk_settings_set_tachometer_divider.
+// Gets the tachometer_divider_exponent setting, which is described in
+// jrk_settings_set_tachometer_divider_exponent.
 JRK_API
-uint8_t jrk_settings_get_tachometer_divider(const jrk_settings *);
+uint8_t jrk_settings_get_tachometer_divider_exponent(const jrk_settings *);
 
 // End of auto-generated settings accessor prototypes.
 
