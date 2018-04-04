@@ -13,8 +13,8 @@ nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
     this->setMinimumSize(temp_box.sizeHint());
   }
 
-  connect(this, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &set_code_from_value);
+  connect(this, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+    this, &nice_spin_box::set_code_from_value);
 }
 
 
