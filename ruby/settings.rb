@@ -274,11 +274,6 @@ The jrk uses hysteresis to keep the system from simply riding the edge of the
 feedback dead zone; once in the dead zone, the duty cycle and integral will
 remain zero until the magnitude of the error exceeds twice the value of the
 dead zone.
-
-Note that this feature conflicts with deceleration limits.  If you set the
-feedback deadzone to a non-zero value, the jrk will set the duty cycle to
-zero immediately in the feedback deadzone without respecting any deceleration
-limits.
 EOF
   },
   {
@@ -583,8 +578,6 @@ For the umc04a/umc05a jrk models, this setting is defined by the formula:
 
 This setting should be between -800 (for an offset of 0 mV) and 800 (for an
 offset of 100 mV).
-
-This setting is stored in the device's EEPROM but the device does not use it.
 EOF
   },
   {
@@ -603,8 +596,6 @@ current by (1875 + current_scale_calibration).
 The default current_scale_calibration value is 0.
 A current_scale_calibration value of 19 would increase the current
 readings by about 1%.
-
-This setting is stored in the device's EEPROM but the device does not use it.
 EOF
   },
   {
@@ -902,6 +893,21 @@ EOF
     comment: <<EOF
 This option causes the jrk to perform analog measurements on the FBA pin
 even if the "Feedback mode" setting is not "Analog".
+EOF
+  },
+  {
+    name: 'tachometer_divider',
+    type: :uint8_t,
+    default: 0,
+    range: 0..7,
+    address: 'JRK_SETTING_TACHOMETER_DIVIDER',
+    comment: <<EOF
+This setting specifies how many bits to shift the raw tachomter reading to
+the right before using it to calculate the "feedback" variable.  The
+default value is 0.
+
+This option is intended for systems with tachometer feedback where the
+tachometer can emit more than 2048 counts per PID period.
 EOF
   },
 ]

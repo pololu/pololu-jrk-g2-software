@@ -332,6 +332,11 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_fba << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA;
   }
 
+  {
+    uint8_t tachometer_divider = jrk_settings_get_tachometer_divider(settings);
+    buf[JRK_SETTING_TACHOMETER_DIVIDER] = tachometer_divider;
+  }
+
   // End of auto-generated settings-to-buffer code.
 
   {

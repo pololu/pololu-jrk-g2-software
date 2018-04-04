@@ -601,6 +601,18 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     jrk_settings_set_vin_calibration(settings, vin_calibration);
   }
 
+  {
+    uint8_t tachometer_divider = jrk_settings_get_tachometer_divider(settings);
+    if (tachometer_divider > 7)
+    {
+      tachometer_divider = 7;
+      jrk_sprintf(warnings,
+        "Warning: The tachometer divider was too high "
+        "so it will be changed to %u.\n", tachometer_divider);
+    }
+    jrk_settings_set_tachometer_divider(settings, tachometer_divider);
+  }
+
   // End of auto-generated settings fixing code.
 
   {

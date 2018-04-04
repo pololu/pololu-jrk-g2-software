@@ -75,6 +75,7 @@ struct jrk_settings
   bool analog_sda_pullup;
   bool always_analog_sda;
   bool always_analog_fba;
+  uint8_t tachometer_divider;
 
   // End of auto-generated settings struct members.
 };
@@ -1039,6 +1040,18 @@ bool jrk_settings_get_always_analog_fba(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->always_analog_fba;
+}
+
+void jrk_settings_set_tachometer_divider(jrk_settings * settings, uint8_t tachometer_divider)
+{
+  if (settings == NULL) { return; }
+  settings->tachometer_divider = tachometer_divider;
+}
+
+uint8_t jrk_settings_get_tachometer_divider(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->tachometer_divider;
 }
 
 // End of auto-generated settings accessors.

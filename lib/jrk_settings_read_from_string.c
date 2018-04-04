@@ -905,6 +905,20 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     jrk_settings_set_always_analog_fba(settings, always_analog_fba);
     jrk_settings_set_always_analog_fba(settings, always_analog_fba);
   }
+  else if (!strcmp(key, "tachometer_divider"))
+  {
+    int64_t tachometer_divider;
+    if (jrk_string_to_i64(value, &tachometer_divider))
+    {
+      return jrk_error_create("Invalid tachometer_divider value.");
+    }
+    if (tachometer_divider < 0 || tachometer_divider > UINT8_MAX)
+    {
+      return jrk_error_create(
+        "The tachometer_divider value is out of range.");
+    }
+    jrk_settings_set_tachometer_divider(settings, tachometer_divider);
+  }
 
   // End of auto-generated settings file parsing code.
 
