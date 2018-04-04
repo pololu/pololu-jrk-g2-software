@@ -2646,6 +2646,7 @@ QWidget * main_window::setup_pid_tab()
 
   pid_period_spinbox = new QSpinBox();
   pid_period_spinbox->setObjectName("pid_period_spinbox");
+  pid_period_spinbox->setRange(0, 8191);
 
   integral_limit_label = new QLabel(tr("Integral limit:"));
   integral_limit_label->setObjectName("integral_limit_label");
