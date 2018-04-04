@@ -400,6 +400,11 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
       always_analog_fba ? "true" : "false");
   }
 
+  {
+    uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
+    jrk_sprintf(&str, "tachometer_divider_exponent: %u\n", tachometer_divider_exponent);
+  }
+
   // End of auto-generated settings file printing code.
 
   if (str.data == NULL)

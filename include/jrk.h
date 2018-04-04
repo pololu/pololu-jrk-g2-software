@@ -591,11 +591,6 @@ bool jrk_settings_get_feedback_detect_disconnect(const jrk_settings *);
 // feedback dead zone; once in the dead zone, the duty cycle and integral will
 // remain zero until the magnitude of the error exceeds twice the value of the
 // dead zone.
-//
-// Note that this feature conflicts with deceleration limits.  If you set the
-// feedback deadzone to a non-zero value, the jrk will set the duty cycle to
-// zero immediately in the feedback deadzone without respecting any deceleration
-// limits.
 JRK_API
 void jrk_settings_set_feedback_dead_zone(jrk_settings *,
   uint8_t feedback_dead_zone);
@@ -980,8 +975,6 @@ uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings *);
 //
 // This setting should be between -800 (for an offset of 0 mV) and 800 (for an
 // offset of 100 mV).
-//
-// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_offset_calibration(jrk_settings *,
   int16_t current_offset_calibration);
@@ -1002,8 +995,6 @@ int16_t jrk_settings_get_current_offset_calibration(const jrk_settings *);
 // The default current_scale_calibration value is 0.
 // A current_scale_calibration value of 19 would increase the current
 // readings by about 1%.
-//
-// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_scale_calibration(jrk_settings *,
   int16_t current_scale_calibration);
@@ -1350,7 +1341,8 @@ bool jrk_settings_get_analog_sda_pullup(const jrk_settings *);
 // Sets the always_analog_sda setting.
 //
 // This option causes the jrk to perform analog measurements on the SDA/AN pin
-// even if the "Input mode" setting is not "Analog".
+// and configure SCL as a potentiometer power pin even if the "Input mode"
+// setting is not "Analog".
 JRK_API
 void jrk_settings_set_always_analog_sda(jrk_settings *,
   bool always_analog_sda);
@@ -1372,6 +1364,23 @@ void jrk_settings_set_always_analog_fba(jrk_settings *,
 // jrk_settings_set_always_analog_fba.
 JRK_API
 bool jrk_settings_get_always_analog_fba(const jrk_settings *);
+
+// Sets the tachometer_divider_exponent setting.
+//
+// This setting specifies how many bits to shift the raw tachomter reading to
+// the right before using it to calculate the "feedback" variable.  The
+// default value is 0.
+//
+// This option is intended for systems with tachometer feedback where the
+// tachometer can emit more than 2048 counts per PID period.
+JRK_API
+void jrk_settings_set_tachometer_divider_exponent(jrk_settings *,
+  uint8_t tachometer_divider_exponent);
+
+// Gets the tachometer_divider_exponent setting, which is described in
+// jrk_settings_set_tachometer_divider_exponent.
+JRK_API
+uint8_t jrk_settings_get_tachometer_divider_exponent(const jrk_settings *);
 
 // End of auto-generated settings accessor prototypes.
 

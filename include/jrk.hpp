@@ -1163,6 +1163,18 @@ namespace jrk
       return jrk_settings_get_always_analog_fba(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_tachometer_divider_exponent().
+    void set_tachometer_divider_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_tachometer_divider_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_tachometer_divider_exponent().
+    uint8_t get_tachometer_divider_exponent() const noexcept
+    {
+      return jrk_settings_get_tachometer_divider_exponent(pointer);
+    }
+
     // End of auto-generated settings C++ accessors.
   };
 

@@ -457,9 +457,6 @@ void main_controller::handle_device_changed()
     window->set_cmd_port(cmd_port);
     window->set_ttl_port(ttl_port);
 
-    window->set_device_reset(
-      jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
-
     window->set_connection_status("", false);
   }
   else
@@ -494,6 +491,9 @@ void main_controller::handle_device_changed()
 
 void main_controller::handle_variables_changed()
 {
+  window->set_device_reset(
+    jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
+
   window->set_up_time(variables.get_up_time());
 
   window->set_input(variables.get_input(), cached_settings.get_input_mode());

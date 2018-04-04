@@ -296,6 +296,9 @@ jrk_error * jrk_force_duty_cycle_target(jrk_handle * handle, int16_t duty_cycle)
     return jrk_error_create("Handle is null.");
   }
 
+  if (duty_cycle > 600) { duty_cycle = 600; }
+  if (duty_cycle < -600) { duty_cycle = -600; }
+
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0x40, JRK_CMD_FORCE_DUTY_CYCLE_TARGET, duty_cycle, 0, NULL, 0, NULL));
 
@@ -314,6 +317,9 @@ jrk_error * jrk_force_duty_cycle(jrk_handle * handle, int16_t duty_cycle)
   {
     return jrk_error_create("Handle is null.");
   }
+
+  if (duty_cycle > 600) { duty_cycle = 600; }
+  if (duty_cycle < -600) { duty_cycle = -600; }
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0x40, JRK_CMD_FORCE_DUTY_CYCLE, duty_cycle, 0, NULL, 0, NULL));
