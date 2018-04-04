@@ -1019,7 +1019,7 @@ void main_window::center_at_startup_if_needed()
   // screen.  On other platforms, the default window position did not make much
   // sense, so it is nice to center it.
   //
-  // In case this causes problems, you can set the TICGUI_CENTER environment
+  // In case this causes problems, you can set the JRK2GUI_CENTER environment
   // variable to "N".
   //
   // NOTE: This position issue on Raspbian is a bug in Qt that should be fixed.
