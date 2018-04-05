@@ -336,6 +336,26 @@ void feedback_wizard::drive_button_released()
   }
 }
 
+void feedback_wizard::final_motor_invert_checkbox_toggled(bool checked)
+{
+  if (!::confirm("This will override your previously chosen motor direction.\n"
+    "Are you sure your want to continue?", this))
+  {
+    QSignalBlocker blocker(final_motor_invert_checkbox);
+    final_motor_invert_checkbox->setChecked(!checked);
+  }
+}
+
+void feedback_wizard::final_invert_checkbox_toggled(bool checked)
+{
+  if (!::confirm("This will override your previously chosen feedback direction.\n"
+    "Are you sure your want to continue?", this))
+  {
+    QSignalBlocker blocker(final_invert_checkbox);
+    final_invert_checkbox->setChecked(!checked);
+  }
+}
+
 bool feedback_wizard::handle_next_on_intro_page()
 {
   try
@@ -643,7 +663,15 @@ void feedback_wizard::update_order_warning()
 void feedback_wizard::copy_result_into_form()
 {
   final_motor_invert_checkbox->setChecked(result.motor_invert);
+
+  connect(final_motor_invert_checkbox, &QCheckBox::toggled,
+   this, &feedback_wizard::final_motor_invert_checkbox_toggled);
+
   final_invert_checkbox->setChecked(result.invert);
+
+  connect(final_invert_checkbox, &QCheckBox::toggled,
+   this, &feedback_wizard::final_invert_checkbox_toggled);
+
   final_error_max_spinbox->setValue(result.error_maximum);
   final_max_spinbox->setValue(result.maximum);
   final_min_spinbox->setValue(result.minimum);

@@ -868,7 +868,7 @@ bool main_controller::check_settings_applied_before_wizard()
 {
   if (settings_modified)
   {
-    if (!window->apply_and_continue("This wizard cannot be used right now because"
+    if (!window->apply_and_continue("This wizard cannot be used right now because "
       "the settings you changed have not been applied to the device.\n\n"
       "Please click \"Apply settings\" to apply your changes to the device or "
       "select \"Reload settings from device\" in the Device menu to discard "
