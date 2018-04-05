@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMessageBox>
+#include <QPushButton>
 #include <stdexcept>
 #include <string>
 
@@ -25,6 +26,24 @@ namespace
     QMessageBox mbox(QMessageBox::Warning, parent->windowTitle(),
       QString::fromStdString(message), QMessageBox::NoButton, parent);
     mbox.exec();
+  }
+
+  bool apply_and_continue(const std::string & question, QWidget * parent)
+  {
+    QMessageBox mbox(QMessageBox::Information, parent->windowTitle(),
+      QString::fromStdString(question), QMessageBox::Cancel, parent);
+
+    QAbstractButton * apply_button =
+      mbox.addButton("Apply settings", QMessageBox::AcceptRole);
+
+    mbox.exec();
+
+    if (mbox.clickedButton() == apply_button)
+    {
+      return true;
+    }
+    else
+      return false;
   }
 
   bool confirm(const std::string & question, QWidget * parent)

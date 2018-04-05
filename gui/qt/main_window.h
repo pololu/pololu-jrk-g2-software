@@ -67,6 +67,10 @@ public:
   void set_update_timer_interval(uint32_t interval_ms);
   void start_update_timer();
 
+  // Show a dialog with "Apply settings" and "Cancel" to apply settings
+  // without closing the dialog.
+  bool apply_and_continue(const std::string & question);
+
   // Show an OK/Cancel dialog, return true if the user selects OK.
   bool confirm(const std::string & question);
 
