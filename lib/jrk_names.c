@@ -49,7 +49,7 @@ const jrk_name jrk_feedback_mode_names_short[] =
 {
   { "none", JRK_FEEDBACK_MODE_NONE },
   { "analog", JRK_FEEDBACK_MODE_ANALOG },
-  { "tachometer", JRK_FEEDBACK_MODE_FREQUENCY },
+  { "frequency", JRK_FEEDBACK_MODE_FREQUENCY },
   { NULL, 0 },
 };
 
