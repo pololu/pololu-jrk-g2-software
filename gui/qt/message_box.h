@@ -31,19 +31,13 @@ namespace
   bool apply_and_continue(const std::string & question, QWidget * parent)
   {
     QMessageBox mbox(QMessageBox::Information, parent->windowTitle(),
-      QString::fromStdString(question), QMessageBox::Cancel, parent);
+      QString::fromStdString(question), QMessageBox::Apply | QMessageBox::Cancel, parent);
 
-    QAbstractButton * apply_button =
-      mbox.addButton("Apply settings", QMessageBox::AcceptRole);
+    mbox.setButtonText(QMessageBox::Apply, "Apply Settings");
 
-    mbox.exec();
+    int button = mbox.exec();
 
-    if (mbox.clickedButton() == apply_button)
-    {
-      return true;
-    }
-    else
-      return false;
+    return button == QMessageBox::Apply;
   }
 
   bool confirm(const std::string & question, QWidget * parent)
