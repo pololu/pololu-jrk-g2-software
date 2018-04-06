@@ -1365,14 +1365,90 @@ void jrk_settings_set_always_analog_fba(jrk_settings *,
 JRK_API
 bool jrk_settings_get_always_analog_fba(const jrk_settings *);
 
+// Sets the tachometer_mode setting.
+//
+// This settings specifies what kind of tachometer measurement to perform
+// on the FBT pin.
+//
+// JRK_TACHOMETER_MODE_PULSE_COUNTING means the jrk will count the number of
+// rising edges on the pin, and is more suitable for fast tachometers.
+//
+// JRK_TACHOMETER_MODE_PULSE_TIMING means the jrk will measure the pulse width
+// (duration) of pulses on the pin, and is more suitable for slow tachometers.
+JRK_API
+void jrk_settings_set_tachometer_mode(jrk_settings *,
+  uint8_t tachometer_mode);
+
+// Gets the tachometer_mode setting, which is described in
+// jrk_settings_set_tachometer_mode.
+JRK_API
+uint8_t jrk_settings_get_tachometer_mode(const jrk_settings *);
+
+// Sets the tachometer_pulse_timing_clock setting.
+//
+// This specifies the speed of the clock (in MHz) to use for pulse timing on the
+// FBT pin.  The options are:
+//
+// - JRK_PULSE_TIMING_CLOCK_1_5: 1.5 MHz
+// - JRK_PULSE_TIMING_CLOCK_3: 3 MHz
+// - JRK_PULSE_TIMING_CLOCK_6: 6 MHz
+// - JRK_PULSE_TIMING_CLOCK_12: 12 MHz
+// - JRK_PULSE_TIMING_CLOCK_24: 24 MHz
+// - JRK_PULSE_TIMING_CLOCK_48: 48 MHz
+JRK_API
+void jrk_settings_set_tachometer_pulse_timing_clock(jrk_settings *,
+  uint8_t tachometer_pulse_timing_clock);
+
+// Gets the tachometer_pulse_timing_clock setting, which is described in
+// jrk_settings_set_tachometer_pulse_timing_clock.
+JRK_API
+uint8_t jrk_settings_get_tachometer_pulse_timing_clock(const jrk_settings *);
+
+// Sets the tachometer_pulse_timing_polarity setting.
+//
+// By default, the pulse timing mode on the FBT pin measures the time of
+// high pulses.  When true, this option causes it to measure low pulses.
+JRK_API
+void jrk_settings_set_tachometer_pulse_timing_polarity(jrk_settings *,
+  bool tachometer_pulse_timing_polarity);
+
+// Gets the tachometer_pulse_timing_polarity setting, which is described in
+// jrk_settings_set_tachometer_pulse_timing_polarity.
+JRK_API
+bool jrk_settings_get_tachometer_pulse_timing_polarity(const jrk_settings *);
+
+// Sets the tachometer_pulse_timing_timeout setting.
+//
+// The pulse timing mode for the FBT pin will assume the motor has stopped, and
+// start recording maximum-width pulses if it has not seen any pulses in this
+// amount of time.
+JRK_API
+void jrk_settings_set_tachometer_pulse_timing_timeout(jrk_settings *,
+  uint16_t tachometer_pulse_timing_timeout);
+
+// Gets the tachometer_pulse_timing_timeout setting, which is described in
+// jrk_settings_set_tachometer_pulse_timing_timeout.
+JRK_API
+uint16_t jrk_settings_get_tachometer_pulse_timing_timeout(const jrk_settings *);
+
+// Sets the tachometer_averaging_count setting.
+//
+// The number of consecutive tachometer readings to average together in pulse
+// timing mode or to add together in pulse counting mode.
+JRK_API
+void jrk_settings_set_tachometer_averaging_count(jrk_settings *,
+  uint8_t tachometer_averaging_count);
+
+// Gets the tachometer_averaging_count setting, which is described in
+// jrk_settings_set_tachometer_averaging_count.
+JRK_API
+uint8_t jrk_settings_get_tachometer_averaging_count(const jrk_settings *);
+
 // Sets the tachometer_divider_exponent setting.
 //
 // This setting specifies how many bits to shift the raw tachomter reading to
 // the right before using it to calculate the "feedback" variable.  The
 // default value is 0.
-//
-// This option is intended for systems with tachometer feedback where the
-// tachometer can emit more than 2048 counts per PID period.
 JRK_API
 void jrk_settings_set_tachometer_divider_exponent(jrk_settings *,
   uint8_t tachometer_divider_exponent);

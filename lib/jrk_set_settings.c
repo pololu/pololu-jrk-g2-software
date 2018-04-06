@@ -333,6 +333,31 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
+    uint8_t tachometer_mode = jrk_settings_get_tachometer_mode(settings);
+    buf[JRK_SETTING_TACHOMETER_MODE] = tachometer_mode;
+  }
+
+  {
+    uint8_t tachometer_pulse_timing_clock = jrk_settings_get_tachometer_pulse_timing_clock(settings);
+    buf[JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS] |= (tachometer_pulse_timing_clock & JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK_MASK) << JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK;
+  }
+
+  {
+    bool tachometer_pulse_timing_polarity = jrk_settings_get_tachometer_pulse_timing_polarity(settings);
+    buf[JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS] |= tachometer_pulse_timing_polarity << JRK_TACHOMETER_PULSE_TIMING_OPTIONS_POLARITY;
+  }
+
+  {
+    uint16_t tachometer_pulse_timing_timeout = jrk_settings_get_tachometer_pulse_timing_timeout(settings);
+    write_uint16_t(buf + JRK_SETTING_TACHOMETER_PULSE_TIMING_TIMEOUT, tachometer_pulse_timing_timeout);
+  }
+
+  {
+    uint8_t tachometer_averaging_count = jrk_settings_get_tachometer_averaging_count(settings);
+    buf[JRK_SETTING_TACHOMETER_AVERAGING_COUNT] = tachometer_averaging_count;
+  }
+
+  {
     uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
     buf[JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT] = tachometer_divider_exponent;
   }

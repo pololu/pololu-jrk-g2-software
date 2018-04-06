@@ -189,14 +189,17 @@ def generate_buffer_to_settings_code(stream)
     type = setting_integer_type(setting_info)
     addr = setting_info.fetch(:address, "JRK_SETTING_#{name.upcase}")
     bit_addr = setting_info.fetch(:bit_address, 0)
+    mask = setting_info.fetch(:mask, nil)
+    mask ||= 1 if type == :bool
+    shift_mask = ""
+    shift_mask << " >> #{bit_addr}" if bit_addr != 0
+    shift_mask << " & #{mask}" if mask
 
     stream.puts "{"
-    if type == :bool
-      shift = " >> #{bit_addr}" if bit_addr != 0
-      stream.puts "  bool #{name} = buf[#{addr}]#{shift} & 1;"
-    elsif [:uint8_t, :int8_t].include?(type)
-      stream.puts "  #{type} #{name} = buf[#{addr}];"
+    if [:bool, :uint8_t, :int8_t].include?(type)
+      stream.puts "  #{type} #{name} = buf[#{addr}]#{shift_mask};"
     else
+      raise NotImplementedError if bit_addr != 0 || mask
       stream.puts "  #{type} #{name} = read_#{type}(buf + #{addr});"
     end
     stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
@@ -213,14 +216,29 @@ def generate_settings_to_buffer_code(stream)
     type = setting_integer_type(setting_info)
     addr = setting_info.fetch(:address, "JRK_SETTING_#{name.upcase}")
     bit_addr = setting_info.fetch(:bit_address, 0)
+    mask = setting_info.fetch(:mask, nil)
+
+    mask_shift_prefix = ""
+    mask_shift = ""
+    if mask
+      mask_shift << " & #{mask}"
+    end
+    if bit_addr != 0
+      if mask
+        mask_shift_prefix << "("
+        mask_shift << ")"
+      end
+      mask_shift << " << #{bit_addr}"
+    end
+    op = "="
+    if mask || type == :bool
+      op = "|="
+    end
 
     stream.puts "{"
     stream.puts "  #{type} #{name} = jrk_settings_get_#{name}(settings);"
-    if type == :bool
-      shift = " << #{bit_addr}" if bit_addr != 0
-      stream.puts "  buf[#{addr}] |= #{name}#{shift};"
-    elsif [:uint8_t, :int8_t].include?(type)
-      stream.puts "  buf[#{addr}] = #{name};"
+    if [:bool, :uint8_t, :int8_t].include?(type)
+      stream.puts "  buf[#{addr}] #{op} #{mask_shift_prefix}#{name}#{mask_shift};"
     else
       stream.puts "  write_#{type}(buf + JRK_SETTING_#{name.upcase}, #{name});"
     end
@@ -248,7 +266,6 @@ def generate_settings_file_parsing_code(stream)
       stream.puts "  {"
       stream.puts "    return jrk_error_create(\"Unrecognized #{name} value.\");"
       stream.puts "  }"
-      stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
     else
       int_type_min, int_type_max = setting_int_type_range(setting_info)
       stream.puts "  int64_t #{name};"

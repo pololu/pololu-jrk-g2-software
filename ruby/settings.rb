@@ -896,6 +896,75 @@ even if the "Feedback mode" setting is not "Analog".
 EOF
   },
   {
+    name: 'tachometer_mode',
+    type: :enum,
+    max: 'JRK_TACHOMETER_MODE_PULSE_TIMING',
+    default: 'JRK_TACHOMETER_MODE_PULSE_COUNTING',
+    english_default: 'pulse counting',
+    comment: <<EOF
+This settings specifies what kind of tachometer measurement to perform
+on the FBT pin.
+
+JRK_TACHOMETER_MODE_PULSE_COUNTING means the jrk will count the number of
+rising edges on the pin, and is more suitable for fast tachometers.
+
+JRK_TACHOMETER_MODE_PULSE_TIMING means the jrk will measure the pulse width
+(duration) of pulses on the pin, and is more suitable for slow tachometers.
+EOF
+  },
+  {
+    name: 'tachometer_pulse_timing_clock',
+    type: :enum,
+    english_default: '1.5 MHz',
+    default: 'JRK_PULSE_TIMING_CLOCK_1_5',
+    max: 'JRK_PULSE_TIMING_CLOCK_24',
+    address: 'JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS',
+    bit_address: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK',
+    mask: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK_MASK',
+    comment: <<EOF
+This specifies the speed of the clock (in MHz) to use for pulse timing on the
+FBT pin.  The options are:
+
+- JRK_PULSE_TIMING_CLOCK_1_5: 1.5 MHz
+- JRK_PULSE_TIMING_CLOCK_3: 3 MHz
+- JRK_PULSE_TIMING_CLOCK_6: 6 MHz
+- JRK_PULSE_TIMING_CLOCK_12: 12 MHz
+- JRK_PULSE_TIMING_CLOCK_24: 24 MHz
+- JRK_PULSE_TIMING_CLOCK_48: 48 MHz
+EOF
+  },
+  {
+    name: 'tachometer_pulse_timing_polarity',
+    type: :bool,
+    address: 'JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS',
+    bit_address: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_POLARITY',
+    comment: <<EOF
+By default, the pulse timing mode on the FBT pin measures the time of
+high pulses.  When true, this option causes it to measure low pulses.
+EOF
+  },
+  {
+    name: 'tachometer_pulse_timing_timeout',
+    type: :uint16_t,
+    default: 100,
+    comment: <<EOF
+The pulse timing mode for the FBT pin will assume the motor has stopped, and
+start recording maximum-width pulses if it has not seen any pulses in this
+amount of time.
+EOF
+  },
+  {
+    name: 'tachometer_averaging_count',
+    type: :uint8_t,
+    min: 1,
+    max: 'JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT',
+    default: 1,
+    comment: <<EOF
+The number of consecutive tachometer readings to average together in pulse
+timing mode or to add together in pulse counting mode.
+EOF
+  },
+  {
     name: 'tachometer_divider_exponent',
     type: :uint8_t,
     default: 0,
@@ -905,9 +974,6 @@ EOF
 This setting specifies how many bits to shift the raw tachomter reading to
 the right before using it to calculate the "feedback" variable.  The
 default value is 0.
-
-This option is intended for systems with tachometer feedback where the
-tachometer can emit more than 2048 counts per PID period.
 EOF
   },
 ]

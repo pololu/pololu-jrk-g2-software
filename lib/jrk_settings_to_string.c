@@ -401,6 +401,36 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
+    uint8_t tachometer_mode = jrk_settings_get_tachometer_mode(settings);
+    const char * value_str = "";
+    jrk_code_to_name(jrk_tachometer_mode_names_short, tachometer_mode, &value_str);
+    jrk_sprintf(&str, "tachometer_mode: %s\n", value_str);
+  }
+
+  {
+    uint8_t tachometer_pulse_timing_clock = jrk_settings_get_tachometer_pulse_timing_clock(settings);
+    const char * value_str = "";
+    jrk_code_to_name(jrk_tachometer_pulse_timing_clock_names_short, tachometer_pulse_timing_clock, &value_str);
+    jrk_sprintf(&str, "tachometer_pulse_timing_clock: %s\n", value_str);
+  }
+
+  {
+    bool tachometer_pulse_timing_polarity = jrk_settings_get_tachometer_pulse_timing_polarity(settings);
+    jrk_sprintf(&str, "tachometer_pulse_timing_polarity: %s\n",
+      tachometer_pulse_timing_polarity ? "true" : "false");
+  }
+
+  {
+    uint16_t tachometer_pulse_timing_timeout = jrk_settings_get_tachometer_pulse_timing_timeout(settings);
+    jrk_sprintf(&str, "tachometer_pulse_timing_timeout: %u\n", tachometer_pulse_timing_timeout);
+  }
+
+  {
+    uint8_t tachometer_averaging_count = jrk_settings_get_tachometer_averaging_count(settings);
+    jrk_sprintf(&str, "tachometer_averaging_count: %u\n", tachometer_averaging_count);
+  }
+
+  {
     uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
     jrk_sprintf(&str, "tachometer_divider_exponent: %u\n", tachometer_divider_exponent);
   }

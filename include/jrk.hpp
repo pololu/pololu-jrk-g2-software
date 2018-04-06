@@ -1163,6 +1163,66 @@ namespace jrk
       return jrk_settings_get_always_analog_fba(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_tachometer_mode().
+    void set_tachometer_mode(uint8_t value) noexcept
+    {
+      jrk_settings_set_tachometer_mode(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_tachometer_mode().
+    uint8_t get_tachometer_mode() const noexcept
+    {
+      return jrk_settings_get_tachometer_mode(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_tachometer_pulse_timing_clock().
+    void set_tachometer_pulse_timing_clock(uint8_t value) noexcept
+    {
+      jrk_settings_set_tachometer_pulse_timing_clock(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_tachometer_pulse_timing_clock().
+    uint8_t get_tachometer_pulse_timing_clock() const noexcept
+    {
+      return jrk_settings_get_tachometer_pulse_timing_clock(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_tachometer_pulse_timing_polarity().
+    void set_tachometer_pulse_timing_polarity(bool value) noexcept
+    {
+      jrk_settings_set_tachometer_pulse_timing_polarity(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_tachometer_pulse_timing_polarity().
+    bool get_tachometer_pulse_timing_polarity() const noexcept
+    {
+      return jrk_settings_get_tachometer_pulse_timing_polarity(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_tachometer_pulse_timing_timeout().
+    void set_tachometer_pulse_timing_timeout(uint16_t value) noexcept
+    {
+      jrk_settings_set_tachometer_pulse_timing_timeout(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_tachometer_pulse_timing_timeout().
+    uint16_t get_tachometer_pulse_timing_timeout() const noexcept
+    {
+      return jrk_settings_get_tachometer_pulse_timing_timeout(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_tachometer_averaging_count().
+    void set_tachometer_averaging_count(uint8_t value) noexcept
+    {
+      jrk_settings_set_tachometer_averaging_count(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_tachometer_averaging_count().
+    uint8_t get_tachometer_averaging_count() const noexcept
+    {
+      return jrk_settings_get_tachometer_averaging_count(pointer);
+    }
+
     /// Wrapper for jrk_settings_set_tachometer_divider_exponent().
     void set_tachometer_divider_exponent(uint8_t value) noexcept
     {
