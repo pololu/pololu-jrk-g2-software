@@ -116,6 +116,7 @@ public:
   void handle_pid_derivative_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_period_input(uint16_t);
   void handle_integral_limit_input(uint16_t);
+  void handle_integral_reduction_exponent_input(uint8_t);
   void handle_reset_integral_input(bool);
   void handle_feedback_dead_zone_input(uint8_t);
 

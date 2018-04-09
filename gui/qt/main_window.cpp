@@ -644,6 +644,11 @@ void main_window::set_integral_limit(uint16_t value)
   set_spin_box(integral_limit_spinbox, value);
 }
 
+void main_window::set_integral_reduction_exponent(uint8_t exponent)
+{
+  set_u8_combobox(integral_reduction_combobox, exponent);
+}
+
 void main_window::set_reset_integral(bool enabled)
 {
   set_check_box(reset_integral_checkbox, enabled);
@@ -1483,6 +1488,12 @@ void main_window::on_integral_limit_spinbox_valueChanged(int value)
   controller->handle_integral_limit_input(value);
 }
 
+void main_window::on_integral_reduction_combobox_currentIndexChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_integral_reduction_exponent_input(value);
+}
+
 void main_window::on_reset_integral_checkbox_stateChanged(int state)
 {
   if (suppress_events) { return; }
@@ -2199,20 +2210,15 @@ QWidget * main_window::setup_input_tab()
   return input_page_widget;
 }
 
-static QComboBox * setup_analog_samples_exponent_combobox()
+static QComboBox * setup_exponent_combobox(int max_exponent)
 {
   QComboBox * box = new QComboBox();
-  box->addItem("1", 0);
-  box->addItem("2", 1);
-  box->addItem("4", 2);
-  box->addItem("8", 3);
-  box->addItem("16", 4);
-  box->addItem("32", 5);
-  box->addItem("64", 6);
-  box->addItem("128", 7);
-  box->addItem("256", 8);
-  box->addItem("512", 9);
-  box->addItem("1024", 10);
+  int value = 1;
+  for (int i = 0; i <= max_exponent; i++)
+  {
+    box->addItem(QString::number(value), i);
+    value <<= 1;
+  }
   return box;
 }
 
@@ -2224,7 +2230,7 @@ QWidget * main_window::setup_input_analog_groupbox()
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
   input_analog_samples_label->setObjectName("input_analog_samples_label");
 
-  input_analog_samples_combobox = setup_analog_samples_exponent_combobox();
+  input_analog_samples_combobox = setup_exponent_combobox(10);
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
 
   input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
@@ -2577,7 +2583,7 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_analog_samples_label = new QLabel(tr("Analog samples:"));
   feedback_analog_samples_label->setObjectName("feedback_analog_samples_label");
 
-  feedback_analog_samples_combobox = setup_analog_samples_exponent_combobox();
+  feedback_analog_samples_combobox = setup_exponent_combobox(10);
   feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
 
   feedback_detect_disconnect_checkbox =
@@ -2648,6 +2654,12 @@ QWidget * main_window::setup_pid_tab()
   integral_limit_spinbox->setObjectName("integral_limit_spinbox");
   integral_limit_spinbox->setRange(0, 0x7FFF);
 
+  integral_reduction_label = new QLabel(tr("Integral reduction:"));
+  integral_reduction_label->setObjectName("integral_reduction_label");
+
+  integral_reduction_combobox = setup_exponent_combobox(15);
+  integral_reduction_combobox->setObjectName("integral_reduction_combobox");
+
   reset_integral_checkbox = new QCheckBox(
     tr("Reset integral when proportional term exceeds max duty cycle"));
   reset_integral_checkbox->setObjectName("reset_integral_checkbox");
@@ -2675,6 +2687,11 @@ QWidget * main_window::setup_pid_tab()
   integral_layout->addWidget(integral_limit_spinbox);
   integral_layout->addStretch(1);
 
+  QHBoxLayout * integral_reduction_layout = new QHBoxLayout();
+  integral_reduction_layout->addWidget(integral_reduction_label);
+  integral_reduction_layout->addWidget(integral_reduction_combobox);
+  integral_reduction_layout->addStretch(1);
+
   QHBoxLayout * deadzone_layout = new QHBoxLayout();
   deadzone_layout->addWidget(feedback_dead_zone_label);
   deadzone_layout->addWidget(feedback_dead_zone_spinbox);
@@ -2684,6 +2701,7 @@ QWidget * main_window::setup_pid_tab()
   layout->addLayout(coefficient_layout);
   layout->addLayout(period_layout);
   layout->addLayout(integral_layout);
+  layout->addLayout(integral_reduction_layout);
   layout->addWidget(reset_integral_checkbox);
   layout->addLayout(deadzone_layout);
   layout->addStretch(1);
@@ -2822,7 +2840,7 @@ QWidget *main_window::setup_motor_tab()
   current_samples_label = new QLabel(tr("Current samples:"));
   current_samples_label->setObjectName("current_samples_label");
 
-  current_samples_combobox = setup_analog_samples_exponent_combobox();
+  current_samples_combobox = setup_exponent_combobox(10);
   current_samples_combobox->setObjectName("current_samples_combobox");
 
   overcurrent_threshold_label = new QLabel(tr("Overcurrent threshold:"));

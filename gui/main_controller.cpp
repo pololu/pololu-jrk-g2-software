@@ -586,6 +586,7 @@ void main_controller::handle_settings_changed()
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
+  window->set_integral_reduction_exponent(settings.get_integral_reduction_exponent());
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
@@ -1044,6 +1045,14 @@ void main_controller::handle_integral_limit_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_integral_limit(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_integral_reduction_exponent_input(uint8_t value)
+{
+  if (!connected()) { return; }
+  settings.set_integral_reduction_exponent(value);
   settings_modified = true;
   handle_settings_changed();
 }

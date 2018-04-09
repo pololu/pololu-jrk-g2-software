@@ -160,6 +160,7 @@ public:
   void set_pid_derivative(uint16_t multiplier, uint8_t exponent);
   void set_pid_period(uint16_t value);
   void set_integral_limit(uint16_t value);
+  void set_integral_reduction_exponent(uint8_t exponent);
   void set_reset_integral(bool enabled);
   void set_feedback_dead_zone(uint8_t value);
 
@@ -314,6 +315,7 @@ private slots:
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
+  void on_integral_reduction_combobox_currentIndexChanged(int value);
   void on_reset_integral_checkbox_stateChanged(int state);
   void on_feedback_dead_zone_spinbox_valueChanged(int value);
 
@@ -585,6 +587,8 @@ private:
   QSpinBox * pid_period_spinbox;
   QLabel * integral_limit_label;
   QSpinBox * integral_limit_spinbox;
+  QLabel * integral_reduction_label;
+  QComboBox * integral_reduction_combobox;
   QCheckBox * reset_integral_checkbox;
   QLabel * feedback_dead_zone_label;
   QSpinBox * feedback_dead_zone_spinbox;
