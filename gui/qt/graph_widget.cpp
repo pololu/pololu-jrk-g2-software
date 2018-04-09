@@ -53,6 +53,10 @@ void graph_widget::clear_graphs()
     plot->graph->data()->clear();
   }
 
+  if (graph_paused)
+  {
+    on_pause_run_button_clicked();
+  }
   custom_plot->replot();
 }
 

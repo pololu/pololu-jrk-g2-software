@@ -45,12 +45,14 @@ class main_window : public QMainWindow
     QRadioButton * disabled_radio = NULL;
     QRadioButton * enabled_radio = NULL;
     QRadioButton * latched_radio = NULL;
+    QCheckBox * error_hard;
     QLabel * stopping_value = NULL;
     QLabel * count_value = NULL;
     QWidget * frame = NULL;
     QButtonGroup * error_enable_group = NULL;
     bool always_enabled = false;
     bool always_latched = false;
+    bool always_hard = false;
     int error_number = 0;
   };
 
@@ -83,9 +85,9 @@ public:
   void set_ttl_port(const std::string & ttl_port);
   void set_device_reset(const std::string & device_reset);
   void set_up_time(uint32_t);
-  void set_input(uint16_t);
+  void set_input(uint16_t, uint8_t);
   void set_target(uint16_t);
-  void set_feedback(uint16_t);
+  void set_feedback(uint16_t, uint8_t);
   void set_scaled_feedback(uint16_t);
   void set_feedback_not_applicable();
   void set_error(int16_t);
@@ -114,9 +116,6 @@ public:
   // disabled.
   void set_apply_settings_enabled(bool enabled);
 
-  void set_vin_calibration(int16_t vin_calibration);
-
-  void set_never_sleep(bool never_sleep);
 
   void set_motor_status_message(std::string const & message,
     uint16_t error_flag = 0);
@@ -132,7 +131,6 @@ public:
   void set_input_enable_device_number(bool enabled);
   void set_input_serial_timeout(uint16_t value);
   void set_input_compact_protocol(bool enabled);
-  void set_input_never_sleep(bool enabled);
   void set_input_error_minimum(uint16_t input_error_minimum);
   void set_input_error_maximum(uint16_t input_error_maximum);
   void set_input_minimum(uint16_t input_minimum);
@@ -189,9 +187,17 @@ public:
   void set_coast_when_off(bool value);
 
   void set_error_enable(uint16_t enable, uint16_t latch);
+  void set_error_hard(uint16_t hard);
   void set_error_flags_halting(uint16_t error_flags_halting);
   void increment_errors_occurred(uint16_t errors_occurred);
   void reset_error_counts();
+
+  void set_disable_i2c_pullups(bool enabled);
+  void set_analog_sda_pullup(bool enabled);
+  void set_always_analog_sda(bool enabled);
+  void set_always_analog_fba(bool enabled);
+  void set_never_sleep(bool enabled);
+  void set_vin_calibration(int16_t vin_calibration);
 
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
@@ -221,6 +227,8 @@ private:
   void set_spin_box(QSpinBox * box, int value);
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
+
+  void center_at_startup_if_needed();
 
 signals:
   void input_changed(uint16_t);
@@ -275,7 +283,6 @@ private slots:
   void on_input_device_number_checkbox_stateChanged(int state);
   void on_input_timeout_spinbox_valueChanged(double value);
   void on_input_disable_compact_protocol_checkbox_stateChanged(int state);
-  void on_input_never_sleep_checkbox_stateChanged(int state);
   void on_input_error_minimum_spinbox_valueChanged(int value);
   void on_input_error_maximum_spinbox_valueChanged(int value);
   void on_input_minimum_spinbox_valueChanged(int value);
@@ -333,8 +340,16 @@ private slots:
   void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
   void error_enable_group_buttonToggled(int id, int index);
+  void error_hard_stateChanged(int state, int index);
   void on_errors_clear_errors_clicked();
   void on_errors_reset_counts_clicked();
+
+  void on_disable_i2c_pullups_stateChanged(int state);
+  void on_analog_sda_pullup_stateChanged(int state);
+  void on_always_analog_sda_stateChanged(int state);
+  void on_always_analog_fba_stateChanged(int state);
+  void on_never_sleep_checkbox_stateChanged(int state);
+  void on_vin_calibration_value_valueChanged(int value);
 
 private:
   void setup_ui();
@@ -364,7 +379,11 @@ private:
 
   QWidget * setup_errors_tab();
   void setup_error_row(int error_number,
-    bool always_enabled, bool always_latched);
+    bool always_enabled, bool always_latched, bool always_hard);
+
+  QWidget * setup_advanced_tab();
+  QWidget * setup_pin_configuration_groupbox();
+  QWidget * setup_advanced_miscellaneous_groupbox();
 
   QTimer *update_timer = NULL;
 
@@ -511,7 +530,6 @@ private:
 
   QGroupBox *input_serial_groupbox;
   QButtonGroup *input_serial_mode_button_group;
-  QCheckBox *input_never_sleep_checkbox;
   QRadioButton *input_usb_dual_port_radio;
   QRadioButton *input_usb_chained_radio;
   QLabel *input_device_label;
@@ -633,6 +651,7 @@ private:
   QLabel * errors_bit_mask_label;
   QLabel * errors_error_label;
   QLabel * errors_setting_label;
+  QLabel * errors_hard_label;
   QLabel * errors_stopping_motor_label;
   QLabel * errors_occurrence_count_label;
   QPushButton * errors_clear_errors;
@@ -645,7 +664,19 @@ private:
   QPushButton * run_motor_button;
   QPushButton * apply_settings_button;
 
+  // advanced tab
 
+  QWidget * advanced_page_widget;
+
+  QGroupBox * pin_configuration_groupbox;
+  QCheckBox * disable_i2c_pullups;
+  QCheckBox * analog_sda_pullup;
+  QCheckBox * always_analog_sda;
+  QCheckBox * always_analog_fba;
+
+  QGroupBox * advanced_miscellaneous_groupbox;
+  QCheckBox * never_sleep_checkbox;
+  QSpinBox * vin_calibration_value;
   bool start_event_reported = false;
 
   QString directory_hint;

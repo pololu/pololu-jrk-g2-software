@@ -42,12 +42,13 @@ public:
   // the program is actually allowed to exit.
   bool exit();
 
+
+private:
   // This is called whenever something in the model has changed that might
   // require the window to be updated.  It includes no details about what
   // exactly changed.
-  void handle_model_changed();  // TODO: make this private
+  void handle_model_changed();
 
-private:
   void connect_device(jrk::device const & device);
   void disconnect_device_by_error(std::string const & error_message);
   void really_disconnect();
@@ -87,7 +88,6 @@ public:
   void handle_input_device_number_input(bool value);
   void handle_input_timeout_input(uint16_t value);
   void handle_input_disable_compact_protocol_input(bool value);
-  void handle_input_never_sleep_input(bool value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_error_minimum_input(uint16_t input_error_minimum);
   void handle_input_error_maximum_input(uint16_t input_error_maximum);
@@ -144,10 +144,15 @@ public:
   void handle_coast_when_off_input(bool);
 
   void handle_error_enable_input(int index, int id);
+  void handle_error_hard_input(int index, bool state);
   void handle_clear_errors_input();
   void handle_reset_counts_input();
 
-  void handle_never_sleep_input(bool never_sleep);
+  void handle_disable_i2c_pullups_input(bool value);
+  void handle_analog_sda_pullup_input(bool value);
+  void handle_always_analog_sda_input(bool value);
+  void handle_always_analog_fba_input(bool value);
+  void handle_never_sleep_input(bool value);
   void handle_vin_calibration_input(int16_t vin_calibration);
 
   void handle_upload_complete();
@@ -162,15 +167,13 @@ private:
 
   void recalculate_motor_asymmetric();
 
+  void constrain_feedback_scaling();
+
 public:
 
   bool check_settings_applied_before_wizard();
 
 private:
-
-  void update_motor_status_message(bool prompt_to_resume);
-
-  // void update_motor_status_message(bool prompt_to_resume);
 
   // Holds a list of the relevant devices that are connected to the computer.
   std::vector<jrk::device> device_list;

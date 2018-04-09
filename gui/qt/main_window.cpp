@@ -161,10 +161,25 @@ void main_window::set_up_time(uint32_t up_time)
     convert_up_time_to_string(up_time)));
 }
 
-void main_window::set_input(uint16_t input)
+void main_window::set_input(uint16_t input, uint8_t input_mode)
 {
   graph->input.plot_value = input;
-  input_value->setText(QString::number(input));
+
+  QString input_pretty = "";
+
+  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  {
+    input_pretty = " (" + QString::fromStdString(
+      convert_rc_12bit_to_us_string(input)) + ")";
+  }
+  else if (input_mode == JRK_INPUT_MODE_ANALOG)
+  {
+    input_pretty = " (" + QString::fromStdString(
+      convert_analog_12bit_to_v_string(input)) + ")";
+  }
+
+  input_value->setText(QString::number(input) + input_pretty);
+
   emit input_changed(input);
 }
 
@@ -174,10 +189,19 @@ void main_window::set_target(uint16_t target)
   target_value->setText(QString::number(target));
 }
 
-void main_window::set_feedback(uint16_t feedback)
+void main_window::set_feedback(uint16_t feedback, uint8_t feedback_mode)
 {
   graph->feedback.plot_value = feedback;
-  feedback_value->setText(QString::number(feedback));
+
+  QString feedback_pretty = "";
+
+  if (feedback_mode == JRK_FEEDBACK_MODE_ANALOG)
+  {
+    feedback_pretty = " (" + QString::fromStdString(
+      convert_analog_12bit_to_v_string(feedback)) + ")";
+  }
+
+  feedback_value->setText(QString::number(feedback) + feedback_pretty);
   emit feedback_changed(feedback);
 }
 
@@ -223,7 +247,11 @@ void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   graph->duty_cycle.plot_value = duty_cycle;
-  duty_cycle_value->setText(QString::number(duty_cycle));
+
+  QString duty_cycle_pretty = " (" + QString::fromStdString(
+      convert_duty_cycle_to_percent_string(duty_cycle)) + ")";
+
+  duty_cycle_value->setText(QString::number(duty_cycle) + duty_cycle_pretty);
   emit duty_cycle_changed(duty_cycle);
 }
 
@@ -337,16 +365,6 @@ void main_window::set_apply_settings_enabled(bool enabled)
   apply_settings_action->setEnabled(enabled);
 }
 
-void main_window::set_vin_calibration(int16_t vin_calibration)
-{
-  // TODO: set_spin_box(vin_calibration_value, vin_calibration);
-}
-
-void main_window::set_never_sleep(bool never_sleep)
-{
-  set_check_box(input_never_sleep_checkbox, never_sleep);
-}
-
 void main_window::set_motor_status_message(std::string const & message, uint16_t error_flag)
 {
   // setStyleSheet() is expensive, so only call it if something actually
@@ -447,11 +465,6 @@ void main_window::set_input_compact_protocol(bool enabled)
   set_check_box(input_disable_compact_protocol_checkbox, enabled);
 }
 
-void main_window::set_input_never_sleep(bool enabled)
-{
-  set_check_box(input_never_sleep_checkbox, enabled);
-}
-
 void main_window::set_input_error_minimum(uint16_t input_error_minimum)
 {
   set_spin_box(input_error_minimum_spinbox, input_error_minimum);
@@ -544,6 +557,12 @@ void main_window::set_feedback_mode(uint8_t feedback_mode)
 
   feedback_scaling_groupbox->setEnabled(
     feedback_mode != JRK_FEEDBACK_MODE_NONE);
+
+  feedback_minimum_spinbox->setEnabled(
+    feedback_mode != JRK_FEEDBACK_MODE_FREQUENCY);
+
+  feedback_error_minimum_spinbox->setEnabled(
+    feedback_mode != JRK_FEEDBACK_MODE_FREQUENCY);
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
@@ -788,6 +807,19 @@ void main_window::set_error_enable(uint16_t enable, uint16_t latch)
   suppress_events = false;
 }
 
+void main_window::set_error_hard(uint16_t hard)
+{
+  for (error_row & row : error_rows)
+  {
+    if (hard >> row.error_number & 1)
+    {
+      set_check_box(row.error_hard, true);
+    }
+    else
+      set_check_box(row.error_hard, false);
+  }
+}
+
 void main_window::set_error_flags_halting(uint16_t error_flags_halting)
 {
   error_flags_halting_value->setText(QString::fromStdString(
@@ -839,6 +871,36 @@ void main_window::reset_error_counts()
     row.count = 0;
     row.count_value->setText("-");
   }
+}
+
+void main_window::set_disable_i2c_pullups(bool enabled)
+{
+  set_check_box(disable_i2c_pullups, enabled);
+}
+
+void main_window::set_analog_sda_pullup(bool enabled)
+{
+  set_check_box(analog_sda_pullup, enabled);
+}
+
+void main_window::set_always_analog_sda(bool enabled)
+{
+  set_check_box(always_analog_sda, enabled);
+}
+
+void main_window::set_always_analog_fba(bool enabled)
+{
+  set_check_box(always_analog_fba, enabled);
+}
+
+void main_window::set_never_sleep(bool enabled)
+{
+  set_check_box(never_sleep_checkbox, enabled);
+}
+
+void main_window::set_vin_calibration(int16_t vin_calibration)
+{
+  set_spin_box(vin_calibration_value, vin_calibration);
 }
 
 void main_window::set_serial_baud_rate(uint32_t serial_baud_rate)
@@ -948,6 +1010,35 @@ void main_window::set_check_box(QCheckBox * check, bool value)
   suppress_events = true;
   check->setChecked(value);
   suppress_events = false;
+}
+
+void main_window::center_at_startup_if_needed()
+{
+  // Center the window.  This fixes a strange bug on the Raspbian Jessie where
+  // the window would appear in the upper left with its title bar off the
+  // screen.  On other platforms, the default window position did not make much
+  // sense, so it is nice to center it.
+  //
+  // In case this causes problems, you can set the JRK2GUI_CENTER environment
+  // variable to "N".
+  //
+  // NOTE: This position issue on Raspbian is a bug in Qt that should be fixed.
+  // Another workaround for it was to uncomment the lines in retranslate() that
+  // set up errors_stopping_header_label, error_rows[*].name_label, and
+  // manual_target_velocity_mode_radio, but then the Window would strangely
+  // start in the lower right.
+  auto env = QProcessEnvironment::systemEnvironment();
+  if (env.value("JRK2GUI_CENTER") != "N")
+  {
+    setGeometry(
+      QStyle::alignedRect(
+        Qt::LeftToRight,
+        Qt::AlignCenter,
+        size(),
+        qApp->desktop()->availableGeometry()
+        )
+      );
+  }
 }
 
 void main_window::showEvent(QShowEvent * event)
@@ -1218,12 +1309,6 @@ void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int st
 {
   if (suppress_events) { return; }
   controller->handle_input_disable_compact_protocol_input(state == Qt::Checked);
-}
-
-void main_window::on_input_never_sleep_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_input_never_sleep_input(state == Qt::Checked);
 }
 
 void main_window::on_input_error_minimum_spinbox_valueChanged(int value)
@@ -1551,6 +1636,12 @@ void main_window::error_enable_group_buttonToggled(int id, int index)
   controller->handle_error_enable_input(index, id);
 }
 
+void main_window::error_hard_stateChanged(int state, int index)
+{
+  if (suppress_events) { return; }
+  controller->handle_error_hard_input(index, state == Qt::Checked);
+}
+
 void main_window::on_errors_clear_errors_clicked()
 {
   if (suppress_events) { return; }
@@ -1561,6 +1652,42 @@ void main_window::on_errors_reset_counts_clicked()
 {
   if (suppress_events) { return; }
   reset_error_counts();
+}
+
+void main_window::on_disable_i2c_pullups_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_disable_i2c_pullups_input(state == Qt::Checked);
+}
+
+void main_window::on_analog_sda_pullup_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_analog_sda_pullup_input(state == Qt::Checked);
+}
+
+void main_window::on_always_analog_sda_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_always_analog_sda_input(state == Qt::Checked);
+}
+
+void main_window::on_always_analog_fba_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_always_analog_fba_input(state == Qt::Checked);
+}
+
+void main_window::on_never_sleep_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_never_sleep_input(state == Qt::Checked);
+}
+
+void main_window::on_vin_calibration_value_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_vin_calibration_input(value);
 }
 
 void main_window::setup_ui()
@@ -1610,6 +1737,7 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_pid_tab(), tr("PID"));
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
+  tab_widget->addTab(setup_advanced_tab(), tr("Advanced"));
 
   // Let the user specify which tab to start on.  Handy for development.
   auto env = QProcessEnvironment::systemEnvironment();
@@ -2172,9 +2300,6 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
   input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
 
-  input_never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
-  input_never_sleep_checkbox->setObjectName("input_never_sleep_checkbox");
-
   QHBoxLayout *uart_fixed_baud = new QHBoxLayout();
   uart_fixed_baud->addWidget(input_uart_fixed_baud_radio, 0, Qt::AlignLeft);
   uart_fixed_baud->addWidget(input_uart_fixed_baud_spinbox, 0, Qt::AlignLeft);
@@ -2198,7 +2323,6 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_serial_layout->addLayout(timeout_layout, 7, 0, Qt::AlignLeft);
   input_serial_layout->addWidget(input_disable_compact_protocol_checkbox, 8, 0, Qt::AlignLeft);
   input_serial_layout->addItem(setup_vertical_spacer(), 9, 0);
-  input_serial_layout->addWidget(input_never_sleep_checkbox, 10, 0, Qt::AlignLeft);
 
   input_serial_groupbox->setLayout(input_serial_layout);
 
@@ -2522,6 +2646,7 @@ QWidget * main_window::setup_pid_tab()
 
   pid_period_spinbox = new QSpinBox();
   pid_period_spinbox->setObjectName("pid_period_spinbox");
+  pid_period_spinbox->setRange(0, 8191);
 
   integral_limit_label = new QLabel(tr("Integral limit:"));
   integral_limit_label->setObjectName("integral_limit_label");
@@ -2849,6 +2974,11 @@ QWidget *main_window::setup_errors_tab()
   errors_setting_label->setFont(font);
   errors_setting_label->setAlignment(Qt::AlignCenter);
 
+  errors_hard_label = new QLabel(tr("Hard\nstop?"));
+  errors_hard_label->setObjectName("errors_hard_label");
+  errors_hard_label->setFont(font);
+  errors_hard_label->setAlignment(Qt::AlignCenter);
+
   errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
@@ -2873,31 +3003,32 @@ QWidget *main_window::setup_errors_tab()
   layout->addWidget(errors_bit_mask_label, 0, 0);
   layout->addWidget(errors_error_label, 0, 1);
   layout->addWidget(errors_setting_label, 0, 2, 1, 3);
-  layout->addWidget(errors_stopping_motor_label, 0, 5);
-  layout->addWidget(errors_occurrence_count_label, 0, 6);
+  layout->addWidget(errors_hard_label, 0, 5);
+  layout->addWidget(errors_stopping_motor_label, 0, 6);
+  layout->addWidget(errors_occurrence_count_label, 0, 7);
 
   // Note: We have to do this before calling setup_error_row or else Qt shows
   // small spurious windows before the main window opens.
   errors_page_widget->setLayout(layout);
 
-  setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true);
-  setup_error_row(JRK_ERROR_NO_POWER, true, false);
-  setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false);
-  setup_error_row(JRK_ERROR_INPUT_INVALID, true, false);
-  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false);
-  setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false);
-  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false);
-  setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_CRC, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true);
-  setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true);
-  setup_error_row(JRK_ERROR_OVERCURRENT, false, false);
+  setup_error_row(JRK_ERROR_AWAITING_COMMAND, true, true, false);
+  setup_error_row(JRK_ERROR_NO_POWER, true, false, true);
+  setup_error_row(JRK_ERROR_MOTOR_DRIVER, true, false, true);
+  setup_error_row(JRK_ERROR_INPUT_INVALID, true, false, false);
+  setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false, false);
+  setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false, false);
+  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false, false);
+  setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_CRC, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true, false);
+  setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true, false);
+  setup_error_row(JRK_ERROR_OVERCURRENT, false, false, false);
 
   int last_row = layout->rowCount();
-  layout->addWidget(errors_clear_errors, last_row, 5, 1, 1, Qt::AlignCenter);
-  layout->addWidget(errors_reset_counts, last_row, 6, 1, 1, Qt::AlignLeft);
+  layout->addWidget(errors_clear_errors, last_row, 6, 1, 1, Qt::AlignCenter);
+  layout->addWidget(errors_reset_counts, last_row, 7, 1, 1, Qt::AlignLeft);
 
   layout->setRowStretch(last_row + 1, 1);
 
@@ -2912,7 +3043,7 @@ static void copy_margins(QWidget * dest, const QWidget * src)
 }
 
 void main_window::setup_error_row(int error_number,
-  bool always_enabled, bool always_latched)
+  bool always_enabled, bool always_latched, bool always_hard)
 {
   error_rows.append(error_row());
   error_row & row = error_rows.last();
@@ -2963,6 +3094,14 @@ void main_window::setup_error_row(int error_number,
   connect(row.error_enable_group, QOverload<int>::of(&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
+  row.error_hard = new QCheckBox(tr("Hard"));
+  row.error_hard->setObjectName("error_hard");
+
+  connect(row.error_hard, &QCheckBox::stateChanged,
+    [=] (int state) { error_hard_stateChanged(state, row.error_number); });
+
+  QLabel * always_hard_label = new QLabel(tr("Yes"));
+
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
   row.stopping_value->setAlignment(Qt::AlignCenter);
@@ -2980,8 +3119,14 @@ void main_window::setup_error_row(int error_number,
   errors_page_layout->addWidget(row.disabled_radio, r + 1, 2);
   errors_page_layout->addWidget(row.enabled_radio, r + 1, 3);
   errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
-  errors_page_layout->addWidget(row.stopping_value, r + 1, 5);
-  errors_page_layout->addWidget(row.count_value, r + 1, 6);
+
+  if (always_hard)
+    errors_page_layout->addWidget(always_hard_label, r + 1, 5, Qt::AlignCenter);
+  else
+    errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
+
+  errors_page_layout->addWidget(row.stopping_value, r + 1, 6);
+  errors_page_layout->addWidget(row.count_value, r + 1, 7);
 
   // Note: We have to do this after adding the radio buttons to the layout or
   // else Qt shows small spurious windows before the main window opens.
@@ -2989,3 +3134,84 @@ void main_window::setup_error_row(int error_number,
   row.enabled_radio->setVisible(!always_latched);
 }
 
+QWidget * main_window::setup_advanced_tab()
+{
+  advanced_page_widget = new QWidget();
+
+  QGridLayout * layout = new QGridLayout();
+
+  layout->addWidget(setup_pin_configuration_groupbox(), 0, 0);
+  layout->addWidget(setup_advanced_miscellaneous_groupbox(), 1, 0);
+
+  layout->setColumnStretch(1, 1);
+  layout->setRowStretch(2, 1);
+
+  advanced_page_widget->setLayout(layout);
+
+  return advanced_page_widget;
+}
+
+QWidget * main_window::setup_pin_configuration_groupbox()
+{
+  pin_configuration_groupbox = new QGroupBox(tr("Pin configuration"));
+  pin_configuration_groupbox->setObjectName("pin_configuration_groupbox");
+
+  disable_i2c_pullups = new QCheckBox(tr("Disable I\u00B2C pull-ups"));
+  disable_i2c_pullups->setObjectName("disable_i2c_pullups");
+
+  analog_sda_pullup = new QCheckBox(tr("Enable pull-up for analog input on SDA/AN"));
+  analog_sda_pullup->setObjectName("analog_sda_pullup");
+
+  always_analog_sda = new QCheckBox(tr("Always configure SDA/AN for analog input"));
+  always_analog_sda->setObjectName("always_analog_sda");
+  always_analog_sda->setToolTip(
+    tr("This option causes the jrk to perform analog measurements\n"
+      "on the SDA/AN pin and configure SCL as a potentiometer\n"
+      "power pin even if the \"Input mode\" setting is not \"Analog\"."));
+
+  always_analog_fba = new QCheckBox(tr("Always configure FBA for analog input"));
+  always_analog_fba->setObjectName("always_analog_fba");
+  always_analog_fba->setToolTip(
+    tr("This option causes the jrk to perform analog measurements on the\n"
+      "FBA pin even if the \"Feedback mode\" setting is not \"Analog\"."));
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addWidget(disable_i2c_pullups);
+  layout->addWidget(analog_sda_pullup);
+  layout->addWidget(always_analog_sda);
+  layout->addWidget(always_analog_fba);
+  layout->addStretch();
+
+  pin_configuration_groupbox->setLayout(layout);
+
+  return pin_configuration_groupbox;
+}
+
+QWidget * main_window::setup_advanced_miscellaneous_groupbox()
+{
+  advanced_miscellaneous_groupbox = new QGroupBox(tr("Miscellaneous"));
+  advanced_miscellaneous_groupbox->setObjectName("advanced_miscellaneous_groupbox");
+
+  never_sleep_checkbox = new QCheckBox(tr("Never sleep (ignore USB suspend)"));
+  never_sleep_checkbox->setObjectName("never_sleep_checkbox");
+
+  QLabel * vin_calibration_label = new QLabel(tr("VIN measurement calibration:"));
+
+  vin_calibration_value = new QSpinBox();
+  vin_calibration_value->setObjectName("vin_calibration_value");
+  vin_calibration_value->setRange(-500, 500);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+
+  QHBoxLayout * vin_calibration_layout = new QHBoxLayout();
+  vin_calibration_layout->addWidget(vin_calibration_label);
+  vin_calibration_layout->addWidget(vin_calibration_value);
+  vin_calibration_layout->addStretch();
+
+  layout->addWidget(never_sleep_checkbox, Qt::AlignLeft);
+  layout->addLayout(vin_calibration_layout, Qt::AlignLeft);
+
+  advanced_miscellaneous_groupbox->setLayout(layout);
+
+  return advanced_miscellaneous_groupbox;
+}
