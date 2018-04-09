@@ -898,7 +898,7 @@ EOF
     name: 'always_analog_fba',
     type: :bool,
     address: 'JRK_SETTING_OPTIONS_BYTE1',
-    bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA',
+    bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_FBA',
     comment: <<EOF
 This option causes the jrk to perform analog measurements on the FBA pin
 even if the "Feedback mode" setting is not "Analog".

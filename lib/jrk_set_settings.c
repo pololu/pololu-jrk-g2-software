@@ -334,7 +334,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     bool always_analog_fba = jrk_settings_get_always_analog_fba(settings);
-    buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_fba << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA;
+    buf[JRK_SETTING_OPTIONS_BYTE1] |= always_analog_fba << JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_FBA;
   }
 
   {
