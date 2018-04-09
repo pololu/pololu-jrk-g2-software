@@ -941,6 +941,9 @@ void main_controller::handle_feedback_error_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_minimum(value);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
@@ -971,6 +974,9 @@ void main_controller::handle_feedback_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_minimum(value);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
