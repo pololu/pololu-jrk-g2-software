@@ -1306,7 +1306,9 @@ void main_controller::handle_error_hard_input(int index, bool state)
     hard_value |= 1 << index;
   }
   else
+  {
     hard_value &= ~(1 << index);
+  }
 
   settings.set_error_hard(hard_value);
 
