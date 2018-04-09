@@ -192,6 +192,11 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
+    uint8_t integral_reduction_exponent = buf[JRK_SETTING_INTEGRAL_REDUCTION_EXPONENT];
+    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+  }
+
+  {
     uint16_t integral_limit = read_uint16_t(buf + JRK_SETTING_INTEGRAL_LIMIT);
     jrk_settings_set_integral_limit(settings, integral_limit);
   }

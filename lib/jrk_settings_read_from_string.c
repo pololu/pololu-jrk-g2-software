@@ -509,6 +509,20 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_pid_period(settings, pid_period);
   }
+  else if (!strcmp(key, "integral_reduction_exponent"))
+  {
+    int64_t integral_reduction_exponent;
+    if (jrk_string_to_i64(value, &integral_reduction_exponent))
+    {
+      return jrk_error_create("Invalid integral_reduction_exponent value.");
+    }
+    if (integral_reduction_exponent < 0 || integral_reduction_exponent > UINT8_MAX)
+    {
+      return jrk_error_create(
+        "The integral_reduction_exponent value is out of range.");
+    }
+    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+  }
   else if (!strcmp(key, "integral_limit"))
   {
     int64_t integral_limit;

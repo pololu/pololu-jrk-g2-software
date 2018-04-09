@@ -329,6 +329,18 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
+    uint8_t integral_reduction_exponent = jrk_settings_get_integral_reduction_exponent(settings);
+    if (integral_reduction_exponent > 15)
+    {
+      integral_reduction_exponent = 15;
+      jrk_sprintf(warnings,
+        "Warning: The integral reduction exponent was too high "
+        "so it will be changed to %u.\n", integral_reduction_exponent);
+    }
+    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+  }
+
+  {
     uint16_t integral_limit = jrk_settings_get_integral_limit(settings);
     if (integral_limit > 32767)
     {
@@ -651,9 +663,9 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
-    if (tachometer_divider_exponent > 7)
+    if (tachometer_divider_exponent > 15)
     {
-      tachometer_divider_exponent = 7;
+      tachometer_divider_exponent = 15;
       jrk_sprintf(warnings,
         "Warning: The tachometer divider exponent was too high "
         "so it will be changed to %u.\n", tachometer_divider_exponent);

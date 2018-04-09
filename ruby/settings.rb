@@ -501,6 +501,15 @@ disabled.
 EOF
   },
   {
+    name: 'integral_reduction_exponent',
+    type: :uint8_t,
+    range: 0..15,
+    default: 0,
+    comment: <<EOF
+Causes the integral variable to accumulate more slowly.
+EOF
+  },
+  {
     name: 'integral_limit',
     type: :uint16_t,
     overridable: true,
@@ -968,7 +977,7 @@ EOF
     name: 'tachometer_divider_exponent',
     type: :uint8_t,
     default: 0,
-    range: 0..7,
+    range: 0..15,
     address: 'JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT',
     comment: <<EOF
 This setting specifies how many bits to shift the raw tachomter reading to

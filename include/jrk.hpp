@@ -803,6 +803,18 @@ namespace jrk
       return jrk_settings_get_pid_period(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_integral_reduction_exponent().
+    void set_integral_reduction_exponent(uint8_t value) noexcept
+    {
+      jrk_settings_set_integral_reduction_exponent(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_integral_reduction_exponent().
+    uint8_t get_integral_reduction_exponent() const noexcept
+    {
+      return jrk_settings_get_integral_reduction_exponent(pointer);
+    }
+
     /// Wrapper for jrk_settings_set_integral_limit().
     void set_integral_limit(uint16_t value) noexcept
     {

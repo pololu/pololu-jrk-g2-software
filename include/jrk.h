@@ -887,6 +887,18 @@ void jrk_settings_set_pid_period(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_pid_period(const jrk_settings *);
 
+// Sets the integral_reduction_exponent setting.
+//
+// Causes the integral variable to accumulate more slowly.
+JRK_API
+void jrk_settings_set_integral_reduction_exponent(jrk_settings *,
+  uint8_t integral_reduction_exponent);
+
+// Gets the integral_reduction_exponent setting, which is described in
+// jrk_settings_set_integral_reduction_exponent.
+JRK_API
+uint8_t jrk_settings_get_integral_reduction_exponent(const jrk_settings *);
+
 // Sets the integral_limit setting.
 //
 // The PID algorithm prevents the absolute value of the accumulated error
