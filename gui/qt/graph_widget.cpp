@@ -125,7 +125,7 @@ void graph_widget::setup_ui()
 
   setup_plot(error, "Error", "#9400d3", true, 4095);
 
-  setup_plot(integral, "Integral", "#ff8c00", true, 1000);
+  setup_plot(integral, "Integral", "#ff8c00", true, 0x7fff);
 
   setup_plot(duty_cycle_target, "Duty cycle target", "#32cd32", true, 600);
 
