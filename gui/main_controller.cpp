@@ -696,7 +696,9 @@ void main_controller::recalculate_motor_asymmetric()
 
 void main_controller::constrain_feedback_scaling()
 {
-  if (settings.get_feedback_maximum() < 2048)
+  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
+  {
+    if (settings.get_feedback_maximum() < 2048)
     {
       settings.set_feedback_maximum(2048);
     }
@@ -707,6 +709,7 @@ void main_controller::constrain_feedback_scaling()
 
     settings.set_feedback_minimum(4096 - settings.get_feedback_maximum());
     settings.set_feedback_error_minimum(4096 - settings.get_feedback_error_maximum());
+  }
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -920,10 +923,7 @@ void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
   if (!connected()) { return; }
   settings.set_feedback_mode(feedback_mode);
 
-  if (feedback_mode == JRK_FEEDBACK_MODE_FREQUENCY)
-  {
-    constrain_feedback_scaling();
-  }
+  constrain_feedback_scaling();
 
   settings_modified = true;
   handle_settings_changed();
@@ -950,10 +950,7 @@ void main_controller::handle_feedback_error_maximum_input(uint16_t value)
   if (!connected()) { return; }
   settings.set_feedback_error_maximum(value);
 
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
-  {
-    constrain_feedback_scaling();
-  }
+  constrain_feedback_scaling();
 
   settings_modified = true;
   handle_settings_changed();
@@ -964,10 +961,7 @@ void main_controller::handle_feedback_maximum_input(uint16_t value)
   if (!connected()) { return; }
   settings.set_feedback_maximum(value);
 
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
-  {
-    constrain_feedback_scaling();
-  }
+  constrain_feedback_scaling();
 
   settings_modified = true;
   handle_settings_changed();
