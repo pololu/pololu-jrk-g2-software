@@ -811,12 +811,8 @@ void main_window::set_error_hard(uint16_t hard)
 {
   for (error_row & row : error_rows)
   {
-    if (hard >> row.error_number & 1)
-    {
-      set_check_box(row.error_hard, true);
-    }
-    else
-      set_check_box(row.error_hard, false);
+    bool is_hard = hard >> row.error_number & 1;
+    set_check_box(row.error_hard, is_hard);
   }
 }
 
@@ -3118,9 +3114,13 @@ void main_window::setup_error_row(int error_number,
   errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
 
   if (always_hard)
+  {
     errors_page_layout->addWidget(always_hard_label, r + 1, 5, Qt::AlignCenter);
+  }
   else
+  {
     errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
+  }
 
   errors_page_layout->addWidget(row.stopping_value, r + 1, 6);
   errors_page_layout->addWidget(row.count_value, r + 1, 7);
@@ -3198,13 +3198,12 @@ QWidget * main_window::setup_advanced_miscellaneous_groupbox()
   vin_calibration_value->setObjectName("vin_calibration_value");
   vin_calibration_value->setRange(-500, 500);
 
-  QVBoxLayout * layout = new QVBoxLayout();
-
   QHBoxLayout * vin_calibration_layout = new QHBoxLayout();
   vin_calibration_layout->addWidget(vin_calibration_label);
   vin_calibration_layout->addWidget(vin_calibration_value);
   vin_calibration_layout->addStretch();
 
+  QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(never_sleep_checkbox, Qt::AlignLeft);
   layout->addLayout(vin_calibration_layout, Qt::AlignLeft);
 
