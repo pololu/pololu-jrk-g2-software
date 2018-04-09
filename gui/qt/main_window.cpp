@@ -1023,10 +1023,6 @@ void main_window::center_at_startup_if_needed()
   // variable to "N".
   //
   // NOTE: This position issue on Raspbian is a bug in Qt that should be fixed.
-  // Another workaround for it was to uncomment the lines in retranslate() that
-  // set up errors_stopping_header_label, error_rows[*].name_label, and
-  // manual_target_velocity_mode_radio, but then the Window would strangely
-  // start in the lower right.
   auto env = QProcessEnvironment::systemEnvironment();
   if (env.value("JRK2GUI_CENTER") != "N")
   {
@@ -1046,6 +1042,7 @@ void main_window::showEvent(QShowEvent * event)
   if (!start_event_reported)
   {
     start_event_reported = true;
+    center_at_startup_if_needed();
     controller->start();
   }
 }
