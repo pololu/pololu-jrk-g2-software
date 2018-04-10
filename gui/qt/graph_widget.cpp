@@ -163,8 +163,16 @@ void graph_widget::setup_ui()
   {
     QString pos = QString::number(i);
     QString neg = QString::number(-i);
-    y_axis_ticker->addTick(i, pos + "%");
-    y_axis_ticker->addTick(-i, neg + "%");
+    if (i % 20 == 0)
+    {
+      y_axis_ticker->addTick(i, pos + "\u0025");
+      y_axis_ticker->addTick(-i, neg + "\u0025");
+    }
+    else
+    {
+      y_axis_ticker->addTick(i, "");
+      y_axis_ticker->addTick(-i, "");
+    }
   }
 
   custom_plot->yAxis->setTicker(y_axis_ticker);
@@ -279,10 +287,10 @@ double graph_widget::calculate_division_size(plot& plot)
 
   if (division_value >= 10)
   {
-    plot.division_size->setText("\u223c " + QString::number(((division_value)), 'f', 0));
+    plot.division_size->setText("\u2248 " + QString::number(((division_value)), 'f', 0));
   }
   else
-    plot.division_size->setText("\u223c " + QString::number(((division_value)), 'f', 1));
+    plot.division_size->setText("\u2248 " + QString::number(((division_value)), 'f', 1));
 }
 
 void graph_widget::change_ranges()
