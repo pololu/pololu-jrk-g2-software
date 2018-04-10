@@ -277,7 +277,7 @@ double graph_widget::calculate_division_size(plot& plot)
 {
   double division_value = (plot.range->value() - plot.center_value->value())/10.0;
 
-  if (division_value >= 100)
+  if (division_value >= 10)
   {
     plot.division_size->setText("\u223c " + QString::number(((division_value)), 'f', 0));
   }
