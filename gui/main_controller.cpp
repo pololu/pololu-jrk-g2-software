@@ -572,6 +572,7 @@ void main_controller::handle_settings_changed()
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
   window->set_input_scaling_order_warning_label();
+
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_invert(settings.get_feedback_invert());
   window->set_feedback_error_minimum(settings.get_feedback_error_minimum());
@@ -583,6 +584,13 @@ void main_controller::handle_settings_changed()
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
   window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());
   window->set_feedback_wraparound(settings.get_feedback_wraparound());
+  window->set_fbt_mode(settings.get_fbt_mode());
+  window->set_fbt_timing_clock(settings.get_fbt_timing_clock());
+  window->set_fbt_timing_polarity(settings.get_fbt_timing_polarity());
+  window->set_fbt_timing_timeout(settings.get_fbt_timing_timeout());
+  window->set_fbt_averaging_count(settings.get_fbt_averaging_count());
+  window->set_fbt_reciprocal(settings.get_fbt_reciprocal());
+  window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
@@ -1002,6 +1010,62 @@ void main_controller::handle_feedback_wraparound_input(bool value)
 {
   if (!connected()) { return; }
   settings.set_feedback_wraparound(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_mode_input(uint8_t mode)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_mode(mode);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_clock_input(uint8_t clock)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_clock(clock);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_polarity_input(bool polarity)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_polarity(polarity);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_timeout_input(uint16_t timeout)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_timeout(timeout);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_averaging_count_input(uint8_t count)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_averaging_count(count);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_reciprocal_input(bool enabled)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_reciprocal(enabled);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_divider_exponent_input(uint8_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_divider_exponent(exponent);
   settings_modified = true;
   handle_settings_changed();
 }

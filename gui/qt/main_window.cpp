@@ -613,6 +613,41 @@ void main_window::set_feedback_wraparound(bool value)
   set_check_box(feedback_wraparound_checkbox, value);
 }
 
+void main_window::set_fbt_mode(uint8_t value)
+{
+  set_u8_combobox(fbt_mode_combobox, value);
+}
+
+void main_window::set_fbt_timing_clock(uint8_t value)
+{
+  set_u8_combobox(fbt_timing_clock_combobox, value);
+}
+
+void main_window::set_fbt_timing_polarity(bool polarity)
+{
+  set_u8_combobox(fbt_timing_polarity_combobox, polarity);
+}
+
+void main_window::set_fbt_timing_timeout(uint16_t value)
+{
+  set_spin_box(fbt_timing_timeout_spinbox, value);
+}
+
+void main_window::set_fbt_averaging_count(uint8_t value)
+{
+  set_spin_box(fbt_averaging_count_spinbox, value);
+}
+
+void main_window::set_fbt_reciprocal(bool enabled)
+{
+  set_check_box(fbt_reciprocal_checkbox, enabled);
+}
+
+void main_window::set_fbt_divider_exponent(uint8_t value)
+{
+  set_u8_combobox(fbt_divider_combobox, value);
+}
+
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
 {
   suppress_events = true;
@@ -1451,6 +1486,52 @@ void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
 {
   if (suppress_events) { return; }
   controller->handle_feedback_wraparound_input(state == Qt::Checked);
+}
+
+void main_window::on_fbt_mode_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t mode = fbt_mode_combobox->itemData(index).toUInt();
+  controller->handle_fbt_mode_input(mode);
+}
+
+void main_window::on_fbt_timing_clock_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t clock = fbt_timing_clock_combobox->itemData(index).toUInt();
+  controller->handle_fbt_timing_clock_input(clock);
+}
+
+void main_window::on_fbt_timing_polarity_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  bool polarity = fbt_timing_polarity_combobox->itemData(index).toUInt();
+  controller->handle_fbt_timing_polarity_input(polarity);
+}
+
+void main_window::on_fbt_timing_timeout_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_fbt_timing_timeout_input(value);
+}
+
+void main_window::on_fbt_averaging_count_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_fbt_averaging_count_input(value);
+}
+
+void main_window::on_fbt_reciprocal_checkbox_stateChanged(int state)
+{
+  if (suppress_events) { return; }
+  controller->handle_fbt_reciprocal_input(state == Qt::Checked);
+}
+
+void main_window::on_fbt_divider_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t exponent = fbt_divider_combobox->itemData(index).toUInt();
+  controller->handle_fbt_divider_exponent_input(exponent);
 }
 
 void main_window::on_feedback_learn_button_clicked()
@@ -2637,7 +2718,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_mode_label->setObjectName("fbt_mode_label");
   fbt_mode_label->setText("Pulse feedback mode:");
 
-  QComboBox * fbt_mode_combobox = new QComboBox();
+  fbt_mode_combobox = new QComboBox();
   fbt_mode_combobox->setObjectName("fbt_mode_combobox");
   fbt_mode_combobox->addItem("Pulse counting", JRK_FBT_MODE_PULSE_COUNTING);
   fbt_mode_combobox->addItem("Pulse timing", JRK_FBT_MODE_PULSE_TIMING);
@@ -2646,7 +2727,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
   fbt_timing_clock_label->setText("Pulse timing clock:");
 
-  QComboBox * fbt_timing_clock_combobox = new QComboBox();
+  fbt_timing_clock_combobox = new QComboBox();
   fbt_timing_clock_combobox->setObjectName("fbt_timing_clock_combobox");
   fbt_timing_clock_combobox->addItem("1.5 MHz", JRK_FBT_TIMING_CLOCK_1_5);
   fbt_timing_clock_combobox->addItem("3 MHz", JRK_FBT_TIMING_CLOCK_3);
@@ -2659,7 +2740,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_polarity_label->setObjectName("fbt_timing_polarity_label");
   fbt_timing_polarity_label->setText("Pulse timing polarity:");
 
-  QComboBox * fbt_timing_polarity_combobox = new QComboBox();
+  fbt_timing_polarity_combobox = new QComboBox();
   fbt_timing_polarity_combobox->setObjectName("fbt_timing_polarity_combobox");
   fbt_timing_polarity_combobox->addItem("Active high", 0);
   fbt_timing_polarity_combobox->addItem("Active low", 1);
@@ -2668,7 +2749,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_timeout_label->setObjectName("fbt_timing_timeout_label");
   fbt_timing_timeout_label->setText("Pulse timing timeout:");
 
-  QSpinBox * fbt_timing_timeout_spinbox = new QSpinBox();
+  fbt_timing_timeout_spinbox = new QSpinBox();
   fbt_timing_timeout_spinbox->setObjectName("fbt_timing_timeout_spinbox");
   fbt_timing_timeout_spinbox->setRange(0, 60000);
 
@@ -2676,10 +2757,11 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_averaging_label->setObjectName("fbt_averaging_label");
   fbt_averaging_label->setText("Pulse averaging:");
 
-  QSpinBox * fbt_averaging_spinbox = new QSpinBox();
-  fbt_averaging_spinbox->setRange(0, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
+  fbt_averaging_count_spinbox = new QSpinBox();
+  fbt_averaging_count_spinbox->setObjectName("fbt_averaging_count_spinbox");
+  fbt_averaging_count_spinbox->setRange(0, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
 
-  QCheckBox * fbt_reciprocal_checkbox = new QCheckBox();
+  fbt_reciprocal_checkbox = new QCheckBox();
   fbt_reciprocal_checkbox->setObjectName("fbt_reciprocal_checkbox");
   fbt_reciprocal_checkbox->setText("Enable reciprocal");
 
@@ -2687,7 +2769,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_divider_label->setObjectName("fbt_divider_label");
   fbt_divider_label->setText("Pulse divider:");
 
-  QComboBox * fbt_divider_combobox = setup_exponent_combobox(15);
+  fbt_divider_combobox = setup_exponent_combobox(15);
   fbt_divider_combobox->setObjectName("fbt_divider_combobox");
 
   QGridLayout * layout = new QGridLayout();
@@ -2700,7 +2782,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   layout->addWidget(fbt_timing_timeout_label, 3, 0, Qt::AlignLeft);
   layout->addWidget(fbt_timing_timeout_spinbox, 3, 1, Qt::AlignLeft);
   layout->addWidget(fbt_averaging_label, 4, 0, Qt::AlignLeft);
-  layout->addWidget(fbt_averaging_spinbox, 4, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_averaging_count_spinbox, 4, 1, Qt::AlignLeft);
   layout->addWidget(fbt_reciprocal_checkbox, 5, 0, 1, 2, Qt::AlignLeft);
   layout->addWidget(fbt_divider_label, 6, 0, Qt::AlignLeft);
   layout->addWidget(fbt_divider_combobox, 6, 1, Qt::AlignLeft);

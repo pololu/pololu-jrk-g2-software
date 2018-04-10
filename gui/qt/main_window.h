@@ -154,6 +154,13 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
+  void set_fbt_mode(uint8_t);
+  void set_fbt_timing_clock(uint8_t);
+  void set_fbt_timing_polarity(bool);
+  void set_fbt_timing_timeout(uint16_t);
+  void set_fbt_averaging_count(uint8_t);
+  void set_fbt_reciprocal(bool);
+  void set_fbt_divider_exponent(uint8_t);
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);
@@ -307,6 +314,13 @@ private slots:
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
   void on_feedback_wraparound_checkbox_stateChanged(int state);
+  void on_fbt_mode_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_clock_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_polarity_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_timeout_spinbox_valueChanged(int value);
+  void on_fbt_averaging_count_spinbox_valueChanged(int value);
+  void on_fbt_reciprocal_checkbox_stateChanged(int state);
+  void on_fbt_divider_combobox_currentIndexChanged(int index);
   void on_feedback_learn_button_clicked();
 
   void on_pid_proportional_control_values_changed(int multiplier, int exponent);
@@ -582,7 +596,13 @@ private:
   QCheckBox * feedback_wraparound_checkbox;
 
   // feedback tab "FBT options" groupbox
-  // TODO
+  QComboBox * fbt_mode_combobox;
+  QComboBox * fbt_timing_clock_combobox;
+  QComboBox * fbt_timing_polarity_combobox;
+  QSpinBox * fbt_timing_timeout_spinbox;
+  QSpinBox * fbt_averaging_count_spinbox;
+  QCheckBox * fbt_reciprocal_checkbox;
+  QComboBox * fbt_divider_combobox;
 
   // pid tab
 
