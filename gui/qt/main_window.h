@@ -160,6 +160,7 @@ public:
   void set_fbt_timing_timeout(uint16_t);
   void set_fbt_averaging_count(uint8_t);
   void set_fbt_divider_exponent(uint8_t);
+  void set_feedback_summary(const std::string &);
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);
@@ -600,6 +601,7 @@ private:
   QSpinBox * fbt_timing_timeout_spinbox;
   QSpinBox * fbt_averaging_count_spinbox;
   QComboBox * fbt_divider_combobox;
+  QLabel * feedback_summary;
 
   // pid tab
 

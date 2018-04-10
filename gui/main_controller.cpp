@@ -591,6 +591,11 @@ void main_controller::handle_settings_changed()
   window->set_fbt_averaging_count(settings.get_fbt_averaging_count());
   window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
 
+  if (settings.is_present())
+  {
+    window->set_feedback_summary(jrk::summarize_feedback_settings(settings));
+  }
+
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
   window->set_integral_reduction_exponent(settings.get_integral_reduction_exponent());
@@ -706,6 +711,11 @@ void main_controller::constrain_feedback_scaling()
 {
   if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
   {
+    // TODO: This is disabled until I can ask Jan about it.  Seems like feedback
+    // scaling is less important for frequency mode than it used to be so we
+    // don't need this, and it's bad that you can't set it to a no-scaling
+    // full-range mode.
+    return;
     if (settings.get_feedback_maximum() < 2048)
     {
       settings.set_feedback_maximum(2048);

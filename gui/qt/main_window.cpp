@@ -365,7 +365,8 @@ void main_window::set_apply_settings_enabled(bool enabled)
   apply_settings_action->setEnabled(enabled);
 }
 
-void main_window::set_motor_status_message(std::string const & message, uint16_t error_flag)
+void main_window::set_motor_status_message(
+  const std::string & message, uint16_t error_flag)
 {
   // setStyleSheet() is expensive, so only call it if something actually
   // changed. Check if there's currently a stylesheet applied and decide
@@ -641,6 +642,11 @@ void main_window::set_fbt_averaging_count(uint8_t value)
 void main_window::set_fbt_divider_exponent(uint8_t value)
 {
   set_u8_combobox(fbt_divider_combobox, value);
+}
+
+void main_window::set_feedback_summary(const std::string & summary)
+{
+  feedback_summary->setText("Summary of the selections above: " + QString::fromStdString(summary));
 }
 
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
@@ -2552,6 +2558,11 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
   feedback_mode_combobox->addItem("Frequency (digital)", JRK_FEEDBACK_MODE_FREQUENCY);
 
+  feedback_summary = new QLabel();
+  feedback_summary->setObjectName("feedback_summary");
+  feedback_summary->setTextInteractionFlags(Qt::TextSelectableByMouse);
+  feedback_summary->setWordWrap(true);
+
   QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
   feedback_mode_layout->addWidget(feedback_mode_label);
   feedback_mode_layout->addWidget(feedback_mode_combobox);
@@ -2562,7 +2573,8 @@ QWidget * main_window::setup_feedback_tab()
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
   layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
-  layout->addWidget(setup_feedback_fbt_groupbox(), 1, 2, 3, 1, Qt::AlignTop);
+  layout->addWidget(setup_feedback_fbt_groupbox(), 1, 1);
+  layout->addWidget(feedback_summary, 4, 0, 1, 2);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;

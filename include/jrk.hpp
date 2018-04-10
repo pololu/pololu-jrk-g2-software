@@ -1999,5 +1999,16 @@ namespace jrk
   {
     return diagnose(settings, jrk::overridable_settings(), vars, flags);
   }
+
+  inline std::string summarize_feedback_settings(
+    const settings & settings, uint32_t flags = 0)
+  {
+    char * cstr;
+    throw_if_needed(jrk_summarize_feedback_settings(
+        settings.get_pointer(), flags, &cstr));
+    std::string diagnosis(cstr);
+    jrk_string_free(cstr);
+    return diagnosis;
+  }
 }
 

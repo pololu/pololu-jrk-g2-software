@@ -139,8 +139,6 @@ jrk_error * jrk_diagnose(
   uint32_t flags,
   char ** diagnosis)
 {
-  (void)flags;
-
   if (diagnosis == NULL)
   {
     return jrk_error_create("Diagnosis output pointer is null.");

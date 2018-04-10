@@ -51,6 +51,7 @@ add_library (lib
   jrk_settings_fix.c
   jrk_settings_read_from_string.c
   jrk_settings_to_string.c
+  jrk_summarize.c
   jrk_string.c
   jrk_variables.c
   ${os_src}
