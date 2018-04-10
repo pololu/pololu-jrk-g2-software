@@ -1235,18 +1235,6 @@ namespace jrk
       return jrk_settings_get_fbt_averaging_count(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_fbt_reciprocal().
-    void set_fbt_reciprocal(bool value) noexcept
-    {
-      jrk_settings_set_fbt_reciprocal(pointer, value);
-    }
-
-    /// Wrapper for jrk_settings_get_fbt_reciprocal().
-    bool get_fbt_reciprocal() const noexcept
-    {
-      return jrk_settings_get_fbt_reciprocal(pointer);
-    }
-
     /// Wrapper for jrk_settings_set_fbt_divider_exponent().
     void set_fbt_divider_exponent(uint8_t value) noexcept
     {

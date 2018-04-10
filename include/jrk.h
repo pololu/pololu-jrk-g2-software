@@ -1456,29 +1456,6 @@ void jrk_settings_set_fbt_averaging_count(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_fbt_averaging_count(const jrk_settings *);
 
-// Sets the fbt_reciprocal setting.
-//
-// When the jrk calculates its feedback value from the FBT measurement, this
-// option tells it to convert the reading from FBT to 0x400000/reading before
-// using dividing it by 2^(fbt_divider_exponent).
-//
-// If you want to do speed feedback with a tachometer, you would typically
-// enable this option if you have set fbt_mode to JRK_FBT_MODE_PULSE_TIMING, in
-// order to convert the measured pulse widths into a number proportional to the
-// frequency of the tachometer signal and the speed of your motor.
-//
-// If you want to do position feedback with a position sensor that uses a
-// pulse-width output to communicate position, you would typically set fbt_mode
-// to JRK_FBT_MODE_PULSETIMING and leave this option disabled.
-JRK_API
-void jrk_settings_set_fbt_reciprocal(jrk_settings *,
-  bool fbt_reciprocal);
-
-// Gets the fbt_reciprocal setting, which is described in
-// jrk_settings_set_fbt_reciprocal.
-JRK_API
-bool jrk_settings_get_fbt_reciprocal(const jrk_settings *);
-
 // Sets the fbt_divider_exponent setting.
 //
 // This setting specifies how many bits to shift the raw tachomter reading to

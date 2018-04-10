@@ -159,7 +159,6 @@ public:
   void set_fbt_timing_polarity(bool);
   void set_fbt_timing_timeout(uint16_t);
   void set_fbt_averaging_count(uint8_t);
-  void set_fbt_reciprocal(bool);
   void set_fbt_divider_exponent(uint8_t);
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
@@ -319,7 +318,6 @@ private slots:
   void on_fbt_timing_polarity_combobox_currentIndexChanged(int index);
   void on_fbt_timing_timeout_spinbox_valueChanged(int value);
   void on_fbt_averaging_count_spinbox_valueChanged(int value);
-  void on_fbt_reciprocal_checkbox_stateChanged(int state);
   void on_fbt_divider_combobox_currentIndexChanged(int index);
   void on_feedback_learn_button_clicked();
 
@@ -601,7 +599,6 @@ private:
   QComboBox * fbt_timing_polarity_combobox;
   QSpinBox * fbt_timing_timeout_spinbox;
   QSpinBox * fbt_averaging_count_spinbox;
-  QCheckBox * fbt_reciprocal_checkbox;
   QComboBox * fbt_divider_combobox;
 
   // pid tab

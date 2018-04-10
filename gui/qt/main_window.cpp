@@ -638,11 +638,6 @@ void main_window::set_fbt_averaging_count(uint8_t value)
   set_spin_box(fbt_averaging_count_spinbox, value);
 }
 
-void main_window::set_fbt_reciprocal(bool enabled)
-{
-  set_check_box(fbt_reciprocal_checkbox, enabled);
-}
-
 void main_window::set_fbt_divider_exponent(uint8_t value)
 {
   set_u8_combobox(fbt_divider_combobox, value);
@@ -1519,12 +1514,6 @@ void main_window::on_fbt_averaging_count_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
   controller->handle_fbt_averaging_count_input(value);
-}
-
-void main_window::on_fbt_reciprocal_checkbox_stateChanged(int state)
-{
-  if (suppress_events) { return; }
-  controller->handle_fbt_reciprocal_input(state == Qt::Checked);
 }
 
 void main_window::on_fbt_divider_combobox_currentIndexChanged(int index)
@@ -2560,8 +2549,8 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
   feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
-  feedback_mode_combobox->addItem("Analog (FBA)", JRK_FEEDBACK_MODE_ANALOG);
-  feedback_mode_combobox->addItem("Pulses (FBT)", JRK_FEEDBACK_MODE_FREQUENCY);
+  feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
+  feedback_mode_combobox->addItem("Frequency (digital)", JRK_FEEDBACK_MODE_FREQUENCY);
 
   QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
   feedback_mode_layout->addWidget(feedback_mode_label);
@@ -2761,10 +2750,6 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_averaging_count_spinbox->setObjectName("fbt_averaging_count_spinbox");
   fbt_averaging_count_spinbox->setRange(0, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
 
-  fbt_reciprocal_checkbox = new QCheckBox();
-  fbt_reciprocal_checkbox->setObjectName("fbt_reciprocal_checkbox");
-  fbt_reciprocal_checkbox->setText("Enable reciprocal");
-
   QLabel * fbt_divider_label = new QLabel();
   fbt_divider_label->setObjectName("fbt_divider_label");
   fbt_divider_label->setText("Pulse divider:");
@@ -2783,9 +2768,8 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   layout->addWidget(fbt_timing_timeout_spinbox, 3, 1, Qt::AlignLeft);
   layout->addWidget(fbt_averaging_label, 4, 0, Qt::AlignLeft);
   layout->addWidget(fbt_averaging_count_spinbox, 4, 1, Qt::AlignLeft);
-  layout->addWidget(fbt_reciprocal_checkbox, 5, 0, 1, 2, Qt::AlignLeft);
-  layout->addWidget(fbt_divider_label, 6, 0, Qt::AlignLeft);
-  layout->addWidget(fbt_divider_combobox, 6, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_divider_label, 5, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_divider_combobox, 5, 1, Qt::AlignLeft);
 
   fbt_groupbox->setLayout(layout);
 

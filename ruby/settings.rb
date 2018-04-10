@@ -975,26 +975,6 @@ timing mode or to add together in pulse counting mode.
 EOF
   },
   {
-    name: 'fbt_reciprocal',
-    type: :bool,
-    address: 'JRK_SETTING_FBT_OPTIONS',
-    bit_address: 'JRK_FBT_OPTIONS_RECIPROCAL',
-    comment: <<EOF
-When the jrk calculates its feedback value from the FBT measurement, this
-option tells it to convert the reading from FBT to 0x400000/reading before
-using dividing it by 2^(fbt_divider_exponent).
-
-If you want to do speed feedback with a tachometer, you would typically
-enable this option if you have set fbt_mode to JRK_FBT_MODE_PULSE_TIMING, in
-order to convert the measured pulse widths into a number proportional to the
-frequency of the tachometer signal and the speed of your motor.
-
-If you want to do position feedback with a position sensor that uses a
-pulse-width output to communicate position, you would typically set fbt_mode
-to JRK_FBT_MODE_PULSETIMING and leave this option disabled.
-EOF
-  },
-  {
     name: 'fbt_divider_exponent',
     type: :uint8_t,
     default: 0,

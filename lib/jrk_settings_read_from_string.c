@@ -958,15 +958,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_fbt_averaging_count(settings, fbt_averaging_count);
   }
-  else if (!strcmp(key, "fbt_reciprocal"))
-  {
-    uint32_t fbt_reciprocal;
-    if (!jrk_name_to_code(jrk_bool_names, value, &fbt_reciprocal))
-    {
-      return jrk_error_create("Unrecognized fbt_reciprocal value.");
-    }
-    jrk_settings_set_fbt_reciprocal(settings, fbt_reciprocal);
-  }
   else if (!strcmp(key, "fbt_divider_exponent"))
   {
     int64_t fbt_divider_exponent;

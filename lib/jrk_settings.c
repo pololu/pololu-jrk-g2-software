@@ -81,7 +81,6 @@ struct jrk_settings
   bool fbt_timing_polarity;
   uint16_t fbt_timing_timeout;
   uint8_t fbt_averaging_count;
-  bool fbt_reciprocal;
   uint8_t fbt_divider_exponent;
 
   // End of auto-generated settings struct members.
@@ -1123,18 +1122,6 @@ uint8_t jrk_settings_get_fbt_averaging_count(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->fbt_averaging_count;
-}
-
-void jrk_settings_set_fbt_reciprocal(jrk_settings * settings, bool fbt_reciprocal)
-{
-  if (settings == NULL) { return; }
-  settings->fbt_reciprocal = fbt_reciprocal;
-}
-
-bool jrk_settings_get_fbt_reciprocal(const jrk_settings * settings)
-{
-  if (settings == NULL) { return 0; }
-  return settings->fbt_reciprocal;
 }
 
 void jrk_settings_set_fbt_divider_exponent(jrk_settings * settings, uint8_t fbt_divider_exponent)

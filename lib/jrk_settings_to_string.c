@@ -436,12 +436,6 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    bool fbt_reciprocal = jrk_settings_get_fbt_reciprocal(settings);
-    jrk_sprintf(&str, "fbt_reciprocal: %s\n",
-      fbt_reciprocal ? "true" : "false");
-  }
-
-  {
     uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
     jrk_sprintf(&str, "fbt_divider_exponent: %u\n", fbt_divider_exponent);
   }

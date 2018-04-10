@@ -363,11 +363,6 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    bool fbt_reciprocal = jrk_settings_get_fbt_reciprocal(settings);
-    buf[JRK_SETTING_FBT_OPTIONS] |= fbt_reciprocal << JRK_FBT_OPTIONS_RECIPROCAL;
-  }
-
-  {
     uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
     buf[JRK_SETTING_FBT_DIVIDER_EXPONENT] = fbt_divider_exponent;
   }

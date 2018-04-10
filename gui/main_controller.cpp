@@ -589,7 +589,6 @@ void main_controller::handle_settings_changed()
   window->set_fbt_timing_polarity(settings.get_fbt_timing_polarity());
   window->set_fbt_timing_timeout(settings.get_fbt_timing_timeout());
   window->set_fbt_averaging_count(settings.get_fbt_averaging_count());
-  window->set_fbt_reciprocal(settings.get_fbt_reciprocal());
   window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
 
   window->set_pid_period(settings.get_pid_period());
@@ -1050,14 +1049,6 @@ void main_controller::handle_fbt_averaging_count_input(uint8_t count)
 {
   if (!connected()) { return; }
   settings.set_fbt_averaging_count(count);
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_fbt_reciprocal_input(bool enabled)
-{
-  if (!connected()) { return; }
-  settings.set_fbt_reciprocal(enabled);
   settings_modified = true;
   handle_settings_changed();
 }

@@ -115,7 +115,6 @@ public:
   void handle_fbt_timing_polarity_input(bool);
   void handle_fbt_timing_timeout_input(uint16_t);
   void handle_fbt_averaging_count_input(uint8_t);
-  void handle_fbt_reciprocal_input(bool);
   void handle_fbt_divider_exponent_input(uint8_t);
 
   void handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent);
