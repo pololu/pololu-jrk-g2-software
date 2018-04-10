@@ -2,11 +2,11 @@
 
 static jrk_print_freq(jrk_string * str, int freq_hz)
 {
-  if (freq_hz >= 3000000)
+  if (freq_hz >= 10000000)
   {
     jrk_sprintf(str, "%d\u00A0MHz", freq_hz / 1000000);
   }
-  else if (freq_hz >= 3000)
+  else if (freq_hz >= 10000)
   {
     jrk_sprintf(str, "%d\u00A0kHz", freq_hz / 1000);
   }
@@ -99,11 +99,46 @@ jrk_error * jrk_summarize_feedback_settings(
   {
     if (fbt_mode == JRK_FBT_MODE_PULSE_COUNTING)
     {
+      // count = freq_khz * pid_period * fbt_averaging_count >> fbt_divider_exponent
+
+      // Need roughly 50 counts for decent PID.
+      int min_counts = 50;
+      int min_freq_hz = 1000 * (min_counts << fbt_divider_exponent)
+        / pid_period / fbt_averaging_count;
+
+      // The counts get capped at 2047, and there is a limit to how fast
+      // the timer can operate too.  (TODO: characterize that)
+      int hardware_limit = 3000000;
+      int max_counts = 2000;
+      int max_freq_hz = 1000 * (max_counts << fbt_divider_exponent)
+        / pid_period / fbt_averaging_count;
+      if (max_freq_hz > hardware_limit) { max_freq_hz = 3000000; }
+
+      if (min_freq_hz < hardware_limit)
+      {
+        jrk_sprintf(&str,
+          "  The frequency on FBT should be between ");
+        jrk_print_freq(&str, min_freq_hz);
+        jrk_sprintf(&str, " and ");
+        jrk_print_freq(&str, max_freq_hz);
+        jrk_sprintf(&str, ".");
+      }
+      else
+      {
+        jrk_sprintf(&str,
+          "  To get a decent number of counts for PID (50), the frequency "
+          "on FBT would have to be at least ");
+        jrk_print_freq(&str, min_freq_hz);
+        jrk_sprintf(&str,
+          " but that is too fast for the jrk to measure.");
+      }
+
       if (fbt_averaging_count > 1 && fbt_divider_exponent > 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will count the number of rising edges it sees on the FBT "
-          "pin during each %u ms PID period, add together the counts from the "
+          "  The jrk will measure the speed of your system by "
+          "counting the rising edges on the FBT pin "
+          "during each %u ms PID period, add together the counts from the "
           "last %u periods, and then divide by %u to get a "
           "frequency measurement capped at 2047.",
           pid_period, fbt_averaging_count, 1 << fbt_divider_exponent);
@@ -112,8 +147,9 @@ jrk_error * jrk_summarize_feedback_settings(
       if (fbt_averaging_count > 1 && fbt_divider_exponent == 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will count the number of rising edges it sees on the FBT "
-          "pin during each %u ms PID period and add together the counts from "
+          "  The jrk will measure the speed of your system by "
+          "counting the rising edges on the FBT pin "
+          "during each %u ms PID period and add together the counts from "
           "the last %u periods to get a "
           "frequency measurement capped at 2047.",
           pid_period, fbt_averaging_count);
@@ -122,8 +158,9 @@ jrk_error * jrk_summarize_feedback_settings(
       if (fbt_averaging_count == 1 && fbt_divider_exponent > 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will count the number of rising edges it sees on the FBT "
-          "pin during each %u ms PID period and divide by %u to get a "
+          "  The jrk will measure the speed of your system by "
+          "counting the rising edges on the FBT pin "
+          "during each %u ms PID period and divide by %u to get a "
           "frequency measurement capped at 2047.",
           pid_period, 1 << fbt_divider_exponent);
       }
@@ -131,24 +168,11 @@ jrk_error * jrk_summarize_feedback_settings(
       if (fbt_averaging_count == 1 && fbt_divider_exponent == 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will count the number of rising edges it sees on the FBT "
-          "pin during each %u ms PID period to get a frequency measurement "
+          "  The jrk will measure the speed of your system by "
+          "counting the rising edges on the FBT pin "
+          "during each %u ms PID period to get a frequency measurement "
           "capped at 2047.", pid_period);
       }
-
-      int min_counts = 50;
-
-      // pid_period*freq_khz*fbt_averaging_count >> fbt_divider_exponent >= min_counts
-      int min_freq_hz = 1000 * (min_counts << fbt_divider_exponent)
-        / pid_period / fbt_averaging_count;
-
-      jrk_sprintf(&str,
-        "  To get a good number of counts for doing PID (at least %u), "
-        "the feedback signal must be at least ",
-        min_counts);
-      jrk_print_freq(&str, min_freq_hz);
-      jrk_sprintf(&str, ".");
-
     }
 
     if (fbt_mode == JRK_FBT_MODE_PULSE_TIMING)
@@ -162,10 +186,10 @@ jrk_error * jrk_summarize_feedback_settings(
       // TODO
     }
 
-    jrk_sprintf(&str,
-      "  A \"Target\" value of 2048 represents a speed of 0. "
-      "The \"Feedback\" value will either be 2048 plus the frequency measurement "
-      "or 2048 minus the frequency measurement, depending on the \"Target\" value.");
+    //jrk_sprintf(&str,
+    //  "  A \"Target\" value of 2048 represents a speed of 0. "
+    //  "The \"Feedback\" value will either be 2048 plus the frequency measurement "
+    //  "or 2048 minus the frequency measurement, depending on the \"Target\" value.");
   }
 
   if (feedback_error && feedback_mode != JRK_FEEDBACK_MODE_NONE)
@@ -208,8 +232,8 @@ jrk_error * jrk_summarize_feedback_settings(
     }
     else
     {
-      jrk_sprintf(&str,
-        "  The \"Scaled feedback\" will equal the \"Feedback\".");
+      //jrk_sprintf(&str,
+      //  "  The \"Scaled feedback\" will equal the \"Feedback\".");
     }
   }
 
