@@ -2585,7 +2585,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and pulse mode only)"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and frequency mode only)"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
@@ -2748,7 +2748,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   QLabel * fbt_timing_timeout_label = new QLabel();
   fbt_timing_timeout_label->setObjectName("fbt_timing_timeout_label");
-  fbt_timing_timeout_label->setText("Pulse timing timeout:");
+  fbt_timing_timeout_label->setText("Pulse timing timeout (ms):");
 
   fbt_timing_timeout_spinbox = new QSpinBox();
   fbt_timing_timeout_spinbox->setObjectName("fbt_timing_timeout_spinbox");
