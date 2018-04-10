@@ -76,12 +76,13 @@ struct jrk_settings
   bool analog_sda_pullup;
   bool always_analog_sda;
   bool always_analog_fba;
-  uint8_t tachometer_mode;
-  uint8_t tachometer_pulse_timing_clock;
-  bool tachometer_pulse_timing_polarity;
-  uint16_t tachometer_pulse_timing_timeout;
-  uint8_t tachometer_averaging_count;
-  uint8_t tachometer_divider_exponent;
+  uint8_t fbt_mode;
+  uint8_t fbt_timing_clock;
+  bool fbt_timing_polarity;
+  uint16_t fbt_timing_timeout;
+  uint8_t fbt_averaging_count;
+  bool fbt_reciprocal;
+  uint8_t fbt_divider_exponent;
 
   // End of auto-generated settings struct members.
 };
@@ -129,10 +130,10 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_max_duty_cycle_reverse(settings, 600);
   jrk_settings_set_current_limit_code_forward(settings, 26);
   jrk_settings_set_current_limit_code_reverse(settings, 26);
-  jrk_settings_set_tachometer_mode(settings, JRK_TACHOMETER_MODE_PULSE_COUNTING);
-  jrk_settings_set_tachometer_pulse_timing_clock(settings, JRK_PULSE_TIMING_CLOCK_1_5);
-  jrk_settings_set_tachometer_pulse_timing_timeout(settings, 100);
-  jrk_settings_set_tachometer_averaging_count(settings, 1);
+  jrk_settings_set_fbt_mode(settings, JRK_FBT_MODE_PULSE_COUNTING);
+  jrk_settings_set_fbt_timing_clock(settings, JRK_FBT_TIMING_CLOCK_1_5);
+  jrk_settings_set_fbt_timing_timeout(settings, 100);
+  jrk_settings_set_fbt_averaging_count(settings, 1);
 
   // End of auto-generated settings defaults.
 }
@@ -1064,76 +1065,88 @@ bool jrk_settings_get_always_analog_fba(const jrk_settings * settings)
   return settings->always_analog_fba;
 }
 
-void jrk_settings_set_tachometer_mode(jrk_settings * settings, uint8_t tachometer_mode)
+void jrk_settings_set_fbt_mode(jrk_settings * settings, uint8_t fbt_mode)
 {
   if (settings == NULL) { return; }
-  settings->tachometer_mode = tachometer_mode;
+  settings->fbt_mode = fbt_mode;
 }
 
-uint8_t jrk_settings_get_tachometer_mode(const jrk_settings * settings)
+uint8_t jrk_settings_get_fbt_mode(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->tachometer_mode;
+  return settings->fbt_mode;
 }
 
-void jrk_settings_set_tachometer_pulse_timing_clock(jrk_settings * settings, uint8_t tachometer_pulse_timing_clock)
+void jrk_settings_set_fbt_timing_clock(jrk_settings * settings, uint8_t fbt_timing_clock)
 {
   if (settings == NULL) { return; }
-  settings->tachometer_pulse_timing_clock = tachometer_pulse_timing_clock;
+  settings->fbt_timing_clock = fbt_timing_clock;
 }
 
-uint8_t jrk_settings_get_tachometer_pulse_timing_clock(const jrk_settings * settings)
+uint8_t jrk_settings_get_fbt_timing_clock(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->tachometer_pulse_timing_clock;
+  return settings->fbt_timing_clock;
 }
 
-void jrk_settings_set_tachometer_pulse_timing_polarity(jrk_settings * settings, bool tachometer_pulse_timing_polarity)
+void jrk_settings_set_fbt_timing_polarity(jrk_settings * settings, bool fbt_timing_polarity)
 {
   if (settings == NULL) { return; }
-  settings->tachometer_pulse_timing_polarity = tachometer_pulse_timing_polarity;
+  settings->fbt_timing_polarity = fbt_timing_polarity;
 }
 
-bool jrk_settings_get_tachometer_pulse_timing_polarity(const jrk_settings * settings)
+bool jrk_settings_get_fbt_timing_polarity(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->tachometer_pulse_timing_polarity;
+  return settings->fbt_timing_polarity;
 }
 
-void jrk_settings_set_tachometer_pulse_timing_timeout(jrk_settings * settings, uint16_t tachometer_pulse_timing_timeout)
+void jrk_settings_set_fbt_timing_timeout(jrk_settings * settings, uint16_t fbt_timing_timeout)
 {
   if (settings == NULL) { return; }
-  settings->tachometer_pulse_timing_timeout = tachometer_pulse_timing_timeout;
+  settings->fbt_timing_timeout = fbt_timing_timeout;
 }
 
-uint16_t jrk_settings_get_tachometer_pulse_timing_timeout(const jrk_settings * settings)
+uint16_t jrk_settings_get_fbt_timing_timeout(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->tachometer_pulse_timing_timeout;
+  return settings->fbt_timing_timeout;
 }
 
-void jrk_settings_set_tachometer_averaging_count(jrk_settings * settings, uint8_t tachometer_averaging_count)
+void jrk_settings_set_fbt_averaging_count(jrk_settings * settings, uint8_t fbt_averaging_count)
 {
   if (settings == NULL) { return; }
-  settings->tachometer_averaging_count = tachometer_averaging_count;
+  settings->fbt_averaging_count = fbt_averaging_count;
 }
 
-uint8_t jrk_settings_get_tachometer_averaging_count(const jrk_settings * settings)
+uint8_t jrk_settings_get_fbt_averaging_count(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->tachometer_averaging_count;
+  return settings->fbt_averaging_count;
 }
 
-void jrk_settings_set_tachometer_divider_exponent(jrk_settings * settings, uint8_t tachometer_divider_exponent)
+void jrk_settings_set_fbt_reciprocal(jrk_settings * settings, bool fbt_reciprocal)
 {
   if (settings == NULL) { return; }
-  settings->tachometer_divider_exponent = tachometer_divider_exponent;
+  settings->fbt_reciprocal = fbt_reciprocal;
 }
 
-uint8_t jrk_settings_get_tachometer_divider_exponent(const jrk_settings * settings)
+bool jrk_settings_get_fbt_reciprocal(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->tachometer_divider_exponent;
+  return settings->fbt_reciprocal;
+}
+
+void jrk_settings_set_fbt_divider_exponent(jrk_settings * settings, uint8_t fbt_divider_exponent)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_divider_exponent = fbt_divider_exponent;
+}
+
+uint8_t jrk_settings_get_fbt_divider_exponent(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_divider_exponent;
 }
 
 // End of auto-generated settings accessors.

@@ -2639,8 +2639,8 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   QComboBox * fbt_mode_combobox = new QComboBox();
   fbt_mode_combobox->setObjectName("fbt_mode_combobox");
-  fbt_mode_combobox->addItem("Pulse counting", JRK_TACHOMETER_MODE_PULSE_COUNTING);
-  fbt_mode_combobox->addItem("Pulse timing", JRK_TACHOMETER_MODE_PULSE_TIMING);
+  fbt_mode_combobox->addItem("Pulse counting", JRK_FBT_MODE_PULSE_COUNTING);
+  fbt_mode_combobox->addItem("Pulse timing", JRK_FBT_MODE_PULSE_TIMING);
 
   QLabel * fbt_timing_clock_label = new QLabel();
   fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
@@ -2648,12 +2648,12 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   QComboBox * fbt_timing_clock_combobox = new QComboBox();
   fbt_timing_clock_combobox->setObjectName("fbt_timing_clock_combobox");
-  fbt_timing_clock_combobox->addItem("1.5 MHz", JRK_PULSE_TIMING_CLOCK_1_5);
-  fbt_timing_clock_combobox->addItem("3 MHz", JRK_PULSE_TIMING_CLOCK_3);
-  fbt_timing_clock_combobox->addItem("6 MHz", JRK_PULSE_TIMING_CLOCK_6);
-  fbt_timing_clock_combobox->addItem("12 MHz", JRK_PULSE_TIMING_CLOCK_12);
-  fbt_timing_clock_combobox->addItem("24 MHz", JRK_PULSE_TIMING_CLOCK_24);
-  fbt_timing_clock_combobox->addItem("48 MHz", JRK_PULSE_TIMING_CLOCK_48);
+  fbt_timing_clock_combobox->addItem("1.5 MHz", JRK_FBT_TIMING_CLOCK_1_5);
+  fbt_timing_clock_combobox->addItem("3 MHz", JRK_FBT_TIMING_CLOCK_3);
+  fbt_timing_clock_combobox->addItem("6 MHz", JRK_FBT_TIMING_CLOCK_6);
+  fbt_timing_clock_combobox->addItem("12 MHz", JRK_FBT_TIMING_CLOCK_12);
+  fbt_timing_clock_combobox->addItem("24 MHz", JRK_FBT_TIMING_CLOCK_24);
+  fbt_timing_clock_combobox->addItem("48 MHz", JRK_FBT_TIMING_CLOCK_48);
 
   QLabel * fbt_timing_polarity_label = new QLabel();
   fbt_timing_polarity_label->setObjectName("fbt_timing_polarity_label");
@@ -2677,7 +2677,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_averaging_label->setText("Pulse averaging:");
 
   QSpinBox * fbt_averaging_spinbox = new QSpinBox();
-  fbt_averaging_spinbox->setRange(0, JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT);
+  fbt_averaging_spinbox->setRange(0, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
 
   QCheckBox * fbt_reciprocal_checkbox = new QCheckBox();
   fbt_reciprocal_checkbox->setObjectName("fbt_reciprocal_checkbox");

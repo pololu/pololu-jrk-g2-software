@@ -495,14 +495,14 @@ private:
   QLabel *input_mode_label;
   QComboBox *input_mode_combobox;
 
-  // input tab "Analog to digital conversion" groupbox
+  // input tab "Analog input" groupbox
 
   QGroupBox *input_analog_groupbox;
   QLabel *input_analog_samples_label;
   QCheckBox *input_detect_disconnect_checkbox;
   QComboBox *input_analog_samples_combobox;
 
-  // input tab "Scaling (Analog and Pulse Width mode only)" groupbox
+  // input tab "Scaling" groupbox
 
   QGroupBox *input_scaling_groupbox;
   QLabel *input_scaling_order_warning_label;

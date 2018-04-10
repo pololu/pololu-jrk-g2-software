@@ -68,21 +68,21 @@ const jrk_name jrk_pwm_frequency_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_tachometer_mode_names_short[] =
+const jrk_name jrk_fbt_mode_names_short[] =
 {
-  { "counting", JRK_TACHOMETER_MODE_PULSE_COUNTING },
-  { "timing", JRK_TACHOMETER_MODE_PULSE_TIMING },
+  { "counting", JRK_FBT_MODE_PULSE_COUNTING },
+  { "timing", JRK_FBT_MODE_PULSE_TIMING },
   { NULL, 0 },
 };
 
-const jrk_name jrk_tachometer_pulse_timing_clock_names_short[] =
+const jrk_name jrk_fbt_timing_clock_names_short[] =
 {
-  { "12m", JRK_PULSE_TIMING_CLOCK_12 },
-  { "6m", JRK_PULSE_TIMING_CLOCK_6 },
-  { "3m", JRK_PULSE_TIMING_CLOCK_3 },
-  { "1m5", JRK_PULSE_TIMING_CLOCK_1_5 },
-  { "48m", JRK_PULSE_TIMING_CLOCK_48 },
-  { "24m", JRK_PULSE_TIMING_CLOCK_24 },
+  { "12m", JRK_FBT_TIMING_CLOCK_12 },
+  { "6m", JRK_FBT_TIMING_CLOCK_6 },
+  { "3m", JRK_FBT_TIMING_CLOCK_3 },
+  { "1m5", JRK_FBT_TIMING_CLOCK_1_5 },
+  { "48m", JRK_FBT_TIMING_CLOCK_48 },
+  { "24m", JRK_FBT_TIMING_CLOCK_24 },
   { NULL, 0 },
 };
 

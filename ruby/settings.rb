@@ -905,31 +905,31 @@ even if the "Feedback mode" setting is not "Analog".
 EOF
   },
   {
-    name: 'tachometer_mode',
+    name: 'fbt_mode',
     type: :enum,
-    max: 'JRK_TACHOMETER_MODE_PULSE_TIMING',
-    default: 'JRK_TACHOMETER_MODE_PULSE_COUNTING',
+    max: 'JRK_FBT_MODE_PULSE_TIMING',
+    default: 'JRK_FBT_MODE_PULSE_COUNTING',
     english_default: 'pulse counting',
     comment: <<EOF
-This settings specifies what kind of tachometer measurement to perform
+This settings specifies what kind of pulse measurement to perform
 on the FBT pin.
 
-JRK_TACHOMETER_MODE_PULSE_COUNTING means the jrk will count the number of
+JRK_FBT_MODE_PULSE_COUNTING means the jrk will count the number of
 rising edges on the pin, and is more suitable for fast tachometers.
 
-JRK_TACHOMETER_MODE_PULSE_TIMING means the jrk will measure the pulse width
+JRK_FBT_MODE_PULSE_TIMING means the jrk will measure the pulse width
 (duration) of pulses on the pin, and is more suitable for slow tachometers.
 EOF
   },
   {
-    name: 'tachometer_pulse_timing_clock',
+    name: 'fbt_timing_clock',
     type: :enum,
     english_default: '1.5 MHz',
-    default: 'JRK_PULSE_TIMING_CLOCK_1_5',
-    max: 'JRK_PULSE_TIMING_CLOCK_24',
-    address: 'JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS',
-    bit_address: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK',
-    mask: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK_MASK',
+    default: 'JRK_FBT_TIMING_CLOCK_1_5',
+    max: 'JRK_FBT_TIMING_CLOCK_24',
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_CLOCK',
+    mask: 'JRK_FBT_OPTIONS_CLOCK_MASK',
     comment: <<EOF
 This specifies the speed of the clock (in MHz) to use for pulse timing on the
 FBT pin.  The options are:
@@ -943,17 +943,17 @@ FBT pin.  The options are:
 EOF
   },
   {
-    name: 'tachometer_pulse_timing_polarity',
+    name: 'fbt_timing_polarity',
     type: :bool,
-    address: 'JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS',
-    bit_address: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_POLARITY',
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_POLARITY',
     comment: <<EOF
 By default, the pulse timing mode on the FBT pin measures the time of
 high pulses.  When true, this option causes it to measure low pulses.
 EOF
   },
   {
-    name: 'tachometer_pulse_timing_timeout',
+    name: 'fbt_timing_timeout',
     type: :uint16_t,
     default: 100,
     max: 60000,
@@ -964,22 +964,42 @@ amount of time.
 EOF
   },
   {
-    name: 'tachometer_averaging_count',
+    name: 'fbt_averaging_count',
     type: :uint8_t,
     min: 1,
-    max: 'JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT',
+    max: 'JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT',
     default: 1,
     comment: <<EOF
-The number of consecutive tachometer readings to average together in pulse
+The number of consecutive FBT measurements to average together in pulse
 timing mode or to add together in pulse counting mode.
 EOF
   },
   {
-    name: 'tachometer_divider_exponent',
+    name: 'fbt_reciprocal',
+    type: :bool,
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_RECIPROCAL',
+    comment: <<EOF
+When the jrk calculates its feedback value from the FBT measurement, this
+option tells it to convert the reading from FBT to 0x400000/reading before
+using dividing it by 2^(fbt_divider_exponent).
+
+If you want to do speed feedback with a tachometer, you would typically
+enable this option if you have set fbt_mode to JRK_FBT_MODE_PULSE_TIMING, in
+order to convert the measured pulse widths into a number proportional to the
+frequency of the tachometer signal and the speed of your motor.
+
+If you want to do position feedback with a position sensor that uses a
+pulse-width output to communicate position, you would typically set fbt_mode
+to JRK_FBT_MODE_PULSETIMING and leave this option disabled.
+EOF
+  },
+  {
+    name: 'fbt_divider_exponent',
     type: :uint8_t,
     default: 0,
     range: 0..15,
-    address: 'JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT',
+    address: 'JRK_SETTING_FBT_DIVIDER_EXPONENT',
     comment: <<EOF
 This setting specifies how many bits to shift the raw tachomter reading to
 the right before using it to calculate the "feedback" variable.  The

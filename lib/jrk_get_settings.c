@@ -337,33 +337,38 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t tachometer_mode = buf[JRK_SETTING_TACHOMETER_MODE];
-    jrk_settings_set_tachometer_mode(settings, tachometer_mode);
+    uint8_t fbt_mode = buf[JRK_SETTING_FBT_MODE];
+    jrk_settings_set_fbt_mode(settings, fbt_mode);
   }
 
   {
-    uint8_t tachometer_pulse_timing_clock = buf[JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS] >> JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK & JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK_MASK;
-    jrk_settings_set_tachometer_pulse_timing_clock(settings, tachometer_pulse_timing_clock);
+    uint8_t fbt_timing_clock = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_CLOCK & JRK_FBT_OPTIONS_CLOCK_MASK;
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
   }
 
   {
-    bool tachometer_pulse_timing_polarity = buf[JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS] >> JRK_TACHOMETER_PULSE_TIMING_OPTIONS_POLARITY & 1;
-    jrk_settings_set_tachometer_pulse_timing_polarity(settings, tachometer_pulse_timing_polarity);
+    bool fbt_timing_polarity = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_POLARITY & 1;
+    jrk_settings_set_fbt_timing_polarity(settings, fbt_timing_polarity);
   }
 
   {
-    uint16_t tachometer_pulse_timing_timeout = read_uint16_t(buf + JRK_SETTING_TACHOMETER_PULSE_TIMING_TIMEOUT);
-    jrk_settings_set_tachometer_pulse_timing_timeout(settings, tachometer_pulse_timing_timeout);
+    uint16_t fbt_timing_timeout = read_uint16_t(buf + JRK_SETTING_FBT_TIMING_TIMEOUT);
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
   }
 
   {
-    uint8_t tachometer_averaging_count = buf[JRK_SETTING_TACHOMETER_AVERAGING_COUNT];
-    jrk_settings_set_tachometer_averaging_count(settings, tachometer_averaging_count);
+    uint8_t fbt_averaging_count = buf[JRK_SETTING_FBT_AVERAGING_COUNT];
+    jrk_settings_set_fbt_averaging_count(settings, fbt_averaging_count);
   }
 
   {
-    uint8_t tachometer_divider_exponent = buf[JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT];
-    jrk_settings_set_tachometer_divider_exponent(settings, tachometer_divider_exponent);
+    bool fbt_reciprocal = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_RECIPROCAL & 1;
+    jrk_settings_set_fbt_reciprocal(settings, fbt_reciprocal);
+  }
+
+  {
+    uint8_t fbt_divider_exponent = buf[JRK_SETTING_FBT_DIVIDER_EXPONENT];
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
   }
 
   // End of auto-generated buffer-to-settings code.

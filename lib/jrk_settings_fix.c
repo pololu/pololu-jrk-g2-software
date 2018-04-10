@@ -614,63 +614,70 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t tachometer_mode = jrk_settings_get_tachometer_mode(settings);
-    if (tachometer_mode > JRK_TACHOMETER_MODE_PULSE_TIMING)
+    uint8_t fbt_mode = jrk_settings_get_fbt_mode(settings);
+    if (fbt_mode > JRK_FBT_MODE_PULSE_TIMING)
     {
-      tachometer_mode = JRK_TACHOMETER_MODE_PULSE_COUNTING;
+      fbt_mode = JRK_FBT_MODE_PULSE_COUNTING;
       jrk_sprintf(warnings,
-        "Warning: The tachometer mode was invalid "
+        "Warning: The fbt mode was invalid "
         "so it will be changed to pulse counting.\n");
     }
-    jrk_settings_set_tachometer_mode(settings, tachometer_mode);
+    jrk_settings_set_fbt_mode(settings, fbt_mode);
   }
 
   {
-    uint8_t tachometer_pulse_timing_clock = jrk_settings_get_tachometer_pulse_timing_clock(settings);
-    if (tachometer_pulse_timing_clock > JRK_PULSE_TIMING_CLOCK_24)
+    uint8_t fbt_timing_clock = jrk_settings_get_fbt_timing_clock(settings);
+    if (fbt_timing_clock > JRK_FBT_TIMING_CLOCK_24)
     {
-      tachometer_pulse_timing_clock = JRK_PULSE_TIMING_CLOCK_1_5;
+      fbt_timing_clock = JRK_FBT_TIMING_CLOCK_1_5;
       jrk_sprintf(warnings,
-        "Warning: The tachometer pulse timing clock was invalid "
+        "Warning: The fbt timing clock was invalid "
         "so it will be changed to 1.5 MHz.\n");
     }
-    jrk_settings_set_tachometer_pulse_timing_clock(settings, tachometer_pulse_timing_clock);
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
   }
 
   {
-    uint16_t tachometer_pulse_timing_timeout = jrk_settings_get_tachometer_pulse_timing_timeout(settings);
-    jrk_settings_set_tachometer_pulse_timing_timeout(settings, tachometer_pulse_timing_timeout);
+    uint16_t fbt_timing_timeout = jrk_settings_get_fbt_timing_timeout(settings);
+    if (fbt_timing_timeout > 60000)
+    {
+      fbt_timing_timeout = 60000;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing timeout was too high "
+        "so it will be changed to %u.\n", fbt_timing_timeout);
+    }
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
   }
 
   {
-    uint8_t tachometer_averaging_count = jrk_settings_get_tachometer_averaging_count(settings);
-    if (tachometer_averaging_count < 1)
+    uint8_t fbt_averaging_count = jrk_settings_get_fbt_averaging_count(settings);
+    if (fbt_averaging_count < 1)
     {
-      tachometer_averaging_count = 1;
+      fbt_averaging_count = 1;
       jrk_sprintf(warnings,
-        "Warning: The tachometer averaging count was too low "
-        "so it will be changed to %u.\n", tachometer_averaging_count);
+        "Warning: The fbt averaging count was too low "
+        "so it will be changed to %u.\n", fbt_averaging_count);
     }
-    if (tachometer_averaging_count > JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT)
+    if (fbt_averaging_count > JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT)
     {
-      tachometer_averaging_count = JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT;
+      fbt_averaging_count = JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT;
       jrk_sprintf(warnings,
-        "Warning: The tachometer averaging count was too high "
-        "so it will be changed to %u.\n", tachometer_averaging_count);
+        "Warning: The fbt averaging count was too high "
+        "so it will be changed to %u.\n", fbt_averaging_count);
     }
-    jrk_settings_set_tachometer_averaging_count(settings, tachometer_averaging_count);
+    jrk_settings_set_fbt_averaging_count(settings, fbt_averaging_count);
   }
 
   {
-    uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
-    if (tachometer_divider_exponent > 15)
+    uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
+    if (fbt_divider_exponent > 15)
     {
-      tachometer_divider_exponent = 15;
+      fbt_divider_exponent = 15;
       jrk_sprintf(warnings,
-        "Warning: The tachometer divider exponent was too high "
-        "so it will be changed to %u.\n", tachometer_divider_exponent);
+        "Warning: The fbt divider exponent was too high "
+        "so it will be changed to %u.\n", fbt_divider_exponent);
     }
-    jrk_settings_set_tachometer_divider_exponent(settings, tachometer_divider_exponent);
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
   }
 
   // End of auto-generated settings fixing code.

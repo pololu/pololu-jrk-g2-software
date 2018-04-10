@@ -155,8 +155,8 @@ void print_status(const jrk::variables & vars,
       << vars.get_rc_pulse_width()
       << std::endl;
 
-    std::cout << left_column << "Tachometer reading: "
-      << vars.get_tachometer_reading()
+    std::cout << left_column << "FBT reading: "
+      << vars.get_fbt_reading()
       << std::endl;
   }
 
