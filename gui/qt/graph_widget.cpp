@@ -1,9 +1,6 @@
 #include "graph_widget.h"
 
-#include <iostream> //tmphax
-
 #include <QString>
-#include <algorithm>
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -115,7 +112,7 @@ void graph_widget::setup_ui()
   domain->setRange(0, 90);
 
   plot_visible_layout = new QGridLayout();
-  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Center:"), 0, 1, Qt::AlignCenter);
   plot_visible_layout->addWidget(new QLabel("Offset:"), 0, 2, Qt::AlignCenter);
   plot_visible_layout->addWidget(new QLabel("Counts per\ndivision:"),
     0, 3, Qt::AlignCenter);
@@ -200,13 +197,18 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.center_value = new QDoubleSpinBox();
   plot.center_value->setDecimals(0);
   plot.center_value->setSingleStep(1.0);
-  plot.center_value->setRange(-plot.range_value, plot.range_value);
+
+  if (signed_range)
+    plot.center_value->setRange(-plot.range_value, plot.range_value);
+  else
+    plot.center_value->setRange(0, plot.range_value);
+
   plot.center_value->setValue(0);
 
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
-  plot.display->setStyleSheet("border: 5px solid "+ color + ";"
-    "padding: 3px;"
+  plot.display->setStyleSheet("border: 2px solid "+ color + ";"
+    "padding: 2px;"
     "background-color: white;");
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
@@ -291,7 +293,8 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
-    plot->axis->setRange(plot->center_value->value(), (plot->range->value() * 2), Qt::AlignCenter);
+    plot->axis->setRangeLower((plot->range->value() * (min_y->value()/100.0)) + plot->center_value->value());
+    plot->axis->setRangeUpper((plot->range->value() * (max_y->value()/100.0)) + plot->center_value->value());
 
     calculate_division_size(*plot);
   }
