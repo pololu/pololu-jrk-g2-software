@@ -221,39 +221,42 @@ jrk_error * jrk_summarize_feedback_settings(
       int min_freq_hz = clock_hz / (slowest_width * 2);
       int max_freq_hz = clock_hz / (fastest_width * 2);
 
-      if (fbt_timing_timeout != 0)
+      int timeout_hz = fbt_timing_timeout ? 1000 / fbt_timing_timeout : 10000000;
+
+      if (max_freq_hz <= timeout_hz)
       {
-        int timeout_hz = 1000 / fbt_timing_timeout;
+        max_freq_hz = timeout_hz;
+        jrk_sprintf(&str,
+          "The pulse timing timeout is too low; try changing it to 100 ms.");
+      }
+      else if (min_freq_hz < max_freq_hz)
+      {
         bool limited_by_timeout = false;
         if (min_freq_hz < timeout_hz)
         {
           min_freq_hz = timeout_hz;
           limited_by_timeout = true;
         }
-        if (max_freq_hz < timeout_hz)
-        {
-          max_freq_hz = timeout_hz;
-          limited_by_timeout = true;
-        }
 
-        if (min_freq_hz < max_freq_hz)
+        jrk_sprintf(&str,
+          "The frequency on FBT should be between ");
+        jrk_print_freq(&str, min_freq_hz);
+        jrk_sprintf(&str, " and ");
+        jrk_print_freq(&str, max_freq_hz);
+        if (limited_by_timeout)
         {
-          jrk_sprintf(&str,
-            "The frequency on FBT should be between ");
-          jrk_print_freq(&str, min_freq_hz);
-          jrk_sprintf(&str, " and ");
-          jrk_print_freq(&str, max_freq_hz);
-          if (limited_by_timeout)
-          {
-            jrk_sprintf(&str, " (limited by the timeout)");
-          }
-          jrk_sprintf(&str, ".");
+          jrk_sprintf(&str, " (limited by the timeout)");
         }
-        else
-        {
-          jrk_sprintf(&str,
-            "The pulse divider is too high; try changing it to 32.");
-        }
+        jrk_sprintf(&str, ".");
+      }
+      else if (fbt_divider_exponent >= 15)
+      {
+        jrk_sprintf(&str,
+          "The pulse divider is too high; try changing it to 32.");
+      }
+      else
+      {
+        assert(0);  // Not reachable.
       }
 
       const char * clock_str = "unknown";
