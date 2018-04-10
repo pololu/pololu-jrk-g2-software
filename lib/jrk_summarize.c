@@ -1,6 +1,6 @@
 #include "jrk_internal.h"
 
-static jrk_print_freq(jrk_string * str, int freq_hz)
+static void jrk_print_freq(jrk_string * str, int freq_hz)
 {
   if (freq_hz >= 10000000)
   {
@@ -107,83 +107,183 @@ jrk_error * jrk_summarize_feedback_settings(
         / pid_period / fbt_averaging_count;
 
       // The counts get capped at 2047, and there is a limit to how fast
-      // the timer can operate too.  (TODO: characterize that)
-      int hardware_limit = 3000000;
+      // the timer can operate too.  6 MHz seems to work.  It will
+      // probably work up to about 48 MHz but let's not imply it will.
+      int hardware_limit = 6000000;
       int max_counts = 2000;
       int max_freq_hz = 1000 * (max_counts << fbt_divider_exponent)
         / pid_period / fbt_averaging_count;
-      if (max_freq_hz > hardware_limit) { max_freq_hz = 3000000; }
 
-      if (min_freq_hz < hardware_limit)
+      if (min_freq_hz < hardware_limit && max_freq_hz < hardware_limit)
       {
         jrk_sprintf(&str,
-          "  The frequency on FBT should be between ");
+          "The frequency on FBT should be between ");
         jrk_print_freq(&str, min_freq_hz);
         jrk_sprintf(&str, " and ");
         jrk_print_freq(&str, max_freq_hz);
         jrk_sprintf(&str, ".");
       }
+      else if (min_freq_hz < hardware_limit)
+      {
+        jrk_sprintf(&str,
+          "The frequency on FBT should be between ");
+        jrk_print_freq(&str, min_freq_hz);
+        jrk_sprintf(&str, " and several MHz.");
+      }
       else
       {
         jrk_sprintf(&str,
-          "  To get a decent number of counts for PID (50), the frequency "
+          "To get a decent number of counts for PID (50), the frequency "
           "on FBT would have to be at least ");
         jrk_print_freq(&str, min_freq_hz);
         jrk_sprintf(&str,
-          " but that is too fast for the jrk to measure.");
+          " but that might be too fast for the jrk to measure.");
       }
 
       if (fbt_averaging_count > 1 && fbt_divider_exponent > 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will measure the speed of your system by "
+          "  The jrk will measure the speed of the motor by "
           "counting the rising edges on the FBT pin "
-          "during each %u ms PID period, add together the counts from the "
-          "last %u periods, and then divide by %u to get a "
-          "frequency measurement capped at 2047.",
+          "during each %u ms PID period, "
+          "add together the counts from the last %u periods, "
+          "and then divide by %u "
+          "to get a frequency measurement capped at 2047.",
           pid_period, fbt_averaging_count, 1 << fbt_divider_exponent);
       }
 
       if (fbt_averaging_count > 1 && fbt_divider_exponent == 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will measure the speed of your system by "
+          "  The jrk will measure the speed of the motor by "
           "counting the rising edges on the FBT pin "
-          "during each %u ms PID period and add together the counts from "
-          "the last %u periods to get a "
-          "frequency measurement capped at 2047.",
+          "during each %u ms PID period "
+          "and add together the counts from the last %u periods "
+          "to get a frequency measurement capped at 2047.",
           pid_period, fbt_averaging_count);
       }
 
       if (fbt_averaging_count == 1 && fbt_divider_exponent > 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will measure the speed of your system by "
+          "  The jrk will measure the speed of the motor by "
           "counting the rising edges on the FBT pin "
-          "during each %u ms PID period and divide by %u to get a "
-          "frequency measurement capped at 2047.",
+          "during each %u ms PID period "
+          "and divide by %u "
+          "to get a frequency measurement capped at 2047.",
           pid_period, 1 << fbt_divider_exponent);
       }
 
       if (fbt_averaging_count == 1 && fbt_divider_exponent == 0)
       {
         jrk_sprintf(&str,
-          "  The jrk will measure the speed of your system by "
+          "  The jrk will measure the speed of the motor by "
           "counting the rising edges on the FBT pin "
-          "during each %u ms PID period to get a frequency measurement "
-          "capped at 2047.", pid_period);
+          "during each %u ms PID period "
+          "to get a frequency measurement capped at 2047.",
+          pid_period);
       }
     }
 
     if (fbt_mode == JRK_FBT_MODE_PULSE_TIMING)
     {
-      jrk_sprintf(&str,
-        "  Pulse-timing frequency feedback is enabled, so "
-        "the jrk will time %s pulses on the FBT pin.",
-        fbt_timing_polarity ? "low" : "high"
-        );
+      // TODO: need to see if we can actually achieve really slow speeds with
+      // low counts and review the logic here
 
-      // TODO
+      int k = 0x4000000;
+      int slowest_width = 58982;  // 0x10000 * 0.9
+      int slowest_freq = k / slowest_width >> fbt_divider_exponent;
+      if (slowest_freq < 50)
+      {
+        slowest_freq = 50;
+        slowest_width = k / slowest_freq >> fbt_divider_exponent;
+      }
+
+      int fastest_freq = 1843;  // 2048*0.9
+      int fastest_width = k / fastest_freq >> fbt_divider_exponent;
+      if (fastest_width < 50)
+      {
+        fastest_width = 50;
+        fastest_freq = k / fastest_width >> fbt_divider_exponent;
+      }
+
+      int clock_hz = 1;
+      switch (fbt_timing_clock)
+      {
+      case JRK_FBT_TIMING_CLOCK_48:  clock_hz = 48000000; break;
+      case JRK_FBT_TIMING_CLOCK_24:  clock_hz = 24000000; break;
+      case JRK_FBT_TIMING_CLOCK_12:  clock_hz = 12000000; break;
+      case JRK_FBT_TIMING_CLOCK_6:   clock_hz = 6000000;  break;
+      case JRK_FBT_TIMING_CLOCK_3:   clock_hz = 3000000;  break;
+      case JRK_FBT_TIMING_CLOCK_1_5: clock_hz = 1500000;  break;
+      }
+
+      int min_freq_hz = clock_hz / (slowest_width * 2);
+      int max_freq_hz = clock_hz / (fastest_width * 2);
+
+      if (fbt_timing_timeout != 0)
+      {
+        int timeout_hz = 1000 / fbt_timing_timeout;
+        bool limited_by_timeout = false;
+        if (min_freq_hz < timeout_hz)
+        {
+          min_freq_hz = timeout_hz;
+          limited_by_timeout = true;
+        }
+        if (max_freq_hz < timeout_hz)
+        {
+          max_freq_hz = timeout_hz;
+          limited_by_timeout = true;
+        }
+
+        if (min_freq_hz < max_freq_hz)
+        {
+          jrk_sprintf(&str,
+            "The frequency on FBT should be between ");
+          jrk_print_freq(&str, min_freq_hz);
+          jrk_sprintf(&str, " and ");
+          jrk_print_freq(&str, max_freq_hz);
+          if (limited_by_timeout)
+          {
+            jrk_sprintf(&str, " (limited by the timeout)");
+          }
+          jrk_sprintf(&str, ".");
+        }
+        else
+        {
+          jrk_sprintf(&str,
+            "The pulse divider is too high; try changing it to 32.");
+        }
+      }
+
+      const char * clock_str = "unknown";
+      jrk_code_to_name(jrk_fbt_timing_clock_names_no_units,
+        fbt_timing_clock, &clock_str);
+
+      if (fbt_divider_exponent > 0)
+      {
+        jrk_sprintf(&str,
+          "  The jrk will measure the speed of the motor by "
+          "timing %s pulses on the FBT pin "
+          "with a %s\u00A0MHz, 16-bit timer, "
+          "calculating 67,108,864 divided by the time, "
+          "and then dividing by %u "
+          "to get a frequency measurement capped at 2047.",
+          fbt_timing_polarity ? "low" : "high",
+          clock_str,
+          1 << fbt_divider_exponent);
+      }
+      else
+      {
+        jrk_sprintf(&str,
+          "  The jrk will measure the speed of the motor by "
+          "timing %s pulses on the FBT pin "
+          "with a %s\u00A0MHz, 16-bit timer "
+          "and calculating 67,108,864 divided by the time, "
+          "to get a frequency measurement capped at 2047.",
+          fbt_timing_polarity ? "low" : "high",
+          clock_str);
+      }
     }
 
     //jrk_sprintf(&str,

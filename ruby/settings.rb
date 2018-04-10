@@ -956,6 +956,7 @@ EOF
     name: 'fbt_timing_timeout',
     type: :uint16_t,
     default: 100,
+    min: 1,
     max: 60000,
     comment: <<EOF
 The pulse timing mode for the FBT pin will assume the motor has stopped, and

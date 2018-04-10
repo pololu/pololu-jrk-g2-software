@@ -86,6 +86,17 @@ const jrk_name jrk_fbt_timing_clock_names_short[] =
   { NULL, 0 },
 };
 
+const jrk_name jrk_fbt_timing_clock_names_no_units[] =
+{
+  { "12", JRK_FBT_TIMING_CLOCK_12 },
+  { "6", JRK_FBT_TIMING_CLOCK_6 },
+  { "3", JRK_FBT_TIMING_CLOCK_3 },
+  { "1.5", JRK_FBT_TIMING_CLOCK_1_5 },
+  { "48", JRK_FBT_TIMING_CLOCK_48 },
+  { "24", JRK_FBT_TIMING_CLOCK_24 },
+  { NULL, 0 },
+};
+
 const jrk_name jrk_error_names_ui[] =
 {
   { "Awaiting command", 1 << JRK_ERROR_AWAITING_COMMAND },

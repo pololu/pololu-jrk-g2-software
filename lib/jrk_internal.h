@@ -69,6 +69,7 @@ extern const jrk_name jrk_serial_mode_names_short[];
 extern const jrk_name jrk_pwm_frequency_names_short[];
 extern const jrk_name jrk_fbt_mode_names_short[];
 extern const jrk_name jrk_fbt_timing_clock_names_short[];
+extern const jrk_name jrk_fbt_timing_clock_names_no_units[];
 
 extern const jrk_name jrk_pin_func_names[];
 
