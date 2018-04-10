@@ -2752,7 +2752,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   fbt_timing_timeout_spinbox = new QSpinBox();
   fbt_timing_timeout_spinbox->setObjectName("fbt_timing_timeout_spinbox");
-  fbt_timing_timeout_spinbox->setRange(0, 60000);
+  fbt_timing_timeout_spinbox->setRange(1, 60000);
 
   QLabel * fbt_averaging_label = new QLabel();
   fbt_averaging_label->setObjectName("fbt_averaging_label");

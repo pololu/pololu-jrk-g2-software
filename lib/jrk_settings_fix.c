@@ -639,6 +639,13 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint16_t fbt_timing_timeout = jrk_settings_get_fbt_timing_timeout(settings);
+    if (fbt_timing_timeout < 1)
+    {
+      fbt_timing_timeout = 1;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing timeout was too low "
+        "so it will be changed to %u.\n", fbt_timing_timeout);
+    }
     if (fbt_timing_timeout > 60000)
     {
       fbt_timing_timeout = 60000;
