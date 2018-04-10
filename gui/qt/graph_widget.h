@@ -23,6 +23,7 @@ public:
   struct plot
   {
     QDoubleSpinBox *range;
+    QDoubleSpinBox * center_value = 0;
     QCheckBox *display;
     QString color;
     QCPAxis *axis;
@@ -31,6 +32,7 @@ public:
     int32_t plot_value = 0;
     double range_value = 0;
     bool default_visible = false;
+    QLabel * division_size;
   };
 
   QList<plot *> all_plots;
@@ -79,6 +81,8 @@ private:
   uint32_t key; // used to store local copy of time value
 
   int row = 1;
+
+  double calculate_division_size(plot& plot);
 
 private slots:
   void change_ranges();

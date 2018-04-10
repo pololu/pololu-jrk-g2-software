@@ -105,6 +105,10 @@ void graph_widget::setup_ui()
   domain->setRange(0, 90);
 
   plot_visible_layout = new QGridLayout();
+  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Offset:"), 0, 2, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Counts per\ndivision:"),
+    0, 3, Qt::AlignCenter);
 
   bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(pause_run_button, 1);
@@ -148,7 +152,7 @@ void graph_widget::setup_ui()
 
   y_axis_ticker->addTick(0, "0");
 
-  for (int i = 20; i <= 100; (i += 20))
+  for (int i = 10; i <= 100; (i += 10))
   {
     QString pos = QString::number(i);
     QString neg = QString::number(-i);
@@ -183,6 +187,12 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range->setRange(0, plot.range_value);
   plot.range->setValue(plot.range_value);
 
+  plot.center_value = new QDoubleSpinBox();
+  plot.center_value->setDecimals(0);
+  plot.center_value->setSingleStep(1.0);
+  plot.center_value->setRange(-plot.range_value, plot.range_value);
+  plot.center_value->setValue(0);
+
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
   plot.display->setStyleSheet("border: 5px solid "+ color + ";"
@@ -196,13 +206,17 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range_label = new QLabel();
 
   if (signed_range)
-    plot.range_label->setText("   \u00B1");
+    plot.range->setPrefix("\u00B1 ");
   else
-    plot.range_label->setText(" 0 \u2013");
+    plot.range->setPrefix("\u002B ");
 
   plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
   plot.axis->setVisible(false);
   plot.axis->setRange(-plot.range_value, plot.range_value);
+
+  plot.division_size = new QLabel();
+
+  calculate_division_size(plot);
 
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
@@ -211,13 +225,17 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
     this, SLOT(show_all_none_clicked()));
 
   plot_visible_layout->addWidget(plot.display, row, 0);
-  plot_visible_layout->addWidget(plot.range_label, row, 1);
+  plot_visible_layout->addWidget(plot.center_value, row, 1);
   plot_visible_layout->addWidget(plot.range, row, 2);
+  plot_visible_layout->addWidget(plot.division_size, row, 3);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.color));
 
   connect(plot.range, SIGNAL(valueChanged(double)),
+    this, SLOT(change_ranges()));
+
+  connect(plot.center_value, SIGNAL(valueChanged(double)),
     this, SLOT(change_ranges()));
 
   connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
@@ -243,6 +261,18 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
   custom_plot->replot();
 }
 
+double graph_widget::calculate_division_size(plot& plot)
+{
+  double division_value = (plot.range->value() - plot.center_value->value())/10.0;
+
+  if (division_value >= 100)
+  {
+    plot.division_size->setText("\u223c " + QString::number(((division_value)), 'f', 0));
+  }
+  else
+    plot.division_size->setText("\u223c " + QString::number(((division_value)), 'f', 1));
+}
+
 void graph_widget::change_ranges()
 {
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
@@ -251,9 +281,11 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
-    plot->axis->setRangeUpper((plot->range->value()) * ((max_y->value())/100));
-    plot->axis->setRangeLower((plot->range->value()) * ((min_y->value())/100));
+    plot->axis->setRange(plot->center_value->value(), (plot->range->value() * 2), Qt::AlignCenter);
+
+    calculate_division_size(*plot);
   }
+
   custom_plot->yAxis->setRange(min_y->value(), max_y->value());
   custom_plot->replot();
 }
