@@ -476,6 +476,7 @@ void main_controller::handle_device_changed()
       window->set_connection_status(connection_error_message, true);
     }
     else
+
     {
       window->set_connection_status("", false);
     }
@@ -495,8 +496,7 @@ void main_controller::handle_variables_changed()
 
   window->set_up_time(variables.get_up_time());
 
-  window->set_input(variables.get_input());
-  // TODO: also show nice units in parentheses
+  window->set_input(variables.get_input(), cached_settings.get_input_mode());
 
   window->set_target(variables.get_target());
 
@@ -506,8 +506,7 @@ void main_controller::handle_variables_changed()
   }
   else
   {
-    window->set_feedback(variables.get_feedback());
-    // TODO: also show version with nice units in parentheses
+    window->set_feedback(variables.get_feedback(), cached_settings.get_feedback_mode());
 
     window->set_scaled_feedback(variables.get_scaled_feedback());
     window->set_error(variables.get_error());
@@ -561,7 +560,6 @@ void main_controller::handle_settings_changed()
   window->set_input_enable_device_number(settings.get_serial_enable_14bit_device_number());
   window->set_input_serial_timeout(settings.get_serial_timeout());
   window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
-  window->set_input_never_sleep(settings.get_never_sleep());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_error_minimum(settings.get_input_error_minimum());
   window->set_input_error_maximum(settings.get_input_error_maximum());
@@ -588,6 +586,7 @@ void main_controller::handle_settings_changed()
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
+  window->set_integral_reduction_exponent(settings.get_integral_reduction_exponent());
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
@@ -646,6 +645,14 @@ void main_controller::handle_settings_changed()
   window->set_overcurrent_threshold(settings.get_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+  window->set_error_hard(settings.get_error_hard());
+
+  window->set_disable_i2c_pullups(settings.get_disable_i2c_pullups());
+  window->set_analog_sda_pullup(settings.get_analog_sda_pullup());
+  window->set_always_analog_sda(settings.get_always_analog_sda());
+  window->set_always_analog_fba(settings.get_always_analog_fba());
+  window->set_never_sleep(settings.get_never_sleep());
+  window->set_vin_calibration(settings.get_vin_calibration());
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -686,6 +693,24 @@ void main_controller::recalculate_motor_asymmetric()
       settings.get_current_limit_code_reverse()) ||
     (settings.get_max_current_forward() !=
       settings.get_max_current_reverse());
+}
+
+void main_controller::constrain_feedback_scaling()
+{
+  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
+  {
+    if (settings.get_feedback_maximum() < 2048)
+    {
+      settings.set_feedback_maximum(2048);
+    }
+    if (settings.get_feedback_error_maximum() < 2048)
+    {
+      settings.set_feedback_error_maximum(2048);
+    }
+
+    settings.set_feedback_minimum(4096 - settings.get_feedback_maximum());
+    settings.set_feedback_error_minimum(4096 - settings.get_feedback_error_maximum());
+  }
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -764,14 +789,6 @@ void main_controller::handle_input_disable_compact_protocol_input(bool value)
 {
   if (!connected()) { return; }
   settings.set_serial_disable_compact_protocol(value);
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_input_never_sleep_input(bool value)
-{
-  if (!connected()) { return; }
-  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -880,12 +897,6 @@ bool main_controller::check_settings_applied_before_wizard()
   return true;
 }
 
-void main_controller::update_motor_status_message(bool prompt_to_resume)
-{
-
-}
-
-
 void main_controller::handle_input_learn()
 {
   if (!connected()) { return; }
@@ -912,6 +923,9 @@ void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
 {
   if (!connected()) { return; }
   settings.set_feedback_mode(feedback_mode);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
@@ -928,6 +942,9 @@ void main_controller::handle_feedback_error_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_minimum(value);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
@@ -936,6 +953,9 @@ void main_controller::handle_feedback_error_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_maximum(value);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
@@ -944,6 +964,9 @@ void main_controller::handle_feedback_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_maximum(value);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
@@ -952,6 +975,9 @@ void main_controller::handle_feedback_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_minimum(value);
+
+  constrain_feedback_scaling();
+
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1019,6 +1045,14 @@ void main_controller::handle_integral_limit_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_integral_limit(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_integral_reduction_exponent_input(uint8_t value)
+{
+  if (!connected()) { return; }
+  settings.set_integral_reduction_exponent(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1271,6 +1305,26 @@ void main_controller::handle_error_enable_input(int index, int id)
   handle_settings_changed();
 }
 
+void main_controller::handle_error_hard_input(int index, bool state)
+{
+  if (!connected()) { return; }
+  uint16_t hard_value = settings.get_error_hard();
+
+  if (state)
+  {
+    hard_value |= 1 << index;
+  }
+  else
+  {
+    hard_value &= ~(1 << index);
+  }
+
+  settings.set_error_hard(hard_value);
+
+  settings_modified = true;
+  handle_settings_changed();
+}
+
 void main_controller::handle_clear_errors_input()
 {
   if (!connected()) { return; }
@@ -1283,10 +1337,42 @@ void main_controller::handle_reset_counts_input()
   window->reset_error_counts();
 }
 
-void main_controller::handle_never_sleep_input(bool never_sleep)
+void main_controller::handle_disable_i2c_pullups_input(bool value)
 {
   if (!connected()) { return; }
-  jrk_settings_set_never_sleep(settings.get_pointer(), never_sleep);
+  settings.set_disable_i2c_pullups(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_analog_sda_pullup_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_analog_sda_pullup(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_always_analog_sda_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_always_analog_sda(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_always_analog_fba_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_always_analog_fba(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_never_sleep_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1294,7 +1380,7 @@ void main_controller::handle_never_sleep_input(bool never_sleep)
 void main_controller::handle_vin_calibration_input(int16_t vin_calibration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_vin_calibration(settings.get_pointer(), vin_calibration);
+  settings.set_vin_calibration(vin_calibration);
   settings_modified = true;
   handle_settings_changed();
 }

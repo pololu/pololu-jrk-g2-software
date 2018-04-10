@@ -67,6 +67,9 @@ extern const jrk_name jrk_input_scaling_degree_names_short[];
 extern const jrk_name jrk_feedback_mode_names_short[];
 extern const jrk_name jrk_serial_mode_names_short[];
 extern const jrk_name jrk_pwm_frequency_names_short[];
+extern const jrk_name jrk_tachometer_mode_names_short[];
+extern const jrk_name jrk_tachometer_pulse_timing_clock_names_short[];
+
 extern const jrk_name jrk_pin_func_names[];
 
 

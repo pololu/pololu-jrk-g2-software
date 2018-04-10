@@ -171,7 +171,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized input_invert value.");
     }
     jrk_settings_set_input_invert(settings, input_invert);
-    jrk_settings_set_input_invert(settings, input_invert);
   }
   else if (!strcmp(key, "input_scaling_degree"))
   {
@@ -189,7 +188,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized input_detect_disconnect value.");
     }
-    jrk_settings_set_input_detect_disconnect(settings, input_detect_disconnect);
     jrk_settings_set_input_detect_disconnect(settings, input_detect_disconnect);
   }
   else if (!strcmp(key, "input_analog_samples_exponent"))
@@ -279,7 +277,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized feedback_invert value.");
     }
     jrk_settings_set_feedback_invert(settings, feedback_invert);
-    jrk_settings_set_feedback_invert(settings, feedback_invert);
   }
   else if (!strcmp(key, "feedback_detect_disconnect"))
   {
@@ -288,7 +285,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized feedback_detect_disconnect value.");
     }
-    jrk_settings_set_feedback_detect_disconnect(settings, feedback_detect_disconnect);
     jrk_settings_set_feedback_detect_disconnect(settings, feedback_detect_disconnect);
   }
   else if (!strcmp(key, "feedback_dead_zone"))
@@ -326,7 +322,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized feedback_wraparound value.");
     }
-    jrk_settings_set_feedback_wraparound(settings, feedback_wraparound);
     jrk_settings_set_feedback_wraparound(settings, feedback_wraparound);
   }
   else if (!strcmp(key, "serial_mode"))
@@ -388,7 +383,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized never_sleep value.");
     }
     jrk_settings_set_never_sleep(settings, never_sleep);
-    jrk_settings_set_never_sleep(settings, never_sleep);
   }
   else if (!strcmp(key, "serial_enable_crc"))
   {
@@ -397,7 +391,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized serial_enable_crc value.");
     }
-    jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
     jrk_settings_set_serial_enable_crc(settings, serial_enable_crc);
   }
   else if (!strcmp(key, "serial_enable_14bit_device_number"))
@@ -408,7 +401,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized serial_enable_14bit_device_number value.");
     }
     jrk_settings_set_serial_enable_14bit_device_number(settings, serial_enable_14bit_device_number);
-    jrk_settings_set_serial_enable_14bit_device_number(settings, serial_enable_14bit_device_number);
   }
   else if (!strcmp(key, "serial_disable_compact_protocol"))
   {
@@ -417,7 +409,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized serial_disable_compact_protocol value.");
     }
-    jrk_settings_set_serial_disable_compact_protocol(settings, serial_disable_compact_protocol);
     jrk_settings_set_serial_disable_compact_protocol(settings, serial_disable_compact_protocol);
   }
   else if (!strcmp(key, "proportional_multiplier"))
@@ -518,6 +509,20 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_pid_period(settings, pid_period);
   }
+  else if (!strcmp(key, "integral_reduction_exponent"))
+  {
+    int64_t integral_reduction_exponent;
+    if (jrk_string_to_i64(value, &integral_reduction_exponent))
+    {
+      return jrk_error_create("Invalid integral_reduction_exponent value.");
+    }
+    if (integral_reduction_exponent < 0 || integral_reduction_exponent > UINT8_MAX)
+    {
+      return jrk_error_create(
+        "The integral_reduction_exponent value is out of range.");
+    }
+    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+  }
   else if (!strcmp(key, "integral_limit"))
   {
     int64_t integral_limit;
@@ -539,7 +544,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized reset_integral value.");
     }
-    jrk_settings_set_reset_integral(settings, reset_integral);
     jrk_settings_set_reset_integral(settings, reset_integral);
   }
   else if (!strcmp(key, "pwm_frequency"))
@@ -614,7 +618,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized motor_invert value.");
     }
-    jrk_settings_set_motor_invert(settings, motor_invert);
     jrk_settings_set_motor_invert(settings, motor_invert);
   }
   else if (!strcmp(key, "max_duty_cycle_while_feedback_out_of_range"))
@@ -807,7 +810,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized coast_when_off value.");
     }
     jrk_settings_set_coast_when_off(settings, coast_when_off);
-    jrk_settings_set_coast_when_off(settings, coast_when_off);
   }
   else if (!strcmp(key, "error_enable"))
   {
@@ -873,7 +875,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized disable_i2c_pullups value.");
     }
     jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
-    jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
   }
   else if (!strcmp(key, "analog_sda_pullup"))
   {
@@ -882,7 +883,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     {
       return jrk_error_create("Unrecognized analog_sda_pullup value.");
     }
-    jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
     jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
   }
   else if (!strcmp(key, "always_analog_sda"))
@@ -893,7 +893,6 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized always_analog_sda value.");
     }
     jrk_settings_set_always_analog_sda(settings, always_analog_sda);
-    jrk_settings_set_always_analog_sda(settings, always_analog_sda);
   }
   else if (!strcmp(key, "always_analog_fba"))
   {
@@ -903,7 +902,61 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
       return jrk_error_create("Unrecognized always_analog_fba value.");
     }
     jrk_settings_set_always_analog_fba(settings, always_analog_fba);
-    jrk_settings_set_always_analog_fba(settings, always_analog_fba);
+  }
+  else if (!strcmp(key, "tachometer_mode"))
+  {
+    uint32_t tachometer_mode;
+    if (!jrk_name_to_code(jrk_tachometer_mode_names_short, value, &tachometer_mode))
+    {
+      return jrk_error_create("Unrecognized tachometer_mode value.");
+    }
+    jrk_settings_set_tachometer_mode(settings, tachometer_mode);
+  }
+  else if (!strcmp(key, "tachometer_pulse_timing_clock"))
+  {
+    uint32_t tachometer_pulse_timing_clock;
+    if (!jrk_name_to_code(jrk_tachometer_pulse_timing_clock_names_short, value, &tachometer_pulse_timing_clock))
+    {
+      return jrk_error_create("Unrecognized tachometer_pulse_timing_clock value.");
+    }
+    jrk_settings_set_tachometer_pulse_timing_clock(settings, tachometer_pulse_timing_clock);
+  }
+  else if (!strcmp(key, "tachometer_pulse_timing_polarity"))
+  {
+    uint32_t tachometer_pulse_timing_polarity;
+    if (!jrk_name_to_code(jrk_bool_names, value, &tachometer_pulse_timing_polarity))
+    {
+      return jrk_error_create("Unrecognized tachometer_pulse_timing_polarity value.");
+    }
+    jrk_settings_set_tachometer_pulse_timing_polarity(settings, tachometer_pulse_timing_polarity);
+  }
+  else if (!strcmp(key, "tachometer_pulse_timing_timeout"))
+  {
+    int64_t tachometer_pulse_timing_timeout;
+    if (jrk_string_to_i64(value, &tachometer_pulse_timing_timeout))
+    {
+      return jrk_error_create("Invalid tachometer_pulse_timing_timeout value.");
+    }
+    if (tachometer_pulse_timing_timeout < 0 || tachometer_pulse_timing_timeout > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The tachometer_pulse_timing_timeout value is out of range.");
+    }
+    jrk_settings_set_tachometer_pulse_timing_timeout(settings, tachometer_pulse_timing_timeout);
+  }
+  else if (!strcmp(key, "tachometer_averaging_count"))
+  {
+    int64_t tachometer_averaging_count;
+    if (jrk_string_to_i64(value, &tachometer_averaging_count))
+    {
+      return jrk_error_create("Invalid tachometer_averaging_count value.");
+    }
+    if (tachometer_averaging_count < 0 || tachometer_averaging_count > UINT8_MAX)
+    {
+      return jrk_error_create(
+        "The tachometer_averaging_count value is out of range.");
+    }
+    jrk_settings_set_tachometer_averaging_count(settings, tachometer_averaging_count);
   }
   else if (!strcmp(key, "tachometer_divider_exponent"))
   {

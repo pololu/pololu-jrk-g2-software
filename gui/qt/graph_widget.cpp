@@ -46,6 +46,16 @@ void graph_widget::set_preview_mode(bool preview_mode)
   custom_plot->replot();
 }
 
+void graph_widget::set_paused(bool paused)
+{
+  if (paused != graph_paused)
+  {
+    graph_paused = paused;
+    pause_run_button->setText(graph_paused ? "R&un" : "&Pause");
+    custom_plot->replot();
+  }
+}
+
 void graph_widget::clear_graphs()
 {
   for (auto plot : all_plots)
@@ -292,9 +302,7 @@ void graph_widget::change_ranges()
 
 void graph_widget::on_pause_run_button_clicked()
 {
-  graph_paused = !graph_paused;
-  pause_run_button->setText(graph_paused ? "R&un" : "&Pause");
-  custom_plot->replot();
+  set_paused(!graph_paused);
 }
 
 void graph_widget::set_line_visible()

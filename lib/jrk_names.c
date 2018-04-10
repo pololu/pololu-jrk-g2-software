@@ -49,7 +49,7 @@ const jrk_name jrk_feedback_mode_names_short[] =
 {
   { "none", JRK_FEEDBACK_MODE_NONE },
   { "analog", JRK_FEEDBACK_MODE_ANALOG },
-  { "tachometer", JRK_FEEDBACK_MODE_FREQUENCY },
+  { "frequency", JRK_FEEDBACK_MODE_FREQUENCY },
   { NULL, 0 },
 };
 
@@ -65,6 +65,24 @@ const jrk_name jrk_pwm_frequency_names_short[] =
 {
   { "20", JRK_PWM_FREQUENCY_20 },
   { "5", JRK_PWM_FREQUENCY_5 },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_tachometer_mode_names_short[] =
+{
+  { "counting", JRK_TACHOMETER_MODE_PULSE_COUNTING },
+  { "timing", JRK_TACHOMETER_MODE_PULSE_TIMING },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_tachometer_pulse_timing_clock_names_short[] =
+{
+  { "12m", JRK_PULSE_TIMING_CLOCK_12 },
+  { "6m", JRK_PULSE_TIMING_CLOCK_6 },
+  { "3m", JRK_PULSE_TIMING_CLOCK_3 },
+  { "1m5", JRK_PULSE_TIMING_CLOCK_1_5 },
+  { "48m", JRK_PULSE_TIMING_CLOCK_48 },
+  { "24m", JRK_PULSE_TIMING_CLOCK_24 },
   { NULL, 0 },
 };
 

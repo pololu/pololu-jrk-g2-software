@@ -48,14 +48,15 @@ public:
   plot current;
   plot current_chopping;
 
-  QCustomPlot *custom_plot;
+  QCustomPlot * custom_plot;
 
-  QHBoxLayout *bottom_control_layout;
-  QGridLayout *plot_visible_layout;
+  QHBoxLayout * bottom_control_layout;
+  QGridLayout * plot_visible_layout;
 
   bool graph_paused = false;
 
   void set_preview_mode(bool preview_mode);
+  void set_paused(bool paused);
   void clear_graphs();
   void plot_data(uint32_t time);
 
