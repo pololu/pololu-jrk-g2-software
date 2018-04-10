@@ -928,8 +928,8 @@ EOF
     default: 'JRK_FBT_TIMING_CLOCK_1_5',
     max: 'JRK_FBT_TIMING_CLOCK_24',
     address: 'JRK_SETTING_FBT_OPTIONS',
-    bit_address: 'JRK_FBT_OPTIONS_CLOCK',
-    mask: 'JRK_FBT_OPTIONS_CLOCK_MASK',
+    bit_address: 'JRK_FBT_OPTIONS_TIMING_CLOCK',
+    mask: 'JRK_FBT_OPTIONS_TIMING_CLOCK_MASK',
     comment: <<EOF
 This specifies the speed of the clock (in MHz) to use for pulse timing on the
 FBT pin.  The options are:
@@ -946,7 +946,7 @@ EOF
     name: 'fbt_timing_polarity',
     type: :bool,
     address: 'JRK_SETTING_FBT_OPTIONS',
-    bit_address: 'JRK_FBT_OPTIONS_POLARITY',
+    bit_address: 'JRK_FBT_OPTIONS_TIMING_POLARITY',
     comment: <<EOF
 By default, the pulse timing mode on the FBT pin measures the time of
 high pulses.  When true, this option causes it to measure low pulses.

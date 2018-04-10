@@ -344,12 +344,12 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
 
   {
     uint8_t fbt_timing_clock = jrk_settings_get_fbt_timing_clock(settings);
-    buf[JRK_SETTING_FBT_OPTIONS] |= (fbt_timing_clock & JRK_FBT_OPTIONS_CLOCK_MASK) << JRK_FBT_OPTIONS_CLOCK;
+    buf[JRK_SETTING_FBT_OPTIONS] |= (fbt_timing_clock & JRK_FBT_OPTIONS_TIMING_CLOCK_MASK) << JRK_FBT_OPTIONS_TIMING_CLOCK;
   }
 
   {
     bool fbt_timing_polarity = jrk_settings_get_fbt_timing_polarity(settings);
-    buf[JRK_SETTING_FBT_OPTIONS] |= fbt_timing_polarity << JRK_FBT_OPTIONS_POLARITY;
+    buf[JRK_SETTING_FBT_OPTIONS] |= fbt_timing_polarity << JRK_FBT_OPTIONS_TIMING_POLARITY;
   }
 
   {
