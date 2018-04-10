@@ -956,6 +956,7 @@ EOF
     name: 'tachometer_pulse_timing_timeout',
     type: :uint16_t,
     default: 100,
+    max: 60000,
     comment: <<EOF
 The pulse timing mode for the FBT pin will assume the motor has stopped, and
 start recording maximum-width pulses if it has not seen any pulses in this

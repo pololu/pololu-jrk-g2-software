@@ -374,6 +374,7 @@ private:
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
   QWidget * setup_feedback_options_groupbox();
+  QWidget * setup_feedback_fbt_groupbox();
 
   QWidget * setup_pid_tab();
 
@@ -579,6 +580,9 @@ private:
 
   QGroupBox * feedback_options_groupbox;
   QCheckBox * feedback_wraparound_checkbox;
+
+  // feedback tab "FBT options" groupbox
+  // TODO
 
   // pid tab
 

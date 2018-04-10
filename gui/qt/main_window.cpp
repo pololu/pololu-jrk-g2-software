@@ -2224,7 +2224,7 @@ static QComboBox * setup_exponent_combobox(int max_exponent)
 
 QWidget * main_window::setup_input_analog_groupbox()
 {
-  input_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
+  input_analog_groupbox = new QGroupBox(tr("Analog input"));
   input_analog_groupbox->setObjectName("input_analog_groupbox");
 
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
@@ -2479,8 +2479,8 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
   feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
-  feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
-  feedback_mode_combobox->addItem("Frequency (digital)", JRK_FEEDBACK_MODE_FREQUENCY);
+  feedback_mode_combobox->addItem("Analog (FBA)", JRK_FEEDBACK_MODE_ANALOG);
+  feedback_mode_combobox->addItem("Pulses (FBT)", JRK_FEEDBACK_MODE_FREQUENCY);
 
   QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
   feedback_mode_layout->addWidget(feedback_mode_label);
@@ -2492,6 +2492,7 @@ QWidget * main_window::setup_feedback_tab()
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
   layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
+  layout->addWidget(setup_feedback_fbt_groupbox(), 1, 2, 3, 1, Qt::AlignTop);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2502,7 +2503,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and tachometer mode only)"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and pulse mode only)"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
@@ -2577,7 +2578,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
 
 QWidget * main_window::setup_feedback_analog_groupbox()
 {
-  feedback_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
+  feedback_analog_groupbox = new QGroupBox(tr("Analog feedback"));
   feedback_analog_groupbox->setObjectName("feedback_analog_groupbox");
 
   feedback_analog_samples_label = new QLabel(tr("Analog samples:"));
@@ -2624,6 +2625,91 @@ QWidget * main_window::setup_feedback_options_groupbox()
   return feedback_options_groupbox;
 }
 
+QWidget * main_window::setup_feedback_fbt_groupbox()
+{
+  // TODO: make the official names of the settings and the names here agree
+
+  QGroupBox * fbt_groupbox = new QGroupBox();
+  fbt_groupbox->setObjectName("fbt_groupbox");
+  fbt_groupbox->setTitle(tr("Pulse feedback"));
+
+  QLabel * fbt_mode_label = new QLabel();
+  fbt_mode_label->setObjectName("fbt_mode_label");
+  fbt_mode_label->setText("Pulse feedback mode:");
+
+  QComboBox * fbt_mode_combobox = new QComboBox();
+  fbt_mode_combobox->setObjectName("fbt_mode_combobox");
+  fbt_mode_combobox->addItem("Pulse counting", JRK_TACHOMETER_MODE_PULSE_COUNTING);
+  fbt_mode_combobox->addItem("Pulse timing", JRK_TACHOMETER_MODE_PULSE_TIMING);
+
+  QLabel * fbt_timing_clock_label = new QLabel();
+  fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
+  fbt_timing_clock_label->setText("Pulse timing clock:");
+
+  QComboBox * fbt_timing_clock_combobox = new QComboBox();
+  fbt_timing_clock_combobox->setObjectName("fbt_timing_clock_combobox");
+  fbt_timing_clock_combobox->addItem("1.5 MHz", JRK_PULSE_TIMING_CLOCK_1_5);
+  fbt_timing_clock_combobox->addItem("3 MHz", JRK_PULSE_TIMING_CLOCK_3);
+  fbt_timing_clock_combobox->addItem("6 MHz", JRK_PULSE_TIMING_CLOCK_6);
+  fbt_timing_clock_combobox->addItem("12 MHz", JRK_PULSE_TIMING_CLOCK_12);
+  fbt_timing_clock_combobox->addItem("24 MHz", JRK_PULSE_TIMING_CLOCK_24);
+  fbt_timing_clock_combobox->addItem("48 MHz", JRK_PULSE_TIMING_CLOCK_48);
+
+  QLabel * fbt_timing_polarity_label = new QLabel();
+  fbt_timing_polarity_label->setObjectName("fbt_timing_polarity_label");
+  fbt_timing_polarity_label->setText("Pulse timing polarity:");
+
+  QComboBox * fbt_timing_polarity_combobox = new QComboBox();
+  fbt_timing_polarity_combobox->setObjectName("fbt_timing_polarity_combobox");
+  fbt_timing_polarity_combobox->addItem("Active high", 0);
+  fbt_timing_polarity_combobox->addItem("Active low", 1);
+
+  QLabel * fbt_timing_timeout_label = new QLabel();
+  fbt_timing_timeout_label->setObjectName("fbt_timing_timeout_label");
+  fbt_timing_timeout_label->setText("Pulse timing timeout:");
+
+  QSpinBox * fbt_timing_timeout_spinbox = new QSpinBox();
+  fbt_timing_timeout_spinbox->setObjectName("fbt_timing_timeout_spinbox");
+  fbt_timing_timeout_spinbox->setRange(0, 60000);
+
+  QLabel * fbt_averaging_label = new QLabel();
+  fbt_averaging_label->setObjectName("fbt_averaging_label");
+  fbt_averaging_label->setText("Pulse averaging:");
+
+  QSpinBox * fbt_averaging_spinbox = new QSpinBox();
+  fbt_averaging_spinbox->setRange(0, JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT);
+
+  QCheckBox * fbt_reciprocal_checkbox = new QCheckBox();
+  fbt_reciprocal_checkbox->setObjectName("fbt_reciprocal_checkbox");
+  fbt_reciprocal_checkbox->setText("Enable reciprocal");
+
+  QLabel * fbt_divider_label = new QLabel();
+  fbt_divider_label->setObjectName("fbt_divider_label");
+  fbt_divider_label->setText("Pulse divider:");
+
+  QComboBox * fbt_divider_combobox = setup_exponent_combobox(15);
+  fbt_divider_combobox->setObjectName("fbt_divider_combobox");
+
+  QGridLayout * layout = new QGridLayout();
+  layout->addWidget(fbt_mode_label, 0, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_mode_combobox, 0, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_clock_label, 1, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_clock_combobox, 1, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_polarity_label, 2, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_polarity_combobox, 2, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_timeout_label, 3, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_timeout_spinbox, 3, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_averaging_label, 4, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_averaging_spinbox, 4, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_reciprocal_checkbox, 5, 0, 1, 2, Qt::AlignLeft);
+  layout->addWidget(fbt_divider_label, 6, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_divider_combobox, 6, 1, Qt::AlignLeft);
+
+  fbt_groupbox->setLayout(layout);
+
+  return fbt_groupbox;
+}
+
 QWidget * main_window::setup_pid_tab()
 {
   pid_page_widget = new QWidget();
@@ -2654,7 +2740,8 @@ QWidget * main_window::setup_pid_tab()
   integral_limit_spinbox->setObjectName("integral_limit_spinbox");
   integral_limit_spinbox->setRange(0, 0x7FFF);
 
-  integral_reduction_label = new QLabel(tr("Integral reduction:"));
+  // TODO: rename it to integral divider everywhere?
+  integral_reduction_label = new QLabel(tr("Integral divider:"));
   integral_reduction_label->setObjectName("integral_reduction_label");
 
   integral_reduction_combobox = setup_exponent_combobox(15);
