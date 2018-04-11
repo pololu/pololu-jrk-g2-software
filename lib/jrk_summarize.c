@@ -1,13 +1,17 @@
 #include "jrk_internal.h"
 
+// TODO: remmber 20kHz
+
 static void jrk_print_freq(jrk_string * str, int freq_hz)
 {
-  if (freq_hz >= 10000000)
+  if (freq_hz >= 1000)
   {
+    // TODO: significant digits
     jrk_sprintf(str, "%d\u00A0MHz", freq_hz / 1000000);
   }
   else if (freq_hz >= 10000)
   {
+    // TODO: significant digits
     jrk_sprintf(str, "%d\u00A0kHz", freq_hz / 1000);
   }
   else
@@ -241,12 +245,13 @@ jrk_error * jrk_summarize_feedback_settings(
         jrk_sprintf(&str,
           "The frequency on FBT should be between ");
         jrk_print_freq(&str, min_freq_hz);
-        jrk_sprintf(&str, " and ");
-        jrk_print_freq(&str, max_freq_hz);
         if (limited_by_timeout)
         {
-          jrk_sprintf(&str, " (limited by the timeout)");
+          jrk_sprintf(&str, " (limited by the %u\u00A0ms timeout)",
+            fbt_timing_timeout);
         }
+        jrk_sprintf(&str, " and ");
+        jrk_print_freq(&str, max_freq_hz);
         jrk_sprintf(&str, ".");
       }
       else if (fbt_divider_exponent >= 15)
@@ -345,12 +350,6 @@ jrk_error * jrk_summarize_feedback_settings(
     jrk_sprintf(&str,
       "  Wraparound mode is enabled, so a scaled feedback value of 0 "
       "is considered to be adjacent to 4095.");
-  }
-
-  if (wraparound && feedback_mode == JRK_FEEDBACK_MODE_FREQUENCY)
-  {
-    jrk_sprintf(&str,
-      "  Wraparound mode is enabled, which does not make sense in this mode.");
   }
 
   if (str.data == NULL)

@@ -646,7 +646,11 @@ void main_window::set_fbt_divider_exponent(uint8_t value)
 
 void main_window::set_feedback_summary(const std::string & summary)
 {
-  feedback_summary->setText("Summary of the selections above: " + QString::fromStdString(summary));
+  // TODO: make this bold, look like a header
+  // TODO: don't use dummy newline at beginning
+  // TODO: move to bottom of window
+  feedback_summary->setText("<b>Summary of selections above:</b><br><br>" +
+    QString::fromStdString(summary));
 }
 
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
@@ -2264,7 +2268,7 @@ QWidget * main_window::setup_input_tab()
   input_mode_combobox->setObjectName("input_mode_combobox");
   input_mode_combobox->addItem("Serial", JRK_INPUT_MODE_SERIAL);
   input_mode_combobox->addItem("Analog", JRK_INPUT_MODE_ANALOG);
-  input_mode_combobox->addItem("Pulse width", JRK_INPUT_MODE_PULSE_WIDTH);
+  input_mode_combobox->addItem("RC", JRK_INPUT_MODE_PULSE_WIDTH); // TODO: fix macro name
 
   QHBoxLayout *input_mode_layout = new QHBoxLayout();
   input_mode_layout->addWidget(input_mode_label);
@@ -2555,8 +2559,9 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
   feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
-  feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
-  feedback_mode_combobox->addItem("Frequency (digital)", JRK_FEEDBACK_MODE_FREQUENCY);
+  feedback_mode_combobox->addItem("Analog voltage on FBA", JRK_FEEDBACK_MODE_ANALOG);
+  feedback_mode_combobox->addItem("Frequency on FBT (speed control)",
+    JRK_FEEDBACK_MODE_FREQUENCY);
 
   feedback_summary = new QLabel();
   feedback_summary->setObjectName("feedback_summary");
@@ -2572,9 +2577,11 @@ QWidget * main_window::setup_feedback_tab()
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
-  layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
+  //layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
   layout->addWidget(setup_feedback_fbt_groupbox(), 1, 1);
-  layout->addWidget(feedback_summary, 4, 0, 1, 2);
+  // TODO: make feedback_summary go to the bottom
+  layout->addWidget(feedback_summary, 3, 0, 1, 2, Qt::AlignBottom);
+  layout->setRowStretch(3, 1);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2660,7 +2667,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
 
 QWidget * main_window::setup_feedback_analog_groupbox()
 {
-  feedback_analog_groupbox = new QGroupBox(tr("Analog feedback"));
+  feedback_analog_groupbox = new QGroupBox(tr("Analog feedback on FBA"));
   feedback_analog_groupbox->setObjectName("feedback_analog_groupbox");
 
   feedback_analog_samples_label = new QLabel(tr("Analog samples:"));
@@ -2682,25 +2689,25 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
   layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
-  feedback_analog_groupbox->setLayout(layout);
-
-  return feedback_analog_groupbox;
-}
-
-QWidget * main_window::setup_feedback_options_groupbox()
-{
-  feedback_options_groupbox = new QGroupBox();
-  feedback_options_groupbox->setObjectName("feedback_options_groupbox");
-  feedback_options_groupbox->setTitle(tr("Options"));
-
   feedback_wraparound_checkbox = new QCheckBox(tr("Wraparound"));
   feedback_wraparound_checkbox->setObjectName("feedback_wraparound_checkbox");
   feedback_wraparound_checkbox->setToolTip(tr(
     "A scaled feedback value of 0 is considered to be adjacent to 4095.  "
     "Suitable for systems that rotate over a full circle."));
+  layout->addWidget(feedback_wraparound_checkbox, 2, 0, Qt::AlignLeft);
+
+  feedback_analog_groupbox->setLayout(layout);
+
+  return feedback_analog_groupbox;
+}
+
+QWidget * main_window::setup_feedback_options_groupbox()  // TODO: remove
+{
+  feedback_options_groupbox = new QGroupBox();
+  feedback_options_groupbox->setObjectName("feedback_options_groupbox");
+  feedback_options_groupbox->setTitle(tr("Options"));
 
   QGridLayout * layout = new QGridLayout();
-  layout->addWidget(feedback_wraparound_checkbox, 0, 0, Qt::AlignLeft);
 
   feedback_options_groupbox->setLayout(layout);
 
@@ -2713,16 +2720,18 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   QGroupBox * fbt_groupbox = new QGroupBox();
   fbt_groupbox->setObjectName("fbt_groupbox");
-  fbt_groupbox->setTitle(tr("Pulse feedback"));
+  fbt_groupbox->setTitle(tr("Frequency feedback on FBT"));
 
   QLabel * fbt_mode_label = new QLabel();
   fbt_mode_label->setObjectName("fbt_mode_label");
-  fbt_mode_label->setText("Pulse feedback mode:");
+  fbt_mode_label->setText("Measurement method:");
 
   fbt_mode_combobox = new QComboBox();
   fbt_mode_combobox->setObjectName("fbt_mode_combobox");
   fbt_mode_combobox->addItem("Pulse counting", JRK_FBT_MODE_PULSE_COUNTING);
   fbt_mode_combobox->addItem("Pulse timing", JRK_FBT_MODE_PULSE_TIMING);
+
+  // TODO: gray out fbt_timing stuff when the mode is not timing
 
   QLabel * fbt_timing_clock_label = new QLabel();
   fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
@@ -2756,7 +2765,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   QLabel * fbt_averaging_label = new QLabel();
   fbt_averaging_label->setObjectName("fbt_averaging_label");
-  fbt_averaging_label->setText("Pulse averaging:");
+  fbt_averaging_label->setText("Pulse samples:");
 
   fbt_averaging_count_spinbox = new QSpinBox();
   fbt_averaging_count_spinbox->setObjectName("fbt_averaging_count_spinbox");
@@ -2764,10 +2773,14 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   QLabel * fbt_divider_label = new QLabel();
   fbt_divider_label->setObjectName("fbt_divider_label");
-  fbt_divider_label->setText("Pulse divider:");
+  fbt_divider_label->setText("Frequency divider:");
 
   fbt_divider_combobox = setup_exponent_combobox(15);
   fbt_divider_combobox->setObjectName("fbt_divider_combobox");
+
+  QLabel * fbt_range_label = new QLabel();
+  fbt_range_label->setText("Frequency range: 5000 Hz to 200 kHz");  // TODO
+  // TODO: make selectable
 
   QGridLayout * layout = new QGridLayout();
   layout->addWidget(fbt_mode_label, 0, 0, Qt::AlignLeft);
@@ -2782,6 +2795,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   layout->addWidget(fbt_averaging_count_spinbox, 4, 1, Qt::AlignLeft);
   layout->addWidget(fbt_divider_label, 5, 0, Qt::AlignLeft);
   layout->addWidget(fbt_divider_combobox, 5, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_range_label, 6, 0, 1, 2, Qt::AlignLeft);
 
   fbt_groupbox->setLayout(layout);
 
