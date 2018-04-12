@@ -36,6 +36,14 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
   }
 
+  for(auto plot : all_plots)
+  {
+    if (plot->display->isChecked())
+    {
+      plot->axis->setVisible(!preview_mode);
+    }
+  }
+
   custom_plot->xAxis->setTicks(!preview_mode);
   custom_plot->yAxis->setTicks(!preview_mode);
 
@@ -169,7 +177,6 @@ void graph_widget::setup_ui()
   y_axis_ticker->setSubTickCount(1);
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(3);
-  // custom_plot->yAxis->setTickLabelPadding(2);
   custom_plot->yAxis->setLabel("Position");
   custom_plot->yAxis->setLabelPadding(2);
 
