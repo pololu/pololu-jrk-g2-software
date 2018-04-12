@@ -2411,7 +2411,7 @@ QWidget * main_window::setup_input_serial_groupbox()
 
 QWidget * main_window::setup_input_scaling_groupbox()
 {
-  input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and pulse width mode only)"));
+  input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and RC mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
