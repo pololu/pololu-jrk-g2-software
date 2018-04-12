@@ -2274,8 +2274,7 @@ QWidget * main_window::setup_input_tab()
   input_mode_combobox->setObjectName("input_mode_combobox");
   input_mode_combobox->addItem(
     "Serial\u2009/\u2009I\u00B2C\u2009/\u2009USB", JRK_INPUT_MODE_SERIAL);
-  input_mode_combobox->addItem(
-    "Analog voltage on SDA/AN", JRK_INPUT_MODE_ANALOG);
+  input_mode_combobox->addItem("Analog voltage", JRK_INPUT_MODE_ANALOG);
   input_mode_combobox->addItem("RC", JRK_INPUT_MODE_RC);
 
   QHBoxLayout *input_mode_layout = new QHBoxLayout();
