@@ -1377,36 +1377,36 @@ void jrk_settings_set_always_analog_fba(jrk_settings *,
 JRK_API
 bool jrk_settings_get_always_analog_fba(const jrk_settings *);
 
-// Sets the fbt_mode setting.
+// Sets the fbt_method setting.
 //
 // This settings specifies what kind of pulse measurement to perform
 // on the FBT pin.
 //
-// JRK_FBT_MODE_PULSE_COUNTING means the jrk will count the number of
+// JRK_FBT_METHOD_PULSE_COUNTING means the jrk will count the number of
 // rising edges on the pin, and is more suitable for fast tachometers.
 //
-// JRK_FBT_MODE_PULSE_TIMING means the jrk will measure the pulse width
+// JRK_FBT_METHOD_PULSE_TIMING means the jrk will measure the pulse width
 // (duration) of pulses on the pin, and is more suitable for slow tachometers.
 JRK_API
-void jrk_settings_set_fbt_mode(jrk_settings *,
-  uint8_t fbt_mode);
+void jrk_settings_set_fbt_method(jrk_settings *,
+  uint8_t fbt_method);
 
-// Gets the fbt_mode setting, which is described in
-// jrk_settings_set_fbt_mode.
+// Gets the fbt_method setting, which is described in
+// jrk_settings_set_fbt_method.
 JRK_API
-uint8_t jrk_settings_get_fbt_mode(const jrk_settings *);
+uint8_t jrk_settings_get_fbt_method(const jrk_settings *);
 
 // Sets the fbt_timing_clock setting.
 //
 // This specifies the speed of the clock (in MHz) to use for pulse timing on the
 // FBT pin.  The options are:
 //
-// - JRK_PULSE_TIMING_CLOCK_1_5: 1.5 MHz
-// - JRK_PULSE_TIMING_CLOCK_3: 3 MHz
-// - JRK_PULSE_TIMING_CLOCK_6: 6 MHz
-// - JRK_PULSE_TIMING_CLOCK_12: 12 MHz
-// - JRK_PULSE_TIMING_CLOCK_24: 24 MHz
-// - JRK_PULSE_TIMING_CLOCK_48: 48 MHz
+// - JRK_FBT_TIMING_CLOCK_1_5: 1.5 MHz
+// - JRK_FBT_TIMING_CLOCK_3: 3 MHz
+// - JRK_FBT_TIMING_CLOCK_6: 6 MHz
+// - JRK_FBT_TIMING_CLOCK_12: 12 MHz
+// - JRK_FBT_TIMING_CLOCK_24: 24 MHz
+// - JRK_FBT_TIMING_CLOCK_48: 48 MHz
 JRK_API
 void jrk_settings_set_fbt_timing_clock(jrk_settings *,
   uint8_t fbt_timing_clock);
@@ -1443,18 +1443,18 @@ void jrk_settings_set_fbt_timing_timeout(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_fbt_timing_timeout(const jrk_settings *);
 
-// Sets the fbt_averaging_count setting.
+// Sets the fbt_samples setting.
 //
 // The number of consecutive FBT measurements to average together in pulse
 // timing mode or to add together in pulse counting mode.
 JRK_API
-void jrk_settings_set_fbt_averaging_count(jrk_settings *,
-  uint8_t fbt_averaging_count);
+void jrk_settings_set_fbt_samples(jrk_settings *,
+  uint8_t fbt_samples);
 
-// Gets the fbt_averaging_count setting, which is described in
-// jrk_settings_set_fbt_averaging_count.
+// Gets the fbt_samples setting, which is described in
+// jrk_settings_set_fbt_samples.
 JRK_API
-uint8_t jrk_settings_get_fbt_averaging_count(const jrk_settings *);
+uint8_t jrk_settings_get_fbt_samples(const jrk_settings *);
 
 // Sets the fbt_divider_exponent setting.
 //

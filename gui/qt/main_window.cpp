@@ -614,9 +614,9 @@ void main_window::set_feedback_wraparound(bool value)
   set_check_box(feedback_wraparound_checkbox, value);
 }
 
-void main_window::set_fbt_mode(uint8_t value)
+void main_window::set_fbt_method(uint8_t value)
 {
-  set_u8_combobox(fbt_mode_combobox, value);
+  set_u8_combobox(fbt_method_combobox, value);
 }
 
 void main_window::set_fbt_timing_clock(uint8_t value)
@@ -634,9 +634,9 @@ void main_window::set_fbt_timing_timeout(uint16_t value)
   set_spin_box(fbt_timing_timeout_spinbox, value);
 }
 
-void main_window::set_fbt_averaging_count(uint8_t value)
+void main_window::set_fbt_samples(uint8_t value)
 {
-  set_spin_box(fbt_averaging_count_spinbox, value);
+  set_spin_box(fbt_samples_spinbox, value);
 }
 
 void main_window::set_fbt_divider_exponent(uint8_t value)
@@ -1499,11 +1499,11 @@ void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
   controller->handle_feedback_wraparound_input(state == Qt::Checked);
 }
 
-void main_window::on_fbt_mode_combobox_currentIndexChanged(int index)
+void main_window::on_fbt_method_combobox_currentIndexChanged(int index)
 {
   if (suppress_events) { return; }
-  uint8_t mode = fbt_mode_combobox->itemData(index).toUInt();
-  controller->handle_fbt_mode_input(mode);
+  uint8_t mode = fbt_method_combobox->itemData(index).toUInt();
+  controller->handle_fbt_method_input(mode);
 }
 
 void main_window::on_fbt_timing_clock_combobox_currentIndexChanged(int index)
@@ -1526,10 +1526,10 @@ void main_window::on_fbt_timing_timeout_spinbox_valueChanged(int value)
   controller->handle_fbt_timing_timeout_input(value);
 }
 
-void main_window::on_fbt_averaging_count_spinbox_valueChanged(int value)
+void main_window::on_fbt_samples_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_fbt_averaging_count_input(value);
+  controller->handle_fbt_samples_input(value);
 }
 
 void main_window::on_fbt_divider_combobox_currentIndexChanged(int index)
@@ -2707,14 +2707,14 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_groupbox->setObjectName("fbt_groupbox");
   fbt_groupbox->setTitle(tr("Frequency feedback on FBT"));
 
-  QLabel * fbt_mode_label = new QLabel();
-  fbt_mode_label->setObjectName("fbt_mode_label");
-  fbt_mode_label->setText("Measurement method:");
+  QLabel * fbt_method_label = new QLabel();
+  fbt_method_label->setObjectName("fbt_method_label");
+  fbt_method_label->setText("Measurement method:");
 
-  fbt_mode_combobox = new QComboBox();
-  fbt_mode_combobox->setObjectName("fbt_mode_combobox");
-  fbt_mode_combobox->addItem("Pulse counting", JRK_FBT_MODE_PULSE_COUNTING);
-  fbt_mode_combobox->addItem("Pulse timing", JRK_FBT_MODE_PULSE_TIMING);
+  fbt_method_combobox = new QComboBox();
+  fbt_method_combobox->setObjectName("fbt_method_combobox");
+  fbt_method_combobox->addItem("Pulse counting", JRK_FBT_METHOD_PULSE_COUNTING);
+  fbt_method_combobox->addItem("Pulse timing", JRK_FBT_METHOD_PULSE_TIMING);
 
   // TODO: gray out fbt_timing stuff when the mode is not timing
 
@@ -2752,9 +2752,9 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_averaging_label->setObjectName("fbt_averaging_label");
   fbt_averaging_label->setText("Pulse samples:");
 
-  fbt_averaging_count_spinbox = new QSpinBox();
-  fbt_averaging_count_spinbox->setObjectName("fbt_averaging_count_spinbox");
-  fbt_averaging_count_spinbox->setRange(1, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
+  fbt_samples_spinbox = new QSpinBox();
+  fbt_samples_spinbox->setObjectName("fbt_samples_spinbox");
+  fbt_samples_spinbox->setRange(1, JRK_MAX_ALLOWED_FBT_SAMPLES);
 
   QLabel * fbt_divider_label = new QLabel();
   fbt_divider_label->setObjectName("fbt_divider_label");
@@ -2766,13 +2766,13 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_range_label = new QLabel();
   fbt_range_label->setObjectName("feedback_range_label");
   fbt_range_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-  fbt_range_label->setText("Frequency Measurement Frange: 9.99 MHz to 9.99 MHz  ");
+  fbt_range_label->setText("Frequency Measurement Range (at 50% duty cycle): 9.99 MHz to 9.99 MHz  ");
   fbt_range_label->setMinimumWidth(fbt_range_label->sizeHint().width());
   fbt_range_label->setText("");
 
   QGridLayout * layout = new QGridLayout();
-  layout->addWidget(fbt_mode_label, 0, 0, Qt::AlignLeft);
-  layout->addWidget(fbt_mode_combobox, 0, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_method_label, 0, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_method_combobox, 0, 1, Qt::AlignLeft);
   layout->addWidget(fbt_timing_clock_label, 1, 0, Qt::AlignLeft);
   layout->addWidget(fbt_timing_clock_combobox, 1, 1, Qt::AlignLeft);
   layout->addWidget(fbt_timing_polarity_label, 2, 0, Qt::AlignLeft);
@@ -2780,7 +2780,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   layout->addWidget(fbt_timing_timeout_label, 3, 0, Qt::AlignLeft);
   layout->addWidget(fbt_timing_timeout_spinbox, 3, 1, Qt::AlignLeft);
   layout->addWidget(fbt_averaging_label, 4, 0, Qt::AlignLeft);
-  layout->addWidget(fbt_averaging_count_spinbox, 4, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_samples_spinbox, 4, 1, Qt::AlignLeft);
   layout->addWidget(fbt_divider_label, 5, 0, Qt::AlignLeft);
   layout->addWidget(fbt_divider_combobox, 5, 1, Qt::AlignLeft);
   layout->addWidget(fbt_range_label, 6, 0, 1, 3, Qt::AlignLeft);

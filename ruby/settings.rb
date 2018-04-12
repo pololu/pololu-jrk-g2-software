@@ -905,19 +905,19 @@ even if the "Feedback mode" setting is not "Analog".
 EOF
   },
   {
-    name: 'fbt_mode',
+    name: 'fbt_method',
     type: :enum,
-    max: 'JRK_FBT_MODE_PULSE_TIMING',
-    default: 'JRK_FBT_MODE_PULSE_COUNTING',
+    max: 'JRK_FBT_METHOD_PULSE_TIMING',
+    default: 'JRK_FBT_METHOD_PULSE_COUNTING',
     english_default: 'pulse counting',
     comment: <<EOF
 This settings specifies what kind of pulse measurement to perform
 on the FBT pin.
 
-JRK_FBT_MODE_PULSE_COUNTING means the jrk will count the number of
+JRK_FBT_METHOD_PULSE_COUNTING means the jrk will count the number of
 rising edges on the pin, and is more suitable for fast tachometers.
 
-JRK_FBT_MODE_PULSE_TIMING means the jrk will measure the pulse width
+JRK_FBT_METHOD_PULSE_TIMING means the jrk will measure the pulse width
 (duration) of pulses on the pin, and is more suitable for slow tachometers.
 EOF
   },
@@ -934,12 +934,12 @@ EOF
 This specifies the speed of the clock (in MHz) to use for pulse timing on the
 FBT pin.  The options are:
 
-- JRK_PULSE_TIMING_CLOCK_1_5: 1.5 MHz
-- JRK_PULSE_TIMING_CLOCK_3: 3 MHz
-- JRK_PULSE_TIMING_CLOCK_6: 6 MHz
-- JRK_PULSE_TIMING_CLOCK_12: 12 MHz
-- JRK_PULSE_TIMING_CLOCK_24: 24 MHz
-- JRK_PULSE_TIMING_CLOCK_48: 48 MHz
+- JRK_FBT_TIMING_CLOCK_1_5: 1.5 MHz
+- JRK_FBT_TIMING_CLOCK_3: 3 MHz
+- JRK_FBT_TIMING_CLOCK_6: 6 MHz
+- JRK_FBT_TIMING_CLOCK_12: 12 MHz
+- JRK_FBT_TIMING_CLOCK_24: 24 MHz
+- JRK_FBT_TIMING_CLOCK_48: 48 MHz
 EOF
   },
   {
@@ -965,10 +965,10 @@ amount of time.
 EOF
   },
   {
-    name: 'fbt_averaging_count',
+    name: 'fbt_samples',
     type: :uint8_t,
     min: 1,
-    max: 'JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT',
+    max: 'JRK_MAX_ALLOWED_FBT_SAMPLES',
     default: 1,
     comment: <<EOF
 The number of consecutive FBT measurements to average together in pulse

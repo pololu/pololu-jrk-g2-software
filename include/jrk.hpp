@@ -1175,16 +1175,16 @@ namespace jrk
       return jrk_settings_get_always_analog_fba(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_fbt_mode().
-    void set_fbt_mode(uint8_t value) noexcept
+    /// Wrapper for jrk_settings_set_fbt_method().
+    void set_fbt_method(uint8_t value) noexcept
     {
-      jrk_settings_set_fbt_mode(pointer, value);
+      jrk_settings_set_fbt_method(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_fbt_mode().
-    uint8_t get_fbt_mode() const noexcept
+    /// Wrapper for jrk_settings_get_fbt_method().
+    uint8_t get_fbt_method() const noexcept
     {
-      return jrk_settings_get_fbt_mode(pointer);
+      return jrk_settings_get_fbt_method(pointer);
     }
 
     /// Wrapper for jrk_settings_set_fbt_timing_clock().
@@ -1223,16 +1223,16 @@ namespace jrk
       return jrk_settings_get_fbt_timing_timeout(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_fbt_averaging_count().
-    void set_fbt_averaging_count(uint8_t value) noexcept
+    /// Wrapper for jrk_settings_set_fbt_samples().
+    void set_fbt_samples(uint8_t value) noexcept
     {
-      jrk_settings_set_fbt_averaging_count(pointer, value);
+      jrk_settings_set_fbt_samples(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_fbt_averaging_count().
-    uint8_t get_fbt_averaging_count() const noexcept
+    /// Wrapper for jrk_settings_get_fbt_samples().
+    uint8_t get_fbt_samples() const noexcept
     {
-      return jrk_settings_get_fbt_averaging_count(pointer);
+      return jrk_settings_get_fbt_samples(pointer);
     }
 
     /// Wrapper for jrk_settings_set_fbt_divider_exponent().

@@ -614,15 +614,15 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t fbt_mode = jrk_settings_get_fbt_mode(settings);
-    if (fbt_mode > JRK_FBT_MODE_PULSE_TIMING)
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
+    if (fbt_method > JRK_FBT_METHOD_PULSE_TIMING)
     {
-      fbt_mode = JRK_FBT_MODE_PULSE_COUNTING;
+      fbt_method = JRK_FBT_METHOD_PULSE_COUNTING;
       jrk_sprintf(warnings,
-        "Warning: The fbt mode was invalid "
+        "Warning: The fbt method was invalid "
         "so it will be changed to pulse counting.\n");
     }
-    jrk_settings_set_fbt_mode(settings, fbt_mode);
+    jrk_settings_set_fbt_method(settings, fbt_method);
   }
 
   {
@@ -657,22 +657,22 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t fbt_averaging_count = jrk_settings_get_fbt_averaging_count(settings);
-    if (fbt_averaging_count < 1)
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    if (fbt_samples < 1)
     {
-      fbt_averaging_count = 1;
+      fbt_samples = 1;
       jrk_sprintf(warnings,
-        "Warning: The fbt averaging count was too low "
-        "so it will be changed to %u.\n", fbt_averaging_count);
+        "Warning: The fbt samples was too low "
+        "so it will be changed to %u.\n", fbt_samples);
     }
-    if (fbt_averaging_count > JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT)
+    if (fbt_samples > JRK_MAX_ALLOWED_FBT_SAMPLES)
     {
-      fbt_averaging_count = JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT;
+      fbt_samples = JRK_MAX_ALLOWED_FBT_SAMPLES;
       jrk_sprintf(warnings,
-        "Warning: The fbt averaging count was too high "
-        "so it will be changed to %u.\n", fbt_averaging_count);
+        "Warning: The fbt samples was too high "
+        "so it will be changed to %u.\n", fbt_samples);
     }
-    jrk_settings_set_fbt_averaging_count(settings, fbt_averaging_count);
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
   }
 
   {

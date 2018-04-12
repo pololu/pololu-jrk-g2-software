@@ -406,10 +406,10 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t fbt_mode = jrk_settings_get_fbt_mode(settings);
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
     const char * value_str = "";
-    jrk_code_to_name(jrk_fbt_mode_names_short, fbt_mode, &value_str);
-    jrk_sprintf(&str, "fbt_mode: %s\n", value_str);
+    jrk_code_to_name(jrk_fbt_method_names_short, fbt_method, &value_str);
+    jrk_sprintf(&str, "fbt_method: %s\n", value_str);
   }
 
   {
@@ -431,8 +431,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t fbt_averaging_count = jrk_settings_get_fbt_averaging_count(settings);
-    jrk_sprintf(&str, "fbt_averaging_count: %u\n", fbt_averaging_count);
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    jrk_sprintf(&str, "fbt_samples: %u\n", fbt_samples);
   }
 
   {

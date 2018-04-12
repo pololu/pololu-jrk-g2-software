@@ -903,14 +903,14 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_always_analog_fba(settings, always_analog_fba);
   }
-  else if (!strcmp(key, "fbt_mode"))
+  else if (!strcmp(key, "fbt_method"))
   {
-    uint32_t fbt_mode;
-    if (!jrk_name_to_code(jrk_fbt_mode_names_short, value, &fbt_mode))
+    uint32_t fbt_method;
+    if (!jrk_name_to_code(jrk_fbt_method_names_short, value, &fbt_method))
     {
-      return jrk_error_create("Unrecognized fbt_mode value.");
+      return jrk_error_create("Unrecognized fbt_method value.");
     }
-    jrk_settings_set_fbt_mode(settings, fbt_mode);
+    jrk_settings_set_fbt_method(settings, fbt_method);
   }
   else if (!strcmp(key, "fbt_timing_clock"))
   {
@@ -944,19 +944,19 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
   }
-  else if (!strcmp(key, "fbt_averaging_count"))
+  else if (!strcmp(key, "fbt_samples"))
   {
-    int64_t fbt_averaging_count;
-    if (jrk_string_to_i64(value, &fbt_averaging_count))
+    int64_t fbt_samples;
+    if (jrk_string_to_i64(value, &fbt_samples))
     {
-      return jrk_error_create("Invalid fbt_averaging_count value.");
+      return jrk_error_create("Invalid fbt_samples value.");
     }
-    if (fbt_averaging_count < 0 || fbt_averaging_count > UINT8_MAX)
+    if (fbt_samples < 0 || fbt_samples > UINT8_MAX)
     {
       return jrk_error_create(
-        "The fbt_averaging_count value is out of range.");
+        "The fbt_samples value is out of range.");
     }
-    jrk_settings_set_fbt_averaging_count(settings, fbt_averaging_count);
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
   }
   else if (!strcmp(key, "fbt_divider_exponent"))
   {

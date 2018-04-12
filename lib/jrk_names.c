@@ -68,10 +68,10 @@ const jrk_name jrk_pwm_frequency_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_fbt_mode_names_short[] =
+const jrk_name jrk_fbt_method_names_short[] =
 {
-  { "counting", JRK_FBT_MODE_PULSE_COUNTING },
-  { "timing", JRK_FBT_MODE_PULSE_TIMING },
+  { "counting", JRK_FBT_METHOD_PULSE_COUNTING },
+  { "timing", JRK_FBT_METHOD_PULSE_TIMING },
   { NULL, 0 },
 };
 

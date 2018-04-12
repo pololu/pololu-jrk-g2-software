@@ -76,11 +76,11 @@ struct jrk_settings
   bool analog_sda_pullup;
   bool always_analog_sda;
   bool always_analog_fba;
-  uint8_t fbt_mode;
+  uint8_t fbt_method;
   uint8_t fbt_timing_clock;
   bool fbt_timing_polarity;
   uint16_t fbt_timing_timeout;
-  uint8_t fbt_averaging_count;
+  uint8_t fbt_samples;
   uint8_t fbt_divider_exponent;
 
   // End of auto-generated settings struct members.
@@ -129,10 +129,10 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_max_duty_cycle_reverse(settings, 600);
   jrk_settings_set_current_limit_code_forward(settings, 26);
   jrk_settings_set_current_limit_code_reverse(settings, 26);
-  jrk_settings_set_fbt_mode(settings, JRK_FBT_MODE_PULSE_COUNTING);
+  jrk_settings_set_fbt_method(settings, JRK_FBT_METHOD_PULSE_COUNTING);
   jrk_settings_set_fbt_timing_clock(settings, JRK_FBT_TIMING_CLOCK_1_5);
   jrk_settings_set_fbt_timing_timeout(settings, 100);
-  jrk_settings_set_fbt_averaging_count(settings, 1);
+  jrk_settings_set_fbt_samples(settings, 1);
 
   // End of auto-generated settings defaults.
 }
@@ -1064,16 +1064,16 @@ bool jrk_settings_get_always_analog_fba(const jrk_settings * settings)
   return settings->always_analog_fba;
 }
 
-void jrk_settings_set_fbt_mode(jrk_settings * settings, uint8_t fbt_mode)
+void jrk_settings_set_fbt_method(jrk_settings * settings, uint8_t fbt_method)
 {
   if (settings == NULL) { return; }
-  settings->fbt_mode = fbt_mode;
+  settings->fbt_method = fbt_method;
 }
 
-uint8_t jrk_settings_get_fbt_mode(const jrk_settings * settings)
+uint8_t jrk_settings_get_fbt_method(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->fbt_mode;
+  return settings->fbt_method;
 }
 
 void jrk_settings_set_fbt_timing_clock(jrk_settings * settings, uint8_t fbt_timing_clock)
@@ -1112,16 +1112,16 @@ uint16_t jrk_settings_get_fbt_timing_timeout(const jrk_settings * settings)
   return settings->fbt_timing_timeout;
 }
 
-void jrk_settings_set_fbt_averaging_count(jrk_settings * settings, uint8_t fbt_averaging_count)
+void jrk_settings_set_fbt_samples(jrk_settings * settings, uint8_t fbt_samples)
 {
   if (settings == NULL) { return; }
-  settings->fbt_averaging_count = fbt_averaging_count;
+  settings->fbt_samples = fbt_samples;
 }
 
-uint8_t jrk_settings_get_fbt_averaging_count(const jrk_settings * settings)
+uint8_t jrk_settings_get_fbt_samples(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->fbt_averaging_count;
+  return settings->fbt_samples;
 }
 
 void jrk_settings_set_fbt_divider_exponent(jrk_settings * settings, uint8_t fbt_divider_exponent)

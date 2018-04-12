@@ -338,8 +338,8 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    uint8_t fbt_mode = jrk_settings_get_fbt_mode(settings);
-    buf[JRK_SETTING_FBT_MODE] = fbt_mode;
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
+    buf[JRK_SETTING_FBT_METHOD] = fbt_method;
   }
 
   {
@@ -358,8 +358,8 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    uint8_t fbt_averaging_count = jrk_settings_get_fbt_averaging_count(settings);
-    buf[JRK_SETTING_FBT_AVERAGING_COUNT] = fbt_averaging_count;
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    buf[JRK_SETTING_FBT_SAMPLES] = fbt_samples;
   }
 
   {

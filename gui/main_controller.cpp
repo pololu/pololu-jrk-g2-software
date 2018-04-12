@@ -584,11 +584,11 @@ void main_controller::handle_settings_changed()
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
   window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());
   window->set_feedback_wraparound(settings.get_feedback_wraparound());
-  window->set_fbt_mode(settings.get_fbt_mode());
+  window->set_fbt_method(settings.get_fbt_method());
   window->set_fbt_timing_clock(settings.get_fbt_timing_clock());
   window->set_fbt_timing_polarity(settings.get_fbt_timing_polarity());
   window->set_fbt_timing_timeout(settings.get_fbt_timing_timeout());
-  window->set_fbt_averaging_count(settings.get_fbt_averaging_count());
+  window->set_fbt_samples(settings.get_fbt_samples());
   window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
   recalculate_fbt_range();
 
@@ -707,32 +707,28 @@ void main_controller::recalculate_fbt_range()
 {
   if (!settings.is_present()) { return; }
 
-  uint8_t mode = settings.get_fbt_mode();
+  uint8_t method = settings.get_fbt_method();
   uint8_t divider_exponent = settings.get_fbt_divider_exponent();
 
   int min_freq_hz = 0;
   int max_freq_hz = 0;
 
-  if (mode == JRK_FBT_MODE_PULSE_COUNTING)
+  if (method == JRK_FBT_METHOD_PULSE_COUNTING)
   {
-    uint16_t pid_period = settings.get_pid_period();
-    if (pid_period == 0) { pid_period = 1; }
-
-    uint8_t samples = settings.get_fbt_averaging_count();
-    if (samples == 0) { samples = 1; }
+    uint16_t sample_period =
+      settings.get_pid_period() * settings.get_fbt_samples();
+    if (sample_period == 0) { sample_period = 1; }
 
     // count = freq_khz * pid_period * samples >> divider_exponent
 
     // We need roughly 50 counts for a decently accurate measurement.
     int min_counts = 50;
-    min_freq_hz = 1000 * (min_counts << divider_exponent)
-      / pid_period / samples;
+    min_freq_hz = 1000 * (min_counts << divider_exponent) / sample_period;
 
     // The counts are capped at 2047 (so they can be added or subtracted from
     // 2048 when we computer the feedback variable) and we want a margin.
     int max_counts = 2000;
-    max_freq_hz = 1000 * (max_counts << divider_exponent)
-      / pid_period / samples;
+    max_freq_hz = 1000 * (max_counts << divider_exponent) / sample_period;
 
     // There is a limit to how fast the timer hardware can operate.
     // The datasheet makes it seem like it should work up to 50 MHz, ad we
@@ -745,13 +741,13 @@ void main_controller::recalculate_fbt_range()
 
     // The timer and fbt_reading variable are 16-bit, so that also limits
     // the maximum frequency.
-    int timer_limit = 1000 * 0xFFFF / pid_period / samples;
+    int timer_limit = 1000 * 0xFFFF / sample_period;
     if (max_freq_hz > timer_limit)
     {
       max_freq_hz = timer_limit;
     }
   }
-  else if (mode == JRK_FBT_MODE_PULSE_TIMING)
+  else if (method == JRK_FBT_METHOD_PULSE_TIMING)
   {
     uint8_t timing_clock = settings.get_fbt_timing_clock();
     bool timing_polarity = settings.get_fbt_timing_polarity();
@@ -812,7 +808,7 @@ void main_controller::recalculate_fbt_range()
   }
 
   std::ostringstream ss;
-  if (mode == JRK_FBT_MODE_PULSE_TIMING)
+  if (method == JRK_FBT_METHOD_PULSE_TIMING)
   {
     ss << "Frequency measurement range (at 50% duty cycle): ";
   }
@@ -1140,10 +1136,10 @@ void main_controller::handle_feedback_wraparound_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_fbt_mode_input(uint8_t mode)
+void main_controller::handle_fbt_method_input(uint8_t mode)
 {
   if (!connected()) { return; }
-  settings.set_fbt_mode(mode);
+  settings.set_fbt_method(mode);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1172,10 +1168,10 @@ void main_controller::handle_fbt_timing_timeout_input(uint16_t timeout)
   handle_settings_changed();
 }
 
-void main_controller::handle_fbt_averaging_count_input(uint8_t count)
+void main_controller::handle_fbt_samples_input(uint8_t count)
 {
   if (!connected()) { return; }
-  settings.set_fbt_averaging_count(count);
+  settings.set_fbt_samples(count);
   settings_modified = true;
   handle_settings_changed();
 }
