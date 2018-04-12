@@ -823,26 +823,6 @@ void main_controller::recalculate_fbt_range()
   window->set_fbt_range_display(ss.str(), false);
 }
 
-void main_controller::constrain_feedback_scaling()
-{
-  // TODO: we agreed to remove this feature and re-enable those boxes
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
-  {
-    return;
-    if (settings.get_feedback_maximum() < 2048)
-    {
-      settings.set_feedback_maximum(2048);
-    }
-    if (settings.get_feedback_error_maximum() < 2048)
-    {
-      settings.set_feedback_error_maximum(2048);
-    }
-
-    settings.set_feedback_minimum(4096 - settings.get_feedback_maximum());
-    settings.set_feedback_error_minimum(4096 - settings.get_feedback_error_maximum());
-  }
-}
-
 void main_controller::handle_input_mode_input(uint8_t input_mode)
 {
   if (!connected()) { return; }
@@ -1053,9 +1033,6 @@ void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
 {
   if (!connected()) { return; }
   settings.set_feedback_mode(feedback_mode);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1072,9 +1049,6 @@ void main_controller::handle_feedback_error_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_minimum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1083,9 +1057,6 @@ void main_controller::handle_feedback_error_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_maximum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1094,9 +1065,6 @@ void main_controller::handle_feedback_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_maximum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1105,9 +1073,6 @@ void main_controller::handle_feedback_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_minimum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
