@@ -23,18 +23,17 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click to open graph window");
-    custom_plot->axisRect()->setAutoMargins(QCP::msNone);
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
-    custom_plot->xAxis->setBasePen(QColor(Qt::white));
-    custom_plot->yAxis->setBasePen(QColor(Qt::white));
+    custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
+    custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
   }
   else
   {
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
-    custom_plot->axisRect()->setAutoMargins(QCP::msAll);
-    custom_plot->xAxis->setBasePen(QColor(Qt::black));
-    custom_plot->yAxis->setBasePen(QColor(Qt::black));
+    custom_plot->axisRect()->setMargins(QMargins(40, 10, 10, 40));
+    custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+    custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
   }
 
   custom_plot->xAxis->setTicks(!preview_mode);
@@ -87,6 +86,7 @@ void graph_widget::setup_ui()
   label1->setText(tr("    Range (\u0025):"));
 
   custom_plot = new QCustomPlot();
+  custom_plot->axisRect()->setAutoMargins(QCP::msNone);
 
   label2 = new QLabel();
   label2->setText(tr("    Time (s):"));
@@ -112,10 +112,8 @@ void graph_widget::setup_ui()
   domain->setRange(0, 90);
 
   plot_visible_layout = new QGridLayout();
-  plot_visible_layout->addWidget(new QLabel("Center:"), 0, 1, Qt::AlignCenter);
-  plot_visible_layout->addWidget(new QLabel("Offset:"), 0, 2, Qt::AlignCenter);
-  plot_visible_layout->addWidget(new QLabel("Counts per\ndivision:"),
-    0, 3, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 3, Qt::AlignCenter);
 
   bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(pause_run_button, 1);
@@ -154,37 +152,46 @@ void graph_widget::setup_ui()
   x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
   x_axis_ticker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
   custom_plot->xAxis->setTicker(x_axis_ticker);
+  custom_plot->xAxis->setTickLengthOut(3);
 
   QSharedPointer<QCPAxisTickerText> y_axis_ticker(new QCPAxisTickerText);
 
   y_axis_ticker->addTick(0, "0");
 
-  for (int i = 10; i <= 100; (i += 10))
+  for (int i = 20; i <= 100; (i += 20))
   {
-    QString pos = QString::number(i);
-    QString neg = QString::number(-i);
-    if (i % 20 == 0)
-    {
-      y_axis_ticker->addTick(i, pos + "\u0025");
-      y_axis_ticker->addTick(-i, neg + "\u0025");
-    }
-    else
-    {
-      y_axis_ticker->addTick(i, "");
-      y_axis_ticker->addTick(-i, "");
-    }
+    QString pos = QString::number(i/10);
+    QString neg = QString::number(-i/10);
+    y_axis_ticker->addTick(i, pos);
+    y_axis_ticker->addTick(-i, neg);
   }
 
+  y_axis_ticker->setSubTickCount(1);
   custom_plot->yAxis->setTicker(y_axis_ticker);
+  custom_plot->yAxis->setTickLengthOut(3);
+  custom_plot->yAxis->setLabel("Position");
+  custom_plot->yAxis->setLabelPadding(2);
+
+  custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
+  custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
+
+  custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 120), 0, Qt::DashLine));
+  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setSubGridVisible(true);
 
   custom_plot->yAxis->setRange(-100,100);
   custom_plot->yAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setTickLabelPadding(10);
+  custom_plot->xAxis->setLabel("Time (ms)");
+  custom_plot->xAxis->setLabelPadding(2);
 
   // this is used to see the x-axis to see accurate time.
   // custom_plot->xAxis2->setVisible(true);
 
   set_line_visible();
+
+  custom_plot->axisRect()->setRangeDragAxes(all_axes);
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -197,19 +204,15 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range_value = range;
 
   plot.range = new QDoubleSpinBox();
-  plot.range->setDecimals(0);
+  plot.range->setDecimals(1);
   plot.range->setSingleStep(1.0);
   plot.range->setRange(0, plot.range_value);
-  plot.range->setValue(plot.range_value);
+  plot.range->setValue(plot.range_value/10.0);
 
   plot.center_value = new QDoubleSpinBox();
   plot.center_value->setDecimals(0);
   plot.center_value->setSingleStep(1.0);
-
-  if (signed_range)
-    plot.center_value->setRange(-plot.range_value, plot.range_value);
-  else
-    plot.center_value->setRange(0, plot.range_value);
+  plot.center_value->setRange(-10, 10);
 
   plot.center_value->setValue(0);
 
@@ -226,17 +229,19 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range_label = new QLabel();
 
   if (signed_range)
-    plot.range->setPrefix("\u00B1 ");
+    plot.range_label->setText("\u00B1");
   else
-    plot.range->setPrefix("\u002B ");
+    plot.range_label->setText("\u002B");
 
-  plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atRight);
-  plot.axis->setVisible(false);
+  plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atLeft);
   plot.axis->setRange(-plot.range_value, plot.range_value);
-
-  plot.division_size = new QLabel();
-
-  calculate_division_size(plot);
+  plot.axis->setBasePen(QPen(Qt::NoPen));
+  plot.axis->ticker()->setTickCount(1);
+  plot.axis->setTickPen(QPen(QColor(color), 4, Qt::SolidLine));
+  plot.axis->setSubTickPen(QPen(Qt::NoPen));
+  plot.axis->setTickLength(0, 6);
+  plot.axis->setTickLabels(false);
+  plot.axis->grid()->setVisible(false);
 
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
@@ -246,8 +251,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.center_value, row, 1);
-  plot_visible_layout->addWidget(plot.range, row, 2);
-  plot_visible_layout->addWidget(plot.division_size, row, 3);
+  plot_visible_layout->addWidget(plot.range_label, row, 2);
+  plot_visible_layout->addWidget(plot.range, row, 3);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.color));
@@ -261,6 +266,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
   all_plots.append(&plot);
+
+  all_axes.append(plot.axis);
 
   row++;
 }
@@ -281,18 +288,6 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
   custom_plot->replot();
 }
 
-double graph_widget::calculate_division_size(plot& plot)
-{
-  double division_value = (plot.range->value() - plot.center_value->value())/10.0;
-
-  if (division_value >= 10)
-  {
-    plot.division_size->setText("\u2248 " + QString::number(((division_value)), 'f', 0));
-  }
-  else
-    plot.division_size->setText("\u2248 " + QString::number(((division_value)), 'f', 1));
-}
-
 void graph_widget::change_ranges()
 {
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
@@ -301,10 +296,8 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
-    plot->axis->setRangeLower((plot->range->value() * (min_y->value()/100.0)) + plot->center_value->value());
-    plot->axis->setRangeUpper((plot->range->value() * (max_y->value()/100.0)) + plot->center_value->value());
-
-    calculate_division_size(*plot);
+    plot->axis->setRangeLower(((plot->range->value() * 10.0) * (min_y->value()/100.0)) - (plot->center_value->value() * plot->range->value()));
+    plot->axis->setRangeUpper(((plot->range->value() * 10.0) * (max_y->value()/100.0)) - (plot->center_value->value() * plot->range->value()));
   }
 
   custom_plot->yAxis->setRange(min_y->value(), max_y->value());
@@ -321,6 +314,7 @@ void graph_widget::set_line_visible()
   for (auto plot : all_plots)
   {
     plot->graph->setVisible(plot->display->isChecked());
+    plot->axis->setVisible(plot->display->isChecked());
   }
 
   custom_plot->replot();
