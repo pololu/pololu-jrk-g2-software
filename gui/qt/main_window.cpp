@@ -2560,6 +2560,7 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
   feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
+  // TODO: can we remove the 'on FBx' stuff below?  Ben said maybe that's okay.
   feedback_mode_combobox->addItem("Analog voltage on FBA", JRK_FEEDBACK_MODE_ANALOG);
   feedback_mode_combobox->addItem("Frequency on FBT (speed control)",
     JRK_FEEDBACK_MODE_FREQUENCY);

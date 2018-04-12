@@ -27,6 +27,10 @@
 // A descriptor type from USB 2.0 Table 9-5
 #define USB_DESCRIPTOR_TYPE_STRING 3
 
+// TODO: remove this and most of the other overridable settings code, since
+// we can just use the settings code instead
+#define JRK_OVERRIDABLE_SETTINGS_START 0
+
 // Internal string manipulation library.
 
 typedef struct jrk_string
@@ -72,7 +76,6 @@ extern const jrk_name jrk_fbt_timing_clock_names_short[];
 extern const jrk_name jrk_fbt_timing_clock_names_no_units[];
 
 extern const jrk_name jrk_pin_func_names[];
-
 
 // Internal settings conversion functions.
 
