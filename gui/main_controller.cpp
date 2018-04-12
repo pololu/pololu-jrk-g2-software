@@ -1033,7 +1033,7 @@ void main_controller::handle_input_learn()
   if (!check_settings_applied_before_wizard()) { return; }
 
   if (settings.get_input_mode() != JRK_INPUT_MODE_ANALOG &&
-    settings.get_input_mode() != JRK_INPUT_MODE_PULSE_WIDTH)
+    settings.get_input_mode() != JRK_INPUT_MODE_RC)
   {
     // Should not happen because the button is disabled.
     window->show_info_message(

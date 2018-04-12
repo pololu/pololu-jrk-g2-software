@@ -167,7 +167,7 @@ void main_window::set_input(uint16_t input, uint8_t input_mode)
 
   QString input_pretty = "";
 
-  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  if (input_mode == JRK_INPUT_MODE_RC)
   {
     input_pretty = " (" + QString::fromStdString(
       convert_rc_12bit_to_us_string(input)) + ")";
@@ -2274,7 +2274,7 @@ QWidget * main_window::setup_input_tab()
   input_mode_combobox->setObjectName("input_mode_combobox");
   input_mode_combobox->addItem("Serial", JRK_INPUT_MODE_SERIAL);
   input_mode_combobox->addItem("Analog", JRK_INPUT_MODE_ANALOG);
-  input_mode_combobox->addItem("RC", JRK_INPUT_MODE_PULSE_WIDTH); // TODO: fix macro name
+  input_mode_combobox->addItem("RC", JRK_INPUT_MODE_RC);
 
   QHBoxLayout *input_mode_layout = new QHBoxLayout();
   input_mode_layout->addWidget(input_mode_label);

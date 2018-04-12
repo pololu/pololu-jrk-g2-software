@@ -31,7 +31,7 @@ const jrk_name jrk_input_mode_names_short[] =
 {
   { "serial", JRK_INPUT_MODE_SERIAL },
   { "analog", JRK_INPUT_MODE_ANALOG },
-  { "pulse_width", JRK_INPUT_MODE_PULSE_WIDTH },
+  { "rc", JRK_INPUT_MODE_RC },
   { NULL, 0 },
 };
 

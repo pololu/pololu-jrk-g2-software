@@ -2,7 +2,7 @@ Settings = [
   {
     name: 'input_mode',
     type: :enum,
-    max: 'JRK_INPUT_MODE_PULSE_WIDTH',
+    max: 'JRK_INPUT_MODE_RC',
     default: 'JRK_INPUT_MODE_SERIAL',
     default_is_zero: true,
     english_default: 'serial',
@@ -24,7 +24,7 @@ algorithm.
   corresponds to an input value of 4092.  The jrk uses its input scaling
   feature to set the target variable.
 
-- If the input mode is "Pulse width" (JRK_INPUT_MODE_PULSE_WIDTH), the jrk
+- If the input mode is "RC" (JRK_INPUT_MODE_RC), the jrk
   gets it input variable by reading RC pulses on its RC pin.  The input value
   is the width of the most recent pulse, in units of 2/3 microseconds.  The
   jrk uses its input scaling feature to set the target variable.

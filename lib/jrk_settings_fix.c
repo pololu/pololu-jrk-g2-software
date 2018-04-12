@@ -6,7 +6,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t input_mode = jrk_settings_get_input_mode(settings);
-    if (input_mode > JRK_INPUT_MODE_PULSE_WIDTH)
+    if (input_mode > JRK_INPUT_MODE_RC)
     {
       input_mode = JRK_INPUT_MODE_SERIAL;
       jrk_sprintf(warnings,
