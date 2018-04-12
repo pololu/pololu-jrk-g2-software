@@ -2585,7 +2585,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and frequency mode only)"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
