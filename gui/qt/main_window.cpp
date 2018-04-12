@@ -2754,7 +2754,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   fbt_averaging_count_spinbox = new QSpinBox();
   fbt_averaging_count_spinbox->setObjectName("fbt_averaging_count_spinbox");
-  fbt_averaging_count_spinbox->setRange(0, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
+  fbt_averaging_count_spinbox->setRange(1, JRK_MAX_ALLOWED_FBT_AVERAGING_COUNT);
 
   QLabel * fbt_divider_label = new QLabel();
   fbt_divider_label->setObjectName("fbt_divider_label");
@@ -2766,8 +2766,9 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_range_label = new QLabel();
   fbt_range_label->setObjectName("feedback_range_label");
   fbt_range_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-  // TODO: set a minimum width based on the largest possible message that could appear here
-  fbt_range_label->setText("");  // TODO
+  fbt_range_label->setText("Frequency Measurement Frange: 9.99 MHz to 9.99 MHz  ");
+  fbt_range_label->setMinimumWidth(fbt_range_label->sizeHint().width());
+  fbt_range_label->setText("");
 
   QGridLayout * layout = new QGridLayout();
   layout->addWidget(fbt_mode_label, 0, 0, Qt::AlignLeft);
@@ -2782,7 +2783,8 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   layout->addWidget(fbt_averaging_count_spinbox, 4, 1, Qt::AlignLeft);
   layout->addWidget(fbt_divider_label, 5, 0, Qt::AlignLeft);
   layout->addWidget(fbt_divider_combobox, 5, 1, Qt::AlignLeft);
-  layout->addWidget(fbt_range_label, 6, 0, 1, 2, Qt::AlignLeft);
+  layout->addWidget(fbt_range_label, 6, 0, 1, 3, Qt::AlignLeft);
+  layout->setColumnStretch(2, 1);
 
   fbt_groupbox->setLayout(layout);
 
