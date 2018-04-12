@@ -2405,16 +2405,6 @@ jrk_error * jrk_diagnose(
   uint32_t flags,
   char ** diagnosis);
 
-/// Returns a friendly paragraph summarizing your feedback settings.
-///
-/// Note: There may be some UTF-8 characters in the returned string to help with
-/// formatting.
-JRK_API
-jrk_error * jrk_summarize_feedback_settings(
-  const jrk_settings * settings,
-  uint32_t flags,
-  char ** summary);
-
 #define JRK_DIAGNOSE_FLAG_FEEDBACK_WIZARD 1
 
 #ifdef __cplusplus

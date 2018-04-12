@@ -173,7 +173,7 @@ private:
   void handle_settings_loaded();
 
   void recalculate_motor_asymmetric();
-
+  void recalculate_fbt_range();
   void constrain_feedback_scaling();
 
 public:

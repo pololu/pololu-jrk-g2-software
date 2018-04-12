@@ -590,11 +590,7 @@ void main_controller::handle_settings_changed()
   window->set_fbt_timing_timeout(settings.get_fbt_timing_timeout());
   window->set_fbt_averaging_count(settings.get_fbt_averaging_count());
   window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
-
-  if (settings.is_present())
-  {
-    window->set_feedback_summary(jrk::summarize_feedback_settings(settings));
-  }
+  recalculate_fbt_range();
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
@@ -707,14 +703,135 @@ void main_controller::recalculate_motor_asymmetric()
       settings.get_max_current_reverse());
 }
 
+void main_controller::recalculate_fbt_range()
+{
+  if (!settings.is_present()) { return; }
+
+  uint8_t mode = settings.get_fbt_mode();
+  uint8_t divider_exponent = settings.get_fbt_divider_exponent();
+
+  int min_freq_hz = 0;
+  int max_freq_hz = 0;
+
+  if (mode == JRK_FBT_MODE_PULSE_COUNTING)
+  {
+    uint16_t pid_period = settings.get_pid_period();
+    if (pid_period == 0) { pid_period = 1; }
+
+    uint8_t samples = settings.get_fbt_averaging_count();
+    if (samples == 0) { samples = 1; }
+
+    // count = freq_khz * pid_period * samples >> divider_exponent
+
+    // We need roughly 50 counts for a decently accurate measurement.
+    int min_counts = 50;
+    min_freq_hz = 1000 * (min_counts << divider_exponent)
+      / pid_period / samples;
+
+    // The counts are capped at 2047 (so they can be added or subtracted from
+    // 2048 when we computer the feedback variable) and we want a margin.
+    int max_counts = 2000;
+    max_freq_hz = 1000 * (max_counts << divider_exponent)
+      / pid_period / samples;
+
+    // There is a limit to how fast the timer hardware can operate.
+    // The datasheet makes it seem like it should work up to 50 MHz, ad we
+    // tested it at 6 MHz.
+    int hardware_limit = 50000000;
+    if (max_freq_hz > hardware_limit)
+    {
+      max_freq_hz = hardware_limit;
+    }
+
+    // The timer and fbt_reading variable are 16-bit, so that also limits
+    // the maximum frequency.
+    int timer_limit = 1000 * 0xFFFF / pid_period / samples;
+    if (max_freq_hz > timer_limit)
+    {
+      max_freq_hz = timer_limit;
+    }
+  }
+  else if (mode == JRK_FBT_MODE_PULSE_TIMING)
+  {
+    uint8_t timing_clock = settings.get_fbt_timing_clock();
+    bool timing_polarity = settings.get_fbt_timing_polarity();
+    uint8_t timing_timeout = settings.get_fbt_timing_timeout();
+
+    int k = 0x4000000;
+    int slowest_width = 58982;  // 0x10000 * 0.90
+    int slowest_fb = k / slowest_width >> divider_exponent;
+    if (slowest_fb < 50)
+    {
+      slowest_fb = 50;
+      slowest_width = k / slowest_fb >> divider_exponent;
+    }
+
+    int fastest_fb = 2000;  // 2048*0.9
+    int fastest_width = k / fastest_fb >> divider_exponent;
+    if (fastest_width < 50)
+    {
+      fastest_width = 50;
+      fastest_fb = k / fastest_width >> divider_exponent;
+    }
+
+    int clock_hz = 1;
+    switch (timing_clock)
+    {
+    case JRK_FBT_TIMING_CLOCK_48:  clock_hz = 48000000; break;
+    case JRK_FBT_TIMING_CLOCK_24:  clock_hz = 24000000; break;
+    case JRK_FBT_TIMING_CLOCK_12:  clock_hz = 12000000; break;
+    case JRK_FBT_TIMING_CLOCK_6:   clock_hz = 6000000;  break;
+    case JRK_FBT_TIMING_CLOCK_3:   clock_hz = 3000000;  break;
+    case JRK_FBT_TIMING_CLOCK_1_5: clock_hz = 1500000;  break;
+    }
+
+    // When we convert from pulse widths to actual frequencies, we just assume
+    // the signal consists of two equal high and low pulses, so our pulse width
+    // measurement represents half of signal period.  If the two pulses are not
+    // equal, that would change this conversion, and at that point it would make
+    // mroe sense to talk about the measurable pulse width range instead of the
+    // masurable frequency range.
+    min_freq_hz = clock_hz / (slowest_width * 2);
+    max_freq_hz = clock_hz / (fastest_width * 2);
+
+    // The timeout imposes another lower bound on our frequency range.
+    //
+    // The timeout shouldn't be 0, but if it is, then set it to a high number like
+    // 10 MHz to make it sure to cause a warning.
+    int timeout_hz = timing_timeout ? (1000 / timing_timeout) : 10000000;
+    if (min_freq_hz < timeout_hz)
+    {
+      min_freq_hz = timeout_hz;
+    }
+  }
+
+  if (min_freq_hz >= max_freq_hz)
+  {
+    window->set_fbt_range_display("Warning: invalid settings", true);
+    return;
+  }
+
+  std::ostringstream ss;
+  if (mode == JRK_FBT_MODE_PULSE_TIMING)
+  {
+    ss << "Frequency measurement range (at 50% duty cycle): ";
+  }
+  else
+  {
+    ss << "Frequency measurement range: ";
+  }
+  ss << convert_hz_to_string(min_freq_hz)
+     << " to "
+     << convert_hz_to_string(max_freq_hz);
+
+  window->set_fbt_range_display(ss.str(), false);
+}
+
 void main_controller::constrain_feedback_scaling()
 {
+  // TODO: we agreed to remove this feature and re-enable those boxes
   if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
   {
-    // TODO: This is disabled until I can ask Jan about it.  Seems like feedback
-    // scaling is less important for frequency mode than it used to be so we
-    // don't need this, and it's bad that you can't set it to a no-scaling
-    // full-range mode.
     return;
     if (settings.get_feedback_maximum() < 2048)
     {

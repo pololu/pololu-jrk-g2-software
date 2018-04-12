@@ -160,7 +160,7 @@ public:
   void set_fbt_timing_timeout(uint16_t);
   void set_fbt_averaging_count(uint8_t);
   void set_fbt_divider_exponent(uint8_t);
-  void set_feedback_summary(const std::string &);
+  void set_fbt_range_display(const std::string & message, bool invalid);
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);
@@ -386,7 +386,6 @@ private:
   QWidget * setup_feedback_tab();
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
-  QWidget * setup_feedback_options_groupbox();
   QWidget * setup_feedback_fbt_groupbox();
 
   QWidget * setup_pid_tab();
@@ -588,10 +587,6 @@ private:
   QLabel * feedback_analog_samples_label;
   QComboBox * feedback_analog_samples_combobox;
   QCheckBox * feedback_detect_disconnect_checkbox;
-
-  // feedback tab "Feedback options" groupbox
-
-  QGroupBox * feedback_options_groupbox;
   QCheckBox * feedback_wraparound_checkbox;
 
   // feedback tab "FBT options" groupbox
@@ -601,7 +596,7 @@ private:
   QSpinBox * fbt_timing_timeout_spinbox;
   QSpinBox * fbt_averaging_count_spinbox;
   QComboBox * fbt_divider_combobox;
-  QLabel * feedback_summary;
+  QLabel * fbt_range_label;
 
   // pid tab
 

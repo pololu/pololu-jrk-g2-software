@@ -644,13 +644,19 @@ void main_window::set_fbt_divider_exponent(uint8_t value)
   set_u8_combobox(fbt_divider_combobox, value);
 }
 
-void main_window::set_feedback_summary(const std::string & summary)
+void main_window::set_fbt_range_display(const std::string & message, bool invalid)
 {
-  // TODO: make this bold, look like a header
-  // TODO: don't use dummy newline at beginning
-  // TODO: move to bottom of window
-  feedback_summary->setText("<b>Summary of selections above:</b><br><br>" +
-    QString::fromStdString(summary));
+  fbt_range_label->setText(QString::fromStdString(message));
+
+  bool styled = !fbt_range_label->styleSheet().isEmpty();
+  if (invalid && !styled)
+  {
+    fbt_range_label->setStyleSheet("color: red; }");
+  }
+  else if (!invalid && styled)
+  {
+    fbt_range_label->setStyleSheet("");
+  }
 }
 
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
@@ -2563,11 +2569,6 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox->addItem("Frequency on FBT (speed control)",
     JRK_FEEDBACK_MODE_FREQUENCY);
 
-  feedback_summary = new QLabel();
-  feedback_summary->setObjectName("feedback_summary");
-  feedback_summary->setTextInteractionFlags(Qt::TextSelectableByMouse);
-  feedback_summary->setWordWrap(true);
-
   QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
   feedback_mode_layout->addWidget(feedback_mode_label);
   feedback_mode_layout->addWidget(feedback_mode_combobox);
@@ -2577,10 +2578,7 @@ QWidget * main_window::setup_feedback_tab()
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
-  //layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
   layout->addWidget(setup_feedback_fbt_groupbox(), 1, 1);
-  // TODO: make feedback_summary go to the bottom
-  layout->addWidget(feedback_summary, 3, 0, 1, 2, Qt::AlignBottom);
   layout->setRowStretch(3, 1);
 
   feedback_page_widget->setLayout(layout);
@@ -2701,19 +2699,6 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   return feedback_analog_groupbox;
 }
 
-QWidget * main_window::setup_feedback_options_groupbox()  // TODO: remove
-{
-  feedback_options_groupbox = new QGroupBox();
-  feedback_options_groupbox->setObjectName("feedback_options_groupbox");
-  feedback_options_groupbox->setTitle(tr("Options"));
-
-  QGridLayout * layout = new QGridLayout();
-
-  feedback_options_groupbox->setLayout(layout);
-
-  return feedback_options_groupbox;
-}
-
 QWidget * main_window::setup_feedback_fbt_groupbox()
 {
   // TODO: make the official names of the settings and the names here agree
@@ -2778,9 +2763,11 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_divider_combobox = setup_exponent_combobox(15);
   fbt_divider_combobox->setObjectName("fbt_divider_combobox");
 
-  QLabel * fbt_range_label = new QLabel();
-  fbt_range_label->setText("Frequency range: 5000 Hz to 200 kHz");  // TODO
-  // TODO: make selectable
+  fbt_range_label = new QLabel();
+  fbt_range_label->setObjectName("feedback_range_label");
+  fbt_range_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+  // TODO: set a minimum width based on the largest possible message that could appear here
+  fbt_range_label->setText("");  // TODO
 
   QGridLayout * layout = new QGridLayout();
   layout->addWidget(fbt_mode_label, 0, 0, Qt::AlignLeft);
