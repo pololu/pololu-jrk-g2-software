@@ -31,7 +31,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
-    custom_plot->axisRect()->setMargins(QMargins(40, 10, 10, 40));
+    custom_plot->axisRect()->setMargins(QMargins(40, 10, 20, 40));
     custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
     custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
   }
@@ -169,15 +169,16 @@ void graph_widget::setup_ui()
   y_axis_ticker->setSubTickCount(1);
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(3);
+  // custom_plot->yAxis->setTickLabelPadding(2);
   custom_plot->yAxis->setLabel("Position");
   custom_plot->yAxis->setLabelPadding(2);
 
-  custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
-  custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
+  custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
+  custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
 
-  custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
-  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 120), 0, Qt::DashLine));
-  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 120), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 100), 0, Qt::DashLine));
+  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridVisible(true);
 
   custom_plot->yAxis->setRange(-100,100);
@@ -205,7 +206,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   plot.range = new QDoubleSpinBox();
   plot.range->setDecimals(1);
-  plot.range->setSingleStep(1.0);
+  plot.range->setSingleStep(0.1);
   plot.range->setRange(0, plot.range_value);
   plot.range->setValue(plot.range_value/10.0);
 
@@ -234,13 +235,22 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
     plot.range_label->setText("\u002B");
 
   plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atLeft);
+
+  QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
+  plot_axis_ticker->addTick(0, "\u2B9E");
+  plot.axis->setTicker(plot_axis_ticker);
+
+  QFont font;
+  font.setPointSize(14);
+
+  plot.axis->setTickLabelFont(font);
+  plot.axis->setTickLabelColor(color);
+  plot.axis->setTickLabelPadding(0);
+
   plot.axis->setRange(-plot.range_value, plot.range_value);
   plot.axis->setBasePen(QPen(Qt::NoPen));
-  plot.axis->ticker()->setTickCount(1);
-  plot.axis->setTickPen(QPen(QColor(color), 4, Qt::SolidLine));
+  plot.axis->setTickPen(QPen(Qt::NoPen));
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
-  plot.axis->setTickLength(0, 6);
-  plot.axis->setTickLabels(false);
   plot.axis->grid()->setVisible(false);
 
   show_all_none = new QPushButton("Show all/none");
@@ -256,6 +266,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.color));
+  plot.graph->pen().color().setAlpha(120);
 
   connect(plot.range, SIGNAL(valueChanged(double)),
     this, SLOT(change_ranges()));
@@ -296,8 +307,8 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
-    plot->axis->setRangeLower(((plot->range->value() * 10.0) * (min_y->value()/100.0)) - (plot->center_value->value() * plot->range->value()));
-    plot->axis->setRangeUpper(((plot->range->value() * 10.0) * (max_y->value()/100.0)) - (plot->center_value->value() * plot->range->value()));
+    plot->axis->setRangeLower(((plot->range->value()) * (min_y->value()/10.0)) - (plot->center_value->value() * plot->range->value()));
+    plot->axis->setRangeUpper(((plot->range->value()) * (max_y->value()/10.0)) - (plot->center_value->value() * plot->range->value()));
   }
 
   custom_plot->yAxis->setRange(min_y->value(), max_y->value());
