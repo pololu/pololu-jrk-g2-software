@@ -28,7 +28,6 @@ public:
     QString color;
     QCPAxis *axis;
     QCPGraph *graph;
-    QLabel *range_label;
     int32_t plot_value = 0;
     double range_value = 0;
     bool default_visible = false;

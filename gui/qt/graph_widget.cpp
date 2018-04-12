@@ -97,7 +97,7 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
 
   label2 = new QLabel();
-  label2->setText(tr("    Time (s):"));
+  label2->setText(tr(" Time (s):"));
 
   label3 = new QLabel();
   label3->setAlignment(Qt::AlignCenter);
@@ -119,24 +119,28 @@ void graph_widget::setup_ui()
   domain->setValue(10); // initialized the graph to show 10 seconds of data
   domain->setRange(0, 90);
 
+  show_all_none = new QPushButton("Show all/none");
+  show_all_none->setObjectName("show_all_none");
+
+  connect(show_all_none, SIGNAL(clicked()),
+    this, SLOT(show_all_none_clicked()));
+
   plot_visible_layout = new QGridLayout();
   plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
-  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 3, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 2, Qt::AlignCenter);
 
   bottom_control_layout = new QHBoxLayout();
-  bottom_control_layout->addWidget(pause_run_button, 1);
-  bottom_control_layout->addWidget(label1, 0, Qt::AlignRight);
-  bottom_control_layout->addWidget(min_y, 0);
-  bottom_control_layout->addWidget(label3, 0);
-  bottom_control_layout->addWidget(max_y, 0);
-  bottom_control_layout->addWidget(label2, 0, Qt::AlignRight);
+  bottom_control_layout->addWidget(show_all_none, 0);
+  bottom_control_layout->addWidget(label2, 0);
   bottom_control_layout->addWidget(domain, 0);
+  bottom_control_layout->addWidget(pause_run_button, 0);
+  bottom_control_layout->setAlignment(Qt::AlignLeft);
 
   setup_plot(input, "Input", "#00ffff", false, 4095);
 
   setup_plot(target, "Target", "#0000ff", false, 4095, true);
 
-  setup_plot(feedback, "Feedback", "#ffc0cb", false, 4095);
+  setup_plot(feedback, "Feedback", "#ff8296", false, 4095);
 
   setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", false, 4095, true);
 
@@ -154,7 +158,7 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
-  plot_visible_layout->addWidget(show_all_none, row, 0, 1, 3);
+  plot_visible_layout->addLayout(bottom_control_layout, row, 0, 1, 3);
 
   QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
   x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
@@ -166,7 +170,7 @@ void graph_widget::setup_ui()
 
   y_axis_ticker->addTick(0, "0");
 
-  for (int i = 20; i <= 100; (i += 20))
+  for (int i = 10; i <= 50; (i += 10))
   {
     QString pos = QString::number(i/10);
     QString neg = QString::number(-i/10);
@@ -175,10 +179,11 @@ void graph_widget::setup_ui()
   }
 
   y_axis_ticker->setSubTickCount(1);
+
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(3);
   custom_plot->yAxis->setLabel("Position");
-  custom_plot->yAxis->setLabelPadding(2);
+  custom_plot->yAxis->setLabelPadding(7);
 
   custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
   custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
@@ -188,7 +193,7 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridVisible(true);
 
-  custom_plot->yAxis->setRange(-100,100);
+  custom_plot->yAxis->setRange(-50,50);
   custom_plot->yAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setLabel("Time (ms)");
@@ -218,9 +223,9 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range->setValue(plot.range_value/10.0);
 
   plot.center_value = new QDoubleSpinBox();
-  plot.center_value->setDecimals(0);
-  plot.center_value->setSingleStep(1.0);
-  plot.center_value->setRange(-10, 10);
+  plot.center_value->setDecimals(1);
+  plot.center_value->setSingleStep(0.1);
+  plot.center_value->setRange(-5, 5);
 
   plot.center_value->setValue(0);
 
@@ -233,13 +238,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.display->setChecked(default_visible);
 
   plot.default_visible = default_visible;
-
-  plot.range_label = new QLabel();
-
-  if (signed_range)
-    plot.range_label->setText("\u00B1");
-  else
-    plot.range_label->setText("\u002B");
 
   plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atLeft);
 
@@ -260,16 +258,10 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
 
-  show_all_none = new QPushButton("Show all/none");
-  show_all_none->setObjectName("show_all_none");
-
-  connect(show_all_none, SIGNAL(clicked()),
-    this, SLOT(show_all_none_clicked()));
 
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.center_value, row, 1);
-  plot_visible_layout->addWidget(plot.range_label, row, 2);
-  plot_visible_layout->addWidget(plot.range, row, 3);
+  plot_visible_layout->addWidget(plot.range, row, 2);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.color));
@@ -314,11 +306,11 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
-    plot->axis->setRangeLower(((plot->range->value()) * (min_y->value()/10.0)) - (plot->center_value->value() * plot->range->value()));
-    plot->axis->setRangeUpper(((plot->range->value()) * (max_y->value()/10.0)) - (plot->center_value->value() * plot->range->value()));
+    plot->axis->setRangeLower(((plot->range->value()) * (min_y->value()/20.0)) - (plot->center_value->value() * plot->range->value()));
+    plot->axis->setRangeUpper(((plot->range->value()) * (max_y->value()/20.0)) - (plot->center_value->value() * plot->range->value()));
   }
 
-  custom_plot->yAxis->setRange(min_y->value(), max_y->value());
+  custom_plot->yAxis->setRange(min_y->value()/2, max_y->value()/2);
   custom_plot->replot();
 }
 
