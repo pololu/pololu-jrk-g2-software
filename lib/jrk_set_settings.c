@@ -193,8 +193,8 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    uint8_t integral_reduction_exponent = jrk_settings_get_integral_reduction_exponent(settings);
-    buf[JRK_SETTING_INTEGRAL_REDUCTION_EXPONENT] = integral_reduction_exponent;
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    buf[JRK_SETTING_INTEGRAL_DIVIDER_EXPONENT] = integral_divider_exponent;
   }
 
   {

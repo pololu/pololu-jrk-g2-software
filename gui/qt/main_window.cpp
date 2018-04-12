@@ -690,9 +690,9 @@ void main_window::set_integral_limit(uint16_t value)
   set_spin_box(integral_limit_spinbox, value);
 }
 
-void main_window::set_integral_reduction_exponent(uint8_t exponent)
+void main_window::set_integral_divider_exponent(uint8_t exponent)
 {
-  set_u8_combobox(integral_reduction_combobox, exponent);
+  set_u8_combobox(integral_divider_combobox, exponent);
 }
 
 void main_window::set_reset_integral(bool enabled)
@@ -1574,10 +1574,10 @@ void main_window::on_integral_limit_spinbox_valueChanged(int value)
   controller->handle_integral_limit_input(value);
 }
 
-void main_window::on_integral_reduction_combobox_currentIndexChanged(int value)
+void main_window::on_integral_divider_combobox_currentIndexChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_integral_reduction_exponent_input(value);
+  controller->handle_integral_divider_exponent_input(value);
 }
 
 void main_window::on_reset_integral_checkbox_stateChanged(int state)
@@ -2703,8 +2703,6 @@ QWidget * main_window::setup_feedback_analog_groupbox()
 
 QWidget * main_window::setup_feedback_fbt_groupbox()
 {
-  // TODO: make the official names of the settings and the names here agree
-
   QGroupBox * fbt_groupbox = new QGroupBox();
   fbt_groupbox->setObjectName("fbt_groupbox");
   fbt_groupbox->setTitle(tr("Frequency feedback on FBT"));
@@ -2750,9 +2748,9 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_timeout_spinbox->setObjectName("fbt_timing_timeout_spinbox");
   fbt_timing_timeout_spinbox->setRange(1, 60000);
 
-  QLabel * fbt_averaging_label = new QLabel();
-  fbt_averaging_label->setObjectName("fbt_averaging_label");
-  fbt_averaging_label->setText("Pulse samples:");
+  QLabel * fbt_samples_label = new QLabel();
+  fbt_samples_label->setObjectName("fbt_samples_label");
+  fbt_samples_label->setText("Pulse samples:");
 
   fbt_samples_spinbox = new QSpinBox();
   fbt_samples_spinbox->setObjectName("fbt_samples_spinbox");
@@ -2768,7 +2766,8 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_range_label = new QLabel();
   fbt_range_label->setObjectName("feedback_range_label");
   fbt_range_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-  fbt_range_label->setText("Frequency Measurement Range (at 50% duty cycle): 9.99 MHz to 9.99 MHz  ");
+  fbt_range_label->setText(
+    "Frequency Measurement Range (at 50% duty cycle): 9.99 MHz to 9.99 MHz  ");
   fbt_range_label->setMinimumWidth(fbt_range_label->sizeHint().width());
   fbt_range_label->setText("");
 
@@ -2781,7 +2780,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   layout->addWidget(fbt_timing_polarity_combobox, 2, 1, Qt::AlignLeft);
   layout->addWidget(fbt_timing_timeout_label, 3, 0, Qt::AlignLeft);
   layout->addWidget(fbt_timing_timeout_spinbox, 3, 1, Qt::AlignLeft);
-  layout->addWidget(fbt_averaging_label, 4, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_samples_label, 4, 0, Qt::AlignLeft);
   layout->addWidget(fbt_samples_spinbox, 4, 1, Qt::AlignLeft);
   layout->addWidget(fbt_divider_label, 5, 0, Qt::AlignLeft);
   layout->addWidget(fbt_divider_combobox, 5, 1, Qt::AlignLeft);
@@ -2823,12 +2822,11 @@ QWidget * main_window::setup_pid_tab()
   integral_limit_spinbox->setObjectName("integral_limit_spinbox");
   integral_limit_spinbox->setRange(0, 0x7FFF);
 
-  // TODO: rename it to integral divider everywhere?
-  integral_reduction_label = new QLabel(tr("Integral divider:"));
-  integral_reduction_label->setObjectName("integral_reduction_label");
+  integral_divider_label = new QLabel(tr("Integral divider:"));
+  integral_divider_label->setObjectName("integral_divider_label");
 
-  integral_reduction_combobox = setup_exponent_combobox(15);
-  integral_reduction_combobox->setObjectName("integral_reduction_combobox");
+  integral_divider_combobox = setup_exponent_combobox(15);
+  integral_divider_combobox->setObjectName("integral_divider_combobox");
 
   reset_integral_checkbox = new QCheckBox(
     tr("Reset integral when proportional term exceeds max duty cycle"));
@@ -2857,10 +2855,10 @@ QWidget * main_window::setup_pid_tab()
   integral_layout->addWidget(integral_limit_spinbox);
   integral_layout->addStretch(1);
 
-  QHBoxLayout * integral_reduction_layout = new QHBoxLayout();
-  integral_reduction_layout->addWidget(integral_reduction_label);
-  integral_reduction_layout->addWidget(integral_reduction_combobox);
-  integral_reduction_layout->addStretch(1);
+  QHBoxLayout * integral_divider_layout = new QHBoxLayout();
+  integral_divider_layout->addWidget(integral_divider_label);
+  integral_divider_layout->addWidget(integral_divider_combobox);
+  integral_divider_layout->addStretch(1);
 
   QHBoxLayout * deadzone_layout = new QHBoxLayout();
   deadzone_layout->addWidget(feedback_dead_zone_label);
@@ -2871,7 +2869,7 @@ QWidget * main_window::setup_pid_tab()
   layout->addLayout(coefficient_layout);
   layout->addLayout(period_layout);
   layout->addLayout(integral_layout);
-  layout->addLayout(integral_reduction_layout);
+  layout->addLayout(integral_divider_layout);
   layout->addWidget(reset_integral_checkbox);
   layout->addLayout(deadzone_layout);
   layout->addStretch(1);

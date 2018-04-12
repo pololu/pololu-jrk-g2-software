@@ -509,19 +509,19 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_pid_period(settings, pid_period);
   }
-  else if (!strcmp(key, "integral_reduction_exponent"))
+  else if (!strcmp(key, "integral_divider_exponent"))
   {
-    int64_t integral_reduction_exponent;
-    if (jrk_string_to_i64(value, &integral_reduction_exponent))
+    int64_t integral_divider_exponent;
+    if (jrk_string_to_i64(value, &integral_divider_exponent))
     {
-      return jrk_error_create("Invalid integral_reduction_exponent value.");
+      return jrk_error_create("Invalid integral_divider_exponent value.");
     }
-    if (integral_reduction_exponent < 0 || integral_reduction_exponent > UINT8_MAX)
+    if (integral_divider_exponent < 0 || integral_divider_exponent > UINT8_MAX)
     {
       return jrk_error_create(
-        "The integral_reduction_exponent value is out of range.");
+        "The integral_divider_exponent value is out of range.");
     }
-    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
   }
   else if (!strcmp(key, "integral_limit"))
   {

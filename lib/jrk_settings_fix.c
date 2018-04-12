@@ -329,15 +329,15 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t integral_reduction_exponent = jrk_settings_get_integral_reduction_exponent(settings);
-    if (integral_reduction_exponent > 15)
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    if (integral_divider_exponent > 15)
     {
-      integral_reduction_exponent = 15;
+      integral_divider_exponent = 15;
       jrk_sprintf(warnings,
-        "Warning: The integral reduction exponent was too high "
-        "so it will be changed to %u.\n", integral_reduction_exponent);
+        "Warning: The integral divider exponent was too high "
+        "so it will be changed to %u.\n", integral_divider_exponent);
     }
-    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
   }
 
   {

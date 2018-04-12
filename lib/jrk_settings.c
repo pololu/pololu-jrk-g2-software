@@ -45,7 +45,7 @@ struct jrk_settings
   uint16_t derivative_multiplier;
   uint8_t derivative_exponent;
   uint16_t pid_period;
-  uint8_t integral_reduction_exponent;
+  uint8_t integral_divider_exponent;
   uint16_t integral_limit;
   bool reset_integral;
   uint8_t pwm_frequency;
@@ -692,16 +692,16 @@ uint16_t jrk_settings_get_pid_period(const jrk_settings * settings)
   return settings->pid_period;
 }
 
-void jrk_settings_set_integral_reduction_exponent(jrk_settings * settings, uint8_t integral_reduction_exponent)
+void jrk_settings_set_integral_divider_exponent(jrk_settings * settings, uint8_t integral_divider_exponent)
 {
   if (settings == NULL) { return; }
-  settings->integral_reduction_exponent = integral_reduction_exponent;
+  settings->integral_divider_exponent = integral_divider_exponent;
 }
 
-uint8_t jrk_settings_get_integral_reduction_exponent(const jrk_settings * settings)
+uint8_t jrk_settings_get_integral_divider_exponent(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->integral_reduction_exponent;
+  return settings->integral_divider_exponent;
 }
 
 void jrk_settings_set_integral_limit(jrk_settings * settings, uint16_t integral_limit)

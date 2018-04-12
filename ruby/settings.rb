@@ -501,7 +501,7 @@ disabled.
 EOF
   },
   {
-    name: 'integral_reduction_exponent',
+    name: 'integral_divider_exponent',
     type: :uint8_t,
     range: 0..15,
     default: 0,

@@ -242,8 +242,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t integral_reduction_exponent = jrk_settings_get_integral_reduction_exponent(settings);
-    jrk_sprintf(&str, "integral_reduction_exponent: %u\n", integral_reduction_exponent);
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    jrk_sprintf(&str, "integral_divider_exponent: %u\n", integral_divider_exponent);
   }
 
   {
