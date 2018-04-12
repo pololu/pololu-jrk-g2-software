@@ -2272,8 +2272,10 @@ QWidget * main_window::setup_input_tab()
 
   input_mode_combobox = new QComboBox();
   input_mode_combobox->setObjectName("input_mode_combobox");
-  input_mode_combobox->addItem("Serial", JRK_INPUT_MODE_SERIAL);
-  input_mode_combobox->addItem("Analog", JRK_INPUT_MODE_ANALOG);
+  input_mode_combobox->addItem(
+    "Serial\u2009/\u2009I\u00B2C\u2009/\u2009USB", JRK_INPUT_MODE_SERIAL);
+  input_mode_combobox->addItem(
+    "Analog voltage on SDA/AN", JRK_INPUT_MODE_ANALOG);
   input_mode_combobox->addItem("RC", JRK_INPUT_MODE_RC);
 
   QHBoxLayout *input_mode_layout = new QHBoxLayout();
@@ -2310,7 +2312,7 @@ static QComboBox * setup_exponent_combobox(int max_exponent)
 
 QWidget * main_window::setup_input_analog_groupbox()
 {
-  input_analog_groupbox = new QGroupBox(tr("Analog input"));
+  input_analog_groupbox = new QGroupBox(tr("Analog input on SDA/AN"));
   input_analog_groupbox->setObjectName("input_analog_groupbox");
 
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
@@ -2319,7 +2321,7 @@ QWidget * main_window::setup_input_analog_groupbox()
   input_analog_samples_combobox = setup_exponent_combobox(10);
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
 
-  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
+  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin (SCL)"));
   input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
 
   QHBoxLayout *analog_samples = new QHBoxLayout();
@@ -2337,7 +2339,7 @@ QWidget * main_window::setup_input_analog_groupbox()
 
 QWidget * main_window::setup_input_serial_groupbox()
 {
-  input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
+  input_serial_groupbox = new QGroupBox(tr("Serial interface"));
   input_serial_groupbox->setObjectName("input_serial_groupbox");
 
   input_usb_dual_port_radio = new QRadioButton(tr("USB dual port"));
@@ -2675,7 +2677,7 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
 
   feedback_detect_disconnect_checkbox =
-    new QCheckBox(tr("Detect disconnect with power pin"));
+    new QCheckBox(tr("Detect disconnect with power pin (AUX)"));
   feedback_detect_disconnect_checkbox->setObjectName(
     "feedback_detect_disconnect_checkbox");
 
