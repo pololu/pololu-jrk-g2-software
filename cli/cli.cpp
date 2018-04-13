@@ -36,7 +36,6 @@ static const char help[] =
   "  --ram-settings FILE          Load settings from file into RAM\n"
   "                               (does not work for all settings)\n"
   "  --reinitialize               Reload settings from EEPROM.\n"
-  // TODO: make the options below be efficiently implemented using segments
   "  --proportional MULT EXP      Set proportional coefficient to MULT/(2^EXP)\n"
   "  --integral MULT EXP          Set integral coefficient to MULT/(2^EXP)\n"
   "  --derivative MULT EXP        Set derivative coefficient to MULT/(2^EXP)\n"
@@ -172,7 +171,7 @@ struct arguments
       set_ram_settings ||
       get_ram_settings ||
       reinitialize ||
-      override_settings() ||
+      override_specific_settings() ||
       get_current_limit_codes ||
       convert_current_limit_code_to_ma ||
       convert_current_limit_ma_to_code ||
@@ -180,7 +179,7 @@ struct arguments
       test_procedure;
   }
 
-  bool override_settings() const
+  bool override_specific_settings() const
   {
     return override_proportional_coefficient ||
       override_integral_coefficient ||
@@ -648,62 +647,109 @@ static void fix_settings(const std::string & input_filename,
   write_string_to_file_or_pipe(output_filename, settings.to_string());
 }
 
-static void override_settings(device_selector & selector,
+// Note: We could have implemented this with handle.get_overridable_settings()
+// and handle.set_overridable_settings(), but this method can be more efficient
+// and demonstrates how to use the lower-level API for overridable settings
+// provided by the jrk API.
+static void override_specific_settings(device_selector & selector,
   const arguments & args)
 {
   jrk::handle handle = jrk::handle(selector.select_device());
-
-  jrk::settings s = handle.get_overridable_settings();
 
   // Fetch the current calibration constants if we need to convert from
   // milliamps into a current code.
   jrk::settings settings;
   if (args.override_current_limit_forward || args.override_current_limit_reverse)
   {
-    settings = handle.get_settings();
+    settings = handle.get_overridable_settings();
   }
 
-  if (args.override_proportional_coefficient)
-  {
-    s.set_proportional_multiplier(args.proportional_multiplier);
-    s.set_proportional_exponent(args.proportional_exponent);
-  }
+  uint8_t buffer[9];
 
-  if (args.override_derivative_coefficient)
+  if (args.override_proportional_coefficient &&
+    args.override_derivative_coefficient &&
+    args.override_integral_coefficient)
   {
-    s.set_derivative_multiplier(args.derivative_multiplier);
-    s.set_derivative_exponent(args.derivative_exponent);
+    // All PID coefficients were specified, so override them all with one
+    // command for extra efficiency.  This is only possible because they
+    // are consecutive.
+    buffer[0] = args.proportional_multiplier & 0xFF;
+    buffer[1] = args.proportional_multiplier >> 8 & 0xFF;
+    buffer[2] = args.proportional_exponent;
+    buffer[3] = args.integral_multiplier & 0xFF;
+    buffer[4] = args.integral_multiplier >> 8 & 0xFF;
+    buffer[5] = args.integral_exponent;
+    buffer[6] = args.derivative_multiplier & 0xFF;
+    buffer[7] = args.derivative_multiplier >> 8 & 0xFF;
+    buffer[8] = args.derivative_exponent;
+    handle.set_overridable_setting_segment(
+      JRK_SETTING_PROPORTIONAL_MULTIPLIER, 9, buffer);
   }
-
-  if (args.override_integral_coefficient)
+  else
   {
-    s.set_integral_multiplier(args.integral_multiplier);
-    s.set_integral_exponent(args.integral_exponent);
+    // Override PID coefficients individually.
+
+    if (args.override_proportional_coefficient)
+    {
+      buffer[0] = args.proportional_multiplier & 0xFF;
+      buffer[1] = args.proportional_multiplier >> 8 & 0xFF;
+      buffer[2] = args.proportional_exponent;
+      handle.set_overridable_setting_segment(
+        JRK_SETTING_PROPORTIONAL_MULTIPLIER, 3, buffer);
+    }
+
+    if (args.override_derivative_coefficient)
+    {
+      buffer[0] = args.derivative_multiplier & 0xFF;
+      buffer[1] = args.derivative_multiplier >> 8 & 0xFF;
+      buffer[2] = args.derivative_exponent;
+      handle.set_overridable_setting_segment(
+        JRK_SETTING_DERIVATIVE_MULTIPLIER, 3, buffer);
+    }
+
+    if (args.override_integral_coefficient)
+    {
+      buffer[0] = args.integral_multiplier & 0xFF;
+      buffer[1] = args.integral_multiplier >> 8 & 0xFF;
+      buffer[2] = args.integral_exponent;
+      handle.set_overridable_setting_segment(
+        JRK_SETTING_INTEGRAL_MULTIPLIER, 3, buffer);
+    }
   }
 
   if (args.override_max_duty_cycle_forward)
   {
-    s.set_max_duty_cycle_forward(args.max_duty_cycle_forward);
+    buffer[0] = args.max_duty_cycle_forward & 0xFF;
+    buffer[1] = args.max_duty_cycle_forward >> 8 & 0xFF;
+    handle.set_overridable_setting_segment(
+      JRK_SETTING_MAX_DUTY_CYCLE_FORWARD, 2, buffer);
   }
 
   if (args.override_max_duty_cycle_reverse)
   {
-    s.set_max_duty_cycle_reverse(args.max_duty_cycle_reverse);
+    buffer[0] = args.max_duty_cycle_reverse & 0xFF;
+    buffer[1] = args.max_duty_cycle_reverse >> 8 & 0xFF;
+    handle.set_overridable_setting_segment(
+      JRK_SETTING_MAX_DUTY_CYCLE_REVERSE, 2, buffer);
   }
 
   if (args.override_current_limit_forward)
   {
     uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_forward_ma);
-    s.set_current_limit_code_forward(code);
+    buffer[0] = code & 0xFF;
+    buffer[1] = code >> 8 & 0xFF;
+    handle.set_overridable_setting_segment(
+      JRK_SETTING_CURRENT_LIMIT_CODE_FORWARD, 2, buffer);
   }
 
   if (args.override_current_limit_reverse)
   {
     uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_reverse_ma);
-    s.set_current_limit_code_reverse(code);
+    buffer[0] = code & 0xFF;
+    buffer[1] = code >> 8 & 0xFF;
+    handle.set_overridable_setting_segment(
+      JRK_SETTING_CURRENT_LIMIT_CODE_REVERSE, 2, buffer);
   }
-
-  handle.set_overridable_settings(s);
 }
 
 static void print_debug_data(device_selector & selector)
@@ -805,9 +851,9 @@ static void run(const arguments & args)
     set_ram_settings(selector, args.set_ram_settings_filename);
   }
 
-  if (args.override_settings())
+  if (args.override_specific_settings())
   {
-    override_settings(selector, args);
+    override_specific_settings(selector, args);
   }
 
   if (args.clear_errors)
