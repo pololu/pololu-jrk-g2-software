@@ -2016,7 +2016,8 @@ JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_restore_defaults(jrk_handle * handle);
 
 /// Causes the jrk to reload all of its settings from EEPROM and make them take
-/// effect.  See also jrk_reset().
+/// effect.  Note that this does not have an immediate effect; the effect
+/// happens at the end of the PID period.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_reinitialize(jrk_handle * handle);
 

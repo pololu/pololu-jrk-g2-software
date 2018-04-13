@@ -32,8 +32,10 @@ static const char help[] =
   "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
   "\n"
   "Override settings temporarily:\n"
-  // TODO: add option for overriding all settings with a settings file
-  // TODO: add option for reading all overridable settings to settings file
+  "  --get-ram-settings FILE      Read settings from RAM and write to file.\n"
+  "  --ram-settings FILE          Load settings from file into RAM\n"
+  "                               (does not work for all settings)\n"
+  "  --reinitialize               Reload settings from EEPROM.\n"
   // TODO: make the options below be efficiently implemented using segments
   "  --proportional MULT EXP      Set proportional coefficient to MULT/(2^EXP)\n"
   "  --integral MULT EXP          Set integral coefficient to MULT/(2^EXP)\n"
@@ -50,6 +52,8 @@ static const char help[] =
   "                               current limit values in milliamps.\n"
   "  --current-code-to-ma NUM     Convert current limit code to milliamps.\n"
   "  --current-ma-to-code NUM     Convert current limit in milliamps to a code.\n"
+  "\n"
+  "FILE can be \"-\" to specify standard input or output.\n"
   "\n"
   "For more help, see: " DOCUMENTATION_URL "\n"
   "\n";
@@ -104,6 +108,14 @@ struct arguments
   std::string fix_settings_input_filename;
   std::string fix_settings_output_filename;
 
+  bool set_ram_settings = false;
+  std::string set_ram_settings_filename;
+
+  bool get_ram_settings = false;
+  std::string get_ram_settings_filename;
+
+  bool reinitialize = false;
+
   bool override_proportional_coefficient = false;
   uint16_t proportional_multiplier = 0;
   uint8_t proportional_exponent = 0;
@@ -157,6 +169,9 @@ struct arguments
       set_settings ||
       get_settings ||
       fix_settings ||
+      set_ram_settings ||
+      get_ram_settings ||
+      reinitialize ||
       override_settings() ||
       get_current_limit_codes ||
       convert_current_limit_code_to_ma ||
@@ -367,6 +382,20 @@ static arguments parse_args(int argc, char ** argv)
       args.fix_settings_input_filename = parse_arg_string(arg_reader);
       args.fix_settings_output_filename = parse_arg_string(arg_reader);
     }
+    else if (arg == "--get-ram-settings")
+    {
+      args.get_ram_settings = true;
+      args.get_ram_settings_filename = parse_arg_string(arg_reader);
+    }
+    else if (arg == "--ram-settings" || arg == "--set-ram-settings")
+    {
+      args.set_ram_settings = true;
+      args.set_ram_settings_filename = parse_arg_string(arg_reader);
+    }
+    else if (arg == "--reinitialize")
+    {
+      args.reinitialize = true;
+    }
     else if (arg == "--proportional")
     {
       args.override_proportional_coefficient = true;
@@ -393,12 +422,12 @@ static arguments parse_args(int argc, char ** argv)
       args.max_duty_cycle_forward = duty_cycle;
       args.max_duty_cycle_reverse = duty_cycle;
     }
-    else if (arg == "--max-duty-cycle-fwd")
+    else if (arg == "--max-duty-cycle-fwd" || arg == "--max-duty-cycle-forward")
     {
       args.override_max_duty_cycle_forward = true;
       args.max_duty_cycle_forward = parse_arg_int<uint16_t>(arg_reader, 0, 600);
     }
-    else if (arg == "--max-duty-cycle-rev")
+    else if (arg == "--max-duty-cycle-rev" || arg == "--max-duty-cycle-reverse")
     {
       args.override_max_duty_cycle_reverse = true;
       args.max_duty_cycle_reverse = parse_arg_int<uint16_t>(arg_reader, 0, 600);
@@ -411,12 +440,12 @@ static arguments parse_args(int argc, char ** argv)
       args.current_limit_forward_ma = ma;
       args.current_limit_reverse_ma = ma;
     }
-    else if (arg == "--current-limit-fwd")
+    else if (arg == "--current-limit-fwd" || arg == "--current-limit-forward")
     {
       args.override_current_limit_forward = true;
       args.current_limit_forward_ma = parse_arg_int<uint32_t>(arg_reader);
     }
-    else if (arg == "--current-limit-rev")
+    else if (arg == "--current-limit-rev" || arg == "--current-limit-reverse")
     {
       args.override_current_limit_reverse = true;
       args.current_limit_reverse_ma = parse_arg_int<uint32_t>(arg_reader);
@@ -511,9 +540,10 @@ static void get_settings(device_selector & selector,
 {
   jrk::settings settings = handle(selector).get_settings();
 
-  std::string warnings;
-  settings.fix(&warnings);
-  std::cerr << warnings;
+  // Not sure if we should fix the settings here:
+  // std::string warnings;
+  // settings.fix(&warnings);
+  // std::cerr << warnings;
 
   std::string settings_string = settings.to_string();
 
@@ -540,6 +570,37 @@ static void set_settings(device_selector & selector,
   jrk::handle handle(device);
   handle.set_settings(settings);
   handle.reinitialize();
+}
+
+static void get_ram_settings(device_selector & selector,
+  const std::string & filename)
+{
+  jrk::settings settings = handle(selector).get_overridable_settings();
+
+  std::string settings_string = settings.to_string();
+
+  write_string_to_file_or_pipe(filename, settings_string);
+}
+
+static void set_ram_settings(device_selector & selector,
+  const std::string & filename)
+{
+  std::string settings_string = read_string_from_file_or_pipe(filename);
+  jrk::settings settings = jrk::settings::read_from_string(settings_string);
+
+  jrk::device device = selector.select_device();
+
+  // Set the product of the settings object to match that of the device so we
+  // can fix it properly.
+  uint8_t product = device.get_product();
+  jrk_settings_set_product(settings.get_pointer(), product);
+
+  std::string warnings;
+  settings.fix(&warnings);
+  std::cerr << warnings;
+
+  jrk::handle handle(device);
+  handle.set_overridable_settings(settings);
 }
 
 static void get_current_limit_codes(device_selector & selector)
@@ -714,6 +775,11 @@ static void run(const arguments & args)
     set_settings(selector, args.set_settings_filename);
   }
 
+  if (args.reinitialize)
+  {
+    handle(selector).reinitialize();
+  }
+
   if (args.get_current_limit_codes)
   {
     get_current_limit_codes(selector);
@@ -727,6 +793,16 @@ static void run(const arguments & args)
   if (args.convert_current_limit_ma_to_code)
   {
     convert_current_limit_ma_to_code(selector, args.current_limit_ma_to_convert);
+  }
+
+  if (args.get_ram_settings)
+  {
+    get_ram_settings(selector, args.get_ram_settings_filename);
+  }
+
+  if (args.set_ram_settings)
+  {
+    set_ram_settings(selector, args.set_ram_settings_filename);
   }
 
   if (args.override_settings())
