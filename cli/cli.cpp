@@ -32,16 +32,18 @@ static const char help[] =
   "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
   "\n"
   "Override settings temporarily:\n"
+  // TODO: add option for overriding all settings with a settings file
+  // TODO: add option for reading all overridable settings to settings file
+  // TODO: make the options below be efficiently implemented using segments
   "  --proportional MULT EXP      Set proportional coefficient to MULT/(2^EXP)\n"
   "  --integral MULT EXP          Set integral coefficient to MULT/(2^EXP)\n"
   "  --derivative MULT EXP        Set derivative coefficient to MULT/(2^EXP)\n"
   "  --max-duty-cycle NUM         Set max duty cycle to NUM (0 to 600)\n"
   "  --max-duty-cycle-fwd NUM     Set max duty cycle forward to NUM (0 to 600)\n"
   "  --max-duty-cycle-rev NUM     Set max duty cycle reverse to NUM (0 to 600)\n"
-  "  --current-limit NUM          Set current limit in milliamps.\n"
+  "  --current-limit NUM          Set (hardware) current limit in milliamps.\n"
   "  --current-limit-fwd NUM      Set forward current limit in milliamps.\n"
   "  --current-limit-rev NUM      Set reverse current limit in milliamps.\n"
-  // TODO: add options for the rest of the overridable settings
   "\n"
   "Current limit codes:\n"
   "  --current-codes              Print a CSV with current limit codes and calibrated\n"
@@ -470,13 +472,7 @@ static void get_status(device_selector & selector, bool full_output)
   jrk::device device = selector.select_device();
   jrk::handle handle(device);
 
-  jrk::overridable_settings overridable_settings;
-  jrk::settings settings = handle.get_settings();
-
-  if (full_output)
-  {
-    overridable_settings = handle.get_overridable_settings();
-  }
+  jrk::settings settings = handle.get_overridable_settings();
 
   uint16_t flags = (1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_OCCURRED) |
     (1 << JRK_GET_VARIABLES_FLAG_CLEAR_CURRENT_CHOPPING_OCCURRENCE_COUNT);
@@ -506,7 +502,7 @@ static void get_status(device_selector & selector, bool full_output)
     ttl_port = "?";
   }
 
-  print_status(vars, overridable_settings, settings, name, serial_number,
+  print_status(vars, settings, name, serial_number,
     firmware_version, cmd_port, ttl_port, full_output);
 }
 
@@ -596,7 +592,7 @@ static void override_settings(device_selector & selector,
 {
   jrk::handle handle = jrk::handle(selector.select_device());
 
-  jrk::overridable_settings s = handle.get_overridable_settings();
+  jrk::settings s = handle.get_overridable_settings();
 
   // Fetch the current calibration constants if we need to convert from
   // milliamps into a current code.

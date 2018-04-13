@@ -442,7 +442,7 @@ jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
     return jrk_error_create("Handle is null.");
   }
 
-  if (output == NULL)
+  if (input == NULL)
   {
     return jrk_error_create("Overridable setting input pointer is null.");
   }

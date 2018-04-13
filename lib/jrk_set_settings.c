@@ -507,7 +507,7 @@ jrk_error * jrk_set_overridable_settings(jrk_handle * handle, const jrk_settings
   // Write the bytes to the device.
   if (error == NULL)
   {
-    error = jrk_set_overridable_settings_segment(handle,
+    error = jrk_set_overridable_setting_segment(handle,
       1, sizeof(buf) - 1, buf + 1);
   }
 

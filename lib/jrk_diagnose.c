@@ -16,7 +16,6 @@
 // Returns true if the duty cycle is non-zero and at the max duty cycle.
 static bool duty_cycle_at_max_non_zero(
   const jrk_settings * settings,
-  const jrk_overridable_settings * osettings,
   int16_t duty_cycle)
 {
   if (duty_cycle == 0)
@@ -26,35 +25,11 @@ static bool duty_cycle_at_max_non_zero(
 
   if (duty_cycle > 0)
   {
-    uint16_t max_duty_cycle_forward;
-    if (osettings)
-    {
-      max_duty_cycle_forward =
-        jrk_overridable_settings_get_max_duty_cycle_forward(osettings);
-    }
-    else
-    {
-      max_duty_cycle_forward =
-        jrk_settings_get_max_duty_cycle_forward(settings);
-    }
-
-    return duty_cycle == max_duty_cycle_forward;
+    return duty_cycle == jrk_settings_get_max_duty_cycle_forward(settings);
   }
   else
   {
-    uint16_t max_duty_cycle_reverse;
-    if (osettings)
-    {
-      max_duty_cycle_reverse =
-        jrk_overridable_settings_get_max_duty_cycle_reverse(osettings);
-    }
-    else
-    {
-      max_duty_cycle_reverse =
-        jrk_settings_get_max_duty_cycle_reverse(settings);
-    }
-
-    return duty_cycle == -max_duty_cycle_reverse;
+    return duty_cycle == -jrk_settings_get_max_duty_cycle_reverse(settings);
   }
 }
 
@@ -62,7 +37,6 @@ static bool duty_cycle_at_max_non_zero(
 // and this is due to a max. duty cycle limit being 0.
 static bool duty_cycle_at_max_zero(
   const jrk_settings * settings,
-  const jrk_overridable_settings * osettings,
   int16_t duty_cycle,
   int16_t duty_cycle_target)
 {
@@ -73,68 +47,31 @@ static bool duty_cycle_at_max_zero(
 
   if (duty_cycle_target > 0)
   {
-    uint16_t max_duty_cycle_forward;
-    if (osettings)
-    {
-      max_duty_cycle_forward =
-        jrk_overridable_settings_get_max_duty_cycle_forward(osettings);
-    }
-    else
-    {
-      max_duty_cycle_forward =
-        jrk_settings_get_max_duty_cycle_forward(settings);
-    }
-
-    return max_duty_cycle_forward == 0;
+    return jrk_settings_get_max_duty_cycle_forward(settings) == 0;
   }
   else
   {
-    uint16_t max_duty_cycle_reverse;
-    if (osettings)
-    {
-      max_duty_cycle_reverse =
-        jrk_overridable_settings_get_max_duty_cycle_reverse(osettings);
-    }
-    else
-    {
-      max_duty_cycle_reverse =
-        jrk_settings_get_max_duty_cycle_reverse(settings);
-    }
-
-    return max_duty_cycle_reverse == 0;
+    return jrk_settings_get_max_duty_cycle_reverse(settings) == 0;
   }
 }
 
 // Returns true if the device's setting indicate closed-loop feedback but the
 // PID coefficients are zero.
-static bool pid_zero(
-  const jrk_settings * settings,
-  const jrk_overridable_settings * osettings)
+static bool pid_zero(const jrk_settings * settings)
 {
   if (jrk_settings_get_feedback_mode(settings) == JRK_FEEDBACK_MODE_NONE)
   {
     return false;  // PID coefficients don't matter.
   }
 
-  if (osettings)
-  {
-    return
-      !jrk_overridable_settings_get_proportional_multiplier(osettings) &&
-      !jrk_overridable_settings_get_integral_multiplier(osettings) &&
-      !jrk_overridable_settings_get_derivative_multiplier(osettings);
-  }
-  else
-  {
-    return
-      !jrk_settings_get_proportional_multiplier(settings) &&
-      !jrk_settings_get_integral_multiplier(settings) &&
-      !jrk_settings_get_derivative_multiplier(settings);
-  }
+  return
+    !jrk_settings_get_proportional_multiplier(settings) &&
+    !jrk_settings_get_integral_multiplier(settings) &&
+    !jrk_settings_get_derivative_multiplier(settings);
 }
 
 jrk_error * jrk_diagnose(
   const jrk_settings * settings,
-  const jrk_overridable_settings * osettings,
   const jrk_variables * vars,
   uint32_t flags,
   char ** diagnosis)
@@ -150,8 +87,6 @@ jrk_error * jrk_diagnose(
   {
     return jrk_error_create("Settings object is null.");
   }
-
-  // osettings is optional, don't check it here
 
   if (vars == NULL)
   {
@@ -262,7 +197,7 @@ jrk_error * jrk_diagnose(
       // go in that direction.
       jrk_sprintf(&str, "Motor stopped: duty cycle is forced to 0.");
     }
-    else if (duty_cycle_at_max_non_zero(settings, osettings, duty_cycle))
+    else if (duty_cycle_at_max_non_zero(settings, duty_cycle))
     {
       jrk_sprintf(&str, "Motor is running, forced to max. duty cycle.");
     }
@@ -273,12 +208,12 @@ jrk_error * jrk_diagnose(
   }
   // Below this point, there are no errors and no forced duty cycle, so we
   // know the jrk is trying to reach the duty cycle target.
-  else if (duty_cycle_at_max_zero(settings, osettings, duty_cycle, duty_cycle_target))
+  else if (duty_cycle_at_max_zero(settings, duty_cycle, duty_cycle_target))
   {
     jrk_sprintf(&str, "Motor stopped because max. duty cycle is 0.");
   }
   else if (duty_cycle_target != duty_cycle &&
-    duty_cycle_at_max_non_zero(settings, osettings, duty_cycle))
+    duty_cycle_at_max_non_zero(settings, duty_cycle))
   {
     jrk_sprintf(&str, "Motor running at max. duty cycle.");
   }
@@ -324,7 +259,7 @@ jrk_error * jrk_diagnose(
     }
   }
   // Below this point, we know this is normal operation (force_mode == 0).
-  else if (duty_cycle == 0 && pid_zero(settings, osettings))
+  else if (duty_cycle == 0 && pid_zero(settings))
   {
     jrk_sprintf(&str, "Motor stopped: PID coefficients are zero.");
   }
