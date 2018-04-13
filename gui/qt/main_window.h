@@ -161,6 +161,7 @@ public:
   void set_fbt_samples(uint8_t);
   void set_fbt_divider_exponent(uint8_t);
   void set_fbt_range_display(const std::string & message, bool invalid);
+  void update_feedback_enables();
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);
@@ -598,6 +599,7 @@ private:
   QLabel * fbt_timing_timeout_label;
   QSpinBox * fbt_timing_timeout_spinbox;
   QSpinBox * fbt_samples_spinbox;
+  QLabel * fbt_divider_label;
   QComboBox * fbt_divider_combobox;
   QLabel * fbt_range_label;
 

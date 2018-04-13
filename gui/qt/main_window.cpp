@@ -555,11 +555,6 @@ void main_window::run_input_wizard(uint8_t input_mode)
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
-
-  feedback_scaling_groupbox->setEnabled(
-    feedback_mode != JRK_FEEDBACK_MODE_NONE);
-  feedback_wraparound_checkbox->setEnabled(
-    feedback_mode == JRK_FEEDBACK_MODE_ANALOG);
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
@@ -613,14 +608,6 @@ void main_window::set_feedback_wraparound(bool value)
 void main_window::set_fbt_method(uint8_t value)
 {
   set_u8_combobox(fbt_method_combobox, value);
-
-  bool timing = value == JRK_FBT_METHOD_PULSE_TIMING;
-  fbt_timing_clock_label->setEnabled(timing);
-  fbt_timing_clock_combobox->setEnabled(timing);
-  fbt_timing_polarity_label->setEnabled(timing);
-  fbt_timing_polarity_combobox->setEnabled(timing);
-  fbt_timing_timeout_label->setEnabled(timing);
-  fbt_timing_timeout_spinbox->setEnabled(timing);
 }
 
 void main_window::set_fbt_timing_clock(uint8_t value)
@@ -661,6 +648,32 @@ void main_window::set_fbt_range_display(const std::string & message, bool invali
   {
     fbt_range_label->setStyleSheet("");
   }
+}
+
+void main_window::update_feedback_enables()
+{
+  uint8_t feedback_mode = feedback_mode_combobox->currentData().toUInt();
+
+  feedback_scaling_groupbox->setEnabled(
+    feedback_mode != JRK_FEEDBACK_MODE_NONE);
+
+  bool analog = feedback_mode == JRK_FEEDBACK_MODE_ANALOG;
+  feedback_wraparound_checkbox->setEnabled(analog);
+  feedback_analog_groupbox->setEnabled(analog || always_analog_fba->isChecked());
+
+  bool frequency = feedback_mode == JRK_FEEDBACK_MODE_FREQUENCY;
+  fbt_divider_label->setEnabled(frequency);
+  fbt_divider_combobox->setEnabled(frequency);
+
+  uint8_t fbt_method = fbt_method_combobox->currentData().toUInt();
+
+  bool timing = fbt_method == JRK_FBT_METHOD_PULSE_TIMING;
+  fbt_timing_clock_label->setEnabled(timing);
+  fbt_timing_clock_combobox->setEnabled(timing);
+  fbt_timing_polarity_label->setEnabled(timing);
+  fbt_timing_polarity_combobox->setEnabled(timing);
+  fbt_timing_timeout_label->setEnabled(timing);
+  fbt_timing_timeout_spinbox->setEnabled(timing);
 }
 
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
@@ -2719,8 +2732,6 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_method_combobox->addItem("Pulse counting", JRK_FBT_METHOD_PULSE_COUNTING);
   fbt_method_combobox->addItem("Pulse timing", JRK_FBT_METHOD_PULSE_TIMING);
 
-  // TODO: gray out fbt_timing stuff when the mode is not timing
-
   fbt_timing_clock_label = new QLabel();
   fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
   fbt_timing_clock_label->setText("Pulse timing clock:");
@@ -2760,7 +2771,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_samples_spinbox->setObjectName("fbt_samples_spinbox");
   fbt_samples_spinbox->setRange(1, JRK_MAX_ALLOWED_FBT_SAMPLES);
 
-  QLabel * fbt_divider_label = new QLabel();
+  fbt_divider_label = new QLabel();
   fbt_divider_label->setObjectName("fbt_divider_label");
   fbt_divider_label->setText("Frequency divider:");
 

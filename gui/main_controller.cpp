@@ -662,6 +662,8 @@ void main_controller::handle_settings_changed()
   window->set_never_sleep(settings.get_never_sleep());
   window->set_vin_calibration(settings.get_vin_calibration());
 
+  window->update_feedback_enables();
+
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
 
@@ -706,6 +708,17 @@ void main_controller::recalculate_motor_asymmetric()
 void main_controller::recalculate_fbt_range()
 {
   if (!settings.is_present()) { return; }
+
+  if (settings.get_feedback_mode() != JRK_FEEDBACK_MODE_FREQUENCY)
+  {
+    // We are not actually doing frequency feedback, so don't display the label.
+    // While it would be interesting to tell users what frequency range can be
+    // measured on FBT using the FBT_READING variable (which is always active),
+    // that is different from telling them what frequencies can be measured on
+    // the "Feedback" variable which is normally what we are doing.
+    window->set_fbt_range_display("", false);
+    return;
+  }
 
   uint8_t method = settings.get_fbt_method();
   uint8_t divider_exponent = settings.get_fbt_divider_exponent();
