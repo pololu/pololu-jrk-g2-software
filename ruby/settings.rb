@@ -9,8 +9,8 @@ Settings = [
     comment: <<EOF
 The input mode setting specifies how you want to control the jrk.  It
 determines the definition of the input and target variables.  The input
-variable is raw measurement of the jrk's input.  The target variable is the
-desired state of the system's output, and feeds into the PID feedback
+variable is a raw measurement of the jrk's input.  The target variable is
+the desired state of the system's output, and feeds into the PID feedback
 algorithm.
 
 - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
@@ -421,7 +421,6 @@ EOF
   {
     name: 'proportional_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -434,7 +433,6 @@ EOF
   {
     name: 'proportional_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -443,7 +441,6 @@ EOF
   {
     name: 'integral_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -459,7 +456,6 @@ EOF
   {
     name: 'integral_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -468,7 +464,6 @@ EOF
   {
     name: 'derivative_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -481,7 +476,6 @@ EOF
   {
     name: 'derivative_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -490,7 +484,6 @@ EOF
   {
     name: 'pid_period',
     type: :uint16_t,
-    overridable: true,
     range: 1..8191,
     default: 10,
     comment: <<EOF
@@ -512,7 +505,6 @@ EOF
   {
     name: 'integral_limit',
     type: :uint16_t,
-    overridable: true,
     default: 1000,
     max: 0x7FFF,
     comment:
@@ -522,7 +514,6 @@ EOF
   {
     name: 'reset_integral',
     type: :bool,
-    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_RESET_INTEGRAL',
     comment:
@@ -621,7 +612,6 @@ EOF
   {
     name: 'max_duty_cycle_while_feedback_out_of_range',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -633,7 +623,6 @@ EOF
   {
     name: 'max_acceleration_forward',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -646,7 +635,6 @@ EOF
   {
     name: 'max_acceleration_reverse',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -659,7 +647,6 @@ EOF
   {
     name: 'max_deceleration_forward',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -672,7 +659,6 @@ EOF
   {
     name: 'max_deceleration_reverse',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -685,7 +671,6 @@ EOF
   {
     name: 'max_duty_cycle_forward',
     type: :uint16_t,
-    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -699,7 +684,6 @@ EOF
   {
     name: 'max_duty_cycle_reverse',
     type: :uint16_t,
-    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -713,7 +697,6 @@ EOF
   {
     name: 'current_limit_code_forward',
     type: :uint16_t,
-    overridable: true,
     default: 26,
     max: 95,
     comment: <<EOF
@@ -733,7 +716,6 @@ EOF
   {
     name: 'current_limit_code_reverse',
     type: :uint16_t,
-    overridable: true,
     default: 26,
     max: 95,
     comment:
@@ -743,7 +725,6 @@ EOF
   {
     name: 'brake_duration_forward',
     type: :uint32_t,
-    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -757,7 +738,6 @@ EOF
   {
     name: 'brake_duration_reverse',
     type: :uint32_t,
-    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -773,7 +753,6 @@ EOF
     name: 'max_current_forward',
     type: :uint16_t,
     default: 0,
-    overridable: true,
     comment: <<EOF
 This is the maximum current while driving forward.  If the current exceeds
 this value, the jrk will trigger a "Max. current exceeded" error.
@@ -787,7 +766,6 @@ EOF
     name: 'max_current_reverse',
     type: :uint16_t,
     default: 0,
-    overridable: true,
     comment: <<EOF
 This is the maximum current while driving in reverse.  If the current exceeds
 this value, the jrk will trigger a "Max. current exceeded" error.
@@ -800,7 +778,6 @@ EOF
   {
     name: 'coast_when_off',
     type: :bool,
-    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_COAST_WHEN_OFF',
     comment:
