@@ -463,11 +463,11 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
   return error;
 }
 
-jrk_error * jrk_get_overridable_settings(jrk_handle * handle, jrk_settings ** settings)
+jrk_error * jrk_get_ram_settings(jrk_handle * handle, jrk_settings ** settings)
 {
   if (settings == NULL)
   {
-    return jrk_error_create("Overridable settings output pointer is null.");
+    return jrk_error_create("RAM settings output pointer is null.");
   }
 
   *settings = NULL;
@@ -499,7 +499,7 @@ jrk_error * jrk_get_overridable_settings(jrk_handle * handle, jrk_settings ** se
   if (error != NULL)
   {
     error = jrk_error_add(error,
-      "There was an error reading overridable settings from the device.");
+      "There was an error reading RAM settings from the device.");
   }
 
   // Read all the settings from the device into a buffer.
@@ -515,7 +515,7 @@ jrk_error * jrk_get_overridable_settings(jrk_handle * handle, jrk_settings ** se
       {
         length = sizeof(buf) - index;
       }
-      error = jrk_get_overridable_setting_segment(handle,
+      error = jrk_get_ram_setting_segment(handle,
         index, length, buf + index);
       index += length;
     }

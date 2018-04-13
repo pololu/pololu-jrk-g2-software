@@ -454,7 +454,7 @@ jrk_error * jrk_set_settings(jrk_handle * handle, const jrk_settings * settings)
   return error;
 }
 
-jrk_error * jrk_set_overridable_settings(jrk_handle * handle, const jrk_settings * settings)
+jrk_error * jrk_set_ram_settings(jrk_handle * handle, const jrk_settings * settings)
 {
   if (handle == NULL)
   {
@@ -463,7 +463,7 @@ jrk_error * jrk_set_overridable_settings(jrk_handle * handle, const jrk_settings
 
   if (settings == NULL)
   {
-    return jrk_error_create("Overridable settings object is null.");
+    return jrk_error_create("RAM settings object is null.");
   }
 
   jrk_error * error = NULL;
@@ -498,16 +498,16 @@ jrk_error * jrk_set_overridable_settings(jrk_handle * handle, const jrk_settings
   }
 
   // Add context here because any error from
-  // jrk_set_overridable_settings_segment will already have nice context.
+  // jrk_set_ram_settings_segment will already have nice context.
   if (error != NULL)
   {
-    error = jrk_error_add(error, "There was an error overriding settings.");
+    error = jrk_error_add(error, "There was an error setting RAM settings.");
   }
 
   // Write the bytes to the device.
   if (error == NULL)
   {
-    error = jrk_set_overridable_setting_segment(handle,
+    error = jrk_set_ram_setting_segment(handle,
       1, sizeof(buf) - 1, buf + 1);
   }
 

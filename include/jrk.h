@@ -1924,13 +1924,13 @@ jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_set_settings(jrk_handle *, const jrk_settings *);
 
-/// Reads the jrk's overridable settings.
+/// Reads the jrk's RAM settings.
 ///
-/// The "overridable settings" are a copy of the jrk's settings that is stored
+/// The RAM settings are a copy of the jrk's settings that is stored
 /// in RAM.  These settings are initialized from EEPROM when the jrk starts up
 /// or when it receives a jrk_reinitialize() command.  Most (but not all) of of
 /// the jrk's settings can be quickly and temporarily changed by writing to the
-/// overridable settings instead of writing to EEPROM.
+/// RAM settings instead of writing to EEPROM.
 ///
 /// The settings parameter should be a non-null pointer to a
 /// jrk_settings pointer, which will receive a pointer to a new
@@ -1941,14 +1941,14 @@ jrk_error * jrk_set_settings(jrk_handle *, const jrk_settings *);
 /// functions.
 ///
 /// For a lower-level version of this, see
-/// jrk_get_overridable_settings_segment().
+/// jrk_get_ram_settings_segment().
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_get_overridable_settings(jrk_handle *, jrk_settings **);
+jrk_error * jrk_get_ram_settings(jrk_handle *, jrk_settings **);
 
-/// Writes to all of the jrk's overridable settings.
+/// Writes to all of the jrk's RAM settings.
 ///
-/// See jrk_get_overridable_settings() for information about what the
-/// overridable settings are.
+/// See jrk_get_ram_settings() for information about what the
+/// RAM settings are.
 ///
 /// Internally, this function copies the settings and calls jrk_settings_fix()
 /// to make sure that the settings will be valid when they are written to the
@@ -1958,26 +1958,26 @@ jrk_error * jrk_get_overridable_settings(jrk_handle *, jrk_settings **);
 /// You can use this command to temporarily change settings such as PID
 /// coefficients and motor limits without modifying EEPROM or reinitializing the
 /// jrk.  This command takes effect immediately.  Some settings are not
-/// overridable in this way, so you will have to use jrk_set_settings() (which
+/// RAM in this way, so you will have to use jrk_set_settings() (which
 /// writes to EEPROM) and jrk_reinitialize() to change them.
 ///
-/// Note that this command works by overriding *all* of the jrk's overridable
+/// Note that this command works by RAM *all* of the jrk's RAM
 /// settings, so it needs knowledge of what those settings are.  If you are
 /// writing your own USB code, you can do something simpler by just overwriting
 /// the settings that you know and care about.  See the internal library
-/// function jrk_set_overridable_setting_segment, which takes an arbitrary index
+/// function jrk_set_ram_setting_segment, which takes an arbitrary index
 /// and length.
 ///
 /// For a lower-level version of this, see
-/// jrk_set_overridable_settings_segment().
+/// jrk_set_ram_settings_segment().
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_set_overridable_settings(jrk_handle *,
+jrk_error * jrk_set_ram_settings(jrk_handle *,
   const jrk_settings *);
 
-/// Reads the specified bytes of the overridable settings.
+/// Reads the specified bytes of the RAM settings.
 ///
-/// See jrk_get_overridable_settings() for information about what the
-/// overridable settings are.
+/// See jrk_get_ram_settings() for information about what the
+/// RAM settings are.
 ///
 /// The index parameter specifies the address of the first byte to retrieve,
 /// and the length parameter specifies how many bytes to retrieve.  The output
@@ -1986,16 +1986,16 @@ jrk_error * jrk_set_overridable_settings(jrk_handle *,
 /// You can use the JRK_SETTINGS_* constants in jrk_protocol.h to calculate
 /// the index and offset.
 ///
-/// For a higher-level version of this that just reads all the overridable
-/// settings, see jrk_get_overridable_settings().
+/// For a higher-level version of this that just reads all the RAM
+/// settings, see jrk_get_ram_settings().
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_get_overridable_setting_segment(jrk_handle *,
+jrk_error * jrk_get_ram_setting_segment(jrk_handle *,
   size_t index, size_t length, uint8_t * output);
 
-/// Sets the specified bytes of the overridable settings.
+/// Sets the specified bytes of the RAM settings.
 ///
-/// See jrk_get_overridable_settings() for information about what the
-/// overridable settings are.
+/// See jrk_get_ram_settings() for information about what the
+/// RAM settings are.
 ///
 /// The index parameter specifies the address of the first byte to set,
 /// and the length parameter specifies how many bytes to set.  The input
@@ -2004,10 +2004,10 @@ jrk_error * jrk_get_overridable_setting_segment(jrk_handle *,
 /// You can use the JRK_SETTINGS_* constants in jrk_protocol.h to calculate
 /// the index and offset.
 ///
-/// For a higher-level version of this that just sets all the overridable
-/// settings and fixes invalid settings, see jrk_set_overridable_settings().
+/// For a higher-level version of this that just sets all the RAM
+/// settings and fixes invalid settings, see jrk_set_ram_settings().
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_set_overridable_setting_segment(jrk_handle *,
+jrk_error * jrk_set_ram_setting_segment(jrk_handle *,
   size_t index, size_t length, const uint8_t * input);
 
 /// Resets the jrk's settings in RAM and EEPROM to their factory default values.

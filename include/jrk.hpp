@@ -1594,33 +1594,33 @@ namespace jrk
       throw_if_needed(jrk_set_settings(pointer, settings.get_pointer()));
     }
 
-    /// Wrapper for jrk_get_overridable_settings().
-    settings get_overridable_settings()
+    /// Wrapper for jrk_get_ram_settings().
+    settings get_ram_settings()
     {
       jrk_settings * s;
-      throw_if_needed(jrk_get_overridable_settings(pointer, &s));
+      throw_if_needed(jrk_get_ram_settings(pointer, &s));
       return settings(s);
     }
 
-    /// Wrapper for jrk_set_overridable_settings().
-    void set_overridable_settings(const settings & s)
+    /// Wrapper for jrk_set_ram_settings().
+    void set_ram_settings(const settings & s)
     {
-      throw_if_needed(jrk_set_overridable_settings(pointer, s.get_pointer()));
+      throw_if_needed(jrk_set_ram_settings(pointer, s.get_pointer()));
     }
 
-    /// Wrapper for jrk_get_overridable_setting_segment().
-    void get_overridable_setting_segment(size_t index, size_t length,
+    /// Wrapper for jrk_get_ram_setting_segment().
+    void get_ram_setting_segment(size_t index, size_t length,
       uint8_t * output)
     {
-      throw_if_needed(jrk_get_overridable_setting_segment(
+      throw_if_needed(jrk_get_ram_setting_segment(
           pointer, index, length, output));
     }
 
-    /// Wrapper for jrk_set_overridable_setting_segment().
-    void set_overridable_setting_segment(size_t index, size_t length,
+    /// Wrapper for jrk_set_ram_setting_segment().
+    void set_ram_setting_segment(size_t index, size_t length,
       const uint8_t * input)
     {
-      throw_if_needed(jrk_set_overridable_setting_segment(
+      throw_if_needed(jrk_set_ram_setting_segment(
           pointer, index, length, input));
     }
 

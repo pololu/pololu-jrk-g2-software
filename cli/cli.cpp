@@ -500,7 +500,7 @@ static void get_status(device_selector & selector, bool full_output)
   jrk::device device = selector.select_device();
   jrk::handle handle(device);
 
-  jrk::settings settings = handle.get_overridable_settings();
+  jrk::settings settings = handle.get_ram_settings();
 
   uint16_t flags = (1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_OCCURRED) |
     (1 << JRK_GET_VARIABLES_FLAG_CLEAR_CURRENT_CHOPPING_OCCURRENCE_COUNT);
@@ -569,7 +569,7 @@ static void set_settings(device_selector & selector,
 static void get_ram_settings(device_selector & selector,
   const std::string & filename)
 {
-  jrk::settings settings = handle(selector).get_overridable_settings();
+  jrk::settings settings = handle(selector).get_ram_settings();
 
   std::string settings_string = settings.to_string();
 
@@ -594,7 +594,7 @@ static void set_ram_settings(device_selector & selector,
   std::cerr << warnings;
 
   jrk::handle handle(device);
-  handle.set_overridable_settings(settings);
+  handle.set_ram_settings(settings);
 }
 
 static void get_current_limit_codes(device_selector & selector)
@@ -642,8 +642,8 @@ static void fix_settings(const std::string & input_filename,
   write_string_to_file_or_pipe(output_filename, settings.to_string());
 }
 
-// Note: We could have implemented this with handle.get_overridable_settings()
-// and handle.set_overridable_settings(), but this method can be more efficient
+// Note: We could have implemented this with handle.get_ram_settings()
+// and handle.set_ram_settings(), but this method can be more efficient
 // and demonstrates how to use the lower-level API for overridable settings
 // provided by the jrk API.
 static void override_specific_settings(device_selector & selector,
@@ -656,7 +656,7 @@ static void override_specific_settings(device_selector & selector,
   jrk::settings settings;
   if (args.override_current_limit_forward || args.override_current_limit_reverse)
   {
-    settings = handle.get_overridable_settings();
+    settings = handle.get_ram_settings();
   }
 
   uint8_t buffer[9];
@@ -677,7 +677,7 @@ static void override_specific_settings(device_selector & selector,
     buffer[6] = args.derivative_multiplier & 0xFF;
     buffer[7] = args.derivative_multiplier >> 8 & 0xFF;
     buffer[8] = args.derivative_exponent;
-    handle.set_overridable_setting_segment(
+    handle.set_ram_setting_segment(
       JRK_SETTING_PROPORTIONAL_MULTIPLIER, 9, buffer);
   }
   else
@@ -689,7 +689,7 @@ static void override_specific_settings(device_selector & selector,
       buffer[0] = args.proportional_multiplier & 0xFF;
       buffer[1] = args.proportional_multiplier >> 8 & 0xFF;
       buffer[2] = args.proportional_exponent;
-      handle.set_overridable_setting_segment(
+      handle.set_ram_setting_segment(
         JRK_SETTING_PROPORTIONAL_MULTIPLIER, 3, buffer);
     }
 
@@ -698,7 +698,7 @@ static void override_specific_settings(device_selector & selector,
       buffer[0] = args.derivative_multiplier & 0xFF;
       buffer[1] = args.derivative_multiplier >> 8 & 0xFF;
       buffer[2] = args.derivative_exponent;
-      handle.set_overridable_setting_segment(
+      handle.set_ram_setting_segment(
         JRK_SETTING_DERIVATIVE_MULTIPLIER, 3, buffer);
     }
 
@@ -707,7 +707,7 @@ static void override_specific_settings(device_selector & selector,
       buffer[0] = args.integral_multiplier & 0xFF;
       buffer[1] = args.integral_multiplier >> 8 & 0xFF;
       buffer[2] = args.integral_exponent;
-      handle.set_overridable_setting_segment(
+      handle.set_ram_setting_segment(
         JRK_SETTING_INTEGRAL_MULTIPLIER, 3, buffer);
     }
   }
@@ -716,7 +716,7 @@ static void override_specific_settings(device_selector & selector,
   {
     buffer[0] = args.max_duty_cycle_forward & 0xFF;
     buffer[1] = args.max_duty_cycle_forward >> 8 & 0xFF;
-    handle.set_overridable_setting_segment(
+    handle.set_ram_setting_segment(
       JRK_SETTING_MAX_DUTY_CYCLE_FORWARD, 2, buffer);
   }
 
@@ -724,7 +724,7 @@ static void override_specific_settings(device_selector & selector,
   {
     buffer[0] = args.max_duty_cycle_reverse & 0xFF;
     buffer[1] = args.max_duty_cycle_reverse >> 8 & 0xFF;
-    handle.set_overridable_setting_segment(
+    handle.set_ram_setting_segment(
       JRK_SETTING_MAX_DUTY_CYCLE_REVERSE, 2, buffer);
   }
 
@@ -733,7 +733,7 @@ static void override_specific_settings(device_selector & selector,
     uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_forward_ma);
     buffer[0] = code & 0xFF;
     buffer[1] = code >> 8 & 0xFF;
-    handle.set_overridable_setting_segment(
+    handle.set_ram_setting_segment(
       JRK_SETTING_CURRENT_LIMIT_CODE_FORWARD, 2, buffer);
   }
 
@@ -742,7 +742,7 @@ static void override_specific_settings(device_selector & selector,
     uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_reverse_ma);
     buffer[0] = code & 0xFF;
     buffer[1] = code >> 8 & 0xFF;
-    handle.set_overridable_setting_segment(
+    handle.set_ram_setting_segment(
       JRK_SETTING_CURRENT_LIMIT_CODE_REVERSE, 2, buffer);
   }
 }

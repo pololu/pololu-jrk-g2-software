@@ -360,7 +360,7 @@ jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   if (length > JRK_MAX_USB_RESPONSE_SIZE)
   {
     return jrk_error_create(
-      "Overridable setting length is too large.");
+      "RAM setting length is too large.");
   }
 
   size_t transferred;
@@ -382,7 +382,7 @@ jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   return NULL;
 }
 
-jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
+jrk_error * jrk_get_ram_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output)
 {
   if (handle == NULL)
@@ -392,49 +392,49 @@ jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
 
   if (output == NULL)
   {
-    return jrk_error_create("Overridable setting output pointer is null.");
+    return jrk_error_create("RAM setting output pointer is null.");
   }
 
   if (index > 0xFF)
   {
     // The firmware would ignore the high bits if we tried to send this.
     return jrk_error_create(
-      "Overridable setting segment index is too large.");
+      "RAM setting segment index is too large.");
   }
 
   if (length == 0)
   {
     return jrk_error_create(
-      "Overridable setting segment length is zero.");
+      "RAM setting segment length is zero.");
   }
 
   if (length > JRK_MAX_USB_RESPONSE_SIZE)
   {
     return jrk_error_create(
-      "Overridable setting length is too large.");
+      "RAM setting length is too large.");
   }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0xC0, JRK_CMD_GET_OVERRIDABLE_SETTINGS, 0, index,
+    0xC0, JRK_CMD_GET_RAM_SETTINGS, 0, index,
     output, length, &transferred));
   if (error != NULL)
   {
-    error = jrk_error_add(error, "There was an error reading overridable settings.");
+    error = jrk_error_add(error, "There was an error reading RAM settings.");
     return error;
   }
 
   if (transferred != length)
   {
     return jrk_error_create(
-      "Failed to read overridable settings.  Expected %u bytes, got %u.\n",
+      "Failed to read RAM settings.  Expected %u bytes, got %u.\n",
       (unsigned int)length, (unsigned int)transferred);
   }
 
   return NULL;
 }
 
-jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
+jrk_error * jrk_set_ram_setting_segment(jrk_handle * handle,
   size_t index, size_t length, const uint8_t * input)
 {
   if (handle == NULL)
@@ -444,42 +444,42 @@ jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
 
   if (input == NULL)
   {
-    return jrk_error_create("Overridable setting input pointer is null.");
+    return jrk_error_create("RAM setting input pointer is null.");
   }
 
   if (index > 0xFF)
   {
     // The firmware would ignore the high bits if we tried to send this.
     return jrk_error_create(
-      "Overridable setting index is too large.");
+      "RAM setting index is too large.");
   }
 
   if (length == 0)
   {
     return jrk_error_create(
-      "Overridable setting segment length is zero.");
+      "RAM setting segment length is zero.");
   }
 
   if (length > JRK_MAX_USB_RESPONSE_SIZE)
   {
     return jrk_error_create(
-      "Overridable setting segment length is too large.");
+      "RAM setting segment length is too large.");
   }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0x40, JRK_CMD_SET_OVERRIDABLE_SETTINGS, 0, index,
+    0x40, JRK_CMD_SET_RAM_SETTINGS, 0, index,
     (uint8_t *)input, length, &transferred));
   if (error != NULL)
   {
-    error = jrk_error_add(error, "There was an error overriding settings.");
+    error = jrk_error_add(error, "There was an error settings RAM settings.");
     return error;
   }
 
   if (transferred != length)
   {
     return jrk_error_create(
-      "Failed to set overridable settings.  Expected %u bytes, got %u.\n",
+      "Failed to set RAM settings.  Expected %u bytes, got %u.\n",
       (unsigned int)length, (unsigned int)transferred);
   }
 
