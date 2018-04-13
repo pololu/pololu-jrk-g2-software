@@ -611,6 +611,14 @@ void main_window::set_feedback_wraparound(bool value)
 void main_window::set_fbt_method(uint8_t value)
 {
   set_u8_combobox(fbt_method_combobox, value);
+
+  bool timing = value == JRK_FBT_METHOD_PULSE_TIMING;
+  fbt_timing_clock_label->setEnabled(timing);
+  fbt_timing_clock_combobox->setEnabled(timing);
+  fbt_timing_polarity_label->setEnabled(timing);
+  fbt_timing_polarity_combobox->setEnabled(timing);
+  fbt_timing_timeout_label->setEnabled(timing);
+  fbt_timing_timeout_spinbox->setEnabled(timing);
 }
 
 void main_window::set_fbt_timing_clock(uint8_t value)
@@ -2711,9 +2719,10 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
 
   // TODO: gray out fbt_timing stuff when the mode is not timing
 
-  QLabel * fbt_timing_clock_label = new QLabel();
+  fbt_timing_clock_label = new QLabel();
   fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
   fbt_timing_clock_label->setText("Pulse timing clock:");
+  fbt_timing_clock_label->setEnabled(false);  // tmphax
 
   fbt_timing_clock_combobox = new QComboBox();
   fbt_timing_clock_combobox->setObjectName("fbt_timing_clock_combobox");
@@ -2724,7 +2733,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_clock_combobox->addItem("24 MHz", JRK_FBT_TIMING_CLOCK_24);
   fbt_timing_clock_combobox->addItem("48 MHz", JRK_FBT_TIMING_CLOCK_48);
 
-  QLabel * fbt_timing_polarity_label = new QLabel();
+  fbt_timing_polarity_label = new QLabel();
   fbt_timing_polarity_label->setObjectName("fbt_timing_polarity_label");
   fbt_timing_polarity_label->setText("Pulse timing polarity:");
 
@@ -2733,7 +2742,7 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_polarity_combobox->addItem("Active high", 0);
   fbt_timing_polarity_combobox->addItem("Active low", 1);
 
-  QLabel * fbt_timing_timeout_label = new QLabel();
+  fbt_timing_timeout_label = new QLabel();
   fbt_timing_timeout_label->setObjectName("fbt_timing_timeout_label");
   fbt_timing_timeout_label->setText("Pulse timing timeout (ms):");
 

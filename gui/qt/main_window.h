@@ -591,8 +591,11 @@ private:
 
   // feedback tab "FBT options" groupbox
   QComboBox * fbt_method_combobox;
+  QLabel * fbt_timing_clock_label;
   QComboBox * fbt_timing_clock_combobox;
+  QLabel * fbt_timing_polarity_label;
   QComboBox * fbt_timing_polarity_combobox;
+  QLabel * fbt_timing_timeout_label;
   QSpinBox * fbt_timing_timeout_spinbox;
   QSpinBox * fbt_samples_spinbox;
   QComboBox * fbt_divider_combobox;
