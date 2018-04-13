@@ -558,6 +558,8 @@ void main_window::set_feedback_mode(uint8_t feedback_mode)
 
   feedback_scaling_groupbox->setEnabled(
     feedback_mode != JRK_FEEDBACK_MODE_NONE);
+  feedback_wraparound_checkbox->setEnabled(
+    feedback_mode == JRK_FEEDBACK_MODE_ANALOG);
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
