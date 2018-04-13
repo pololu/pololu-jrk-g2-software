@@ -32,8 +32,8 @@ static const char help[] =
   "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
   "\n"
   "Override settings temporarily:\n"
-  "  --get-ram-settings FILE      Read settings from RAM and write to file.\n"
-  "  --ram-settings FILE          Load settings from file into RAM\n"
+  "  --get-ram-settings FILE      Read settings from device RAM and write to file.\n"
+  "  --ram-settings FILE          Load settings from file into device RAM\n"
   "                               (does not work for all settings)\n"
   "  --reinitialize               Reload settings from EEPROM.\n"
   "  --proportional MULT EXP      Set proportional coefficient to MULT/(2^EXP)\n"
@@ -538,11 +538,6 @@ static void get_settings(device_selector & selector,
   const std::string & filename)
 {
   jrk::settings settings = handle(selector).get_settings();
-
-  // Not sure if we should fix the settings here:
-  // std::string warnings;
-  // settings.fix(&warnings);
-  // std::cerr << warnings;
 
   std::string settings_string = settings.to_string();
 
