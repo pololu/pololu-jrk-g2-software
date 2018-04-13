@@ -453,3 +453,65 @@ jrk_error * jrk_set_settings(jrk_handle * handle, const jrk_settings * settings)
 
   return error;
 }
+
+jrk_error * jrk_set_overridable_settings(jrk_handle * handle, const jrk_settings * settings)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  if (settings == NULL)
+  {
+    return jrk_error_create("Overridable settings object is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  jrk_settings * fixed_settings = NULL;
+
+  // Copy the settings so we can fix them without modifying the input ones,
+  // which would be surprising to the caller.
+  if (error == NULL)
+  {
+    error = jrk_settings_copy(settings, &fixed_settings);
+  }
+
+  // Set the product code of the settings and fix the settings silently to make
+  // sure we don't apply invalid settings to the device.  A good app will set
+  // the product and call jrk_settings_fix on its own before calling this
+  // function, so there should be nothing to fix here.
+  if (error == NULL)
+  {
+    uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
+    jrk_settings_set_product(fixed_settings, product);
+
+    error = jrk_settings_fix(fixed_settings, NULL);
+  }
+
+  // Construct a buffer holding the bytes we want to write.
+  uint8_t buf[JRK_SETTINGS_SIZE];
+  memset(buf, 0, sizeof(buf));
+  if (error == NULL)
+  {
+    jrk_write_settings_to_buffer(fixed_settings, buf);
+  }
+
+  // Add context here because any error from
+  // jrk_set_overridable_settings_segment will already have nice context.
+  if (error != NULL)
+  {
+    error = jrk_error_add(error, "There was an error overriding settings.");
+  }
+
+  // Write the bytes to the device.
+  if (error == NULL)
+  {
+    error = jrk_set_overridable_settings_segment(handle,
+      1, sizeof(buf) - 1, buf + 1);
+  }
+
+  jrk_settings_free(fixed_settings);
+
+  return error;
+}

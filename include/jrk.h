@@ -1880,7 +1880,25 @@ JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
   uint16_t flags);
 
-/// Reads all of the jrk's non-volatile settings and returns them as an object.
+/// Reads the specified bytes from the jrk variables data structure.
+///
+/// The index parameter specifies the address of the first byte to read, and the
+/// length parameter specifies how many bytes to read.  The output parameter
+/// must point to a buffer that can hold the specified number of bytes.
+///
+/// You can use the JRK_VAR_* constants in jrk_protocol.h to determine
+/// the index and offset.
+///
+/// The flags parameter is the same as the flags parameter for
+/// jrk_get_variables().
+///
+/// For a higher-level version of this that just reads all variables,
+/// see jrk_get_variables().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_variable_segment(jrk_handle *,
+  size_t index, size_t length, uint8_t * output, uint16_t flags);
+
+/// Reads all of the jrk's settings from EEPROM and returns them as an object.
 ///
 /// The settings parameter should be a non-null pointer to a jrk_settings
 /// pointer, which will receive a pointer to a new settings object if and only
@@ -1908,26 +1926,40 @@ jrk_error * jrk_set_settings(jrk_handle *, const jrk_settings *);
 
 /// Reads the jrk's overridable settings.
 ///
-/// The overridable_settings parameter should be a non-null pointer to a
-/// jrk_overridable_settings pointer, which will receive a pointer to a new
+/// The "overridable settings" are a copy of the jrk's settings that is stored
+/// in RAM.  These settings are initialized from EEPROM when the jrk starts up
+/// or when it receives a jrk_reinitialize() command.  Most (but not all) of of
+/// the jrk's settings can be quickly and temporarily changed by writing to the
+/// overridable settings instead of writing to EEPROM.
+///
+/// The settings parameter should be a non-null pointer to a
+/// jrk_settings pointer, which will receive a pointer to a new
 /// object if and only if this function is successful.  The caller must free the
-/// overridable settings later by calling jrk_overridable_settings_free().
+/// settings later by calling jrk_settings_free().
 ///
-/// To access fields in the settings, see the jrk_overridable_settings_*
+/// To access fields in the settings, see the jrk_settings_*
 /// functions.
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_get_overridable_settings(jrk_handle *,
-  jrk_overridable_settings ** overridable_settings);
-
-/// Overrides the values for the jrk's overridable settings.
 ///
-/// Unlike jrk_set_settings(), this function does not fix any problems with the
-/// settings, so it may be possible to set invalid values that cause unexpected
-/// behavior.  (Note: This might change in the future.)
+/// For a lower-level version of this, see
+/// jrk_get_overridable_settings_segment().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_overridable_settings(jrk_handle *, jrk_settings **);
+
+/// Writes to all of the jrk's overridable settings.
+///
+/// See jrk_get_overridable_settings() for information about what the
+/// overridable settings are.
+///
+/// Internally, this function copies the settings and calls jrk_settings_fix()
+/// to make sure that the settings will be valid when they are written to the
+/// device.  If you want to get warnings about what was changed, you should call
+/// jrk_settings_fix() yourself beforehand.
 ///
 /// You can use this command to temporarily change settings such as PID
 /// coefficients and motor limits without modifying EEPROM or reinitializing the
-/// jrk.  This command takes effect immediately.
+/// jrk.  This command takes effect immediately.  Some settings are not
+/// overridable in this way, so you will have to use jrk_set_settings() (which
+/// writes to EEPROM) and jrk_reinitialize() to change them.
 ///
 /// Note that this command works by overriding *all* of the jrk's overridable
 /// settings, so it needs knowledge of what those settings are.  If you are
@@ -1935,11 +1967,51 @@ jrk_error * jrk_get_overridable_settings(jrk_handle *,
 /// the settings that you know and care about.  See the internal library
 /// function jrk_set_overridable_setting_segment, which takes an arbitrary index
 /// and length.
+///
+/// For a lower-level version of this, see
+/// jrk_set_overridable_settings_segment().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_set_overridable_settings(jrk_handle *,
-  const jrk_overridable_settings *);
+  const jrk_settings *);
 
-/// Resets the jrk's settings to their factory default values.
+/// Reads the specified bytes of the overridable settings.
+///
+/// See jrk_get_overridable_settings() for information about what the
+/// overridable settings are.
+///
+/// The index parameter specifies the address of the first byte to retrieve,
+/// and the length parameter specifies how many bytes to retrieve.  The output
+/// parameter must point to a buffer large enough for the requested length.
+///
+/// You can use the JRK_SETTINGS_* constants in jrk_protocol.h to calculate
+/// the index and offset.
+///
+/// For a higher-level version of this that just reads all the overridable
+/// settings, see jrk_get_overridable_settings().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_overridable_setting_segment(jrk_handle *,
+  size_t index, size_t length, uint8_t * output);
+
+/// Sets the specified bytes of the overridable settings.
+///
+/// See jrk_get_overridable_settings() for information about what the
+/// overridable settings are.
+///
+/// The index parameter specifies the address of the first byte to set,
+/// and the length parameter specifies how many bytes to set.  The input
+/// parameter must point to a buffer of the specified length.
+///
+/// You can use the JRK_SETTINGS_* constants in jrk_protocol.h to calculate
+/// the index and offset.
+///
+/// For a higher-level version of this that just sets all the overridable
+/// settings and fixes invalid settings, see jrk_set_overridable_settings().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_set_overridable_setting_segment(jrk_handle *,
+  size_t index, size_t length, const uint8_t * input);
+
+/// Resets the jrk's settings in RAM and EEPROM to their factory default values.
+/// Part of this process is calling jrk_reinitialize().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_restore_defaults(jrk_handle * handle);
 
@@ -2032,7 +2104,6 @@ uint32_t jrk_calculate_raw_current_mv64(
 JRK_API
 jrk_error * jrk_diagnose(
   const jrk_settings * settings,
-  const jrk_overridable_settings * osettings,
   const jrk_variables * vars,
   uint32_t flags,
   char ** diagnosis);

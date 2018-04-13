@@ -424,8 +424,17 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
     jrk_settings_set_product(new_settings, product);
   }
 
+  // Set the context here because any error from jrk_get_setting_segment will
+  // already have got context.
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error reading settings from the device.");
+  }
+
   // Read all the settings from the device into a buffer.
   uint8_t buf[JRK_SETTINGS_SIZE];
+  if (error == NULL)
   {
     memset(buf, 0, sizeof(buf));
     size_t index = 1;
@@ -441,26 +450,86 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
     }
   }
 
-  // Store the settings in the new settings object.
-  if (error == NULL)
-  {
-    write_buffer_to_settings(buf, new_settings);
-  }
-
   // Pass the new settings to the caller.
   if (error == NULL)
   {
+    write_buffer_to_settings(buf, new_settings);
     *settings = new_settings;
     new_settings = NULL;
   }
 
   jrk_settings_free(new_settings);
 
+  return error;
+}
+
+jrk_error * jrk_get_overridable_settings(jrk_handle * handle, jrk_settings ** settings)
+{
+  if (settings == NULL)
+  {
+    return jrk_error_create("Overridable settings output pointer is null.");
+  }
+
+  *settings = NULL;
+
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
+
+  // Allocate the new settings object.
+  jrk_settings * new_settings = NULL;
+  if (error == NULL)
+  {
+    error = jrk_settings_create(&new_settings);
+  }
+
+  // Specify what product these settings are for.
+  if (error == NULL)
+  {
+    jrk_settings_set_product(new_settings, product);
+  }
+
+  // Set the context here because any error from jrk_get_setting_segment will
+  // already have got context.
   if (error != NULL)
   {
     error = jrk_error_add(error,
-      "There was an error reading settings from the device.");
+      "There was an error reading overridable settings from the device.");
   }
+
+  // Read all the settings from the device into a buffer.
+  uint8_t buf[JRK_SETTINGS_SIZE];
+  if (error == NULL)
+  {
+    memset(buf, 0, sizeof(buf));
+    size_t index = 1;
+    while (index < sizeof(buf) && error == NULL)
+    {
+      size_t length = JRK_MAX_USB_RESPONSE_SIZE;
+      if (index + length > sizeof(buf))
+      {
+        length = sizeof(buf) - index;
+      }
+      error = jrk_get_overridable_setting_segment(handle,
+        index, length, buf + index);
+      index += length;
+    }
+  }
+
+  // Pass the new settings to the caller.
+  if (error == NULL)
+  {
+    write_buffer_to_settings(buf, new_settings);
+    *settings = new_settings;
+    new_settings = NULL;
+  }
+
+  jrk_settings_free(new_settings);
 
   return error;
 }
