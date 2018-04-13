@@ -143,6 +143,7 @@ public:
   void set_input_scaling_degree(uint8_t input_scaling_degree);
   void set_input_scaling_order_warning_label();
   void run_input_wizard(uint8_t input_mode);
+  void update_input_tab_enables();
 
   void set_feedback_mode(uint8_t feedback_mode);
   void set_feedback_invert(bool feedback_invert);
@@ -161,7 +162,7 @@ public:
   void set_fbt_samples(uint8_t);
   void set_fbt_divider_exponent(uint8_t);
   void set_fbt_range_display(const std::string & message, bool invalid);
-  void update_feedback_enables();
+  void update_feedback_tab_enables();
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);

@@ -395,7 +395,6 @@ void main_window::set_motor_status_message(
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
-  input_scaling_groupbox->setEnabled(input_mode != JRK_INPUT_MODE_SERIAL);
 }
 
 void main_window::set_input_invert(bool input_invert)
@@ -552,6 +551,17 @@ void main_window::run_input_wizard(uint8_t input_mode)
   controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
 }
 
+void main_window::update_input_tab_enables()
+{
+  uint8_t input_mode = input_mode_combobox->currentData().toUInt();
+
+  input_scaling_groupbox->setEnabled(input_mode != JRK_INPUT_MODE_SERIAL);
+
+  bool analog = input_mode == JRK_FEEDBACK_MODE_ANALOG;
+  input_analog_groupbox->setEnabled(analog || always_analog_sda->isChecked());
+  input_detect_disconnect_checkbox->setEnabled(analog);
+}
+
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
@@ -650,7 +660,7 @@ void main_window::set_fbt_range_display(const std::string & message, bool invali
   }
 }
 
-void main_window::update_feedback_enables()
+void main_window::update_feedback_tab_enables()
 {
   uint8_t feedback_mode = feedback_mode_combobox->currentData().toUInt();
 
@@ -658,8 +668,9 @@ void main_window::update_feedback_enables()
     feedback_mode != JRK_FEEDBACK_MODE_NONE);
 
   bool analog = feedback_mode == JRK_FEEDBACK_MODE_ANALOG;
-  feedback_wraparound_checkbox->setEnabled(analog);
   feedback_analog_groupbox->setEnabled(analog || always_analog_fba->isChecked());
+  feedback_detect_disconnect_checkbox->setEnabled(analog);
+  feedback_wraparound_checkbox->setEnabled(analog);
 
   bool frequency = feedback_mode == JRK_FEEDBACK_MODE_FREQUENCY;
   fbt_divider_label->setEnabled(frequency);

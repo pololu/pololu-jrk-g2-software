@@ -662,7 +662,8 @@ void main_controller::handle_settings_changed()
   window->set_never_sleep(settings.get_never_sleep());
   window->set_vin_calibration(settings.get_vin_calibration());
 
-  window->update_feedback_enables();
+  window->update_input_tab_enables();
+  window->update_feedback_tab_enables();
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
