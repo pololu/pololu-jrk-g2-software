@@ -22,7 +22,7 @@ struct jrk_variables {
   uint8_t device_reset;
   uint32_t up_time;
   uint16_t rc_pulse_width;
-  uint16_t tachometer_reading;
+  uint16_t fbt_reading;
   uint16_t raw_current;
   uint16_t current_limit_code;
   int16_t last_duty_cycle;
@@ -136,7 +136,7 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->device_reset = buf[JRK_VAR_DEVICE_RESET];
   vars->up_time = read_uint32_t(buf + JRK_VAR_UP_TIME);
   vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
-  vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
+  vars->fbt_reading = read_uint16_t(buf + JRK_VAR_FBT_READING);
   vars->raw_current = read_uint16_t(buf + JRK_VAR_RAW_CURRENT);
   vars->current_limit_code = read_uint16_t(buf + JRK_VAR_CURRENT_LIMIT_CODE);
   vars->last_duty_cycle = read_int16_t(buf + JRK_VAR_LAST_DUTY_CYCLE);
@@ -341,10 +341,10 @@ uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables * vars)
   return vars->rc_pulse_width;
 }
 
-uint16_t jrk_variables_get_tachometer_reading(const jrk_variables * vars)
+uint16_t jrk_variables_get_fbt_reading(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
-  return vars->tachometer_reading;
+  return vars->fbt_reading;
 }
 
 uint16_t jrk_variables_get_raw_current(const jrk_variables * vars)

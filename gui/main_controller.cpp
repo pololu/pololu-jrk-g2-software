@@ -572,6 +572,7 @@ void main_controller::handle_settings_changed()
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
   window->set_input_scaling_order_warning_label();
+
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_invert(settings.get_feedback_invert());
   window->set_feedback_error_minimum(settings.get_feedback_error_minimum());
@@ -583,10 +584,17 @@ void main_controller::handle_settings_changed()
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
   window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());
   window->set_feedback_wraparound(settings.get_feedback_wraparound());
+  window->set_fbt_method(settings.get_fbt_method());
+  window->set_fbt_timing_clock(settings.get_fbt_timing_clock());
+  window->set_fbt_timing_polarity(settings.get_fbt_timing_polarity());
+  window->set_fbt_timing_timeout(settings.get_fbt_timing_timeout());
+  window->set_fbt_samples(settings.get_fbt_samples());
+  window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
+  recalculate_fbt_range();
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
-  window->set_integral_reduction_exponent(settings.get_integral_reduction_exponent());
+  window->set_integral_divider_exponent(settings.get_integral_divider_exponent());
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
@@ -654,6 +662,9 @@ void main_controller::handle_settings_changed()
   window->set_never_sleep(settings.get_never_sleep());
   window->set_vin_calibration(settings.get_vin_calibration());
 
+  window->update_input_tab_enables();
+  window->update_feedback_tab_enables();
+
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
 
@@ -695,22 +706,135 @@ void main_controller::recalculate_motor_asymmetric()
       settings.get_max_current_reverse());
 }
 
-void main_controller::constrain_feedback_scaling()
+void main_controller::recalculate_fbt_range()
 {
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_FREQUENCY)
+  if (!settings.is_present()) { return; }
+
+  if (settings.get_feedback_mode() != JRK_FEEDBACK_MODE_FREQUENCY)
   {
-    if (settings.get_feedback_maximum() < 2048)
+    // We are not actually doing frequency feedback, so don't display the label.
+    // While it would be interesting to tell users what frequency range can be
+    // measured on FBT using the FBT_READING variable (which is always active),
+    // that is different from telling them what frequencies can be measured on
+    // the "Feedback" variable which is normally what we are doing.
+    window->set_fbt_range_display("", false);
+    return;
+  }
+
+  uint8_t method = settings.get_fbt_method();
+  uint8_t divider_exponent = settings.get_fbt_divider_exponent();
+
+  int min_freq_hz = 0;
+  int max_freq_hz = 0;
+
+  if (method == JRK_FBT_METHOD_PULSE_COUNTING)
+  {
+    uint16_t sample_period =
+      settings.get_pid_period() * settings.get_fbt_samples();
+    if (sample_period == 0) { sample_period = 1; }
+
+    // count = freq_khz * pid_period * samples >> divider_exponent
+
+    // We need roughly 50 counts for a decently accurate measurement.
+    int min_counts = 50;
+    min_freq_hz = 1000 * (min_counts << divider_exponent) / sample_period;
+
+    // The counts are capped at 2047 (so they can be added or subtracted from
+    // 2048 when we computer the feedback variable) and we want a margin.
+    int max_counts = 2000;
+    max_freq_hz = 1000 * (max_counts << divider_exponent) / sample_period;
+
+    // There is a limit to how fast the timer hardware can operate.
+    // The datasheet makes it seem like it should work up to 50 MHz, ad we
+    // tested it at 6 MHz.
+    int hardware_limit = 50000000;
+    if (max_freq_hz > hardware_limit)
     {
-      settings.set_feedback_maximum(2048);
-    }
-    if (settings.get_feedback_error_maximum() < 2048)
-    {
-      settings.set_feedback_error_maximum(2048);
+      max_freq_hz = hardware_limit;
     }
 
-    settings.set_feedback_minimum(4096 - settings.get_feedback_maximum());
-    settings.set_feedback_error_minimum(4096 - settings.get_feedback_error_maximum());
+    // The timer and fbt_reading variable are 16-bit, so that also limits
+    // the maximum frequency.
+    int timer_limit = 1000 * 0xFFFF / sample_period;
+    if (max_freq_hz > timer_limit)
+    {
+      max_freq_hz = timer_limit;
+    }
   }
+  else if (method == JRK_FBT_METHOD_PULSE_TIMING)
+  {
+    uint8_t timing_clock = settings.get_fbt_timing_clock();
+    bool timing_polarity = settings.get_fbt_timing_polarity();
+    uint8_t timing_timeout = settings.get_fbt_timing_timeout();
+
+    int k = 0x4000000;
+    int slowest_width = 58982;  // 0x10000 * 0.90
+    int slowest_fb = k / slowest_width >> divider_exponent;
+    if (slowest_fb < 50)
+    {
+      slowest_fb = 50;
+      slowest_width = k / slowest_fb >> divider_exponent;
+    }
+
+    int fastest_fb = 2000;  // 2048*0.9
+    int fastest_width = k / fastest_fb >> divider_exponent;
+    if (fastest_width < 50)
+    {
+      fastest_width = 50;
+      fastest_fb = k / fastest_width >> divider_exponent;
+    }
+
+    int clock_hz = 1;
+    switch (timing_clock)
+    {
+    case JRK_FBT_TIMING_CLOCK_48:  clock_hz = 48000000; break;
+    case JRK_FBT_TIMING_CLOCK_24:  clock_hz = 24000000; break;
+    case JRK_FBT_TIMING_CLOCK_12:  clock_hz = 12000000; break;
+    case JRK_FBT_TIMING_CLOCK_6:   clock_hz = 6000000;  break;
+    case JRK_FBT_TIMING_CLOCK_3:   clock_hz = 3000000;  break;
+    case JRK_FBT_TIMING_CLOCK_1_5: clock_hz = 1500000;  break;
+    }
+
+    // When we convert from pulse widths to actual frequencies, we just assume
+    // the signal consists of two equal high and low pulses, so our pulse width
+    // measurement represents half of signal period.  If the two pulses are not
+    // equal, that would change this conversion, and at that point it would make
+    // mroe sense to talk about the measurable pulse width range instead of the
+    // masurable frequency range.
+    min_freq_hz = clock_hz / (slowest_width * 2);
+    max_freq_hz = clock_hz / (fastest_width * 2);
+
+    // The timeout imposes another lower bound on our frequency range.
+    //
+    // The timeout shouldn't be 0, but if it is, then set it to a high number like
+    // 10 MHz to make it sure to cause a warning.
+    int timeout_hz = timing_timeout ? (1000 / timing_timeout) : 10000000;
+    if (min_freq_hz < timeout_hz)
+    {
+      min_freq_hz = timeout_hz;
+    }
+  }
+
+  if (min_freq_hz >= max_freq_hz)
+  {
+    window->set_fbt_range_display("Warning: invalid settings", true);
+    return;
+  }
+
+  std::ostringstream ss;
+  if (method == JRK_FBT_METHOD_PULSE_TIMING)
+  {
+    ss << "Frequency measurement range (at 50% duty cycle): ";
+  }
+  else
+  {
+    ss << "Frequency measurement range: ";
+  }
+  ss << convert_hz_to_string(min_freq_hz)
+     << " to "
+     << convert_hz_to_string(max_freq_hz);
+
+  window->set_fbt_range_display(ss.str(), false);
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -903,7 +1027,7 @@ void main_controller::handle_input_learn()
   if (!check_settings_applied_before_wizard()) { return; }
 
   if (settings.get_input_mode() != JRK_INPUT_MODE_ANALOG &&
-    settings.get_input_mode() != JRK_INPUT_MODE_PULSE_WIDTH)
+    settings.get_input_mode() != JRK_INPUT_MODE_RC)
   {
     // Should not happen because the button is disabled.
     window->show_info_message(
@@ -923,9 +1047,6 @@ void main_controller::handle_feedback_mode_input(uint8_t feedback_mode)
 {
   if (!connected()) { return; }
   settings.set_feedback_mode(feedback_mode);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -942,9 +1063,6 @@ void main_controller::handle_feedback_error_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_minimum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -953,9 +1071,6 @@ void main_controller::handle_feedback_error_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_error_maximum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -964,9 +1079,6 @@ void main_controller::handle_feedback_maximum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_maximum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -975,9 +1087,6 @@ void main_controller::handle_feedback_minimum_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_feedback_minimum(value);
-
-  constrain_feedback_scaling();
-
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1002,6 +1111,54 @@ void main_controller::handle_feedback_wraparound_input(bool value)
 {
   if (!connected()) { return; }
   settings.set_feedback_wraparound(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_method_input(uint8_t mode)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_method(mode);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_clock_input(uint8_t clock)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_clock(clock);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_polarity_input(bool polarity)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_polarity(polarity);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_timeout_input(uint16_t timeout)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_timeout(timeout);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_samples_input(uint8_t count)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_samples(count);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_divider_exponent_input(uint8_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_divider_exponent(exponent);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1049,10 +1206,10 @@ void main_controller::handle_integral_limit_input(uint16_t value)
   handle_settings_changed();
 }
 
-void main_controller::handle_integral_reduction_exponent_input(uint8_t value)
+void main_controller::handle_integral_divider_exponent_input(uint8_t value)
 {
   if (!connected()) { return; }
-  settings.set_integral_reduction_exponent(value);
+  settings.set_integral_divider_exponent(value);
   settings_modified = true;
   handle_settings_changed();
 }

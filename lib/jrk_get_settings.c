@@ -192,8 +192,8 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t integral_reduction_exponent = buf[JRK_SETTING_INTEGRAL_REDUCTION_EXPONENT];
-    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+    uint8_t integral_divider_exponent = buf[JRK_SETTING_INTEGRAL_DIVIDER_EXPONENT];
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
   }
 
   {
@@ -337,33 +337,33 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t tachometer_mode = buf[JRK_SETTING_TACHOMETER_MODE];
-    jrk_settings_set_tachometer_mode(settings, tachometer_mode);
+    uint8_t fbt_method = buf[JRK_SETTING_FBT_METHOD];
+    jrk_settings_set_fbt_method(settings, fbt_method);
   }
 
   {
-    uint8_t tachometer_pulse_timing_clock = buf[JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS] >> JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK & JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK_MASK;
-    jrk_settings_set_tachometer_pulse_timing_clock(settings, tachometer_pulse_timing_clock);
+    uint8_t fbt_timing_clock = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_TIMING_CLOCK & JRK_FBT_OPTIONS_TIMING_CLOCK_MASK;
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
   }
 
   {
-    bool tachometer_pulse_timing_polarity = buf[JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS] >> JRK_TACHOMETER_PULSE_TIMING_OPTIONS_POLARITY & 1;
-    jrk_settings_set_tachometer_pulse_timing_polarity(settings, tachometer_pulse_timing_polarity);
+    bool fbt_timing_polarity = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_TIMING_POLARITY & 1;
+    jrk_settings_set_fbt_timing_polarity(settings, fbt_timing_polarity);
   }
 
   {
-    uint16_t tachometer_pulse_timing_timeout = read_uint16_t(buf + JRK_SETTING_TACHOMETER_PULSE_TIMING_TIMEOUT);
-    jrk_settings_set_tachometer_pulse_timing_timeout(settings, tachometer_pulse_timing_timeout);
+    uint16_t fbt_timing_timeout = read_uint16_t(buf + JRK_SETTING_FBT_TIMING_TIMEOUT);
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
   }
 
   {
-    uint8_t tachometer_averaging_count = buf[JRK_SETTING_TACHOMETER_AVERAGING_COUNT];
-    jrk_settings_set_tachometer_averaging_count(settings, tachometer_averaging_count);
+    uint8_t fbt_samples = buf[JRK_SETTING_FBT_SAMPLES];
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
   }
 
   {
-    uint8_t tachometer_divider_exponent = buf[JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT];
-    jrk_settings_set_tachometer_divider_exponent(settings, tachometer_divider_exponent);
+    uint8_t fbt_divider_exponent = buf[JRK_SETTING_FBT_DIVIDER_EXPONENT];
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
   }
 
   // End of auto-generated buffer-to-settings code.
@@ -424,8 +424,17 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
     jrk_settings_set_product(new_settings, product);
   }
 
+  // Set the context here because any error from jrk_get_setting_segment will
+  // already have got context.
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error reading settings from the device.");
+  }
+
   // Read all the settings from the device into a buffer.
   uint8_t buf[JRK_SETTINGS_SIZE];
+  if (error == NULL)
   {
     memset(buf, 0, sizeof(buf));
     size_t index = 1;
@@ -441,26 +450,86 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
     }
   }
 
-  // Store the settings in the new settings object.
-  if (error == NULL)
-  {
-    write_buffer_to_settings(buf, new_settings);
-  }
-
   // Pass the new settings to the caller.
   if (error == NULL)
   {
+    write_buffer_to_settings(buf, new_settings);
     *settings = new_settings;
     new_settings = NULL;
   }
 
   jrk_settings_free(new_settings);
 
+  return error;
+}
+
+jrk_error * jrk_get_ram_settings(jrk_handle * handle, jrk_settings ** settings)
+{
+  if (settings == NULL)
+  {
+    return jrk_error_create("RAM settings output pointer is null.");
+  }
+
+  *settings = NULL;
+
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
+
+  // Allocate the new settings object.
+  jrk_settings * new_settings = NULL;
+  if (error == NULL)
+  {
+    error = jrk_settings_create(&new_settings);
+  }
+
+  // Specify what product these settings are for.
+  if (error == NULL)
+  {
+    jrk_settings_set_product(new_settings, product);
+  }
+
+  // Set the context here because any error from jrk_get_setting_segment will
+  // already have got context.
   if (error != NULL)
   {
     error = jrk_error_add(error,
-      "There was an error reading settings from the device.");
+      "There was an error reading RAM settings from the device.");
   }
+
+  // Read all the settings from the device into a buffer.
+  uint8_t buf[JRK_SETTINGS_SIZE];
+  if (error == NULL)
+  {
+    memset(buf, 0, sizeof(buf));
+    size_t index = 1;
+    while (index < sizeof(buf) && error == NULL)
+    {
+      size_t length = JRK_MAX_USB_RESPONSE_SIZE;
+      if (index + length > sizeof(buf))
+      {
+        length = sizeof(buf) - index;
+      }
+      error = jrk_get_ram_setting_segment(handle,
+        index, length, buf + index);
+      index += length;
+    }
+  }
+
+  // Pass the new settings to the caller.
+  if (error == NULL)
+  {
+    write_buffer_to_settings(buf, new_settings);
+    *settings = new_settings;
+    new_settings = NULL;
+  }
+
+  jrk_settings_free(new_settings);
 
   return error;
 }

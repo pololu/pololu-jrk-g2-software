@@ -80,3 +80,27 @@ static inline std::string convert_rc_12bit_to_us_string(uint16_t reading)
   ss << us << " \u03BCs";
   return ss.str();
 }
+
+// Converts a frequency in Hz to a string, using the most natural units, and
+// three significant digits.
+static inline std::string convert_hz_to_string(uint32_t freq)
+{
+  std::ostringstream ss;
+  ss << std::setprecision(3);
+  if (freq >= 1000000)
+  {
+    ss << (float)freq / 1000000;
+    ss << " MHz";
+  }
+  else if (freq >= 1000)
+  {
+    ss << (float)freq / 1000;
+    ss << " kHz";
+  }
+  else
+  {
+    ss << freq;
+    ss << " Hz";
+  }
+  return ss.str();
+}

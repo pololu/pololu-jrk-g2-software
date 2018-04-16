@@ -85,7 +85,7 @@ EOF
     type: :uint16_t,
   },
   {
-    name: 'tachometer_reading',
+    name: 'fbt_reading',
     type: :uint16_t,
   },
   {

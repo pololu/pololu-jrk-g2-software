@@ -2,15 +2,15 @@ Settings = [
   {
     name: 'input_mode',
     type: :enum,
-    max: 'JRK_INPUT_MODE_PULSE_WIDTH',
+    max: 'JRK_INPUT_MODE_RC',
     default: 'JRK_INPUT_MODE_SERIAL',
     default_is_zero: true,
     english_default: 'serial',
     comment: <<EOF
 The input mode setting specifies how you want to control the jrk.  It
 determines the definition of the input and target variables.  The input
-variable is raw measurement of the jrk's input.  The target variable is the
-desired state of the system's output, and feeds into the PID feedback
+variable is a raw measurement of the jrk's input.  The target variable is
+the desired state of the system's output, and feeds into the PID feedback
 algorithm.
 
 - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
@@ -24,7 +24,7 @@ algorithm.
   corresponds to an input value of 4092.  The jrk uses its input scaling
   feature to set the target variable.
 
-- If the input mode is "Pulse width" (JRK_INPUT_MODE_PULSE_WIDTH), the jrk
+- If the input mode is "RC" (JRK_INPUT_MODE_RC), the jrk
   gets it input variable by reading RC pulses on its RC pin.  The input value
   is the width of the most recent pulse, in units of 2/3 microseconds.  The
   jrk uses its input scaling feature to set the target variable.
@@ -421,7 +421,6 @@ EOF
   {
     name: 'proportional_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -434,7 +433,6 @@ EOF
   {
     name: 'proportional_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -443,7 +441,6 @@ EOF
   {
     name: 'integral_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -459,7 +456,6 @@ EOF
   {
     name: 'integral_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -468,7 +464,6 @@ EOF
   {
     name: 'derivative_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -481,7 +476,6 @@ EOF
   {
     name: 'derivative_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -490,7 +484,6 @@ EOF
   {
     name: 'pid_period',
     type: :uint16_t,
-    overridable: true,
     range: 1..8191,
     default: 10,
     comment: <<EOF
@@ -501,7 +494,7 @@ disabled.
 EOF
   },
   {
-    name: 'integral_reduction_exponent',
+    name: 'integral_divider_exponent',
     type: :uint8_t,
     range: 0..15,
     default: 0,
@@ -512,7 +505,6 @@ EOF
   {
     name: 'integral_limit',
     type: :uint16_t,
-    overridable: true,
     default: 1000,
     max: 0x7FFF,
     comment:
@@ -522,7 +514,6 @@ EOF
   {
     name: 'reset_integral',
     type: :bool,
-    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_RESET_INTEGRAL',
     comment:
@@ -621,7 +612,6 @@ EOF
   {
     name: 'max_duty_cycle_while_feedback_out_of_range',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -633,7 +623,6 @@ EOF
   {
     name: 'max_acceleration_forward',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -646,7 +635,6 @@ EOF
   {
     name: 'max_acceleration_reverse',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -659,7 +647,6 @@ EOF
   {
     name: 'max_deceleration_forward',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -672,7 +659,6 @@ EOF
   {
     name: 'max_deceleration_reverse',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -685,7 +671,6 @@ EOF
   {
     name: 'max_duty_cycle_forward',
     type: :uint16_t,
-    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -699,7 +684,6 @@ EOF
   {
     name: 'max_duty_cycle_reverse',
     type: :uint16_t,
-    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -713,7 +697,6 @@ EOF
   {
     name: 'current_limit_code_forward',
     type: :uint16_t,
-    overridable: true,
     default: 26,
     max: 95,
     comment: <<EOF
@@ -733,7 +716,6 @@ EOF
   {
     name: 'current_limit_code_reverse',
     type: :uint16_t,
-    overridable: true,
     default: 26,
     max: 95,
     comment:
@@ -743,7 +725,6 @@ EOF
   {
     name: 'brake_duration_forward',
     type: :uint32_t,
-    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -757,7 +738,6 @@ EOF
   {
     name: 'brake_duration_reverse',
     type: :uint32_t,
-    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -773,7 +753,6 @@ EOF
     name: 'max_current_forward',
     type: :uint16_t,
     default: 0,
-    overridable: true,
     comment: <<EOF
 This is the maximum current while driving forward.  If the current exceeds
 this value, the jrk will trigger a "Max. current exceeded" error.
@@ -787,7 +766,6 @@ EOF
     name: 'max_current_reverse',
     type: :uint16_t,
     default: 0,
-    overridable: true,
     comment: <<EOF
 This is the maximum current while driving in reverse.  If the current exceeds
 this value, the jrk will trigger a "Max. current exceeded" error.
@@ -800,7 +778,6 @@ EOF
   {
     name: 'coast_when_off',
     type: :bool,
-    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_COAST_WHEN_OFF',
     comment:
@@ -905,57 +882,59 @@ even if the "Feedback mode" setting is not "Analog".
 EOF
   },
   {
-    name: 'tachometer_mode',
+    name: 'fbt_method',
     type: :enum,
-    max: 'JRK_TACHOMETER_MODE_PULSE_TIMING',
-    default: 'JRK_TACHOMETER_MODE_PULSE_COUNTING',
+    max: 'JRK_FBT_METHOD_PULSE_TIMING',
+    default: 'JRK_FBT_METHOD_PULSE_COUNTING',
     english_default: 'pulse counting',
     comment: <<EOF
-This settings specifies what kind of tachometer measurement to perform
+This settings specifies what kind of pulse measurement to perform
 on the FBT pin.
 
-JRK_TACHOMETER_MODE_PULSE_COUNTING means the jrk will count the number of
+JRK_FBT_METHOD_PULSE_COUNTING means the jrk will count the number of
 rising edges on the pin, and is more suitable for fast tachometers.
 
-JRK_TACHOMETER_MODE_PULSE_TIMING means the jrk will measure the pulse width
+JRK_FBT_METHOD_PULSE_TIMING means the jrk will measure the pulse width
 (duration) of pulses on the pin, and is more suitable for slow tachometers.
 EOF
   },
   {
-    name: 'tachometer_pulse_timing_clock',
+    name: 'fbt_timing_clock',
     type: :enum,
     english_default: '1.5 MHz',
-    default: 'JRK_PULSE_TIMING_CLOCK_1_5',
-    max: 'JRK_PULSE_TIMING_CLOCK_24',
-    address: 'JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS',
-    bit_address: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK',
-    mask: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_CLOCK_MASK',
+    default: 'JRK_FBT_TIMING_CLOCK_1_5',
+    max: 'JRK_FBT_TIMING_CLOCK_24',
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_TIMING_CLOCK',
+    mask: 'JRK_FBT_OPTIONS_TIMING_CLOCK_MASK',
     comment: <<EOF
 This specifies the speed of the clock (in MHz) to use for pulse timing on the
 FBT pin.  The options are:
 
-- JRK_PULSE_TIMING_CLOCK_1_5: 1.5 MHz
-- JRK_PULSE_TIMING_CLOCK_3: 3 MHz
-- JRK_PULSE_TIMING_CLOCK_6: 6 MHz
-- JRK_PULSE_TIMING_CLOCK_12: 12 MHz
-- JRK_PULSE_TIMING_CLOCK_24: 24 MHz
-- JRK_PULSE_TIMING_CLOCK_48: 48 MHz
+- JRK_FBT_TIMING_CLOCK_1_5: 1.5 MHz
+- JRK_FBT_TIMING_CLOCK_3: 3 MHz
+- JRK_FBT_TIMING_CLOCK_6: 6 MHz
+- JRK_FBT_TIMING_CLOCK_12: 12 MHz
+- JRK_FBT_TIMING_CLOCK_24: 24 MHz
+- JRK_FBT_TIMING_CLOCK_48: 48 MHz
 EOF
   },
   {
-    name: 'tachometer_pulse_timing_polarity',
+    name: 'fbt_timing_polarity',
     type: :bool,
-    address: 'JRK_SETTING_TACHOMETER_PULSE_TIMING_OPTIONS',
-    bit_address: 'JRK_TACHOMETER_PULSE_TIMING_OPTIONS_POLARITY',
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_TIMING_POLARITY',
     comment: <<EOF
 By default, the pulse timing mode on the FBT pin measures the time of
 high pulses.  When true, this option causes it to measure low pulses.
 EOF
   },
   {
-    name: 'tachometer_pulse_timing_timeout',
+    name: 'fbt_timing_timeout',
     type: :uint16_t,
     default: 100,
+    min: 1,
+    max: 60000,
     comment: <<EOF
 The pulse timing mode for the FBT pin will assume the motor has stopped, and
 start recording maximum-width pulses if it has not seen any pulses in this
@@ -963,22 +942,22 @@ amount of time.
 EOF
   },
   {
-    name: 'tachometer_averaging_count',
+    name: 'fbt_samples',
     type: :uint8_t,
     min: 1,
-    max: 'JRK_MAX_ALLOWED_TACHOMETER_AVERAGING_COUNT',
+    max: 'JRK_MAX_ALLOWED_FBT_SAMPLES',
     default: 1,
     comment: <<EOF
-The number of consecutive tachometer readings to average together in pulse
+The number of consecutive FBT measurements to average together in pulse
 timing mode or to add together in pulse counting mode.
 EOF
   },
   {
-    name: 'tachometer_divider_exponent',
+    name: 'fbt_divider_exponent',
     type: :uint8_t,
     default: 0,
     range: 0..15,
-    address: 'JRK_SETTING_TACHOMETER_DIVIDER_EXPONENT',
+    address: 'JRK_SETTING_FBT_DIVIDER_EXPONENT',
     comment: <<EOF
 This setting specifies how many bits to shift the raw tachomter reading to
 the right before using it to calculate the "feedback" variable.  The

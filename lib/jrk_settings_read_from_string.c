@@ -509,19 +509,19 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_pid_period(settings, pid_period);
   }
-  else if (!strcmp(key, "integral_reduction_exponent"))
+  else if (!strcmp(key, "integral_divider_exponent"))
   {
-    int64_t integral_reduction_exponent;
-    if (jrk_string_to_i64(value, &integral_reduction_exponent))
+    int64_t integral_divider_exponent;
+    if (jrk_string_to_i64(value, &integral_divider_exponent))
     {
-      return jrk_error_create("Invalid integral_reduction_exponent value.");
+      return jrk_error_create("Invalid integral_divider_exponent value.");
     }
-    if (integral_reduction_exponent < 0 || integral_reduction_exponent > UINT8_MAX)
+    if (integral_divider_exponent < 0 || integral_divider_exponent > UINT8_MAX)
     {
       return jrk_error_create(
-        "The integral_reduction_exponent value is out of range.");
+        "The integral_divider_exponent value is out of range.");
     }
-    jrk_settings_set_integral_reduction_exponent(settings, integral_reduction_exponent);
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
   }
   else if (!strcmp(key, "integral_limit"))
   {
@@ -903,74 +903,74 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_always_analog_fba(settings, always_analog_fba);
   }
-  else if (!strcmp(key, "tachometer_mode"))
+  else if (!strcmp(key, "fbt_method"))
   {
-    uint32_t tachometer_mode;
-    if (!jrk_name_to_code(jrk_tachometer_mode_names_short, value, &tachometer_mode))
+    uint32_t fbt_method;
+    if (!jrk_name_to_code(jrk_fbt_method_names_short, value, &fbt_method))
     {
-      return jrk_error_create("Unrecognized tachometer_mode value.");
+      return jrk_error_create("Unrecognized fbt_method value.");
     }
-    jrk_settings_set_tachometer_mode(settings, tachometer_mode);
+    jrk_settings_set_fbt_method(settings, fbt_method);
   }
-  else if (!strcmp(key, "tachometer_pulse_timing_clock"))
+  else if (!strcmp(key, "fbt_timing_clock"))
   {
-    uint32_t tachometer_pulse_timing_clock;
-    if (!jrk_name_to_code(jrk_tachometer_pulse_timing_clock_names_short, value, &tachometer_pulse_timing_clock))
+    uint32_t fbt_timing_clock;
+    if (!jrk_name_to_code(jrk_fbt_timing_clock_names_short, value, &fbt_timing_clock))
     {
-      return jrk_error_create("Unrecognized tachometer_pulse_timing_clock value.");
+      return jrk_error_create("Unrecognized fbt_timing_clock value.");
     }
-    jrk_settings_set_tachometer_pulse_timing_clock(settings, tachometer_pulse_timing_clock);
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
   }
-  else if (!strcmp(key, "tachometer_pulse_timing_polarity"))
+  else if (!strcmp(key, "fbt_timing_polarity"))
   {
-    uint32_t tachometer_pulse_timing_polarity;
-    if (!jrk_name_to_code(jrk_bool_names, value, &tachometer_pulse_timing_polarity))
+    uint32_t fbt_timing_polarity;
+    if (!jrk_name_to_code(jrk_bool_names, value, &fbt_timing_polarity))
     {
-      return jrk_error_create("Unrecognized tachometer_pulse_timing_polarity value.");
+      return jrk_error_create("Unrecognized fbt_timing_polarity value.");
     }
-    jrk_settings_set_tachometer_pulse_timing_polarity(settings, tachometer_pulse_timing_polarity);
+    jrk_settings_set_fbt_timing_polarity(settings, fbt_timing_polarity);
   }
-  else if (!strcmp(key, "tachometer_pulse_timing_timeout"))
+  else if (!strcmp(key, "fbt_timing_timeout"))
   {
-    int64_t tachometer_pulse_timing_timeout;
-    if (jrk_string_to_i64(value, &tachometer_pulse_timing_timeout))
+    int64_t fbt_timing_timeout;
+    if (jrk_string_to_i64(value, &fbt_timing_timeout))
     {
-      return jrk_error_create("Invalid tachometer_pulse_timing_timeout value.");
+      return jrk_error_create("Invalid fbt_timing_timeout value.");
     }
-    if (tachometer_pulse_timing_timeout < 0 || tachometer_pulse_timing_timeout > UINT16_MAX)
+    if (fbt_timing_timeout < 0 || fbt_timing_timeout > UINT16_MAX)
     {
       return jrk_error_create(
-        "The tachometer_pulse_timing_timeout value is out of range.");
+        "The fbt_timing_timeout value is out of range.");
     }
-    jrk_settings_set_tachometer_pulse_timing_timeout(settings, tachometer_pulse_timing_timeout);
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
   }
-  else if (!strcmp(key, "tachometer_averaging_count"))
+  else if (!strcmp(key, "fbt_samples"))
   {
-    int64_t tachometer_averaging_count;
-    if (jrk_string_to_i64(value, &tachometer_averaging_count))
+    int64_t fbt_samples;
+    if (jrk_string_to_i64(value, &fbt_samples))
     {
-      return jrk_error_create("Invalid tachometer_averaging_count value.");
+      return jrk_error_create("Invalid fbt_samples value.");
     }
-    if (tachometer_averaging_count < 0 || tachometer_averaging_count > UINT8_MAX)
+    if (fbt_samples < 0 || fbt_samples > UINT8_MAX)
     {
       return jrk_error_create(
-        "The tachometer_averaging_count value is out of range.");
+        "The fbt_samples value is out of range.");
     }
-    jrk_settings_set_tachometer_averaging_count(settings, tachometer_averaging_count);
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
   }
-  else if (!strcmp(key, "tachometer_divider_exponent"))
+  else if (!strcmp(key, "fbt_divider_exponent"))
   {
-    int64_t tachometer_divider_exponent;
-    if (jrk_string_to_i64(value, &tachometer_divider_exponent))
+    int64_t fbt_divider_exponent;
+    if (jrk_string_to_i64(value, &fbt_divider_exponent))
     {
-      return jrk_error_create("Invalid tachometer_divider_exponent value.");
+      return jrk_error_create("Invalid fbt_divider_exponent value.");
     }
-    if (tachometer_divider_exponent < 0 || tachometer_divider_exponent > UINT8_MAX)
+    if (fbt_divider_exponent < 0 || fbt_divider_exponent > UINT8_MAX)
     {
       return jrk_error_create(
-        "The tachometer_divider_exponent value is out of range.");
+        "The fbt_divider_exponent value is out of range.");
     }
-    jrk_settings_set_tachometer_divider_exponent(settings, tachometer_divider_exponent);
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
   }
 
   // End of auto-generated settings file parsing code.

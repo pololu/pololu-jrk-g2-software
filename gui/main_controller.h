@@ -110,13 +110,19 @@ public:
   void handle_feedback_analog_samples_exponent_input(uint8_t);
   void handle_feedback_detect_disconnect_input(bool);
   void handle_feedback_wraparound_input(bool);
+  void handle_fbt_method_input(uint8_t);
+  void handle_fbt_timing_clock_input(uint8_t);
+  void handle_fbt_timing_polarity_input(bool);
+  void handle_fbt_timing_timeout_input(uint16_t);
+  void handle_fbt_samples_input(uint8_t);
+  void handle_fbt_divider_exponent_input(uint8_t);
 
   void handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_integral_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_derivative_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_period_input(uint16_t);
   void handle_integral_limit_input(uint16_t);
-  void handle_integral_reduction_exponent_input(uint8_t);
+  void handle_integral_divider_exponent_input(uint8_t);
   void handle_reset_integral_input(bool);
   void handle_feedback_dead_zone_input(uint8_t);
 
@@ -167,8 +173,7 @@ private:
   void handle_settings_loaded();
 
   void recalculate_motor_asymmetric();
-
-  void constrain_feedback_scaling();
+  void recalculate_fbt_range();
 
 public:
 

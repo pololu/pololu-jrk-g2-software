@@ -67,20 +67,16 @@ extern const jrk_name jrk_input_scaling_degree_names_short[];
 extern const jrk_name jrk_feedback_mode_names_short[];
 extern const jrk_name jrk_serial_mode_names_short[];
 extern const jrk_name jrk_pwm_frequency_names_short[];
-extern const jrk_name jrk_tachometer_mode_names_short[];
-extern const jrk_name jrk_tachometer_pulse_timing_clock_names_short[];
+extern const jrk_name jrk_fbt_method_names_short[];
+extern const jrk_name jrk_fbt_timing_clock_names_short[];
+extern const jrk_name jrk_fbt_timing_clock_names_no_units[];
 
 extern const jrk_name jrk_pin_func_names[];
-
 
 // Internal settings conversion functions.
 
 uint32_t jrk_baud_rate_from_brg(uint16_t brg);
 uint16_t jrk_baud_rate_to_brg(uint32_t baud_rate);
-
-// Internal jrk_overridable_settings functions.
-
-jrk_error * jrk_overridable_settings_create(jrk_overridable_settings **);
 
 // Internal jrk_device functions.
 
@@ -95,15 +91,6 @@ jrk_error * jrk_set_setting_byte(jrk_handle * handle,
 
 jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output);
-
-jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
-  size_t index, size_t length, const uint8_t * buf);
-
-jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
-  size_t index, size_t length, uint8_t * output);
-
-jrk_error * jrk_get_variable_segment(jrk_handle * handle,
-  size_t index, size_t length, uint8_t * buf, uint16_t flags);
 
 
 // Error creation functions.

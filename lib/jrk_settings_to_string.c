@@ -242,8 +242,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t integral_reduction_exponent = jrk_settings_get_integral_reduction_exponent(settings);
-    jrk_sprintf(&str, "integral_reduction_exponent: %u\n", integral_reduction_exponent);
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    jrk_sprintf(&str, "integral_divider_exponent: %u\n", integral_divider_exponent);
   }
 
   {
@@ -406,38 +406,38 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t tachometer_mode = jrk_settings_get_tachometer_mode(settings);
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
     const char * value_str = "";
-    jrk_code_to_name(jrk_tachometer_mode_names_short, tachometer_mode, &value_str);
-    jrk_sprintf(&str, "tachometer_mode: %s\n", value_str);
+    jrk_code_to_name(jrk_fbt_method_names_short, fbt_method, &value_str);
+    jrk_sprintf(&str, "fbt_method: %s\n", value_str);
   }
 
   {
-    uint8_t tachometer_pulse_timing_clock = jrk_settings_get_tachometer_pulse_timing_clock(settings);
+    uint8_t fbt_timing_clock = jrk_settings_get_fbt_timing_clock(settings);
     const char * value_str = "";
-    jrk_code_to_name(jrk_tachometer_pulse_timing_clock_names_short, tachometer_pulse_timing_clock, &value_str);
-    jrk_sprintf(&str, "tachometer_pulse_timing_clock: %s\n", value_str);
+    jrk_code_to_name(jrk_fbt_timing_clock_names_short, fbt_timing_clock, &value_str);
+    jrk_sprintf(&str, "fbt_timing_clock: %s\n", value_str);
   }
 
   {
-    bool tachometer_pulse_timing_polarity = jrk_settings_get_tachometer_pulse_timing_polarity(settings);
-    jrk_sprintf(&str, "tachometer_pulse_timing_polarity: %s\n",
-      tachometer_pulse_timing_polarity ? "true" : "false");
+    bool fbt_timing_polarity = jrk_settings_get_fbt_timing_polarity(settings);
+    jrk_sprintf(&str, "fbt_timing_polarity: %s\n",
+      fbt_timing_polarity ? "true" : "false");
   }
 
   {
-    uint16_t tachometer_pulse_timing_timeout = jrk_settings_get_tachometer_pulse_timing_timeout(settings);
-    jrk_sprintf(&str, "tachometer_pulse_timing_timeout: %u\n", tachometer_pulse_timing_timeout);
+    uint16_t fbt_timing_timeout = jrk_settings_get_fbt_timing_timeout(settings);
+    jrk_sprintf(&str, "fbt_timing_timeout: %u\n", fbt_timing_timeout);
   }
 
   {
-    uint8_t tachometer_averaging_count = jrk_settings_get_tachometer_averaging_count(settings);
-    jrk_sprintf(&str, "tachometer_averaging_count: %u\n", tachometer_averaging_count);
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    jrk_sprintf(&str, "fbt_samples: %u\n", fbt_samples);
   }
 
   {
-    uint8_t tachometer_divider_exponent = jrk_settings_get_tachometer_divider_exponent(settings);
-    jrk_sprintf(&str, "tachometer_divider_exponent: %u\n", tachometer_divider_exponent);
+    uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
+    jrk_sprintf(&str, "fbt_divider_exponent: %u\n", fbt_divider_exponent);
   }
 
   // End of auto-generated settings file printing code.

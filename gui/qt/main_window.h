@@ -143,6 +143,7 @@ public:
   void set_input_scaling_degree(uint8_t input_scaling_degree);
   void set_input_scaling_order_warning_label();
   void run_input_wizard(uint8_t input_mode);
+  void update_input_tab_enables();
 
   void set_feedback_mode(uint8_t feedback_mode);
   void set_feedback_invert(bool feedback_invert);
@@ -154,13 +155,21 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
+  void set_fbt_method(uint8_t);
+  void set_fbt_timing_clock(uint8_t);
+  void set_fbt_timing_polarity(bool);
+  void set_fbt_timing_timeout(uint16_t);
+  void set_fbt_samples(uint8_t);
+  void set_fbt_divider_exponent(uint8_t);
+  void set_fbt_range_display(const std::string & message, bool invalid);
+  void update_feedback_tab_enables();
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);
   void set_pid_derivative(uint16_t multiplier, uint8_t exponent);
   void set_pid_period(uint16_t value);
   void set_integral_limit(uint16_t value);
-  void set_integral_reduction_exponent(uint8_t exponent);
+  void set_integral_divider_exponent(uint8_t exponent);
   void set_reset_integral(bool enabled);
   void set_feedback_dead_zone(uint8_t value);
 
@@ -307,6 +316,12 @@ private slots:
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
   void on_feedback_wraparound_checkbox_stateChanged(int state);
+  void on_fbt_method_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_clock_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_polarity_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_timeout_spinbox_valueChanged(int value);
+  void on_fbt_samples_spinbox_valueChanged(int value);
+  void on_fbt_divider_combobox_currentIndexChanged(int index);
   void on_feedback_learn_button_clicked();
 
   void on_pid_proportional_control_values_changed(int multiplier, int exponent);
@@ -315,7 +330,7 @@ private slots:
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
-  void on_integral_reduction_combobox_currentIndexChanged(int value);
+  void on_integral_divider_combobox_currentIndexChanged(int value);
   void on_reset_integral_checkbox_stateChanged(int state);
   void on_feedback_dead_zone_spinbox_valueChanged(int value);
 
@@ -373,7 +388,7 @@ private:
   QWidget * setup_feedback_tab();
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
-  QWidget * setup_feedback_options_groupbox();
+  QWidget * setup_feedback_fbt_groupbox();
 
   QWidget * setup_pid_tab();
 
@@ -494,14 +509,14 @@ private:
   QLabel *input_mode_label;
   QComboBox *input_mode_combobox;
 
-  // input tab "Analog to digital conversion" groupbox
+  // input tab "Analog input" groupbox
 
   QGroupBox *input_analog_groupbox;
   QLabel *input_analog_samples_label;
   QCheckBox *input_detect_disconnect_checkbox;
   QComboBox *input_analog_samples_combobox;
 
-  // input tab "Scaling (Analog and Pulse Width mode only)" groupbox
+  // input tab "Scaling" groupbox
 
   QGroupBox *input_scaling_groupbox;
   QLabel *input_scaling_order_warning_label;
@@ -574,11 +589,20 @@ private:
   QLabel * feedback_analog_samples_label;
   QComboBox * feedback_analog_samples_combobox;
   QCheckBox * feedback_detect_disconnect_checkbox;
-
-  // feedback tab "Feedback options" groupbox
-
-  QGroupBox * feedback_options_groupbox;
   QCheckBox * feedback_wraparound_checkbox;
+
+  // feedback tab "FBT options" groupbox
+  QComboBox * fbt_method_combobox;
+  QLabel * fbt_timing_clock_label;
+  QComboBox * fbt_timing_clock_combobox;
+  QLabel * fbt_timing_polarity_label;
+  QComboBox * fbt_timing_polarity_combobox;
+  QLabel * fbt_timing_timeout_label;
+  QSpinBox * fbt_timing_timeout_spinbox;
+  QSpinBox * fbt_samples_spinbox;
+  QLabel * fbt_divider_label;
+  QComboBox * fbt_divider_combobox;
+  QLabel * fbt_range_label;
 
   // pid tab
 
@@ -587,8 +611,8 @@ private:
   QSpinBox * pid_period_spinbox;
   QLabel * integral_limit_label;
   QSpinBox * integral_limit_spinbox;
-  QLabel * integral_reduction_label;
-  QComboBox * integral_reduction_combobox;
+  QLabel * integral_divider_label;
+  QComboBox * integral_divider_combobox;
   QCheckBox * reset_integral_checkbox;
   QLabel * feedback_dead_zone_label;
   QSpinBox * feedback_dead_zone_spinbox;

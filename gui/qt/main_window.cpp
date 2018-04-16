@@ -167,7 +167,7 @@ void main_window::set_input(uint16_t input, uint8_t input_mode)
 
   QString input_pretty = "";
 
-  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  if (input_mode == JRK_INPUT_MODE_RC)
   {
     input_pretty = " (" + QString::fromStdString(
       convert_rc_12bit_to_us_string(input)) + ")";
@@ -365,7 +365,8 @@ void main_window::set_apply_settings_enabled(bool enabled)
   apply_settings_action->setEnabled(enabled);
 }
 
-void main_window::set_motor_status_message(std::string const & message, uint16_t error_flag)
+void main_window::set_motor_status_message(
+  const std::string & message, uint16_t error_flag)
 {
   // setStyleSheet() is expensive, so only call it if something actually
   // changed. Check if there's currently a stylesheet applied and decide
@@ -394,7 +395,6 @@ void main_window::set_motor_status_message(std::string const & message, uint16_t
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
-  input_scaling_groupbox->setEnabled(input_mode != JRK_INPUT_MODE_SERIAL);
 }
 
 void main_window::set_input_invert(bool input_invert)
@@ -551,18 +551,20 @@ void main_window::run_input_wizard(uint8_t input_mode)
   controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
 }
 
+void main_window::update_input_tab_enables()
+{
+  uint8_t input_mode = input_mode_combobox->currentData().toUInt();
+
+  input_scaling_groupbox->setEnabled(input_mode != JRK_INPUT_MODE_SERIAL);
+
+  bool analog = input_mode == JRK_FEEDBACK_MODE_ANALOG;
+  input_analog_groupbox->setEnabled(analog || always_analog_sda->isChecked());
+  input_detect_disconnect_checkbox->setEnabled(analog);
+}
+
 void main_window::set_feedback_mode(uint8_t feedback_mode)
 {
   set_u8_combobox(feedback_mode_combobox, feedback_mode);
-
-  feedback_scaling_groupbox->setEnabled(
-    feedback_mode != JRK_FEEDBACK_MODE_NONE);
-
-  feedback_minimum_spinbox->setEnabled(
-    feedback_mode != JRK_FEEDBACK_MODE_FREQUENCY);
-
-  feedback_error_minimum_spinbox->setEnabled(
-    feedback_mode != JRK_FEEDBACK_MODE_FREQUENCY);
 }
 
 void main_window::set_feedback_invert(bool feedback_invert)
@@ -613,6 +615,78 @@ void main_window::set_feedback_wraparound(bool value)
   set_check_box(feedback_wraparound_checkbox, value);
 }
 
+void main_window::set_fbt_method(uint8_t value)
+{
+  set_u8_combobox(fbt_method_combobox, value);
+}
+
+void main_window::set_fbt_timing_clock(uint8_t value)
+{
+  set_u8_combobox(fbt_timing_clock_combobox, value);
+}
+
+void main_window::set_fbt_timing_polarity(bool polarity)
+{
+  set_u8_combobox(fbt_timing_polarity_combobox, polarity);
+}
+
+void main_window::set_fbt_timing_timeout(uint16_t value)
+{
+  set_spin_box(fbt_timing_timeout_spinbox, value);
+}
+
+void main_window::set_fbt_samples(uint8_t value)
+{
+  set_spin_box(fbt_samples_spinbox, value);
+}
+
+void main_window::set_fbt_divider_exponent(uint8_t value)
+{
+  set_u8_combobox(fbt_divider_combobox, value);
+}
+
+void main_window::set_fbt_range_display(const std::string & message, bool invalid)
+{
+  fbt_range_label->setText(QString::fromStdString(message));
+
+  bool styled = !fbt_range_label->styleSheet().isEmpty();
+  if (invalid && !styled)
+  {
+    fbt_range_label->setStyleSheet("color: red; }");
+  }
+  else if (!invalid && styled)
+  {
+    fbt_range_label->setStyleSheet("");
+  }
+}
+
+void main_window::update_feedback_tab_enables()
+{
+  uint8_t feedback_mode = feedback_mode_combobox->currentData().toUInt();
+
+  feedback_scaling_groupbox->setEnabled(
+    feedback_mode != JRK_FEEDBACK_MODE_NONE);
+
+  bool analog = feedback_mode == JRK_FEEDBACK_MODE_ANALOG;
+  feedback_analog_groupbox->setEnabled(analog || always_analog_fba->isChecked());
+  feedback_detect_disconnect_checkbox->setEnabled(analog);
+  feedback_wraparound_checkbox->setEnabled(analog);
+
+  bool frequency = feedback_mode == JRK_FEEDBACK_MODE_FREQUENCY;
+  fbt_divider_label->setEnabled(frequency);
+  fbt_divider_combobox->setEnabled(frequency);
+
+  uint8_t fbt_method = fbt_method_combobox->currentData().toUInt();
+
+  bool timing = fbt_method == JRK_FBT_METHOD_PULSE_TIMING;
+  fbt_timing_clock_label->setEnabled(timing);
+  fbt_timing_clock_combobox->setEnabled(timing);
+  fbt_timing_polarity_label->setEnabled(timing);
+  fbt_timing_polarity_combobox->setEnabled(timing);
+  fbt_timing_timeout_label->setEnabled(timing);
+  fbt_timing_timeout_spinbox->setEnabled(timing);
+}
+
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
 {
   suppress_events = true;
@@ -644,9 +718,9 @@ void main_window::set_integral_limit(uint16_t value)
   set_spin_box(integral_limit_spinbox, value);
 }
 
-void main_window::set_integral_reduction_exponent(uint8_t exponent)
+void main_window::set_integral_divider_exponent(uint8_t exponent)
 {
-  set_u8_combobox(integral_reduction_combobox, exponent);
+  set_u8_combobox(integral_divider_combobox, exponent);
 }
 
 void main_window::set_reset_integral(bool enabled)
@@ -1453,6 +1527,46 @@ void main_window::on_feedback_wraparound_checkbox_stateChanged(int state)
   controller->handle_feedback_wraparound_input(state == Qt::Checked);
 }
 
+void main_window::on_fbt_method_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t mode = fbt_method_combobox->itemData(index).toUInt();
+  controller->handle_fbt_method_input(mode);
+}
+
+void main_window::on_fbt_timing_clock_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t clock = fbt_timing_clock_combobox->itemData(index).toUInt();
+  controller->handle_fbt_timing_clock_input(clock);
+}
+
+void main_window::on_fbt_timing_polarity_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  bool polarity = fbt_timing_polarity_combobox->itemData(index).toUInt();
+  controller->handle_fbt_timing_polarity_input(polarity);
+}
+
+void main_window::on_fbt_timing_timeout_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_fbt_timing_timeout_input(value);
+}
+
+void main_window::on_fbt_samples_spinbox_valueChanged(int value)
+{
+  if (suppress_events) { return; }
+  controller->handle_fbt_samples_input(value);
+}
+
+void main_window::on_fbt_divider_combobox_currentIndexChanged(int index)
+{
+  if (suppress_events) { return; }
+  uint8_t exponent = fbt_divider_combobox->itemData(index).toUInt();
+  controller->handle_fbt_divider_exponent_input(exponent);
+}
+
 void main_window::on_feedback_learn_button_clicked()
 {
   run_feedback_wizard(this);
@@ -1488,10 +1602,10 @@ void main_window::on_integral_limit_spinbox_valueChanged(int value)
   controller->handle_integral_limit_input(value);
 }
 
-void main_window::on_integral_reduction_combobox_currentIndexChanged(int value)
+void main_window::on_integral_divider_combobox_currentIndexChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_integral_reduction_exponent_input(value);
+  controller->handle_integral_divider_exponent_input(value);
 }
 
 void main_window::on_reset_integral_checkbox_stateChanged(int state)
@@ -2186,9 +2300,10 @@ QWidget * main_window::setup_input_tab()
 
   input_mode_combobox = new QComboBox();
   input_mode_combobox->setObjectName("input_mode_combobox");
-  input_mode_combobox->addItem("Serial", JRK_INPUT_MODE_SERIAL);
-  input_mode_combobox->addItem("Analog", JRK_INPUT_MODE_ANALOG);
-  input_mode_combobox->addItem("Pulse width", JRK_INPUT_MODE_PULSE_WIDTH);
+  input_mode_combobox->addItem(
+    "Serial\u2009/\u2009I\u00B2C\u2009/\u2009USB", JRK_INPUT_MODE_SERIAL);
+  input_mode_combobox->addItem("Analog voltage", JRK_INPUT_MODE_ANALOG);
+  input_mode_combobox->addItem("RC", JRK_INPUT_MODE_RC);
 
   QHBoxLayout *input_mode_layout = new QHBoxLayout();
   input_mode_layout->addWidget(input_mode_label);
@@ -2224,7 +2339,7 @@ static QComboBox * setup_exponent_combobox(int max_exponent)
 
 QWidget * main_window::setup_input_analog_groupbox()
 {
-  input_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
+  input_analog_groupbox = new QGroupBox(tr("Analog input on SDA/AN"));
   input_analog_groupbox->setObjectName("input_analog_groupbox");
 
   input_analog_samples_label = new QLabel(tr("Analog samples:"));
@@ -2233,7 +2348,7 @@ QWidget * main_window::setup_input_analog_groupbox()
   input_analog_samples_combobox = setup_exponent_combobox(10);
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
 
-  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin"));
+  input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin (SCL)"));
   input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
 
   QHBoxLayout *analog_samples = new QHBoxLayout();
@@ -2251,7 +2366,7 @@ QWidget * main_window::setup_input_analog_groupbox()
 
 QWidget * main_window::setup_input_serial_groupbox()
 {
-  input_serial_groupbox = new QGroupBox(tr("Serial Interface"));
+  input_serial_groupbox = new QGroupBox(tr("Serial interface"));
   input_serial_groupbox->setObjectName("input_serial_groupbox");
 
   input_usb_dual_port_radio = new QRadioButton(tr("USB dual port"));
@@ -2330,7 +2445,7 @@ QWidget * main_window::setup_input_serial_groupbox()
 
 QWidget * main_window::setup_input_scaling_groupbox()
 {
-  input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and pulse width mode only)"));
+  input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and RC mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
@@ -2479,8 +2594,9 @@ QWidget * main_window::setup_feedback_tab()
   feedback_mode_combobox = new QComboBox();
   feedback_mode_combobox->setObjectName("feedback_mode_combobox");
   feedback_mode_combobox->addItem("None", JRK_FEEDBACK_MODE_NONE);
-  feedback_mode_combobox->addItem("Analog", JRK_FEEDBACK_MODE_ANALOG);
-  feedback_mode_combobox->addItem("Frequency (digital)", JRK_FEEDBACK_MODE_FREQUENCY);
+  feedback_mode_combobox->addItem("Analog voltage", JRK_FEEDBACK_MODE_ANALOG);
+  feedback_mode_combobox->addItem("Frequency (speed control)",
+    JRK_FEEDBACK_MODE_FREQUENCY);
 
   QHBoxLayout *feedback_mode_layout = new QHBoxLayout();
   feedback_mode_layout->addWidget(feedback_mode_label);
@@ -2491,7 +2607,8 @@ QWidget * main_window::setup_feedback_tab()
   layout->addLayout(feedback_mode_layout, 0, 0, Qt::AlignLeft);
   layout->addWidget(setup_feedback_scaling_groupbox(), 1, 0);
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
-  layout->addWidget(setup_feedback_options_groupbox(), 3, 0);
+  layout->addWidget(setup_feedback_fbt_groupbox(), 1, 1);
+  layout->setRowStretch(3, 1);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
@@ -2502,7 +2619,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
 
-  feedback_scaling_groupbox = new QGroupBox(tr("Scaling (analog and tachometer mode only)"));
+  feedback_scaling_groupbox = new QGroupBox(tr("Scaling"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
@@ -2577,7 +2694,7 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
 
 QWidget * main_window::setup_feedback_analog_groupbox()
 {
-  feedback_analog_groupbox = new QGroupBox(tr("Analog to digital conversion"));
+  feedback_analog_groupbox = new QGroupBox(tr("Analog feedback on FBA"));
   feedback_analog_groupbox->setObjectName("feedback_analog_groupbox");
 
   feedback_analog_samples_label = new QLabel(tr("Analog samples:"));
@@ -2587,7 +2704,7 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   feedback_analog_samples_combobox->setObjectName("feedback_analog_samples_combobox");
 
   feedback_detect_disconnect_checkbox =
-    new QCheckBox(tr("Detect disconnect with power pin"));
+    new QCheckBox(tr("Detect disconnect with power pin (AUX)"));
   feedback_detect_disconnect_checkbox->setObjectName(
     "feedback_detect_disconnect_checkbox");
 
@@ -2599,29 +2716,106 @@ QWidget * main_window::setup_feedback_analog_groupbox()
   layout->addLayout(analog_samples, 0, 0, Qt::AlignLeft);
   layout->addWidget(feedback_detect_disconnect_checkbox, 1, 0, Qt::AlignLeft);
 
-  feedback_analog_groupbox->setLayout(layout);
-
-  return feedback_analog_groupbox;
-}
-
-QWidget * main_window::setup_feedback_options_groupbox()
-{
-  feedback_options_groupbox = new QGroupBox();
-  feedback_options_groupbox->setObjectName("feedback_options_groupbox");
-  feedback_options_groupbox->setTitle(tr("Options"));
-
   feedback_wraparound_checkbox = new QCheckBox(tr("Wraparound"));
   feedback_wraparound_checkbox->setObjectName("feedback_wraparound_checkbox");
   feedback_wraparound_checkbox->setToolTip(tr(
     "A scaled feedback value of 0 is considered to be adjacent to 4095.  "
     "Suitable for systems that rotate over a full circle."));
+  layout->addWidget(feedback_wraparound_checkbox, 2, 0, Qt::AlignLeft);
+
+  feedback_analog_groupbox->setLayout(layout);
+
+  return feedback_analog_groupbox;
+}
+
+QWidget * main_window::setup_feedback_fbt_groupbox()
+{
+  QGroupBox * fbt_groupbox = new QGroupBox();
+  fbt_groupbox->setObjectName("fbt_groupbox");
+  fbt_groupbox->setTitle(tr("Frequency feedback on FBT"));
+
+  QLabel * fbt_method_label = new QLabel();
+  fbt_method_label->setObjectName("fbt_method_label");
+  fbt_method_label->setText("Measurement method:");
+
+  fbt_method_combobox = new QComboBox();
+  fbt_method_combobox->setObjectName("fbt_method_combobox");
+  fbt_method_combobox->addItem("Pulse counting", JRK_FBT_METHOD_PULSE_COUNTING);
+  fbt_method_combobox->addItem("Pulse timing", JRK_FBT_METHOD_PULSE_TIMING);
+
+  fbt_timing_clock_label = new QLabel();
+  fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
+  fbt_timing_clock_label->setText("Pulse timing clock:");
+  fbt_timing_clock_label->setEnabled(false);  // tmphax
+
+  fbt_timing_clock_combobox = new QComboBox();
+  fbt_timing_clock_combobox->setObjectName("fbt_timing_clock_combobox");
+  fbt_timing_clock_combobox->addItem("1.5 MHz", JRK_FBT_TIMING_CLOCK_1_5);
+  fbt_timing_clock_combobox->addItem("3 MHz", JRK_FBT_TIMING_CLOCK_3);
+  fbt_timing_clock_combobox->addItem("6 MHz", JRK_FBT_TIMING_CLOCK_6);
+  fbt_timing_clock_combobox->addItem("12 MHz", JRK_FBT_TIMING_CLOCK_12);
+  fbt_timing_clock_combobox->addItem("24 MHz", JRK_FBT_TIMING_CLOCK_24);
+  fbt_timing_clock_combobox->addItem("48 MHz", JRK_FBT_TIMING_CLOCK_48);
+
+  fbt_timing_polarity_label = new QLabel();
+  fbt_timing_polarity_label->setObjectName("fbt_timing_polarity_label");
+  fbt_timing_polarity_label->setText("Pulse timing polarity:");
+
+  fbt_timing_polarity_combobox = new QComboBox();
+  fbt_timing_polarity_combobox->setObjectName("fbt_timing_polarity_combobox");
+  fbt_timing_polarity_combobox->addItem("Active high", 0);
+  fbt_timing_polarity_combobox->addItem("Active low", 1);
+
+  fbt_timing_timeout_label = new QLabel();
+  fbt_timing_timeout_label->setObjectName("fbt_timing_timeout_label");
+  fbt_timing_timeout_label->setText("Pulse timing timeout (ms):");
+
+  fbt_timing_timeout_spinbox = new QSpinBox();
+  fbt_timing_timeout_spinbox->setObjectName("fbt_timing_timeout_spinbox");
+  fbt_timing_timeout_spinbox->setRange(1, 60000);
+
+  QLabel * fbt_samples_label = new QLabel();
+  fbt_samples_label->setObjectName("fbt_samples_label");
+  fbt_samples_label->setText("Pulse samples:");
+
+  fbt_samples_spinbox = new QSpinBox();
+  fbt_samples_spinbox->setObjectName("fbt_samples_spinbox");
+  fbt_samples_spinbox->setRange(1, JRK_MAX_ALLOWED_FBT_SAMPLES);
+
+  fbt_divider_label = new QLabel();
+  fbt_divider_label->setObjectName("fbt_divider_label");
+  fbt_divider_label->setText("Frequency divider:");
+
+  fbt_divider_combobox = setup_exponent_combobox(15);
+  fbt_divider_combobox->setObjectName("fbt_divider_combobox");
+
+  fbt_range_label = new QLabel();
+  fbt_range_label->setObjectName("feedback_range_label");
+  fbt_range_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+  fbt_range_label->setText(
+    "Frequency Measurement Range (at 50% duty cycle): 9.99 MHz to 9.99 MHz  ");
+  fbt_range_label->setMinimumWidth(fbt_range_label->sizeHint().width());
+  fbt_range_label->setText("");
 
   QGridLayout * layout = new QGridLayout();
-  layout->addWidget(feedback_wraparound_checkbox, 0, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_method_label, 0, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_method_combobox, 0, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_clock_label, 1, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_clock_combobox, 1, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_polarity_label, 2, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_polarity_combobox, 2, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_timeout_label, 3, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_timing_timeout_spinbox, 3, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_samples_label, 4, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_samples_spinbox, 4, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_divider_label, 5, 0, Qt::AlignLeft);
+  layout->addWidget(fbt_divider_combobox, 5, 1, Qt::AlignLeft);
+  layout->addWidget(fbt_range_label, 6, 0, 1, 3, Qt::AlignLeft);
+  layout->setColumnStretch(2, 1);
 
-  feedback_options_groupbox->setLayout(layout);
+  fbt_groupbox->setLayout(layout);
 
-  return feedback_options_groupbox;
+  return fbt_groupbox;
 }
 
 QWidget * main_window::setup_pid_tab()
@@ -2654,11 +2848,11 @@ QWidget * main_window::setup_pid_tab()
   integral_limit_spinbox->setObjectName("integral_limit_spinbox");
   integral_limit_spinbox->setRange(0, 0x7FFF);
 
-  integral_reduction_label = new QLabel(tr("Integral reduction:"));
-  integral_reduction_label->setObjectName("integral_reduction_label");
+  integral_divider_label = new QLabel(tr("Integral divider:"));
+  integral_divider_label->setObjectName("integral_divider_label");
 
-  integral_reduction_combobox = setup_exponent_combobox(15);
-  integral_reduction_combobox->setObjectName("integral_reduction_combobox");
+  integral_divider_combobox = setup_exponent_combobox(15);
+  integral_divider_combobox->setObjectName("integral_divider_combobox");
 
   reset_integral_checkbox = new QCheckBox(
     tr("Reset integral when proportional term exceeds max duty cycle"));
@@ -2687,10 +2881,10 @@ QWidget * main_window::setup_pid_tab()
   integral_layout->addWidget(integral_limit_spinbox);
   integral_layout->addStretch(1);
 
-  QHBoxLayout * integral_reduction_layout = new QHBoxLayout();
-  integral_reduction_layout->addWidget(integral_reduction_label);
-  integral_reduction_layout->addWidget(integral_reduction_combobox);
-  integral_reduction_layout->addStretch(1);
+  QHBoxLayout * integral_divider_layout = new QHBoxLayout();
+  integral_divider_layout->addWidget(integral_divider_label);
+  integral_divider_layout->addWidget(integral_divider_combobox);
+  integral_divider_layout->addStretch(1);
 
   QHBoxLayout * deadzone_layout = new QHBoxLayout();
   deadzone_layout->addWidget(feedback_dead_zone_label);
@@ -2701,7 +2895,7 @@ QWidget * main_window::setup_pid_tab()
   layout->addLayout(coefficient_layout);
   layout->addLayout(period_layout);
   layout->addLayout(integral_layout);
-  layout->addLayout(integral_reduction_layout);
+  layout->addLayout(integral_divider_layout);
   layout->addWidget(reset_integral_checkbox);
   layout->addLayout(deadzone_layout);
   layout->addStretch(1);
