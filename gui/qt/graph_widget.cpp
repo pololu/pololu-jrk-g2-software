@@ -204,8 +204,6 @@ void graph_widget::setup_ui()
 
   set_line_visible();
 
-  custom_plot->axisRect()->setRangeDragAxes(all_axes);
-
   QMetaObject::connectSlotsByName(this);
 }
 
@@ -276,8 +274,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
   all_plots.append(&plot);
-
-  all_axes.append(plot.axis);
 
   row++;
 }

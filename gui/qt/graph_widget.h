@@ -34,7 +34,6 @@ public:
   };
 
   QList<plot *> all_plots;
-  QList<QCPAxis *> all_axes;
   plot input;
   plot target;
   plot feedback;
