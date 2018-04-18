@@ -223,8 +223,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   plot.center_value = new QDoubleSpinBox();
   plot.center_value->setDecimals(1);
-  plot.center_value->setSingleStep(0.1);
-  plot.center_value->setRange(-5, 5);
+  plot.center_value->setSingleStep(plot.range_value/5);
+  plot.center_value->setRange(-plot.range_value, plot.range_value);
 
   plot.center_value->setValue(0);
 
@@ -275,6 +275,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
 
+  connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
+    (&QCPAxis::rangeChanged), [=](const QCPRange & newRange)
+    {
+      double position_value = -(newRange.lower + newRange.upper)/2;
+      plot.center_value->setValue(position_value);
+    });
+
   plot_visible_layout->addWidget(plot.drag_axes_range, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
   plot_visible_layout->addWidget(plot.center_value, row, 2);
@@ -322,8 +329,8 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
-    plot->axis->setRangeLower(((plot->range->value()) * (min_y->value()/20.0)) - (plot->center_value->value() * plot->range->value()));
-    plot->axis->setRangeUpper(((plot->range->value()) * (max_y->value()/20.0)) - (plot->center_value->value() * plot->range->value()));
+    plot->axis->setRangeLower(-(plot->range->value() * 10.0) - plot->center_value->value());
+    plot->axis->setRangeUpper((plot->range->value() * 10.0) - plot->center_value->value());
   }
 
   custom_plot->yAxis->setRange(min_y->value()/2, max_y->value()/2);
