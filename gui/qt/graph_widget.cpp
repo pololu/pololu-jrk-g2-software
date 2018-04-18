@@ -323,6 +323,11 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
 
 void graph_widget::change_ranges()
 {
+  if (domain->value() == 0 && !graph_paused)
+  {
+    set_paused(true);
+  }
+
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
 
   custom_plot->xAxis2->setRange(key, domain->value() * 1000, Qt::AlignRight);
