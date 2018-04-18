@@ -237,6 +237,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.display->setChecked(default_visible);
 
   plot.drag_axes_range = new QRadioButton();
+  plot.drag_axes_range->setToolTip("Click to drag " + display_text + " plot postion");
   plot_drag_radios->addButton(plot.drag_axes_range, ++axis_index);
 
   connect(plot.drag_axes_range, &QRadioButton::clicked,
