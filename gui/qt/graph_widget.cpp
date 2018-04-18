@@ -217,13 +217,15 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   plot.range = new QDoubleSpinBox();
   plot.range->setDecimals(1);
-  plot.range->setSingleStep(0.1);
+  plot.range->setSingleStep(1);
+  plot.range->setAccelerated(true);
   plot.range->setRange(0, plot.range_value);
   plot.range->setValue(plot.range_value/10.0);
 
   plot.center_value = new QDoubleSpinBox();
   plot.center_value->setDecimals(1);
-  plot.center_value->setSingleStep(plot.range_value/5);
+  plot.center_value->setSingleStep(1);
+  plot.center_value->setAccelerated(true);
   plot.center_value->setRange(-plot.range_value, plot.range_value);
 
   plot.center_value->setValue(0);
@@ -279,8 +281,11 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange)
     {
-      double position_value = -(newRange.lower + newRange.upper)/2;
+      double position_value = -(newRange.lower + newRange.upper)/2.0;
+
+      QSignalBlocker blocker(plot.center_value);
       plot.center_value->setValue(position_value);
+      custom_plot->replot();
     });
 
   plot_visible_layout->addWidget(plot.drag_axes_range, row, 0);
@@ -335,11 +340,11 @@ void graph_widget::change_ranges()
 
   for (auto plot : all_plots)
   {
+    QSignalBlocker blocker(plot->axis);
     plot->axis->setRangeLower(-(plot->range->value() * 10.0) - plot->center_value->value());
     plot->axis->setRangeUpper((plot->range->value() * 10.0) - plot->center_value->value());
   }
 
-  custom_plot->yAxis->setRange(min_y->value()/2, max_y->value()/2);
   custom_plot->replot();
 }
 

@@ -25,7 +25,7 @@ public:
   struct plot
   {
     QDoubleSpinBox *range;
-    QDoubleSpinBox * center_value = 0;
+    QDoubleSpinBox * center_value;
     QCheckBox *display;
     QString color;
     QCPAxis *axis;
