@@ -31,7 +31,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
-    custom_plot->axisRect()->setMargins(QMargins(40, 10, 20, 40));
+    custom_plot->axisRect()->setMargins(QMargins(20, 10, 20, 40));
     custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
     custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
   }
@@ -95,6 +95,7 @@ void graph_widget::setup_ui()
 
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
+  custom_plot->setInteractions(QCP::iRangeDrag);
 
   label2 = new QLabel();
   label2->setText(tr(" Time (s):"));
@@ -122,12 +123,15 @@ void graph_widget::setup_ui()
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
 
+  plot_drag_radios = new QButtonGroup();
+  plot_drag_radios->setExclusive(true);
+
   connect(show_all_none, SIGNAL(clicked()),
     this, SLOT(show_all_none_clicked()));
 
   plot_visible_layout = new QGridLayout();
-  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
-  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 2, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 2, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 3, Qt::AlignCenter);
 
   bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(show_all_none, 0);
@@ -158,7 +162,7 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
-  plot_visible_layout->addLayout(bottom_control_layout, row, 0, 1, 3);
+  plot_visible_layout->addLayout(bottom_control_layout, row, 0, 1, 4);
 
   QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
   x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
@@ -168,22 +172,18 @@ void graph_widget::setup_ui()
 
   QSharedPointer<QCPAxisTickerText> y_axis_ticker(new QCPAxisTickerText);
 
-  y_axis_ticker->addTick(0, "0");
+  y_axis_ticker->addTick(0, "");
 
   for (int i = 10; i <= 50; (i += 10))
   {
-    QString pos = QString::number(i/10);
-    QString neg = QString::number(-i/10);
-    y_axis_ticker->addTick(i, pos);
-    y_axis_ticker->addTick(-i, neg);
+    y_axis_ticker->addTick(i, "");
+    y_axis_ticker->addTick(-i, "");
   }
 
   y_axis_ticker->setSubTickCount(1);
 
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(3);
-  custom_plot->yAxis->setLabel("Position");
-  custom_plot->yAxis->setLabelPadding(7);
 
   custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
   custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
@@ -194,7 +194,6 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->grid()->setSubGridVisible(true);
 
   custom_plot->yAxis->setRange(-50,50);
-  custom_plot->yAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setLabel("Time (ms)");
   custom_plot->xAxis->setLabelPadding(2);
@@ -203,6 +202,8 @@ void graph_widget::setup_ui()
   // custom_plot->xAxis2->setVisible(true);
 
   set_line_visible();
+
+  custom_plot->axisRect()->setRangeDragAxes(drag_axes);
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -235,6 +236,24 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
 
+  plot.drag_axes_range = new QRadioButton();
+  plot_drag_radios->addButton(plot.drag_axes_range, ++axis_index);
+
+  connect(plot.drag_axes_range, &QRadioButton::clicked,
+    [=](bool checked)
+    {
+      plot.display->setChecked(true);
+      set_line_visible();
+    });
+
+  connect(plot_drag_radios, static_cast<void (QButtonGroup::*)(int)>
+    (&QButtonGroup::buttonClicked), [=](int id)
+    {
+      drag_axes.clear();
+      drag_axes.append(all_axes[id]);
+      custom_plot->axisRect()->setRangeDragAxes(drag_axes);
+    });
+
   plot.default_visible = default_visible;
 
   plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atLeft);
@@ -256,10 +275,10 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
 
-
-  plot_visible_layout->addWidget(plot.display, row, 0);
-  plot_visible_layout->addWidget(plot.center_value, row, 1);
-  plot_visible_layout->addWidget(plot.range, row, 2);
+  plot_visible_layout->addWidget(plot.drag_axes_range, row, 0);
+  plot_visible_layout->addWidget(plot.display, row, 1);
+  plot_visible_layout->addWidget(plot.center_value, row, 2);
+  plot_visible_layout->addWidget(plot.range, row, 3);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.color));
@@ -274,6 +293,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
   all_plots.append(&plot);
+  all_axes.append(plot.axis);
 
   row++;
 }

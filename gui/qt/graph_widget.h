@@ -12,6 +12,8 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QApplication>
+#include <QRadioButton>
+#include <QButtonGroup>
 
 class graph_widget : public QWidget
 {
@@ -31,9 +33,13 @@ public:
     int32_t plot_value = 0;
     double range_value = 0;
     bool default_visible = false;
+    QRadioButton * drag_axes_range;
   };
 
   QList<plot *> all_plots;
+  QList<QCPAxis *> all_axes;
+  QList<QCPAxis *> drag_axes;
+
   plot input;
   plot target;
   plot feedback;
@@ -76,10 +82,12 @@ private:
   QLabel *label2;
   QLabel *label3;
   QPushButton *show_all_none;
+  QButtonGroup * plot_drag_radios;
 
   uint32_t key; // used to store local copy of time value
 
   int row = 1;
+  int axis_index = -1;
 
 private slots:
   void change_ranges();
