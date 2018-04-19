@@ -2,15 +2,11 @@
 
 #include <QString>
 
+#include <iostream>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   setup_ui();
-
-  connect(max_y, SIGNAL(valueChanged(double)),
-    this, SLOT(change_ranges()));
-
-  connect(min_y, SIGNAL(valueChanged(double)),
-    this, SLOT(change_ranges()));
 
   connect(domain, SIGNAL(valueChanged(int)),
     this, SLOT(change_ranges()));
@@ -90,35 +86,15 @@ void graph_widget::setup_ui()
   pause_run_button->setText(tr("&Pause"));
   pause_run_button->setMinimumSize(pause_run_button->sizeHint());
 
-  label1 = new QLabel();
-  label1->setText(tr("    Range (\u0025):"));
-
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
-  custom_plot->setInteractions(QCP::iRangeDrag);
+  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
-  label2 = new QLabel();
-  label2->setText(tr(" Time (s):"));
-
-  label3 = new QLabel();
-  label3->setAlignment(Qt::AlignCenter);
-  label3->setText(tr("\u2013"));
-
-  min_y = new QDoubleSpinBox();
-  min_y->setRange(-100,0);
-  min_y->setDecimals(0);
-  min_y->setSingleStep(1.0);
-  min_y->setValue(-100);
-
-  max_y = new QDoubleSpinBox();
-  max_y->setRange(0,100);
-  max_y->setDecimals(0);
-  max_y->setSingleStep(1.0);
-  max_y->setValue(100);
+  QLabel * label2 = new QLabel(tr(" Time (s):"));
 
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
-  domain->setRange(0, 90);
+  domain->setRange(1, 90);
 
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
@@ -133,7 +109,7 @@ void graph_widget::setup_ui()
   plot_visible_layout->addWidget(new QLabel("Position:"), 0, 2, Qt::AlignCenter);
   plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 3, Qt::AlignCenter);
 
-  bottom_control_layout = new QHBoxLayout();
+  QHBoxLayout * bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(show_all_none, 0);
   bottom_control_layout->addWidget(label2, 0);
   bottom_control_layout->addWidget(domain, 0);
@@ -189,7 +165,7 @@ void graph_widget::setup_ui()
   custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
 
   custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
-  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 100), 0, Qt::DashLine));
+  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 100), 0, Qt::DotLine));
   custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridVisible(true);
 
@@ -203,7 +179,9 @@ void graph_widget::setup_ui()
 
   set_line_visible();
 
-  custom_plot->axisRect()->setRangeDragAxes(drag_axes);
+  custom_plot->axisRect()->setRangeDragAxes(0, 0);
+  custom_plot->axisRect()->setRangeZoomAxes(0, 0);
+  custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 
   QMetaObject::connectSlotsByName(this);
 }
@@ -223,7 +201,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range->setValue(plot.range_value/10.0);
 
   plot.center_value = new QDoubleSpinBox();
-  plot.center_value->setDecimals(1);
+  plot.center_value->setDecimals(0);
   plot.center_value->setSingleStep(1);
   plot.center_value->setAccelerated(true);
   plot.center_value->setRange(-plot.range_value, plot.range_value);
@@ -242,24 +220,9 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.drag_axes_range->setToolTip("Click to drag " + display_text + " plot postion");
   plot_drag_radios->addButton(plot.drag_axes_range, ++axis_index);
 
-  connect(plot.drag_axes_range, &QRadioButton::clicked,
-    [=](bool checked)
-    {
-      plot.display->setChecked(true);
-      set_line_visible();
-    });
-
-  connect(plot_drag_radios, static_cast<void (QButtonGroup::*)(int)>
-    (&QButtonGroup::buttonClicked), [=](int id)
-    {
-      drag_axes.clear();
-      drag_axes.append(all_axes[id]);
-      custom_plot->axisRect()->setRangeDragAxes(drag_axes);
-    });
-
   plot.default_visible = default_visible;
 
-  plot.axis = custom_plot->axisRect(0)->addAxis(QCPAxis::atLeft);
+  plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
 
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
   plot_axis_ticker->addTick(0, "\u2B9E");
@@ -271,22 +234,11 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(color);
   plot.axis->setTickLabelPadding(0);
-
   plot.axis->setRange(-plot.range_value, plot.range_value);
   plot.axis->setBasePen(QPen(Qt::NoPen));
   plot.axis->setTickPen(QPen(Qt::NoPen));
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
-
-  connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
-    (&QCPAxis::rangeChanged), [=](const QCPRange & newRange)
-    {
-      double position_value = -(newRange.lower + newRange.upper)/2.0;
-
-      QSignalBlocker blocker(plot.center_value);
-      plot.center_value->setValue(position_value);
-      custom_plot->replot();
-    });
 
   plot_visible_layout->addWidget(plot.drag_axes_range, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
@@ -297,16 +249,69 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.graph->setPen(QPen(plot.color));
   plot.graph->pen().color().setAlpha(120);
 
-  connect(plot.range, SIGNAL(valueChanged(double)),
-    this, SLOT(change_ranges()));
+  connect(plot.drag_axes_range, &QRadioButton::clicked,
+    [=](bool checked)
+  {
+    plot.display->setChecked(true);
+    set_line_visible();
+  });
 
-  connect(plot.center_value, SIGNAL(valueChanged(double)),
-    this, SLOT(change_ranges()));
+  connect(plot_drag_radios, static_cast<void (QButtonGroup::*)(int)>
+    (&QButtonGroup::buttonClicked), [=](int id)
+  {
+    QList<QCPAxis *> drag_axes;
+    drag_axes.append(custom_plot->axisRect()->axis(QCPAxis::atLeft, (id)));
+    custom_plot->axisRect()->setRangeDragAxes(drag_axes);
+    custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
+  });
+
+  connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
+    (&QCPAxis::rangeChanged), [=](const QCPRange & newRange)
+  {
+    double position_value = -(newRange.lower + newRange.upper);
+
+    plot.center_value->setRange(-newRange.upper, -newRange.lower);
+
+    {
+      QSignalBlocker blocker(plot.center_value);
+      plot.center_value->setValue(position_value/2);
+    }
+
+    {
+      QSignalBlocker blocker(plot.range);
+      plot.range->setValue((-newRange.lower + newRange.upper)/20);
+    }
+
+    custom_plot->replot();
+  });
+
+  connect(plot.range, static_cast<void (QDoubleSpinBox::*)(double)>
+    (&QDoubleSpinBox::valueChanged), [=](double value)
+  {
+    {
+      QSignalBlocker blocker(plot.axis);
+      plot.axis->setRangeLower(-(value * 10.0) - (plot.center_value->value()));
+      plot.axis->setRangeUpper((value * 10.0) - (plot.center_value->value()));
+    }
+
+    custom_plot->replot();
+  });
+
+  connect(plot.center_value, static_cast<void (QDoubleSpinBox::*)(double)>
+    (&QDoubleSpinBox::valueChanged), [=](double value)
+  {
+    {
+      QSignalBlocker blocker(plot.axis);
+      plot.axis->setRangeLower(-(plot.range->value() * 10.0) - (value));
+      plot.axis->setRangeUpper((plot.range->value() * 10.0) - (value));
+    }
+
+    custom_plot->replot();
+  });
 
   connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
   all_plots.append(&plot);
-  all_axes.append(plot.axis);
 
   row++;
 }
@@ -329,21 +334,9 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
 
 void graph_widget::change_ranges()
 {
-  if (domain->value() == 0 && !graph_paused)
-  {
-    set_paused(true);
-  }
-
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
 
   custom_plot->xAxis2->setRange(key, domain->value() * 1000, Qt::AlignRight);
-
-  for (auto plot : all_plots)
-  {
-    QSignalBlocker blocker(plot->axis);
-    plot->axis->setRangeLower(-(plot->range->value() * 10.0) - plot->center_value->value());
-    plot->axis->setRangeUpper((plot->range->value() * 10.0) - plot->center_value->value());
-  }
 
   custom_plot->replot();
 }

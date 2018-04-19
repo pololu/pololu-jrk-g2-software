@@ -37,8 +37,6 @@ public:
   };
 
   QList<plot *> all_plots;
-  QList<QCPAxis *> all_axes;
-  QList<QCPAxis *> drag_axes;
 
   plot input;
   plot target;
@@ -53,8 +51,6 @@ public:
   plot current_chopping;
 
   QCustomPlot * custom_plot;
-
-  QHBoxLayout * bottom_control_layout;
   QGridLayout * plot_visible_layout;
 
   bool graph_paused = false;
@@ -75,19 +71,14 @@ private:
 
   QWidget *central_widget;
   QPushButton *pause_run_button;
-  QDoubleSpinBox *min_y;
-  QDoubleSpinBox *max_y;
   QSpinBox *domain;
-  QLabel *label1;
-  QLabel *label2;
-  QLabel *label3;
   QPushButton *show_all_none;
   QButtonGroup * plot_drag_radios;
 
   uint32_t key; // used to store local copy of time value
 
   int row = 1;
-  int axis_index = -1;
+  int axis_index = 0;
 
 private slots:
   void change_ranges();
