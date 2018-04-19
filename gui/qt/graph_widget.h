@@ -33,7 +33,7 @@ public:
     int32_t plot_value = 0;
     double range_value = 0;
     bool default_visible = false;
-    QRadioButton * drag_axes_range;
+    QRadioButton * allow_interaction;
   };
 
   QList<plot *> all_plots;
@@ -73,7 +73,7 @@ private:
   QPushButton *pause_run_button;
   QSpinBox *domain;
   QPushButton *show_all_none;
-  QButtonGroup * plot_drag_radios;
+  QButtonGroup * plot_interaction_radios;
 
   uint32_t key; // used to store local copy of time value
 

@@ -99,8 +99,8 @@ void graph_widget::setup_ui()
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
 
-  plot_drag_radios = new QButtonGroup();
-  plot_drag_radios->setExclusive(true);
+  plot_interaction_radios = new QButtonGroup();
+  plot_interaction_radios->setExclusive(true);
 
   connect(show_all_none, SIGNAL(clicked()),
     this, SLOT(show_all_none_clicked()));
@@ -216,9 +216,9 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
 
-  plot.drag_axes_range = new QRadioButton();
-  plot.drag_axes_range->setToolTip("Click to drag " + display_text + " plot postion");
-  plot_drag_radios->addButton(plot.drag_axes_range, ++axis_index);
+  plot.allow_interaction = new QRadioButton();
+  plot.allow_interaction->setToolTip("Click to drag " + display_text + " plot postion");
+  plot_interaction_radios->addButton(plot.allow_interaction, ++axis_index);
 
   plot.default_visible = default_visible;
 
@@ -240,7 +240,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
 
-  plot_visible_layout->addWidget(plot.drag_axes_range, row, 0);
+  plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
   plot_visible_layout->addWidget(plot.center_value, row, 2);
   plot_visible_layout->addWidget(plot.range, row, 3);
@@ -249,14 +249,25 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.graph->setPen(QPen(plot.color));
   plot.graph->pen().color().setAlpha(120);
 
-  connect(plot.drag_axes_range, &QRadioButton::clicked,
+  connect(plot.allow_interaction, &QRadioButton::clicked,
     [=](bool checked)
   {
     plot.display->setChecked(true);
     set_line_visible();
+
+    custom_plot->replot();
   });
 
-  connect(plot_drag_radios, static_cast<void (QButtonGroup::*)(int)>
+  connect(plot.display, &QCheckBox::clicked,
+    [=](bool checked)
+  {
+    plot.allow_interaction->click();
+    set_line_visible();
+
+    custom_plot->replot();
+  });
+
+  connect(plot_interaction_radios, static_cast<void (QButtonGroup::*)(int)>
     (&QButtonGroup::buttonClicked), [=](int id)
   {
     QList<QCPAxis *> drag_axes;
@@ -294,6 +305,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
       plot.axis->setRangeUpper((value * 10.0) - (plot.center_value->value()));
     }
 
+    plot.allow_interaction->click();
+
     custom_plot->replot();
   });
 
@@ -305,6 +318,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
       plot.axis->setRangeLower(-(plot.range->value() * 10.0) - (value));
       plot.axis->setRangeUpper((plot.range->value() * 10.0) - (value));
     }
+
+    plot.allow_interaction->click();
 
     custom_plot->replot();
   });
