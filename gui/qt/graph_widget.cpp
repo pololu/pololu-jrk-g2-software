@@ -97,8 +97,6 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
   custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
-  QLabel * label2 = new QLabel(tr(" Time (s):"));
-
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
   domain->setRange(1, 90);
@@ -110,6 +108,7 @@ void graph_widget::setup_ui()
   plot_interaction_radios->setExclusive(true);
 
   reset_all_button = new QPushButton(tr("Reset all"), this);
+  reset_all_button->setStyleSheet("QPushButton{padding: 3px 2px 3px 2px;}");
   reset_all_button->setObjectName("reset_all_button");
   reset_all_button->setToolTip("Reset all plots\nposition and scale");
 
@@ -117,16 +116,16 @@ void graph_widget::setup_ui()
     this, SLOT(show_all_none_clicked()));
 
   plot_visible_layout = new QGridLayout();
+  plot_visible_layout->addWidget(show_all_none, 0, 1);
   plot_visible_layout->addWidget(new QLabel("Position:"), 0, 2, Qt::AlignCenter);
   plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 3, Qt::AlignCenter);
+  plot_visible_layout->addWidget(reset_all_button, 0, 4, Qt::AlignLeft);
+
 
   QHBoxLayout * bottom_control_layout = new QHBoxLayout();
-  bottom_control_layout->addWidget(show_all_none, 0);
-  bottom_control_layout->addWidget(label2, 0);
+  bottom_control_layout->addWidget(new QLabel(tr(" Time (s):")), 0, Qt::AlignRight);
   bottom_control_layout->addWidget(domain, 0);
-  bottom_control_layout->addWidget(pause_run_button, 0);
-  bottom_control_layout->addWidget(reset_all_button, 0, Qt::AlignCenter);
-  bottom_control_layout->setAlignment(Qt::AlignLeft);
+  bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignRight);
 
   setup_plot(input, "Input", "#00ffff", false, 4095);
 
@@ -150,7 +149,13 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
-  plot_visible_layout->addLayout(bottom_control_layout, row, 0, 1, 5);
+  QFrame * division_frame = new QFrame();
+  division_frame->setFrameShadow(QFrame::Plain);
+  division_frame->setLineWidth(0);
+  division_frame->setFrameShape(QFrame::HLine);
+
+  plot_visible_layout->addWidget(division_frame, row, 0, 1, 5);
+  plot_visible_layout->addLayout(bottom_control_layout, ++row, 0, 1, 5, Qt::AlignCenter);
 
   QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
   x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
@@ -173,12 +178,12 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(3);
 
-  custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
-  custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
+  custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
+  custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
 
-  custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 100), 0, Qt::DotLine));
-  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 100), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridVisible(true);
 
   custom_plot->yAxis->setRange(-50,50);
@@ -212,7 +217,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.range->setSingleStep(1);
   plot.range->setAccelerated(true);
   plot.range->setRange(0, plot.range_value);
-  plot.range->setValue(plot.range_value/10.0);
+  plot.range->setValue(plot.range_value/5.0);
 
   plot.center_value = new QDoubleSpinBox();
   plot.center_value->setDecimals(0);
@@ -240,7 +245,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   connect(plot.reset_button, &QPushButton::clicked, [=]
   {
-    plot.range->setValue(plot.range_value/10);
+    plot.range->setValue(plot.range_value/5.0);
     plot.center_value->setValue(0);
 
     custom_plot->replot();
@@ -289,9 +294,23 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
     custom_plot->replot();
   });
 
-  connect(plot.display, &QCheckBox::clicked, [=]
+  connect(plot.display, &QCheckBox::toggled, [=](bool checked)
   {
-    plot.allow_interaction->click();
+    if (checked)
+    {
+      QSignalBlocker blocker(plot.allow_interaction);
+      plot.allow_interaction->click();
+    }
+    else if (!checked && plot.allow_interaction->isChecked())
+    {
+      custom_plot->axisRect()->setRangeDragAxes(0, 0);
+      custom_plot->axisRect()->setRangeZoomAxes(0, 0);
+
+      QRadioButton * temp_button = new QRadioButton();
+      plot_interaction_radios->addButton(temp_button, -1);
+      temp_button->setChecked(true);
+    }
+
     set_line_visible();
 
     custom_plot->replot();
@@ -320,7 +339,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
     {
       QSignalBlocker blocker(plot.range);
-      plot.range->setValue((-newRange.lower + newRange.upper)/20);
+      plot.range->setValue((-newRange.lower + newRange.upper)/10);
     }
 
     custom_plot->replot();
@@ -331,8 +350,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   {
     {
       QSignalBlocker blocker(plot.axis);
-      plot.axis->setRangeLower(-(value * 10.0) - (plot.center_value->value()));
-      plot.axis->setRangeUpper((value * 10.0) - (plot.center_value->value()));
+      plot.axis->setRangeLower(-(value * 5.0) - (plot.center_value->value()));
+      plot.axis->setRangeUpper((value * 5.0) - (plot.center_value->value()));
     }
 
     plot.allow_interaction->click();
@@ -345,8 +364,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   {
     {
       QSignalBlocker blocker(plot.axis);
-      plot.axis->setRangeLower(-(plot.range->value() * 10.0) - (value));
-      plot.axis->setRangeUpper((plot.range->value() * 10.0) - (value));
+      plot.axis->setRangeLower(-(plot.range->value() * 5.0) - (value));
+      plot.axis->setRangeUpper((plot.range->value() * 5.0) - (value));
     }
 
     plot.allow_interaction->click();
@@ -409,10 +428,13 @@ void graph_widget::show_all_none_clicked()
 
   for (auto plot : all_plots)
   {
-    if (all_checked)
-      plot->display->setChecked(false);
-    else
-      plot->display->setChecked(true);
+    {
+      QSignalBlocker blocker(plot->display);
+      if (all_checked)
+        plot->display->setChecked(false);
+      else
+        plot->display->setChecked(true);
+    }
   }
 
   set_line_visible();
@@ -422,15 +444,15 @@ void graph_widget::on_reset_all_button_clicked()
 {
   QMessageBox mbox(QMessageBox::Question, "",
     QString::fromStdString("Reset all positions and scales?"),
-    QMessageBox::Ok | QMessageBox::Cancel, this);
+    QMessageBox::Ok | QMessageBox::Cancel);
   mbox.exec();
 
   if (QMessageBox::Ok)
   {
     for (auto plot : all_plots)
     {
-      plot->center_value->setValue(0);
-      plot->range->setValue(plot->range_value/10);
+      plot->reset_button->click();
+
     }
 
     custom_plot->replot();
