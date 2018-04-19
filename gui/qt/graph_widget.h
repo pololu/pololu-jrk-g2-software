@@ -34,6 +34,7 @@ public:
     double range_value = 0;
     bool default_visible = false;
     QRadioButton * allow_interaction;
+    QPushButton *reset_button;
   };
 
   QList<plot *> all_plots;
@@ -74,6 +75,7 @@ private:
   QSpinBox *domain;
   QPushButton *show_all_none;
   QButtonGroup * plot_interaction_radios;
+  QPushButton *reset_all_button;
 
   uint32_t key; // used to store local copy of time value
 
@@ -85,4 +87,5 @@ private slots:
   void on_pause_run_button_clicked();
   void set_line_visible();
   void show_all_none_clicked();
+  void on_reset_all_button_clicked();
 };

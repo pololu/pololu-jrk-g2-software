@@ -1,6 +1,7 @@
 #include "graph_widget.h"
 
 #include <QString>
+#include <QMessageBox>
 
 #include <iostream>
 
@@ -108,6 +109,11 @@ void graph_widget::setup_ui()
   plot_interaction_radios = new QButtonGroup();
   plot_interaction_radios->setExclusive(true);
 
+  reset_all_button = new QPushButton(tr("Reset all"), this);
+  reset_all_button->setObjectName("reset_all_button");
+  reset_all_button->setStyleSheet("QPushButton{margin: 0px; padding: 2px;}");
+  reset_all_button->setToolTip("Reset all plots\nposition and scale");
+
   connect(show_all_none, SIGNAL(clicked()),
     this, SLOT(show_all_none_clicked()));
 
@@ -120,6 +126,7 @@ void graph_widget::setup_ui()
   bottom_control_layout->addWidget(label2, 0);
   bottom_control_layout->addWidget(domain, 0);
   bottom_control_layout->addWidget(pause_run_button, 0);
+  bottom_control_layout->addWidget(reset_all_button, 0, Qt::AlignCenter);
   bottom_control_layout->setAlignment(Qt::AlignLeft);
 
   setup_plot(input, "Input", "#00ffff", false, 4095);
@@ -144,7 +151,7 @@ void graph_widget::setup_ui()
 
   setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
 
-  plot_visible_layout->addLayout(bottom_control_layout, row, 0, 1, 4);
+  plot_visible_layout->addLayout(bottom_control_layout, row, 0, 1, 5);
 
   QSharedPointer<QCPAxisTickerFixed> x_axis_ticker(new QCPAxisTickerFixed);
   x_axis_ticker->setTickStepStrategy(QCPAxisTicker::tssReadability);
@@ -228,6 +235,23 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot.allow_interaction->setToolTip("Click to drag " + display_text + " plot postion");
   plot_interaction_radios->addButton(plot.allow_interaction, ++axis_index);
 
+  plot.reset_button = new QPushButton(tr("\u27f2"));
+  plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 2px;}");
+  plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
+
+  connect(plot.reset_button, &QPushButton::clicked, [=]
+  {
+    plot.range->setValue(plot.range_value/10);
+    plot.center_value->setValue(0);
+
+    custom_plot->replot();
+  });
+
+  QFont button_font;
+  button_font.setPointSize(12);
+  button_font.setBold(true);
+  plot.reset_button->setFont(button_font);
+
   plot.default_visible = default_visible;
 
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
@@ -252,13 +276,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot_visible_layout->addWidget(plot.display, row, 1);
   plot_visible_layout->addWidget(plot.center_value, row, 2);
   plot_visible_layout->addWidget(plot.range, row, 3);
+  plot_visible_layout->addWidget(plot.reset_button, row, 4, Qt::AlignCenter);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.color));
   plot.graph->pen().color().setAlpha(120);
 
-  connect(plot.allow_interaction, &QRadioButton::clicked,
-    [=](bool checked)
+  connect(plot.allow_interaction, &QRadioButton::clicked, [=]
   {
     plot.display->setChecked(true);
     set_line_visible();
@@ -266,8 +290,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
     custom_plot->replot();
   });
 
-  connect(plot.display, &QCheckBox::clicked,
-    [=](bool checked)
+  connect(plot.display, &QCheckBox::clicked, [=]
   {
     plot.allow_interaction->click();
     set_line_visible();
@@ -394,4 +417,25 @@ void graph_widget::show_all_none_clicked()
   }
 
   set_line_visible();
+}
+
+void graph_widget::on_reset_all_button_clicked()
+{
+  QMessageBox mbox(QMessageBox::Question, "",
+    QString::fromStdString("Reset all positions and scales?"),
+    QMessageBox::Ok | QMessageBox::Cancel, this);
+  mbox.exec();
+
+  if (QMessageBox::Ok)
+  {
+    for (auto plot : all_plots)
+    {
+      plot->center_value->setValue(0);
+      plot->range->setValue(plot->range_value/10);
+    }
+
+    custom_plot->replot();
+  }
+  else
+    return;
 }
