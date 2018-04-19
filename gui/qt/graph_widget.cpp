@@ -22,6 +22,12 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
     custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
     custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
+    custom_plot->axisRect()->setRangeDragAxes(0, 0);
+    custom_plot->axisRect()->setRangeZoomAxes(0, 0);
+
+    QRadioButton * temp_button = new QRadioButton();
+    plot_interaction_radios->addButton(temp_button, -1);
+    temp_button->setChecked(true);
   }
   else
   {
@@ -182,6 +188,8 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeDragAxes(0, 0);
   custom_plot->axisRect()->setRangeZoomAxes(0, 0);
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
+
+
 
   QMetaObject::connectSlotsByName(this);
 }
