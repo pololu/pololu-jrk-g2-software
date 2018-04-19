@@ -710,3 +710,16 @@ private:
   QString directory_hint;
 };
 
+// TODO: fix these names in the main_window class for settings that were renamed:
+/**
+-  void set_current_limit_code_forward(uint16_t);
+-  void set_current_limit_code_reverse(uint16_t);
++  void set_encoded_hard_current_limit_forward(uint16_t);
++  void set_encoded_hard_current_limit_reverse(uint16_t);
+-  void set_max_current_forward(uint16_t);
+-  void set_max_current_reverse(uint16_t);
++  void set_soft_current_limit_forward(uint16_t);
++  void set_soft_current_limit_reverse(uint16_t);
+-  void set_overcurrent_threshold(uint8_t);
++  void set_hard_overcurrent_threshold(uint8_t);
+**/

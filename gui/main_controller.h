@@ -245,3 +245,18 @@ private:
 
   main_window * window;
 };
+
+
+// TODO: rename these main_controller functions to match renamed settings:
+/**
+-  void handle_current_limit_forward_input(uint16_t);
+-  void handle_current_limit_reverse_input(uint16_t);
+-  void handle_max_current_forward_input(uint16_t);
+-  void handle_max_current_reverse_input(uint16_t);
++  void handle_encoded_hard_current_limit_forward_input(uint16_t);
++  void handle_encoded_hard_current_limit_reverse_input(uint16_t);
++  void handle_soft_current_limit_forward_input(uint16_t);
++  void handle_soft_current_limit_reverse_input(uint16_t);
+-  void handle_overcurrent_threshold_input(uint8_t);
++  void handle_hard_overcurrent_threshold_input(uint8_t);
+**/

@@ -218,8 +218,8 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
-    buf[JRK_SETTING_OVERCURRENT_THRESHOLD] = overcurrent_threshold;
+    uint8_t hard_overcurrent_threshold = jrk_settings_get_hard_overcurrent_threshold(settings);
+    buf[JRK_SETTING_HARD_OVERCURRENT_THRESHOLD] = hard_overcurrent_threshold;
   }
 
   {
@@ -273,23 +273,23 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 
   {
-    uint16_t current_limit_code_forward = jrk_settings_get_current_limit_code_forward(settings);
-    write_uint16_t(buf + JRK_SETTING_CURRENT_LIMIT_CODE_FORWARD, current_limit_code_forward);
+    uint16_t encoded_hard_current_limit_forward = jrk_settings_get_encoded_hard_current_limit_forward(settings);
+    write_uint16_t(buf + JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_FORWARD, encoded_hard_current_limit_forward);
   }
 
   {
-    uint16_t current_limit_code_reverse = jrk_settings_get_current_limit_code_reverse(settings);
-    write_uint16_t(buf + JRK_SETTING_CURRENT_LIMIT_CODE_REVERSE, current_limit_code_reverse);
+    uint16_t encoded_hard_current_limit_reverse = jrk_settings_get_encoded_hard_current_limit_reverse(settings);
+    write_uint16_t(buf + JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_REVERSE, encoded_hard_current_limit_reverse);
   }
 
   {
-    uint16_t max_current_forward = jrk_settings_get_max_current_forward(settings);
-    write_uint16_t(buf + JRK_SETTING_MAX_CURRENT_FORWARD, max_current_forward);
+    uint16_t soft_current_limit_forward = jrk_settings_get_soft_current_limit_forward(settings);
+    write_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_LIMIT_FORWARD, soft_current_limit_forward);
   }
 
   {
-    uint16_t max_current_reverse = jrk_settings_get_max_current_reverse(settings);
-    write_uint16_t(buf + JRK_SETTING_MAX_CURRENT_REVERSE, max_current_reverse);
+    uint16_t soft_current_limit_reverse = jrk_settings_get_soft_current_limit_reverse(settings);
+    write_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_LIMIT_REVERSE, soft_current_limit_reverse);
   }
 
   {
@@ -394,7 +394,7 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
   }
 }
 
-jrk_error * jrk_set_settings(jrk_handle * handle, const jrk_settings * settings)
+jrk_error * jrk_set_eeprom_settings(jrk_handle * handle, const jrk_settings * settings)
 {
   if (handle == NULL)
   {
@@ -440,7 +440,7 @@ jrk_error * jrk_set_settings(jrk_handle * handle, const jrk_settings * settings)
   // Write the bytes to the device.
   for (uint8_t i = 1; i < sizeof(buf) && error == NULL; i++)
   {
-    error = jrk_set_setting_byte(handle, i, buf[i]);
+    error = jrk_set_eeprom_setting_byte(handle, i, buf[i]);
   }
 
   jrk_settings_free(fixed_settings);

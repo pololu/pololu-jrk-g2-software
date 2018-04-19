@@ -1,8 +1,6 @@
 #include "jrk_internal.h"
 
-// TODO: put correct tables here when we finalize components
-
-static const uint16_t jrk_30v_vilim_table[32] =
+static const uint16_t jrk_umc04a_30v_vilim_table[32] =
 {
   0,
   809,
@@ -38,43 +36,7 @@ static const uint16_t jrk_30v_vilim_table[32] =
   25097,
 };
 
-static const uint16_t jrk_40v_vilim_table[32] =
-{
-  0,
-  1353,
-  2592,
-  3742,
-  4821,
-  5845,
-  6826,
-  7776,
-  8703,
-  9615,
-  10519,
-  11423,
-  12333,
-  13254,
-  14192,
-  15154,
-  16146,
-  17175,
-  18247,
-  19371,
-  20555,
-  21809,
-  23143,
-  24572,
-  26109,
-  27772,
-  29583,
-  31566,
-  33752,
-  36179,
-  38894,
-  41958,
-};
-
-static const uint16_t jrk_30v_recommended_codes[] =
+static const uint16_t jrk_umc04a_30v_recommended_encoded_hard_current_limits[] =
 {
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
   5,   // VILIM = 0.052 V, Current limit =  0.11 A
@@ -124,7 +86,43 @@ static const uint16_t jrk_30v_recommended_codes[] =
   95,  // VILIM = 1.569 V, Current limit = 75.93 A
 };
 
-static const uint16_t jrk_40v_recommended_codes[] =
+static const uint16_t jrk_umc04a_40v_vilim_table[32] =
+{
+  0,
+  1353,
+  2592,
+  3742,
+  4821,
+  5845,
+  6826,
+  7776,
+  8703,
+  9615,
+  10519,
+  11423,
+  12333,
+  13254,
+  14192,
+  15154,
+  16146,
+  17175,
+  18247,
+  19371,
+  20555,
+  21809,
+  23143,
+  24572,
+  26109,
+  27772,
+  29583,
+  31566,
+  33752,
+  36179,
+  38894,
+  41958,
+};
+
+static const uint16_t jrk_umc04a_40v_recommended_encoded_hard_current_limits[] =
 {
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
   3,   // VILIM = 0.058 V, Current limit =  0.21 A
@@ -179,6 +177,186 @@ static const uint16_t jrk_40v_recommended_codes[] =
   95,  // VILIM = 2.622 V, Current limit = 64.31 A
 };
 
+static const uint16_t jrk_umc05a_30v_vilim_table[32] =
+{
+  0,
+  935,
+  1791,
+  2585,
+  3330,
+  4037,
+  4715,
+  5371,
+  6011,
+  6641,
+  7265,
+  7890,
+  8518,
+  9154,
+  9802,
+  10466,
+  11152,
+  11862,
+  12603,
+  13379,
+  14197,
+  15063,
+  15985,
+  16971,
+  18033,
+  19183,
+  20434,
+  21804,
+  23314,
+  24991,
+  26868,
+  28986,
+};
+
+static const uint16_t jrk_umc05a_30v_recommended_encoded_hard_current_limits[] =
+{
+  0,   // VILIM = 0.000 V, Current limit =  0.00 A
+  4,   // VILIM = 0.052 V, Current limit =  0.06 A
+  5,   // VILIM = 0.063 V, Current limit =  0.39 A
+  6,   // VILIM = 0.074 V, Current limit =  0.71 A
+  7,   // VILIM = 0.084 V, Current limit =  1.02 A
+  8,   // VILIM = 0.094 V, Current limit =  1.32 A
+  9,   // VILIM = 0.104 V, Current limit =  1.61 A
+  10,  // VILIM = 0.114 V, Current limit =  1.91 A
+  11,  // VILIM = 0.123 V, Current limit =  2.20 A
+  12,  // VILIM = 0.133 V, Current limit =  2.49 A
+  13,  // VILIM = 0.143 V, Current limit =  2.79 A
+  14,  // VILIM = 0.153 V, Current limit =  3.09 A
+  15,  // VILIM = 0.164 V, Current limit =  3.41 A
+  16,  // VILIM = 0.174 V, Current limit =  3.73 A
+  17,  // VILIM = 0.185 V, Current limit =  4.06 A
+  18,  // VILIM = 0.197 V, Current limit =  4.41 A
+  19,  // VILIM = 0.209 V, Current limit =  4.77 A
+  20,  // VILIM = 0.222 V, Current limit =  5.15 A
+  21,  // VILIM = 0.235 V, Current limit =  5.56 A
+  22,  // VILIM = 0.250 V, Current limit =  5.99 A
+  23,  // VILIM = 0.265 V, Current limit =  6.46 A
+  24,  // VILIM = 0.282 V, Current limit =  6.95 A
+  25,  // VILIM = 0.300 V, Current limit =  7.49 A
+  26,  // VILIM = 0.319 V, Current limit =  8.08 A
+  27,  // VILIM = 0.341 V, Current limit =  8.72 A
+  28,  // VILIM = 0.364 V, Current limit =  9.43 A
+  29,  // VILIM = 0.390 V, Current limit = 10.21 A
+  30,  // VILIM = 0.420 V, Current limit = 11.09 A
+  31,  // VILIM = 0.453 V, Current limit = 12.09 A
+  54,  // VILIM = 0.500 V, Current limit = 13.49 A
+  55,  // VILIM = 0.530 V, Current limit = 14.41 A
+  56,  // VILIM = 0.564 V, Current limit = 15.41 A
+  57,  // VILIM = 0.599 V, Current limit = 16.48 A
+  58,  // VILIM = 0.639 V, Current limit = 17.66 A
+  59,  // VILIM = 0.681 V, Current limit = 18.94 A
+  60,  // VILIM = 0.729 V, Current limit = 20.36 A
+  61,  // VILIM = 0.781 V, Current limit = 21.93 A
+  62,  // VILIM = 0.840 V, Current limit = 23.69 A
+  63,  // VILIM = 0.906 V, Current limit = 25.67 A
+  85,  // VILIM = 0.941 V, Current limit = 26.74 A
+  86,  // VILIM = 0.999 V, Current limit = 28.47 A
+  87,  // VILIM = 1.061 V, Current limit = 30.32 A
+  88,  // VILIM = 1.127 V, Current limit = 32.31 A
+  89,  // VILIM = 1.199 V, Current limit = 34.47 A
+  90,  // VILIM = 1.277 V, Current limit = 36.81 A
+  91,  // VILIM = 1.363 V, Current limit = 39.38 A
+  92,  // VILIM = 1.457 V, Current limit = 42.21 A
+  93,  // VILIM = 1.562 V, Current limit = 45.36 A
+  94,  // VILIM = 1.679 V, Current limit = 48.88 A
+  95,  // VILIM = 1.812 V, Current limit = 52.85 A
+};
+
+static const uint16_t jrk_umc05a_40v_vilim_table[32] =
+{
+  0,
+  1124,
+  2169,
+  3150,
+  4081,
+  4970,
+  5828,
+  6662,
+  7478,
+  8282,
+  9081,
+  9879,
+  10680,
+  11490,
+  12313,
+  13153,
+  14016,
+  14907,
+  15831,
+  16793,
+  17800,
+  18860,
+  19979,
+  21167,
+  22434,
+  23793,
+  25256,
+  26841,
+  28567,
+  30457,
+  32541,
+  34854,
+};
+
+static const uint16_t jrk_umc05a_40v_recommended_encoded_hard_current_limits[] =
+{
+  0,   // VILIM = 0.000 V, Current limit =  0.00 A
+  4,   // VILIM = 0.064 V, Current limit =  0.28 A
+  5,   // VILIM = 0.078 V, Current limit =  0.55 A
+  6,   // VILIM = 0.091 V, Current limit =  0.82 A
+  7,   // VILIM = 0.104 V, Current limit =  1.08 A
+  8,   // VILIM = 0.117 V, Current limit =  1.34 A
+  9,   // VILIM = 0.129 V, Current limit =  1.59 A
+  10,  // VILIM = 0.142 V, Current limit =  1.84 A
+  11,  // VILIM = 0.154 V, Current limit =  2.09 A
+  12,  // VILIM = 0.167 V, Current limit =  2.34 A
+  13,  // VILIM = 0.180 V, Current limit =  2.59 A
+  14,  // VILIM = 0.192 V, Current limit =  2.85 A
+  15,  // VILIM = 0.206 V, Current limit =  3.11 A
+  16,  // VILIM = 0.219 V, Current limit =  3.38 A
+  17,  // VILIM = 0.233 V, Current limit =  3.66 A
+  18,  // VILIM = 0.247 V, Current limit =  3.95 A
+  19,  // VILIM = 0.262 V, Current limit =  4.25 A
+  20,  // VILIM = 0.278 V, Current limit =  4.56 A
+  21,  // VILIM = 0.295 V, Current limit =  4.89 A
+  22,  // VILIM = 0.312 V, Current limit =  5.24 A
+  23,  // VILIM = 0.331 V, Current limit =  5.61 A
+  24,  // VILIM = 0.351 V, Current limit =  6.01 A
+  25,  // VILIM = 0.372 V, Current limit =  6.44 A
+  26,  // VILIM = 0.395 V, Current limit =  6.89 A
+  27,  // VILIM = 0.419 V, Current limit =  7.39 A
+  28,  // VILIM = 0.446 V, Current limit =  7.93 A
+  29,  // VILIM = 0.476 V, Current limit =  8.52 A
+  30,  // VILIM = 0.508 V, Current limit =  9.17 A
+  31,  // VILIM = 0.545 V, Current limit =  9.89 A
+  54,  // VILIM = 0.624 V, Current limit = 11.49 A
+  55,  // VILIM = 0.661 V, Current limit = 12.23 A
+  56,  // VILIM = 0.701 V, Current limit = 13.02 A
+  57,  // VILIM = 0.744 V, Current limit = 13.87 A
+  58,  // VILIM = 0.789 V, Current limit = 14.79 A
+  59,  // VILIM = 0.839 V, Current limit = 15.78 A
+  60,  // VILIM = 0.893 V, Current limit = 16.85 A
+  61,  // VILIM = 0.952 V, Current limit = 18.04 A
+  62,  // VILIM = 1.017 V, Current limit = 19.34 A
+  63,  // VILIM = 1.089 V, Current limit = 20.78 A
+  85,  // VILIM = 1.179 V, Current limit = 22.58 A
+  86,  // VILIM = 1.249 V, Current limit = 23.97 A
+  87,  // VILIM = 1.323 V, Current limit = 25.46 A
+  88,  // VILIM = 1.402 V, Current limit = 27.04 A
+  89,  // VILIM = 1.487 V, Current limit = 28.74 A
+  90,  // VILIM = 1.579 V, Current limit = 30.57 A
+  91,  // VILIM = 1.678 V, Current limit = 32.55 A
+  92,  // VILIM = 1.785 V, Current limit = 34.71 A
+  93,  // VILIM = 1.904 V, Current limit = 37.07 A
+  94,  // VILIM = 2.034 V, Current limit = 39.68 A
+  95,  // VILIM = 2.178 V, Current limit = 42.57 A
+};
+
 // Given a jrk product code and 5-bit DAC level, this returns the expected
 // voltage we will see on the pin of the motor driver that sets the current
 // limit.  The units are set such that 0x10000 is the DAC reference, and 0 is
@@ -186,42 +364,96 @@ static const uint16_t jrk_40v_recommended_codes[] =
 static uint16_t jrk_get_vilim(uint32_t product, uint8_t dac_level)
 {
   const uint16_t * table;
-  if (product == JRK_PRODUCT_UMC04A_40V || product == JRK_PRODUCT_UMC05A_40V)
+  if (product == JRK_PRODUCT_UMC04A_30V)
   {
-    table = jrk_40v_vilim_table;
+    table = jrk_umc04a_30v_vilim_table;
+  }
+  else if (product == JRK_PRODUCT_UMC04A_40V)
+  {
+    table = jrk_umc04a_40v_vilim_table;
+  }
+  else if (product == JRK_PRODUCT_UMC05A_30V)
+  {
+    table = jrk_umc05a_30v_vilim_table;
+  }
+  else if (product == JRK_PRODUCT_UMC05A_40V)
+  {
+    table = jrk_umc05a_40v_vilim_table;
   }
   else
   {
-    table = jrk_30v_vilim_table;
+    return 0;
   }
   return table[dac_level & 0x1F];
 }
 
-const uint16_t * jrk_get_recommended_current_limit_codes(
-  uint32_t product, size_t * code_count)
+const uint16_t * jrk_get_recommended_encoded_hard_current_limits(
+  uint32_t product, size_t * count)
 {
-  size_t count = 0;
   const uint16_t * table = 0;
+  size_t size = 0;
 
-  if (product == JRK_PRODUCT_UMC04A_40V || product == JRK_PRODUCT_UMC05A_40V)
+  if (product == JRK_PRODUCT_UMC04A_30V)
   {
-    table = jrk_40v_recommended_codes;
-    count = sizeof(jrk_40v_recommended_codes) / sizeof(uint16_t);
+    table = jrk_umc04a_30v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc04a_30v_recommended_encoded_hard_current_limits);
+  }
+  else if (product == JRK_PRODUCT_UMC04A_40V)
+  {
+    table = jrk_umc04a_40v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc04a_40v_recommended_encoded_hard_current_limits);
+  }
+  else if (product == JRK_PRODUCT_UMC05A_30V)
+  {
+    table = jrk_umc05a_30v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc05a_30v_recommended_encoded_hard_current_limits);
+  }
+  else if (product == JRK_PRODUCT_UMC05A_40V)
+  {
+    table = jrk_umc05a_40v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc05a_40v_recommended_encoded_hard_current_limits);
   }
   else
   {
-    table = jrk_30v_recommended_codes;
-    count = sizeof(jrk_30v_recommended_codes) / sizeof(uint16_t);
+    table = NULL;
+    size = 0;
   }
 
-  if (code_count) { *code_count = count; }
+  if (count) { *count = size / sizeof(uint16_t); }
   return table;
 }
 
-// Gets the rsense resistor value for the jrk, in units of mohms.
-static uint8_t jrk_get_rsense(uint32_t product)
+static uint8_t jrk_get_rsense_numerator(uint32_t product)
 {
-  if (product == JRK_PRODUCT_UMC04A_40V || product == JRK_PRODUCT_UMC05A_40V)
+  if (product == JRK_PRODUCT_UMC04A_30V)
+  {
+    return 1;
+  }
+  else if (product == JRK_PRODUCT_UMC04A_40V)
+  {
+    return 2;
+  }
+  else if (product == JRK_PRODUCT_UMC05A_30V)
+  {
+    return 5;
+  }
+  else if (product == JRK_PRODUCT_UMC05A_40V)
+  {
+    return 5;
+  }
+  else
+  {
+    return 1;
+  }
+}
+
+static uint8_t jrk_get_rsense_denominator(uint32_t product)
+{
+  if (product == JRK_PRODUCT_UMC05A_30V)
+  {
+    return 3;
+  }
+  else if (product == JRK_PRODUCT_UMC05A_40V)
   {
     return 2;
   }
@@ -238,16 +470,18 @@ static uint8_t jrk_get_rsense(uint32_t product)
 // produce 'current' variable (see jrk_variables_get_current()).
 //
 // raw_current: From jrk_variables_get_raw_current().
-// current_limit_code: The hardware current limiting configuration, from
+// encoded_current_limit: The hardware current limiting configuration, from
 //   from jrk_variables_get_max_current().
-// rsense: Sense resistor resistance, in units of mohms.
+// rsense_numerator divided by rsense_denominator:
+//   Sense resistor resistance, in units of mohms.
 // current_offset_calibration: from jrk_settings_get_current_offset_calibration()
 // current_scale_calibration: from jrk_settings_get_current_scale_calibration()
 static uint16_t jrk_calculate_measured_current_ma_type1(
   uint16_t raw_current,
-  uint16_t current_limit_code,
+  uint16_t encoded_current_limit,
   int16_t duty_cycle,
-  uint8_t rsense,
+  uint8_t rsense_numerator,
+  uint8_t rsense_denominator,
   int16_t current_offset_calibration,
   int16_t current_scale_calibration
   )
@@ -260,7 +494,7 @@ static uint16_t jrk_calculate_measured_current_ma_type1(
   uint16_t offset = 800 + current_offset_calibration;
   uint16_t scale = 1875 + current_scale_calibration;
 
-  uint8_t dac_ref = current_limit_code >> 5 & 3;
+  uint8_t dac_ref = encoded_current_limit >> 5 & 3;
 
   // Convert the reading on the current sense line to units of mV/16.
   uint16_t current = raw_current >> ((2 - dac_ref) & 3);
@@ -287,7 +521,8 @@ static uint16_t jrk_calculate_measured_current_ma_type1(
 
   // Divide by the duty cycle and apply scaling factors to get the current in
   // milliamps.  The product will be at most 0xFFFF*(2*1875) = 0x0EA5F15A.
-  uint32_t current32 = current * scale / (duty_cycle_unsigned * rsense);
+  uint32_t current32 = current * scale * rsense_denominator /
+    (duty_cycle_unsigned * rsense_numerator);
 
   if (current32 > 0xFFFF)
   {
@@ -299,7 +534,8 @@ static uint16_t jrk_calculate_measured_current_ma_type1(
   }
 }
 
-uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t code)
+uint32_t jrk_current_limit_decode(
+  const jrk_settings * settings, uint16_t encoded_limit)
 {
   uint32_t product = jrk_settings_get_product(settings);
   if (!settings || !product) { return 0; }
@@ -309,14 +545,15 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t co
   {
     // These jrks ignore the top 8 bits and treat codes as zero if the top 3
     // bits are invalid.
-    code &= 0xFF;
-    if (code > 95) { code = 0; }
+    encoded_limit &= 0xFF;
+    if (encoded_limit > 95) { encoded_limit = 0; }
 
     return jrk_calculate_measured_current_ma_type1(
-      jrk_get_vilim(product, code & 0x1F),
-      code,
+      jrk_get_vilim(product, encoded_limit & 0x1F),
+      encoded_limit,
       600,
-      jrk_get_rsense(product),
+      jrk_get_rsense_numerator(product),
+      jrk_get_rsense_denominator(product),
       jrk_settings_get_current_offset_calibration(settings),
       jrk_settings_get_current_scale_calibration(settings)
     );
@@ -325,39 +562,38 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t co
   return 0;
 }
 
-uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma)
+uint16_t jrk_current_limit_encode(const jrk_settings * settings, uint32_t ma)
 {
   uint32_t product = jrk_settings_get_product(settings);
   if (product == 0) { return 0; }
 
   size_t count;
-  const uint16_t * codes = jrk_get_recommended_current_limit_codes(product, &count);
+  const uint16_t * table =
+    jrk_get_recommended_encoded_hard_current_limits(product, &count);
 
   // Assumption: The table is in ascending order, so we want to return the last
-  // one that is less than or equal to the desired current.
-  // Assumption: 0 is a valid code and a good default to use.
+  // one that is less than or equal to the desired current limit.
+  // Assumption: 0 is a valid encoded current limit and a good default to use.
 
-  // Assumption: 0 is one of the recommended codes, so let's use it if we can't
-  // find any other good ones.
   uint16_t code = 0;
   uint16_t found_ma = 0;
 
   for (size_t i = 0; i < count; i++)
   {
-    uint8_t candidate = codes[i];
-    uint32_t candidate_ma = jrk_current_limit_code_to_ma(settings, candidate);
+    uint8_t candidate = table[i];
+    uint32_t candidate_ma = jrk_current_limit_decode(settings, candidate);
 
     if (candidate_ma > ma)
     {
-      // The codes are in ascending order so we won't find any better matches
+      // The table is in ascending order so we won't find any better matches
       // from now on.
       break;
     }
 
-    // We want to find a code that gives a current less than or equal to the
-    // target current.  The first part of the if condition takes care of that.
-    // The second part of the if condition ensures that if multiple codes map
-    // to zero then we will pick the smallest one.
+    // We want to find a current limit less than or equal to the target current.
+    // The first part of the if condition takes care of that.  The second part
+    // of the if condition ensures that if multiple encoded values map to 0 mA
+    // then we will pick the smallest one.
     if (candidate_ma <= ma && candidate_ma > found_ma)
     {
       code = candidate;
@@ -376,33 +612,7 @@ uint32_t jrk_calculate_measured_current_ma(
   if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V ||
     product == JRK_PRODUCT_UMC05A_30V || product == JRK_PRODUCT_UMC05A_40V)
   {
-    uint16_t firmware_calculated_current = jrk_variables_get_current(vars);
-
-    // Enable this code if you want to compare the firmware currrent calculation
-    // to the software one and detect mismatches.
-    if (0)
-    {
-      uint16_t software_calculated_current =
-        jrk_calculate_measured_current_ma_type1(
-          jrk_variables_get_raw_current(vars),
-          jrk_variables_get_current_limit_code(vars),
-          jrk_variables_get_last_duty_cycle(vars),
-          jrk_get_rsense(product),
-          jrk_settings_get_current_offset_calibration(settings),
-          jrk_settings_get_current_scale_calibration(settings)
-          );
-
-      if (firmware_calculated_current != software_calculated_current)
-      {
-        // The only reason this should happen is if there is a bug in the firmware
-        // or software calculation.
-        fprintf(stderr, "warning: current calculation mismatch: %u != %u\n",
-          firmware_calculated_current, software_calculated_current);
-        fflush(stderr);
-      }
-    }
-
-    return firmware_calculated_current;
+    return jrk_variables_get_current(vars);
   }
 
   return 0;
@@ -418,7 +628,7 @@ uint32_t jrk_calculate_raw_current_mv64(
     product == JRK_PRODUCT_UMC05A_30V || product == JRK_PRODUCT_UMC05A_40V)
   {
     uint16_t current = jrk_variables_get_raw_current(vars);
-    uint8_t dac_ref = jrk_variables_get_current_limit_code(vars) >> 5 & 3;
+    uint8_t dac_ref = jrk_variables_get_encoded_hard_current_limit(vars) >> 5 & 3;
     return current << dac_ref;
   }
 

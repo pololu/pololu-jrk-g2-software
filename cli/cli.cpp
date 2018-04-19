@@ -25,13 +25,13 @@ static const char help[] =
   "  --force-duty-cycle-target N  Force the duty cycle target to value N.\n"
   "  --force-duty-cycle NUM       Force the duty cycle to value NUM.\n"
   "\n"
-  "Permanent settings:\n"
+  "EEPROM (non-volatile) settings:\n"
   "  --restore-defaults           Restore device's factory settings\n"
-  "  --settings FILE              Load settings file into device.\n"
-  "  --get-settings FILE          Read device settings and write to file.\n"
+  "  --settings FILE              Load settings file into EEPROM.\n"
+  "  --get-settings FILE          Read EEPROM settings and write to file.\n"
   "  --fix-settings IN OUT        Read settings from a file and fix them.\n"
   "\n"
-  "Override settings temporarily:\n"
+  "RAM (volatile) settings:\n"
   "  --get-ram-settings FILE      Read settings from device RAM and write to file.\n"
   "  --ram-settings FILE          Load settings from file into device RAM\n"
   "                               (does not work for all settings)\n"
@@ -42,15 +42,15 @@ static const char help[] =
   "  --max-duty-cycle NUM         Set max duty cycle to NUM (0 to 600)\n"
   "  --max-duty-cycle-fwd NUM     Set max duty cycle forward to NUM (0 to 600)\n"
   "  --max-duty-cycle-rev NUM     Set max duty cycle reverse to NUM (0 to 600)\n"
-  "  --current-limit NUM          Set (hardware) current limit in milliamps.\n"
-  "  --current-limit-fwd NUM      Set forward current limit in milliamps.\n"
-  "  --current-limit-rev NUM      Set reverse current limit in milliamps.\n"
+  "  --current-limit NUM          Set hard current limit in milliamps.\n"
+  "  --current-limit-fwd NUM      Set hard forward current limit in milliamps.\n"
+  "  --current-limit-rev NUM      Set hard reverse current limit in milliamps.\n"
   "\n"
-  "Current limit codes:\n"
-  "  --current-codes              Print a CSV with current limit codes and calibrated\n"
-  "                               current limit values in milliamps.\n"
-  "  --current-code-to-ma NUM     Convert current limit code to milliamps.\n"
-  "  --current-ma-to-code NUM     Convert current limit in milliamps to a code.\n"
+  "Encoded current limits:\n"
+  "  --current-table              Print a CSV with encoded hard current limits and\n"
+  "                               calibrated current limits in milliamps.\n"
+  "  --current-decode NUM         Convert encoded current limit to milliamps.\n"
+  "  --current-encode NUM         Encode specified current limit in milliamps.\n"
   "\n"
   "FILE can be \"-\" to specify standard input or output.\n"
   "\n"
@@ -97,11 +97,11 @@ struct arguments
 
   bool restore_defaults = false;
 
-  bool set_settings = false;
-  std::string set_settings_filename;
+  bool set_eeprom_settings = false;
+  std::string set_eeprom_settings_filename;
 
-  bool get_settings = false;
-  std::string get_settings_filename;
+  bool get_eeprom_settings = false;
+  std::string get_eeprom_settings_filename;
 
   bool fix_settings = false;
   std::string fix_settings_input_filename;
@@ -139,12 +139,12 @@ struct arguments
   bool override_current_limit_reverse = false;
   uint32_t current_limit_reverse_ma = 0;
 
-  bool get_current_limit_codes = false;
+  bool get_current_limit_table = false;
 
-  bool convert_current_limit_code_to_ma = false;
-  uint16_t current_limit_code_to_convert;
+  bool current_limit_decode = false;
+  uint16_t encoded_current_limit_to_convert;
 
-  bool convert_current_limit_ma_to_code = false;
+  bool current_limit_encode = false;
   uint32_t current_limit_ma_to_convert;
 
   bool get_debug_data = false;
@@ -165,16 +165,16 @@ struct arguments
       force_duty_cycle_target ||
       force_duty_cycle ||
       restore_defaults ||
-      set_settings ||
-      get_settings ||
+      set_eeprom_settings ||
+      get_eeprom_settings ||
       fix_settings ||
       set_ram_settings ||
       get_ram_settings ||
       reinitialize ||
       override_specific_settings() ||
-      get_current_limit_codes ||
-      convert_current_limit_code_to_ma ||
-      convert_current_limit_ma_to_code ||
+      get_current_limit_table ||
+      current_limit_decode ||
+      current_limit_encode ||
       get_debug_data ||
       test_procedure;
   }
@@ -365,15 +365,17 @@ static arguments parse_args(int argc, char ** argv)
     {
       args.restore_defaults = true;
     }
-    else if (arg == "--settings" || arg == "--set-settings" || arg == "--configure")
+    else if (arg == "--settings" || arg == "--set-settings" \
+      || arg == "--set-eeprom-settings" || arg == "--configure")
     {
-      args.set_settings = true;
-      args.set_settings_filename = parse_arg_string(arg_reader);
+      args.set_eeprom_settings = true;
+      args.set_eeprom_settings_filename = parse_arg_string(arg_reader);
     }
-    else if (arg == "--get-settings" || arg == "--getconf")
+    else if (arg == "--get-settings" || arg == "--get-eeprom-settings" || \
+      arg == "--getconf")
     {
-      args.get_settings = true;
-      args.get_settings_filename = parse_arg_string(arg_reader);
+      args.get_eeprom_settings = true;
+      args.get_eeprom_settings_filename = parse_arg_string(arg_reader);
     }
     else if (arg == "--fix-settings")
     {
@@ -449,18 +451,18 @@ static arguments parse_args(int argc, char ** argv)
       args.override_current_limit_reverse = true;
       args.current_limit_reverse_ma = parse_arg_int<uint32_t>(arg_reader);
     }
-    else if (arg == "--current-codes" || arg == "--current-limit-codes")
+    else if (arg == "--current-table" || arg == "--current-limit-table")
     {
-      args.get_current_limit_codes = true;
+      args.get_current_limit_table = true;
     }
-    else if (arg == "--current-code-to-ma" || arg == "--current-limit-code-to-ma")
+    else if (arg == "--current-decode" || arg == "--current-limit-decode")
     {
-      args.convert_current_limit_code_to_ma = true;
-      args.current_limit_code_to_convert = parse_arg_int<uint16_t>(arg_reader);
+      args.current_limit_decode = true;
+      args.encoded_current_limit_to_convert = parse_arg_int<uint16_t>(arg_reader);
     }
-    else if (arg == "--current-ma-to-code" || arg == "--current-limit-ma-to-code")
+    else if (arg == "--current-encode" || arg == "--current-limit-encode")
     {
-      args.convert_current_limit_ma_to_code = true;
+      args.current_limit_encode = true;
       args.current_limit_ma_to_convert = parse_arg_int<uint32_t>(arg_reader);
     }
     else if (arg == "--debug")
@@ -534,17 +536,17 @@ static void get_status(device_selector & selector, bool full_output)
     firmware_version, cmd_port, ttl_port, full_output);
 }
 
-static void get_settings(device_selector & selector,
+static void get_eeprom_settings(device_selector & selector,
   const std::string & filename)
 {
-  jrk::settings settings = handle(selector).get_settings();
+  jrk::settings settings = handle(selector).get_eeprom_settings();
 
   std::string settings_string = settings.to_string();
 
   write_string_to_file_or_pipe(filename, settings_string);
 }
 
-static void set_settings(device_selector & selector,
+static void set_eeprom_settings(device_selector & selector,
   const std::string & filename)
 {
   std::string settings_string = read_string_from_file_or_pipe(filename);
@@ -562,7 +564,7 @@ static void set_settings(device_selector & selector,
   std::cerr << warnings;
 
   jrk::handle handle(device);
-  handle.set_settings(settings);
+  handle.set_eeprom_settings(settings);
   handle.reinitialize();
 }
 
@@ -597,35 +599,35 @@ static void set_ram_settings(device_selector & selector,
   handle.set_ram_settings(settings);
 }
 
-static void get_current_limit_codes(device_selector & selector)
+static void get_current_limit_table(device_selector & selector)
 {
   jrk::device device = selector.select_device();
   jrk::handle handle(device);
-  jrk::settings settings = handle.get_settings();
-  std::vector<uint16_t> codes =
-    jrk::get_recommended_current_limit_codes(device.get_product());
+  jrk::settings settings = handle.get_eeprom_settings();
+  std::vector<uint16_t> encoded_limits =
+    jrk::get_recommended_encoded_hard_current_limits(device.get_product());
 
-  std::cout << "code,ma" << std::endl;
-  for (uint16_t code : codes)
+  std::cout << "encoded_limit,milliamps" << std::endl;
+  for (uint16_t encoded_limit : encoded_limits)
   {
-    uint32_t ma = jrk::current_limit_code_to_ma(settings, code);
-    std::cout << code << "," << ma << std::endl;
+    uint32_t ma = jrk::current_limit_decode(settings, encoded_limit);
+    std::cout << encoded_limit << "," << ma << std::endl;
   }
 }
 
-static void convert_current_limit_code_to_ma(device_selector & selector, uint16_t code)
+static void current_limit_decode(device_selector & selector, uint16_t encoded_limit)
 {
   jrk::handle handle(selector.select_device());
-  jrk::settings settings = handle.get_settings();
-  uint32_t ma = jrk::current_limit_code_to_ma(settings, code);
+  jrk::settings settings = handle.get_eeprom_settings();
+  uint32_t ma = jrk::current_limit_decode(settings, encoded_limit);
   std::cout << ma << std::endl;
 }
 
-static void convert_current_limit_ma_to_code(device_selector & selector, uint32_t ma)
+static void current_limit_encode(device_selector & selector, uint32_t ma)
 {
   jrk::handle handle(selector.select_device());
-  jrk::settings settings = handle.get_settings();
-  uint16_t code = jrk::current_limit_ma_to_code(settings, ma);
+  jrk::settings settings = handle.get_eeprom_settings();
+  uint16_t code = jrk::current_limit_encode(settings, ma);
   std::cout << code << std::endl;
 }
 
@@ -730,20 +732,20 @@ static void override_specific_settings(device_selector & selector,
 
   if (args.override_current_limit_forward)
   {
-    uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_forward_ma);
-    buffer[0] = code & 0xFF;
-    buffer[1] = code >> 8 & 0xFF;
+    uint16_t v = jrk::current_limit_encode(settings, args.current_limit_forward_ma);
+    buffer[0] = v & 0xFF;
+    buffer[1] = v >> 8 & 0xFF;
     handle.set_ram_setting_segment(
-      JRK_SETTING_CURRENT_LIMIT_CODE_FORWARD, 2, buffer);
+      JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_FORWARD, 2, buffer);
   }
 
   if (args.override_current_limit_reverse)
   {
-    uint16_t code = jrk::current_limit_ma_to_code(settings, args.current_limit_reverse_ma);
-    buffer[0] = code & 0xFF;
-    buffer[1] = code >> 8 & 0xFF;
+    uint16_t v = jrk::current_limit_encode(settings, args.current_limit_reverse_ma);
+    buffer[0] = v & 0xFF;
+    buffer[1] = v >> 8 & 0xFF;
     handle.set_ram_setting_segment(
-      JRK_SETTING_CURRENT_LIMIT_CODE_REVERSE, 2, buffer);
+      JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_REVERSE, 2, buffer);
   }
 }
 
@@ -801,9 +803,9 @@ static void run(const arguments & args)
       args.fix_settings_output_filename);
   }
 
-  if (args.get_settings)
+  if (args.get_eeprom_settings)
   {
-    get_settings(selector, args.get_settings_filename);
+    get_eeprom_settings(selector, args.get_eeprom_settings_filename);
   }
 
   if (args.restore_defaults)
@@ -811,9 +813,9 @@ static void run(const arguments & args)
     handle(selector).restore_defaults();
   }
 
-  if (args.set_settings)
+  if (args.set_eeprom_settings)
   {
-    set_settings(selector, args.set_settings_filename);
+    set_eeprom_settings(selector, args.set_eeprom_settings_filename);
   }
 
   if (args.reinitialize)
@@ -821,19 +823,19 @@ static void run(const arguments & args)
     handle(selector).reinitialize();
   }
 
-  if (args.get_current_limit_codes)
+  if (args.get_current_limit_table)
   {
-    get_current_limit_codes(selector);
+    get_current_limit_table(selector);
   }
 
-  if (args.convert_current_limit_code_to_ma)
+  if (args.current_limit_decode)
   {
-    convert_current_limit_code_to_ma(selector, args.current_limit_code_to_convert);
+    current_limit_decode(selector, args.encoded_current_limit_to_convert);
   }
 
-  if (args.convert_current_limit_ma_to_code)
+  if (args.current_limit_encode)
   {
-    convert_current_limit_ma_to_code(selector, args.current_limit_ma_to_convert);
+    current_limit_encode(selector, args.current_limit_ma_to_convert);
   }
 
   if (args.get_ram_settings)

@@ -569,19 +569,19 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
   }
-  else if (!strcmp(key, "overcurrent_threshold"))
+  else if (!strcmp(key, "hard_overcurrent_threshold"))
   {
-    int64_t overcurrent_threshold;
-    if (jrk_string_to_i64(value, &overcurrent_threshold))
+    int64_t hard_overcurrent_threshold;
+    if (jrk_string_to_i64(value, &hard_overcurrent_threshold))
     {
-      return jrk_error_create("Invalid overcurrent_threshold value.");
+      return jrk_error_create("Invalid hard_overcurrent_threshold value.");
     }
-    if (overcurrent_threshold < 0 || overcurrent_threshold > UINT8_MAX)
+    if (hard_overcurrent_threshold < 0 || hard_overcurrent_threshold > UINT8_MAX)
     {
       return jrk_error_create(
-        "The overcurrent_threshold value is out of range.");
+        "The hard_overcurrent_threshold value is out of range.");
     }
-    jrk_settings_set_overcurrent_threshold(settings, overcurrent_threshold);
+    jrk_settings_set_hard_overcurrent_threshold(settings, hard_overcurrent_threshold);
   }
   else if (!strcmp(key, "current_offset_calibration"))
   {
@@ -718,33 +718,33 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_max_duty_cycle_reverse(settings, max_duty_cycle_reverse);
   }
-  else if (!strcmp(key, "current_limit_code_forward"))
+  else if (!strcmp(key, "encoded_hard_current_limit_forward"))
   {
-    int64_t current_limit_code_forward;
-    if (jrk_string_to_i64(value, &current_limit_code_forward))
+    int64_t encoded_hard_current_limit_forward;
+    if (jrk_string_to_i64(value, &encoded_hard_current_limit_forward))
     {
-      return jrk_error_create("Invalid current_limit_code_forward value.");
+      return jrk_error_create("Invalid encoded_hard_current_limit_forward value.");
     }
-    if (current_limit_code_forward < 0 || current_limit_code_forward > UINT16_MAX)
+    if (encoded_hard_current_limit_forward < 0 || encoded_hard_current_limit_forward > UINT16_MAX)
     {
       return jrk_error_create(
-        "The current_limit_code_forward value is out of range.");
+        "The encoded_hard_current_limit_forward value is out of range.");
     }
-    jrk_settings_set_current_limit_code_forward(settings, current_limit_code_forward);
+    jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
   }
-  else if (!strcmp(key, "current_limit_code_reverse"))
+  else if (!strcmp(key, "encoded_hard_current_limit_reverse"))
   {
-    int64_t current_limit_code_reverse;
-    if (jrk_string_to_i64(value, &current_limit_code_reverse))
+    int64_t encoded_hard_current_limit_reverse;
+    if (jrk_string_to_i64(value, &encoded_hard_current_limit_reverse))
     {
-      return jrk_error_create("Invalid current_limit_code_reverse value.");
+      return jrk_error_create("Invalid encoded_hard_current_limit_reverse value.");
     }
-    if (current_limit_code_reverse < 0 || current_limit_code_reverse > UINT16_MAX)
+    if (encoded_hard_current_limit_reverse < 0 || encoded_hard_current_limit_reverse > UINT16_MAX)
     {
       return jrk_error_create(
-        "The current_limit_code_reverse value is out of range.");
+        "The encoded_hard_current_limit_reverse value is out of range.");
     }
-    jrk_settings_set_current_limit_code_reverse(settings, current_limit_code_reverse);
+    jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);
   }
   else if (!strcmp(key, "brake_duration_forward"))
   {
@@ -774,33 +774,33 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_brake_duration_reverse(settings, brake_duration_reverse);
   }
-  else if (!strcmp(key, "max_current_forward"))
+  else if (!strcmp(key, "soft_current_limit_forward"))
   {
-    int64_t max_current_forward;
-    if (jrk_string_to_i64(value, &max_current_forward))
+    int64_t soft_current_limit_forward;
+    if (jrk_string_to_i64(value, &soft_current_limit_forward))
     {
-      return jrk_error_create("Invalid max_current_forward value.");
+      return jrk_error_create("Invalid soft_current_limit_forward value.");
     }
-    if (max_current_forward < 0 || max_current_forward > UINT16_MAX)
+    if (soft_current_limit_forward < 0 || soft_current_limit_forward > UINT16_MAX)
     {
       return jrk_error_create(
-        "The max_current_forward value is out of range.");
+        "The soft_current_limit_forward value is out of range.");
     }
-    jrk_settings_set_max_current_forward(settings, max_current_forward);
+    jrk_settings_set_soft_current_limit_forward(settings, soft_current_limit_forward);
   }
-  else if (!strcmp(key, "max_current_reverse"))
+  else if (!strcmp(key, "soft_current_limit_reverse"))
   {
-    int64_t max_current_reverse;
-    if (jrk_string_to_i64(value, &max_current_reverse))
+    int64_t soft_current_limit_reverse;
+    if (jrk_string_to_i64(value, &soft_current_limit_reverse))
     {
-      return jrk_error_create("Invalid max_current_reverse value.");
+      return jrk_error_create("Invalid soft_current_limit_reverse value.");
     }
-    if (max_current_reverse < 0 || max_current_reverse > UINT16_MAX)
+    if (soft_current_limit_reverse < 0 || soft_current_limit_reverse > UINT16_MAX)
     {
       return jrk_error_create(
-        "The max_current_reverse value is out of range.");
+        "The soft_current_limit_reverse value is out of range.");
     }
-    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+    jrk_settings_set_soft_current_limit_reverse(settings, soft_current_limit_reverse);
   }
   else if (!strcmp(key, "coast_when_off"))
   {

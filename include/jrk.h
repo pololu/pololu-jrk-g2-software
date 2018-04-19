@@ -58,7 +58,7 @@ void jrk_string_free(char *);
 
 // Simple name lookup ///////////////////////////////////////////////////////////
 
-/// Looks up a short code string without spaces representing the product.  The
+/// Looks up a short name string without spaces representing the product.  The
 /// product argument should be one of the JRK_PRODUCT_* macros, but if it is
 /// not, this function returns an empty string.  The returned string will be
 /// valid indefinitely and should not be freed.
@@ -240,8 +240,8 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 //
 // The input mode setting specifies how you want to control the jrk.  It
 // determines the definition of the input and target variables.  The input
-// variable is raw measurement of the jrk's input.  The target variable is the
-// desired state of the system's output, and feeds into the PID feedback
+// variable is a raw measurement of the jrk's input.  The target variable is
+// the desired state of the system's output, and feeds into the PID feedback
 // algorithm.
 //
 // - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
@@ -953,7 +953,7 @@ void jrk_settings_set_current_samples_exponent(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 
-// Sets the overcurrent_threshold setting.
+// Sets the hard_overcurrent_threshold setting.
 //
 // This is the number of consecutive PID periods where the the hardware current
 // chopping must occur before the jrk triggers a "Max. current exceeded" error.
@@ -962,13 +962,13 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 // starting up) but you still want to it to be an error when your motor leads
 // are shorted out.
 JRK_API
-void jrk_settings_set_overcurrent_threshold(jrk_settings *,
-  uint8_t overcurrent_threshold);
+void jrk_settings_set_hard_overcurrent_threshold(jrk_settings *,
+  uint8_t hard_overcurrent_threshold);
 
-// Gets the overcurrent_threshold setting, which is described in
-// jrk_settings_set_overcurrent_threshold.
+// Gets the hard_overcurrent_threshold setting, which is described in
+// jrk_settings_set_hard_overcurrent_threshold.
 JRK_API
-uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings *);
+uint8_t jrk_settings_get_hard_overcurrent_threshold(const jrk_settings *);
 
 // Sets the current_offset_calibration setting.
 //
@@ -1137,40 +1137,40 @@ void jrk_settings_set_max_duty_cycle_reverse(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 
-// Sets the current_limit_code_forward setting.
+// Sets the encoded_hard_current_limit_forward setting.
 //
 // Sets the current limit to be used when driving forward.
 //
-// This setting is not actually a current, it is a code telling the jrk how to
-// set up its current limiting hardware.
+// This setting is not actually a current, it is an encoded value telling
+// the jrk how to set up its current limiting hardware.
 //
 // The correspondence between this setting and the actual current limit
 // in milliamps depends on what product you are using.  See also:
 //
-// - jrk_current_limit_code_to_ma()
-// - jrk_current_limit_ma_to_code()
-// - jrk_current_limit_code_step()
+// - jrk_current_limit_decode()
+// - jrk_current_limit_encode()
+// - jrk_get_recommended_encoded_hard_current_limits()
 JRK_API
-void jrk_settings_set_current_limit_code_forward(jrk_settings *,
-  uint16_t current_limit_code_forward);
+void jrk_settings_set_encoded_hard_current_limit_forward(jrk_settings *,
+  uint16_t encoded_hard_current_limit_forward);
 
-// Gets the current_limit_code_forward setting, which is described in
-// jrk_settings_set_current_limit_code_forward.
+// Gets the encoded_hard_current_limit_forward setting, which is described in
+// jrk_settings_set_encoded_hard_current_limit_forward.
 JRK_API
-uint16_t jrk_settings_get_current_limit_code_forward(const jrk_settings *);
+uint16_t jrk_settings_get_encoded_hard_current_limit_forward(const jrk_settings *);
 
-// Sets the current_limit_code_reverse setting.
+// Sets the encoded_hard_current_limit_reverse setting.
 //
 // Sets the current limit to be used when driving in reverse.
-// See the documentation of current_limit_code_forward.
+// See the documentation of encoded_hard_current_limit_forward.
 JRK_API
-void jrk_settings_set_current_limit_code_reverse(jrk_settings *,
-  uint16_t current_limit_code_reverse);
+void jrk_settings_set_encoded_hard_current_limit_reverse(jrk_settings *,
+  uint16_t encoded_hard_current_limit_reverse);
 
-// Gets the current_limit_code_reverse setting, which is described in
-// jrk_settings_set_current_limit_code_reverse.
+// Gets the encoded_hard_current_limit_reverse setting, which is described in
+// jrk_settings_set_encoded_hard_current_limit_reverse.
 JRK_API
-uint16_t jrk_settings_get_current_limit_code_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_encoded_hard_current_limit_reverse(const jrk_settings *);
 
 // Sets the brake_duration_forward setting.
 //
@@ -1203,7 +1203,7 @@ void jrk_settings_set_brake_duration_reverse(jrk_settings *,
 JRK_API
 uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 
-// Sets the max_current_forward setting.
+// Sets the soft_current_limit_forward setting.
 //
 // This is the maximum current while driving forward.  If the current exceeds
 // this value, the jrk will trigger a "Max. current exceeded" error.
@@ -1212,15 +1212,15 @@ uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 //
 // For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
-void jrk_settings_set_max_current_forward(jrk_settings *,
-  uint16_t max_current_forward);
+void jrk_settings_set_soft_current_limit_forward(jrk_settings *,
+  uint16_t soft_current_limit_forward);
 
-// Gets the max_current_forward setting, which is described in
-// jrk_settings_set_max_current_forward.
+// Gets the soft_current_limit_forward setting, which is described in
+// jrk_settings_set_soft_current_limit_forward.
 JRK_API
-uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
+uint16_t jrk_settings_get_soft_current_limit_forward(const jrk_settings *);
 
-// Sets the max_current_reverse setting.
+// Sets the soft_current_limit_reverse setting.
 //
 // This is the maximum current while driving in reverse.  If the current exceeds
 // this value, the jrk will trigger a "Max. current exceeded" error.
@@ -1229,13 +1229,13 @@ uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
 //
 // For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
-void jrk_settings_set_max_current_reverse(jrk_settings *,
-  uint16_t max_current_reverse);
+void jrk_settings_set_soft_current_limit_reverse(jrk_settings *,
+  uint16_t soft_current_limit_reverse);
 
-// Gets the max_current_reverse setting, which is described in
-// jrk_settings_set_max_current_reverse.
+// Gets the soft_current_limit_reverse setting, which is described in
+// jrk_settings_set_soft_current_limit_reverse.
 JRK_API
-uint16_t jrk_settings_get_max_current_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_soft_current_limit_reverse(const jrk_settings *);
 
 // Sets the coast_when_off setting.
 //
@@ -1590,9 +1590,9 @@ uint16_t jrk_variables_get_fbt_reading(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_raw_current(const jrk_variables *);
 
-// Gets the current_limit_code variable.
+// Gets the encoded_hard_current_limit variable.
 JRK_API
-uint16_t jrk_variables_get_current_limit_code(const jrk_variables *);
+uint16_t jrk_variables_get_encoded_hard_current_limit(const jrk_variables *);
 
 // Gets the last_duty_cycle variable.
 JRK_API
@@ -1898,7 +1898,8 @@ JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variable_segment(jrk_handle *,
   size_t index, size_t length, uint8_t * output, uint16_t flags);
 
-/// Reads all of the jrk's settings from EEPROM and returns them as an object.
+/// Reads all of the jrk's non-volatile settings from EEPROM and returns them as
+/// an object.
 ///
 /// The settings parameter should be a non-null pointer to a jrk_settings
 /// pointer, which will receive a pointer to a new settings object if and only
@@ -1907,9 +1908,9 @@ jrk_error * jrk_get_variable_segment(jrk_handle *,
 ///
 /// To access fields in the settings, see the jrk_settings_* functions.
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
+jrk_error * jrk_get_eeprom_settings(jrk_handle *, jrk_settings ** settings);
 
-/// Writes all of the jrk's non-volatile settings.
+/// Writes all of the jrk's non-volatile EEPROM settings.
 ///
 /// Internally, this function copies the settings and calls jrk_settings_fix()
 /// to make sure that the settings will be valid when they are written to the
@@ -1922,7 +1923,7 @@ jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
 /// Be careful not to call this command in a fast loop to avoid wearing out the
 /// jrk's EEPROM, which is rated for only 100,000 write cycles.
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_set_settings(jrk_handle *, const jrk_settings *);
+jrk_error * jrk_set_eeprom_settings(jrk_handle *, const jrk_settings *);
 
 /// Reads the jrk's RAM settings.
 ///
@@ -1958,8 +1959,8 @@ jrk_error * jrk_get_ram_settings(jrk_handle *, jrk_settings **);
 /// You can use this command to temporarily change settings such as PID
 /// coefficients and motor limits without modifying EEPROM or reinitializing the
 /// jrk.  This command takes effect immediately.  Some settings are not
-/// RAM in this way, so you will have to use jrk_set_settings() (which
-/// writes to EEPROM) and jrk_reinitialize() to change them.
+/// RAM in this way, so you will have to use jrk_set_eeprom_settings() and
+/// jrk_reinitialize() to change them.
 ///
 /// Note that this command works by RAM *all* of the jrk's RAM
 /// settings, so it needs knowledge of what those settings are.  If you are
@@ -2034,36 +2035,36 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 
 //// Current limiting and measurment ////////////////////////////////////////////
 
-/// Gets a list of the recommended current limit codes for the specified
+/// Gets a list of the recommended encoded hard current limits for the specified
 /// product.  They will be in ascending order by current limit in milliamps.
 JRK_API
-const uint16_t * jrk_get_recommended_current_limit_codes(
-  uint32_t product, size_t * code_count);
+const uint16_t * jrk_get_recommended_encoded_hard_current_limits(
+  uint32_t product, size_t * count);
 
-/// Converts max current codes to milliamps for the specified product.  You can
-/// use this to interpret the codes returned by
-/// jrk_settings_get_current_limit_code_forward() or
-/// jrk_settings_get_current_limit_code_reverse().
+/// Converts encoded current limit codes to milliamps for the specified product.  You can
+/// use this to interpret the encoded values returned by
+/// jrk_settings_get_encoded_hard_current_limit_forward() or
+/// jrk_settings_get_encoded_hard_current_limit_reverse().
 ///
-/// The code argument should be a current limit code.
-///
-/// See also jrk_current_limit_ma_to_code().
+/// See also jrk_current_limit_encode().
 JRK_API
-uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
+uint32_t jrk_current_limit_decode(const jrk_settings *, uint16_t encoded_limit);
 
-// Converts a max current value in milliamps into a recommended max current
-// code.  You can use this to get the raw values needed by
-// jrk_settings_set_current_limit_code_forward() or
-// jrk_settings_set_current_limit_code_reverse().
+// Converts a current limit value in milliamps into a recommended encoded hard
+// current limit value.
+//
+// You can use this to get the encoded values needed by
+// jrk_settings_set_encoded_hard_current_limit_forward() or
+// jrk_settings_set_encoded_hard_current_limit_reverse().
 //
 // Note that this function only returns codes that are in the recommended set, a
 // subset of the codes supported by the device.
 //
 // The ma argument should be a current limit in milliamps.
 //
-// See also jrk_current_limit_code_to_ma().
+// See also jrk_current_limit_decode().
 JRK_API
-uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
+uint16_t jrk_current_limit_encode(const jrk_settings *, uint32_t ma);
 
 // Calculates or retrieves the measured motor current, in milliamps, given a
 // settings object and a variables object read from the same device.
