@@ -131,14 +131,14 @@ void print_status(const jrk::variables & vars,
       << jrk::calculate_raw_current_mv64(settings, vars) / 64 << " mV"
       << std::endl;
 
-    std::cout << left_column << "Current limit: "
+    std::cout << left_column << "Hard current limit: "
       << convert_current_limit_ma_to_string(
-         jrk::current_limit_code_to_ma(settings,
-           vars.get_current_limit_code()))
+         jrk::current_limit_decode(settings,
+           vars.get_encoded_hard_current_limit()))
       << std::endl;
 
-    std::cout << left_column << "Current limit (code): "
-      << vars.get_current_limit_code()
+    std::cout << left_column << "Encoded hard current limit: "
+      << vars.get_encoded_hard_current_limit()
       << std::endl;
 
     std::cout << "Current chopping:" << std::endl;

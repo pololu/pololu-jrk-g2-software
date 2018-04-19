@@ -377,15 +377,15 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
-    if (overcurrent_threshold < 1)
+    uint8_t hard_overcurrent_threshold = jrk_settings_get_hard_overcurrent_threshold(settings);
+    if (hard_overcurrent_threshold < 1)
     {
-      overcurrent_threshold = 1;
+      hard_overcurrent_threshold = 1;
       jrk_sprintf(warnings,
-        "Warning: The overcurrent threshold was too low "
-        "so it will be changed to %u.\n", overcurrent_threshold);
+        "Warning: The hard overcurrent threshold was too low "
+        "so it will be changed to %u.\n", hard_overcurrent_threshold);
     }
-    jrk_settings_set_overcurrent_threshold(settings, overcurrent_threshold);
+    jrk_settings_set_hard_overcurrent_threshold(settings, hard_overcurrent_threshold);
   }
 
   {
@@ -546,37 +546,37 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t current_limit_code_forward = jrk_settings_get_current_limit_code_forward(settings);
-    if (current_limit_code_forward > 95)
+    uint16_t encoded_hard_current_limit_forward = jrk_settings_get_encoded_hard_current_limit_forward(settings);
+    if (encoded_hard_current_limit_forward > 95)
     {
-      current_limit_code_forward = 95;
+      encoded_hard_current_limit_forward = 95;
       jrk_sprintf(warnings,
-        "Warning: The current limit code forward was too high "
-        "so it will be changed to %u.\n", current_limit_code_forward);
+        "Warning: The encoded hard current limit forward was too high "
+        "so it will be changed to %u.\n", encoded_hard_current_limit_forward);
     }
-    jrk_settings_set_current_limit_code_forward(settings, current_limit_code_forward);
+    jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
   }
 
   {
-    uint16_t current_limit_code_reverse = jrk_settings_get_current_limit_code_reverse(settings);
-    if (current_limit_code_reverse > 95)
+    uint16_t encoded_hard_current_limit_reverse = jrk_settings_get_encoded_hard_current_limit_reverse(settings);
+    if (encoded_hard_current_limit_reverse > 95)
     {
-      current_limit_code_reverse = 95;
+      encoded_hard_current_limit_reverse = 95;
       jrk_sprintf(warnings,
-        "Warning: The current limit code reverse was too high "
-        "so it will be changed to %u.\n", current_limit_code_reverse);
+        "Warning: The encoded hard current limit reverse was too high "
+        "so it will be changed to %u.\n", encoded_hard_current_limit_reverse);
     }
-    jrk_settings_set_current_limit_code_reverse(settings, current_limit_code_reverse);
+    jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);
   }
 
   {
-    uint16_t max_current_forward = jrk_settings_get_max_current_forward(settings);
-    jrk_settings_set_max_current_forward(settings, max_current_forward);
+    uint16_t soft_current_limit_forward = jrk_settings_get_soft_current_limit_forward(settings);
+    jrk_settings_set_soft_current_limit_forward(settings, soft_current_limit_forward);
   }
 
   {
-    uint16_t max_current_reverse = jrk_settings_get_max_current_reverse(settings);
-    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+    uint16_t soft_current_limit_reverse = jrk_settings_get_soft_current_limit_reverse(settings);
+    jrk_settings_set_soft_current_limit_reverse(settings, soft_current_limit_reverse);
   }
 
   {

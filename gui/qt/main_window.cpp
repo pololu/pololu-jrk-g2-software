@@ -3037,7 +3037,7 @@ QWidget *main_window::setup_motor_tab()
   current_samples_combobox = setup_exponent_combobox(10);
   current_samples_combobox->setObjectName("current_samples_combobox");
 
-  overcurrent_threshold_label = new QLabel(tr("Overcurrent threshold:"));
+  overcurrent_threshold_label = new QLabel(tr("Hard overcurrent threshold:"));
   overcurrent_threshold_label->setObjectName("overcurrent_threshold_label");
 
   overcurrent_threshold_spinbox = new QSpinBox();
@@ -3222,14 +3222,14 @@ QWidget *main_window::setup_errors_tab()
   setup_error_row(JRK_ERROR_INPUT_INVALID, true, false, false);
   setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false, false);
   setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false, false);
-  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false, false);
+  setup_error_row(JRK_ERROR_SOFT_OVERCURRENT, false, false, false);
   setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_CRC, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true, false);
-  setup_error_row(JRK_ERROR_OVERCURRENT, false, false, false);
+  setup_error_row(JRK_ERROR_HARD_OVERCURRENT, false, false, false);
 
   int last_row = layout->rowCount();
   layout->addWidget(errors_clear_errors, last_row, 6, 1, 1, Qt::AlignCenter);

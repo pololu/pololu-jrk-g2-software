@@ -543,7 +543,7 @@ EOF
       "the current.  The number of samples will be 2^x, where x is this setting.",
   },
   {
-    name: 'overcurrent_threshold',
+    name: 'hard_overcurrent_threshold',
     type: :uint8_t,
     default: 1,
     min: 1,
@@ -695,32 +695,32 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'current_limit_code_forward',
+    name: 'encoded_hard_current_limit_forward',
     type: :uint16_t,
     default: 26,
     max: 95,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
-This setting is not actually a current, it is a code telling the jrk how to
-set up its current limiting hardware.
+This setting is not actually a current, it is an encoded value telling
+the jrk how to set up its current limiting hardware.
 
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
 
-- jrk_current_limit_code_to_ma()
-- jrk_current_limit_ma_to_code()
-- jrk_current_limit_code_step()
+- jrk_current_limit_decode()
+- jrk_current_limit_encode()
+- jrk_get_recommended_encoded_hard_current_limits()
 EOF
   },
   {
-    name: 'current_limit_code_reverse',
+    name: 'encoded_hard_current_limit_reverse',
     type: :uint16_t,
     default: 26,
     max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
-      "See the documentation of current_limit_code_forward."
+      "See the documentation of encoded_hard_current_limit_forward."
   },
   {
     name: 'brake_duration_forward',
@@ -750,7 +750,7 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'max_current_forward',
+    name: 'soft_current_limit_forward',
     type: :uint16_t,
     default: 0,
     comment: <<EOF
@@ -763,7 +763,7 @@ For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 EOF
   },
   {
-    name: 'max_current_reverse',
+    name: 'soft_current_limit_reverse',
     type: :uint16_t,
     default: 0,
     comment: <<EOF

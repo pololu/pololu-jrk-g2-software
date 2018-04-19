@@ -132,7 +132,7 @@ void main_controller::connect_device(jrk::device const & device)
   // Load the settings from the device.
   try
   {
-    settings = device_handle.get_settings();
+    settings = device_handle.get_eeprom_settings();
     handle_settings_loaded();
   }
   catch (const std::exception & e)
@@ -183,7 +183,7 @@ void main_controller::reload_settings(bool ask)
 
   try
   {
-    settings = device_handle.get_settings();
+    settings = device_handle.get_eeprom_settings();
     handle_settings_loaded();
   }
   catch (std::exception const & e)
@@ -620,28 +620,30 @@ void main_controller::handle_settings_changed()
   window->set_max_acceleration_reverse(settings.get_max_acceleration_reverse());
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
   window->set_brake_duration_reverse(settings.get_brake_duration_reverse());
-  window->set_current_limit_code_reverse(settings.get_current_limit_code_reverse());
-  window->set_max_current_reverse(settings.get_max_current_reverse());
+  window->set_current_limit_code_reverse(
+    settings.get_encoded_hard_current_limit_reverse());
+  window->set_max_current_reverse(settings.get_soft_current_limit_reverse());
 
   window->set_max_duty_cycle_forward(settings.get_max_duty_cycle_forward());
   window->set_max_acceleration_forward(settings.get_max_acceleration_forward());
   window->set_max_deceleration_forward(settings.get_max_deceleration_forward());
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
-  window->set_current_limit_code_forward(settings.get_current_limit_code_forward());
-  window->set_max_current_forward(settings.get_max_current_forward());
+  window->set_current_limit_code_forward(
+    settings.get_encoded_hard_current_limit_forward());
+  window->set_max_current_forward(settings.get_soft_current_limit_forward());
 
   {
     std::ostringstream meaning;
     meaning << "(";
     meaning << convert_current_limit_ma_to_string(
-      jrk::current_limit_code_to_ma(
-        settings, settings.get_current_limit_code_forward()));
+      jrk::current_limit_decode(
+        settings, settings.get_encoded_hard_current_limit_forward()));
     if (motor_asymmetric)
     {
       meaning << ", ";
       meaning << convert_current_limit_ma_to_string(
-        jrk::current_limit_code_to_ma(
-          settings, settings.get_current_limit_code_reverse()));
+        jrk::current_limit_decode(
+          settings, settings.get_encoded_hard_current_limit_reverse()));
     }
     meaning << ")";
     window->set_current_limit_meaning(meaning.str().c_str());
@@ -650,7 +652,7 @@ void main_controller::handle_settings_changed()
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
   window->set_current_samples_exponent(settings.get_current_samples_exponent());
-  window->set_overcurrent_threshold(settings.get_overcurrent_threshold());
+  window->set_overcurrent_threshold(settings.get_hard_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
   window->set_error_hard(settings.get_error_hard());
@@ -700,10 +702,10 @@ void main_controller::recalculate_motor_asymmetric()
       settings.get_max_deceleration_reverse()) ||
     (settings.get_brake_duration_forward() !=
       settings.get_brake_duration_reverse()) ||
-    (settings.get_current_limit_code_forward() !=
-      settings.get_current_limit_code_reverse()) ||
-    (settings.get_max_current_forward() !=
-      settings.get_max_current_reverse());
+    (settings.get_encoded_hard_current_limit_forward() !=
+      settings.get_encoded_hard_current_limit_reverse()) ||
+    (settings.get_soft_current_limit_forward() !=
+      settings.get_soft_current_limit_reverse());
 }
 
 void main_controller::recalculate_fbt_range()
@@ -1257,8 +1259,9 @@ void main_controller::handle_motor_asymmetric_input(bool asymmetric)
     settings.set_max_acceleration_reverse(settings.get_max_acceleration_forward());
     settings.set_max_deceleration_reverse(settings.get_max_deceleration_forward());
     settings.set_brake_duration_reverse(settings.get_brake_duration_forward());
-    settings.set_current_limit_code_reverse(settings.get_current_limit_code_forward());
-    settings.set_max_current_reverse(settings.get_max_current_forward());
+    settings.set_encoded_hard_current_limit_reverse(
+      settings.get_encoded_hard_current_limit_forward());
+    settings.set_soft_current_limit_reverse(settings.get_soft_current_limit_forward());
   }
 
   settings_modified = true;
@@ -1345,33 +1348,33 @@ void main_controller::handle_brake_duration_reverse_input(uint32_t deceleration)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_forward_input(uint16_t current)
+void main_controller::handle_current_limit_forward_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_current_limit_code_forward(current);
+  settings.set_encoded_hard_current_limit_forward(limit);
   if (!motor_asymmetric)
   {
-    settings.set_current_limit_code_reverse(current);
+    settings.set_encoded_hard_current_limit_reverse(limit);
   }
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_reverse_input(uint16_t current)
+void main_controller::handle_current_limit_reverse_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_current_limit_code_reverse(current);
+  settings.set_encoded_hard_current_limit_reverse(limit);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_max_current_forward_input(uint16_t current)
+void main_controller::handle_max_current_forward_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_max_current_forward(current);
+  settings.set_soft_current_limit_forward(limit);
   if (!motor_asymmetric)
   {
-    settings.set_max_current_reverse(current);
+    settings.set_soft_current_limit_reverse(limit);
   }
   settings_modified = true;
   handle_settings_changed();
@@ -1380,7 +1383,7 @@ void main_controller::handle_max_current_forward_input(uint16_t current)
 void main_controller::handle_max_current_reverse_input(uint16_t current)
 {
   if (!connected()) { return; }
-  settings.set_max_current_reverse(current);
+  settings.set_soft_current_limit_reverse(current);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1412,7 +1415,7 @@ void main_controller::handle_current_samples_exponent_input(uint8_t exponent)
 void main_controller::handle_overcurrent_threshold_input(uint8_t threshold)
 {
   if (!connected()) { return; }
-  settings.set_overcurrent_threshold(threshold);
+  settings.set_hard_overcurrent_threshold(threshold);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1564,7 +1567,7 @@ void main_controller::apply_settings()
       window->confirm(warnings.append("\nAccept these changes and apply settings?")))
     {
       settings = fixed_settings;
-      device_handle.set_settings(settings);
+      device_handle.set_eeprom_settings(settings);
       device_handle.reinitialize();
       cached_settings = settings;
       settings_modified = false;  // this must be last in case exceptions are thrown

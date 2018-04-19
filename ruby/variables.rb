@@ -96,7 +96,7 @@ This is an analog voltage reading from the motor driver's current sense pin.
 EOF
   },
   {
-    name: 'current_limit_code',
+    name: 'encoded_hard_current_limit',
     type: :uint16_t,
   },
   {

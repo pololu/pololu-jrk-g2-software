@@ -36,7 +36,7 @@ static const uint16_t jrk_umc04a_30v_vilim_table[32] =
   25097,
 };
 
-static const uint16_t jrk_umc04a_30v_recommended_codes[] =
+static const uint16_t jrk_umc04a_30v_recommended_encoded_hard_current_limits[] =
 {
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
   5,   // VILIM = 0.052 V, Current limit =  0.11 A
@@ -122,7 +122,7 @@ static const uint16_t jrk_umc04a_40v_vilim_table[32] =
   41958,
 };
 
-static const uint16_t jrk_umc04a_40v_recommended_codes[] =
+static const uint16_t jrk_umc04a_40v_recommended_encoded_hard_current_limits[] =
 {
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
   3,   // VILIM = 0.058 V, Current limit =  0.21 A
@@ -213,7 +213,7 @@ static const uint16_t jrk_umc05a_30v_vilim_table[32] =
   28986,
 };
 
-static const uint16_t jrk_umc05a_30v_recommended_codes[] =
+static const uint16_t jrk_umc05a_30v_recommended_encoded_hard_current_limits[] =
 {
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
   4,   // VILIM = 0.052 V, Current limit =  0.06 A
@@ -303,7 +303,7 @@ static const uint16_t jrk_umc05a_40v_vilim_table[32] =
   34854,
 };
 
-static const uint16_t jrk_umc05a_40v_recommended_codes[] =
+static const uint16_t jrk_umc05a_40v_recommended_encoded_hard_current_limits[] =
 {
   0,   // VILIM = 0.000 V, Current limit =  0.00 A
   4,   // VILIM = 0.064 V, Current limit =  0.28 A
@@ -387,39 +387,39 @@ static uint16_t jrk_get_vilim(uint32_t product, uint8_t dac_level)
   return table[dac_level & 0x1F];
 }
 
-const uint16_t * jrk_get_recommended_current_limit_codes(
-  uint32_t product, size_t * code_count)
+const uint16_t * jrk_get_recommended_encoded_hard_current_limits(
+  uint32_t product, size_t * count)
 {
   const uint16_t * table = 0;
-  size_t count = 0;
+  size_t size = 0;
 
   if (product == JRK_PRODUCT_UMC04A_30V)
   {
-    table = jrk_umc04a_30v_recommended_codes;
-    count = sizeof(jrk_umc04a_30v_recommended_codes) / sizeof(uint16_t);
+    table = jrk_umc04a_30v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc04a_30v_recommended_encoded_hard_current_limits);
   }
   else if (product == JRK_PRODUCT_UMC04A_40V)
   {
-    table = jrk_umc04a_40v_recommended_codes;
-    count = sizeof(jrk_umc04a_40v_recommended_codes) / sizeof(uint16_t);
+    table = jrk_umc04a_40v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc04a_40v_recommended_encoded_hard_current_limits);
   }
   else if (product == JRK_PRODUCT_UMC05A_30V)
   {
-    table = jrk_umc05a_30v_recommended_codes;
-    count = sizeof(jrk_umc05a_30v_recommended_codes) / sizeof(uint16_t);
+    table = jrk_umc05a_30v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc05a_30v_recommended_encoded_hard_current_limits);
   }
   else if (product == JRK_PRODUCT_UMC05A_40V)
   {
-    table = jrk_umc05a_40v_recommended_codes;
-    count = sizeof(jrk_umc05a_40v_recommended_codes) / sizeof(uint16_t);
+    table = jrk_umc05a_40v_recommended_encoded_hard_current_limits;
+    size = sizeof(jrk_umc05a_40v_recommended_encoded_hard_current_limits);
   }
   else
   {
     table = NULL;
-    count = 0;
+    size = 0;
   }
 
-  if (code_count) { *code_count = count; }
+  if (count) { *count = size / sizeof(uint16_t); }
   return table;
 }
 
@@ -470,7 +470,7 @@ static uint8_t jrk_get_rsense_denominator(uint32_t product)
 // produce 'current' variable (see jrk_variables_get_current()).
 //
 // raw_current: From jrk_variables_get_raw_current().
-// current_limit_code: The hardware current limiting configuration, from
+// encoded_current_limit: The hardware current limiting configuration, from
 //   from jrk_variables_get_max_current().
 // rsense_numerator divided by rsense_denominator:
 //   Sense resistor resistance, in units of mohms.
@@ -478,7 +478,7 @@ static uint8_t jrk_get_rsense_denominator(uint32_t product)
 // current_scale_calibration: from jrk_settings_get_current_scale_calibration()
 static uint16_t jrk_calculate_measured_current_ma_type1(
   uint16_t raw_current,
-  uint16_t current_limit_code,
+  uint16_t encoded_current_limit,
   int16_t duty_cycle,
   uint8_t rsense_numerator,
   uint8_t rsense_denominator,
@@ -494,7 +494,7 @@ static uint16_t jrk_calculate_measured_current_ma_type1(
   uint16_t offset = 800 + current_offset_calibration;
   uint16_t scale = 1875 + current_scale_calibration;
 
-  uint8_t dac_ref = current_limit_code >> 5 & 3;
+  uint8_t dac_ref = encoded_current_limit >> 5 & 3;
 
   // Convert the reading on the current sense line to units of mV/16.
   uint16_t current = raw_current >> ((2 - dac_ref) & 3);
@@ -534,7 +534,8 @@ static uint16_t jrk_calculate_measured_current_ma_type1(
   }
 }
 
-uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t code)
+uint32_t jrk_current_limit_decode(
+  const jrk_settings * settings, uint16_t encoded_limit)
 {
   uint32_t product = jrk_settings_get_product(settings);
   if (!settings || !product) { return 0; }
@@ -544,12 +545,12 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t co
   {
     // These jrks ignore the top 8 bits and treat codes as zero if the top 3
     // bits are invalid.
-    code &= 0xFF;
-    if (code > 95) { code = 0; }
+    encoded_limit &= 0xFF;
+    if (encoded_limit > 95) { encoded_limit = 0; }
 
     return jrk_calculate_measured_current_ma_type1(
-      jrk_get_vilim(product, code & 0x1F),
-      code,
+      jrk_get_vilim(product, encoded_limit & 0x1F),
+      encoded_limit,
       600,
       jrk_get_rsense_numerator(product),
       jrk_get_rsense_denominator(product),
@@ -561,39 +562,38 @@ uint32_t jrk_current_limit_code_to_ma(const jrk_settings * settings, uint16_t co
   return 0;
 }
 
-uint16_t jrk_current_limit_ma_to_code(const jrk_settings * settings, uint32_t ma)
+uint16_t jrk_current_limit_encode(const jrk_settings * settings, uint32_t ma)
 {
   uint32_t product = jrk_settings_get_product(settings);
   if (product == 0) { return 0; }
 
   size_t count;
-  const uint16_t * codes = jrk_get_recommended_current_limit_codes(product, &count);
+  const uint16_t * table =
+    jrk_get_recommended_encoded_hard_current_limits(product, &count);
 
   // Assumption: The table is in ascending order, so we want to return the last
-  // one that is less than or equal to the desired current.
-  // Assumption: 0 is a valid code and a good default to use.
+  // one that is less than or equal to the desired current limit.
+  // Assumption: 0 is a valid encoded current limit and a good default to use.
 
-  // Assumption: 0 is one of the recommended codes, so let's use it if we can't
-  // find any other good ones.
   uint16_t code = 0;
   uint16_t found_ma = 0;
 
   for (size_t i = 0; i < count; i++)
   {
-    uint8_t candidate = codes[i];
-    uint32_t candidate_ma = jrk_current_limit_code_to_ma(settings, candidate);
+    uint8_t candidate = table[i];
+    uint32_t candidate_ma = jrk_current_limit_decode(settings, candidate);
 
     if (candidate_ma > ma)
     {
-      // The codes are in ascending order so we won't find any better matches
+      // The table is in ascending order so we won't find any better matches
       // from now on.
       break;
     }
 
-    // We want to find a code that gives a current less than or equal to the
-    // target current.  The first part of the if condition takes care of that.
-    // The second part of the if condition ensures that if multiple codes map
-    // to zero then we will pick the smallest one.
+    // We want to find a current limit less than or equal to the target current.
+    // The first part of the if condition takes care of that.  The second part
+    // of the if condition ensures that if multiple encoded values map to 0 mA
+    // then we will pick the smallest one.
     if (candidate_ma <= ma && candidate_ma > found_ma)
     {
       code = candidate;
@@ -628,7 +628,7 @@ uint32_t jrk_calculate_raw_current_mv64(
     product == JRK_PRODUCT_UMC05A_30V || product == JRK_PRODUCT_UMC05A_40V)
   {
     uint16_t current = jrk_variables_get_raw_current(vars);
-    uint8_t dac_ref = jrk_variables_get_current_limit_code(vars) >> 5 & 3;
+    uint8_t dac_ref = jrk_variables_get_encoded_hard_current_limit(vars) >> 5 & 3;
     return current << dac_ref;
   }
 
