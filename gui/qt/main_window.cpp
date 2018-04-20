@@ -359,6 +359,11 @@ void main_window::set_manual_target_inputs(uint16_t target)
   suppress_events = false;
 }
 
+uint16_t main_window::get_manual_target_numeric_input()
+{
+  return manual_target_entry_value->value();
+}
+
 void main_window::set_apply_settings_enabled(bool enabled)
 {
   apply_settings_button->setEnabled(enabled);

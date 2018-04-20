@@ -109,6 +109,18 @@ void main_controller::connect_device(const jrk::device & device)
     return;
   }
 
+  // Clear the variables read from the device because they don't apply anymore.
+  variables.pointer_reset();
+  current_chopping_count = 0;
+
+  // Clear the settings from the device because they don't apply anymore and
+  // we'd like the manual target interface to get reinitialized.
+  cached_settings.pointer_reset();
+
+  window->reset_graph();
+
+  window->reset_error_counts();
+
   // Get the command port name.
   try
   {
@@ -139,14 +151,6 @@ void main_controller::connect_device(const jrk::device & device)
   {
     show_exception(e, "There was an error loading settings from the device.");
   }
-
-  // Clear the variables read from the device because they don't apply anymore.
-  variables.pointer_reset();
-  current_chopping_count = 0;
-
-  window->reset_graph();
-
-  window->reset_error_counts();
 
   handle_model_changed();
 }
@@ -673,16 +677,26 @@ void main_controller::handle_settings_loaded()
 {
   recalculate_motor_asymmetric();
 
-  window->set_manual_target_enabled(
-    settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
+  if (!cached_settings.is_present() ||
+    cached_settings.get_feedback_mode() != settings.get_feedback_mode() ||
+    cached_settings.get_input_mode() != settings.get_input_mode())
+  {
+    // The cached feedback mode and input mode are going to be set for the first
+    // time or are about to change.  We should reinitialize the manual target
+    // interface.
 
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-  {
-    window->set_manual_target_range(1448, 2648);
-  }
-  else
-  {
-    window->set_manual_target_range(0, 4095);
+    window->set_manual_target_enabled(
+      settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
+
+    if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
+    {
+      window->set_manual_target_range(1448, 2648);
+    }
+    else
+    {
+      window->set_manual_target_range(0, 4095);
+    }
+    window->set_manual_target_inputs(2048);
   }
 
   cached_settings = settings;
@@ -1592,16 +1606,6 @@ void main_controller::stop_motor()
   {
     show_exception(e);
   }
-
-  if (cached_settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-  {
-    // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
-    // speed, starting at a speed of zero.
-    //
-    // If the user wants to go back to the speed they were previously using, they
-    // can just press 'Run motor' instead of messing with the scroll bar.
-    window->set_manual_target_inputs(2048);
-  }
 }
 
 void main_controller::run_motor()
@@ -1610,7 +1614,13 @@ void main_controller::run_motor()
 
   try
   {
-    device_handle.run_motor();
+    // Clear the "Awaiting command" error by sending a "Set target" command,
+    // just like the original jrk utility.
+    uint16_t target = window->get_manual_target_numeric_input();
+    device_handle.set_target(target);
+
+    // Clear all the other latched errors.
+    device_handle.clear_errors();
   }
   catch (const std::exception & e)
   {

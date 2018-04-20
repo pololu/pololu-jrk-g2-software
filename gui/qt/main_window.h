@@ -111,6 +111,7 @@ public:
   void set_manual_target_enabled(bool enabled);
   void set_manual_target_range(uint16_t min, uint16_t max);
   void set_manual_target_inputs(uint16_t target);
+  uint16_t get_manual_target_numeric_input();
 
   // Controls whether the apply settings action/button is enabled or
   // disabled.
