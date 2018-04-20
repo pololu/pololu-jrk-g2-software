@@ -118,7 +118,7 @@ File.open(OutDir + 'app.wxs', 'w') do |f|
                 <File Id="MainInf" Name="jrk-g2.inf" />
               </Component>
               <Component Id="SerialInf">
-                <File Id="BootloaderInf" Name="jrk-g2-serial.inf" />
+                <File Id="SerialInf" Name="jrk-g2-serial.inf" />
               </Component>
               <Component Id="BootloaderInf">
                 <File Id="BootloaderInf" Name="jrk-g2-bootloader.inf" />
