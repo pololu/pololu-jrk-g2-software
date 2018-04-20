@@ -3304,7 +3304,7 @@ void main_window::setup_error_row(int error_number,
   connect(row.error_enable_group, QOverload<int>::of(&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
-  row.error_hard = new QCheckBox(tr("Hard"));
+  row.error_hard = new QCheckBox();
   row.error_hard->setObjectName("error_hard");
 
   connect(row.error_hard, &QCheckBox::stateChanged,
