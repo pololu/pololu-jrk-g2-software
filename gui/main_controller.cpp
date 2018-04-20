@@ -561,7 +561,7 @@ void main_controller::handle_settings_changed()
   window->set_input_enable_crc(settings.get_serial_enable_crc());
   window->set_input_device_number(settings.get_serial_device_number());
   window->set_input_enable_device_number(settings.get_serial_enable_14bit_device_number());
-  window->set_input_serial_timeout(settings.get_serial_timeout());
+  window->set_serial_timeout(settings.get_serial_timeout());
   window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_error_minimum(settings.get_input_error_minimum());
@@ -916,7 +916,7 @@ void main_controller::handle_input_device_number_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_input_timeout_input(uint16_t value)
+void main_controller::handle_serial_timeout_input(uint32_t value)
 {
   if (!connected()) { return; }
   settings.set_serial_timeout(value);

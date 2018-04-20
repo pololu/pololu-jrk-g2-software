@@ -460,9 +460,9 @@ void main_window::set_input_enable_device_number(bool enabled)
   set_check_box(input_device_number_checkbox, enabled);
 }
 
-void main_window::set_input_serial_timeout(uint16_t value)
+void main_window::set_serial_timeout(uint32_t value)
 {
-  set_double_spin_box(input_timeout_spinbox, value);
+  set_double_spin_box(input_timeout_spinbox, value / 1000.0);
 }
 
 void main_window::set_input_compact_protocol(bool enabled)
@@ -1379,7 +1379,7 @@ void main_window::on_input_device_number_checkbox_stateChanged(int state)
 void main_window::on_input_timeout_spinbox_valueChanged(double value)
 {
   if (suppress_events) { return; }
-  controller->handle_input_timeout_input(value);
+  controller->handle_serial_timeout_input(qRound(value * 100) * 10);
 }
 
 void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int state)
@@ -2412,9 +2412,9 @@ QWidget * main_window::setup_input_serial_groupbox()
 
   input_timeout_spinbox = new QDoubleSpinBox();
   input_timeout_spinbox->setObjectName("input_timeout_spinbox");
-  input_timeout_spinbox->setSingleStep(JRK_SERIAL_TIMEOUT_UNITS);
+  input_timeout_spinbox->setSingleStep(0.01);
   input_timeout_spinbox->setDecimals(2);
-  input_timeout_spinbox->setRange(0, JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
+  input_timeout_spinbox->setRange(0, 655.35);
 
   input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
   input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
