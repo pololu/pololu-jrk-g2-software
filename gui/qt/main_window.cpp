@@ -3006,7 +3006,8 @@ QWidget *main_window::setup_motor_tab()
   brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  current_limit_label = new QLabel(tr("Current limit (A):"));
+  // TODO: change the variable names to hard_current_limit too
+  current_limit_label = new QLabel(tr("Hard current limit (A):"));
   current_limit_label->setObjectName("current_limit_label");
 
   current_limit_forward_spinbox = new nice_spin_box();
@@ -3017,7 +3018,8 @@ QWidget *main_window::setup_motor_tab()
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
   current_limit_reverse_spinbox->set_decimals(2);
 
-  max_current_label = new QLabel(tr("Max current (A):"));
+  // TODO: change the variable names to soft_current_limit too
+  max_current_label = new QLabel(tr("Soft current limit (A):"));
   max_current_label->setObjectName("max_current_label");
 
   max_current_forward_spinbox = new nice_spin_box();
