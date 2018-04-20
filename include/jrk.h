@@ -1790,14 +1790,6 @@ jrk_error * jrk_set_target(jrk_handle *, uint16_t target);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_stop_motor(jrk_handle *);
 
-/// This function clears all of the latched errors including the "Awaiting
-/// command" error bit.
-///
-/// This is the command to use if you want the jrk to clear all of its errors
-/// and run the motor if possible.
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_run_motor(jrk_handle *);
-
 /// Sends a command to the jrk that causes it to clear latched errors in the
 /// "Error flags halting" varible except for "Awaiting command".
 ///
@@ -1806,6 +1798,23 @@ jrk_error * jrk_run_motor(jrk_handle *);
 /// cleared.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
+
+/// This function clears all of the latched errors including the "Awaiting
+/// command" error bit.
+///
+/// It uses two commands to do this:
+///
+/// 1. A "Get variable" command to fetch the current Target value from the jrk
+///    and clear all latched errors except "Awaiting command" as a side effect.
+/// 2. A "Set target" command to send the previously-fetched target to the jrk.
+///
+/// If you want to have control over what target gets set, you should use
+/// jrk_clear_errors() and jrk_set_target() separately instead of this function.
+///
+/// This is the command to use if you want the jrk to clear all of its errors
+/// and run the motor if possible.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_run_motor(jrk_handle *);
 
 /// Sends a "Force duty cycle target" command to the jrk.
 ///
