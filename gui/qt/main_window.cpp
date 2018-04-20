@@ -896,7 +896,7 @@ void main_window::set_error_hard(uint16_t hard)
   for (error_row & row : error_rows)
   {
     bool is_hard = hard >> row.error_number & 1;
-    set_check_box(row.error_hard, is_hard);
+    set_check_box(row.error_hard, is_hard || row.always_hard);
   }
 }
 
@@ -3261,6 +3261,7 @@ void main_window::setup_error_row(int error_number,
   row.error_number = error_number;
   row.always_enabled = always_enabled;
   row.always_latched = always_latched;
+  row.always_hard = always_hard;
 
   uint16_t error_mask = 1 << error_number;
 
@@ -3306,11 +3307,13 @@ void main_window::setup_error_row(int error_number,
 
   row.error_hard = new QCheckBox();
   row.error_hard->setObjectName("error_hard");
+  if (always_hard)
+  {
+    row.error_hard->setEnabled(false);
+  }
 
   connect(row.error_hard, &QCheckBox::stateChanged,
     [=] (int state) { error_hard_stateChanged(state, row.error_number); });
-
-  QLabel * always_hard_label = new QLabel(tr("Yes"));
 
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
@@ -3329,15 +3332,7 @@ void main_window::setup_error_row(int error_number,
   errors_page_layout->addWidget(row.disabled_radio, r + 1, 2);
   errors_page_layout->addWidget(row.enabled_radio, r + 1, 3);
   errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
-
-  if (always_hard)
-  {
-    errors_page_layout->addWidget(always_hard_label, r + 1, 5, Qt::AlignCenter);
-  }
-  else
-  {
-    errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
-  }
+  errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
 
   errors_page_layout->addWidget(row.stopping_value, r + 1, 6);
   errors_page_layout->addWidget(row.count_value, r + 1, 7);
