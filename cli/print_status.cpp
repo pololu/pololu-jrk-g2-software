@@ -122,7 +122,7 @@ void print_status(const jrk::variables & vars,
   }
 
   std::cout << left_column << "Current: "
-    << jrk::calculate_measured_current_ma(settings, vars) << " mA"
+    << vars.get_current() << " mA"
     << std::endl;
 
   if (full_output)

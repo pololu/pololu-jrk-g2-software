@@ -2066,20 +2066,6 @@ uint32_t jrk_current_limit_decode(const jrk_settings *, uint16_t encoded_limit);
 JRK_API
 uint16_t jrk_current_limit_encode(const jrk_settings *, uint32_t ma);
 
-// Calculates or retrieves the measured motor current, in milliamps, given a
-// settings object and a variables object read from the same device.
-//
-// The function returns the measured current, in milliamps.
-//
-// If you don't want to actually fetch settings from the jrk, you can just
-// create a new settings object, set it to the right product, and fill it with
-// the default settings, using the jrk_settings_* functions of this library.
-//
-// Note for umc04a jrk models: If current chopping happened during the PID
-// period, the value returned here will not be trustable.
-JRK_API
-uint32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
-
 // Calculates the voltage on the current sense line in units of mV/64.
 //
 // To get millivolts, divide the return value by 64.

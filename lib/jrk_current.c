@@ -603,21 +603,6 @@ uint16_t jrk_current_limit_encode(const jrk_settings * settings, uint32_t ma)
   return code;
 }
 
-uint32_t jrk_calculate_measured_current_ma(
-  const jrk_settings * settings, const jrk_variables * vars)
-{
-  uint32_t product = jrk_settings_get_product(settings);
-  if (!product || !vars) { return 0; }
-
-  if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V ||
-    product == JRK_PRODUCT_UMC05A_30V || product == JRK_PRODUCT_UMC05A_40V)
-  {
-    return jrk_variables_get_current(vars);
-  }
-
-  return 0;
-}
-
 uint32_t jrk_calculate_raw_current_mv64(
   const jrk_settings * settings, const jrk_variables * vars)
 {

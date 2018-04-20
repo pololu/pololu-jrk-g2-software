@@ -1673,14 +1673,6 @@ namespace jrk
     return jrk_current_limit_encode(settings.get_pointer(), ma);
   }
 
-  /// Wrapper for jrk_calculate_measured_current_ma().
-  inline int32_t calculate_measured_current_ma(
-    const settings & settings, const variables & vars)
-  {
-    return jrk_calculate_measured_current_ma(
-      settings.get_pointer(), vars.get_pointer());
-  }
-
   /// Wrapper for jrk_calculate_raw_current_mv64().
   inline int32_t calculate_raw_current_mv64(
     const settings & settings, const variables & vars)
