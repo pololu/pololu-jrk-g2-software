@@ -973,13 +973,14 @@ uint8_t jrk_settings_get_hard_overcurrent_threshold(const jrk_settings *);
 // Sets the current_offset_calibration setting.
 //
 // You can use this current calibration setting to correct current measurements
-// and current limit settings that are off by a constant amount.
+// and current limit settings.
 //
 // The current sense circuitry on a umc04a/umc05a jrks produces a constant
-// voltage of about 50 mV when the motor driver is powered, even if there is no
-// current flowing through the motor.  This offset must be subtracted from
-// analog voltages representing current limits or current measurements in order
-// to convert those values to amps.
+// voltage of about 50 mV (but with large variations from unit to unit) when the
+// motor driver is powered, even if there is no current flowing through the
+// motor.  This offset must be subtracted from analog voltages representing
+// current limits or current measurements as one of the first steps for
+// converting those voltages to amps.
 //
 // For the umc04a/umc05a jrk models, this setting is defined by the formula:
 //
