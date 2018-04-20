@@ -86,7 +86,7 @@ bool main_controller::disconnect_device()
   return true;
 }
 
-void main_controller::connect_device(jrk::device const & device)
+void main_controller::connect_device(const jrk::device & device)
 {
   assert(device.is_present());
 
@@ -151,7 +151,7 @@ void main_controller::connect_device(jrk::device const & device)
   handle_model_changed();
 }
 
-void main_controller::disconnect_device_by_error(std::string const & error_message)
+void main_controller::disconnect_device_by_error(const std::string & error_message)
 {
   really_disconnect();
   disconnected_by_user = false;
@@ -164,7 +164,7 @@ void main_controller::really_disconnect()
   settings_modified = false;
 }
 
-void main_controller::set_connection_error(std::string const & error_message)
+void main_controller::set_connection_error(const std::string & error_message)
 {
   connection_error = true;
   connection_error_message = error_message;
@@ -186,7 +186,7 @@ void main_controller::reload_settings(bool ask)
     settings = device_handle.get_eeprom_settings();
     handle_settings_loaded();
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
     settings_modified = true;
     show_exception(e, "There was an error loading the settings from the device.");
