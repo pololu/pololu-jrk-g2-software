@@ -2868,6 +2868,7 @@ QWidget * main_window::setup_pid_tab()
 
   feedback_dead_zone_spinbox = new QSpinBox();
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
+  feedback_dead_zone_spinbox->setRange(0, 255);
 
   QHBoxLayout * coefficient_layout = new QHBoxLayout();
   coefficient_layout->addWidget(pid_proportional_control);
