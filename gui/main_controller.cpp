@@ -6,7 +6,6 @@
 #include <cassert>
 #include <cmath>
 #include <sstream>
-#include <iostream>  // tmphax
 
 // This is how often we fetch the variables from the device.
 static const uint32_t UPDATE_INTERVAL_MS = 50;
