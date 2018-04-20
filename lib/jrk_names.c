@@ -11,19 +11,19 @@ const jrk_name jrk_bool_names[] =
 
 const jrk_name jrk_product_names_short[] =
 {
-  { "18v2x", JRK_PRODUCT_UMC04A_30V }, // TODO: real name
-  { "24v2x", JRK_PRODUCT_UMC04A_40V }, // TODO: real name
-  { "18v1x", JRK_PRODUCT_UMC05A_30V }, // TODO: real name
-  { "24v1x", JRK_PRODUCT_UMC05A_40V }, // TODO: real name
+  { "18v27", JRK_PRODUCT_UMC04A_30V },
+  { "24v21", JRK_PRODUCT_UMC04A_40V },
+  { "18v19", JRK_PRODUCT_UMC05A_30V },
+  { "24v13", JRK_PRODUCT_UMC05A_40V },
   { NULL, 0 },
 };
 
 const jrk_name jrk_product_names_ui[] =
 {
-  { "Jrk G2 18v2x", JRK_PRODUCT_UMC04A_30V },  // TODO: real name
-  { "Jrk G2 24v2x", JRK_PRODUCT_UMC04A_40V },  // TODO: real name
-  { "Jrk G2 18v1x", JRK_PRODUCT_UMC05A_30V },  // TODO: real name
-  { "Jrk G2 24v1x", JRK_PRODUCT_UMC05A_40V },  // TODO: real name
+  { "Jrk G2 18v27", JRK_PRODUCT_UMC04A_30V },
+  { "Jrk G2 24v21", JRK_PRODUCT_UMC04A_40V },
+  { "Jrk G2 18v19", JRK_PRODUCT_UMC05A_30V },
+  { "Jrk G2 24v13", JRK_PRODUCT_UMC05A_40V },
   { NULL, 0 },
 };
 
@@ -31,7 +31,7 @@ const jrk_name jrk_input_mode_names_short[] =
 {
   { "serial", JRK_INPUT_MODE_SERIAL },
   { "analog", JRK_INPUT_MODE_ANALOG },
-  { "pulse_width", JRK_INPUT_MODE_PULSE_WIDTH },
+  { "rc", JRK_INPUT_MODE_RC },
   { NULL, 0 },
 };
 
@@ -49,7 +49,7 @@ const jrk_name jrk_feedback_mode_names_short[] =
 {
   { "none", JRK_FEEDBACK_MODE_NONE },
   { "analog", JRK_FEEDBACK_MODE_ANALOG },
-  { "tachometer", JRK_FEEDBACK_MODE_FREQUENCY },
+  { "frequency", JRK_FEEDBACK_MODE_FREQUENCY },
   { NULL, 0 },
 };
 
@@ -68,15 +68,32 @@ const jrk_name jrk_pwm_frequency_names_short[] =
   { NULL, 0 },
 };
 
-const jrk_name jrk_pin_func_names[] =
+const jrk_name jrk_fbt_method_names_short[] =
 {
-  { "default", JRK_PIN_FUNC_DEFAULT },
-  { "user_io", JRK_PIN_FUNC_USER_IO },
-  { "user_input", JRK_PIN_FUNC_USER_INPUT },
-  { "pot_power", JRK_PIN_FUNC_POT_POWER },
-  { "serial", JRK_PIN_FUNC_SERIAL },
-  { "rc", JRK_PIN_FUNC_RC },
-  { "tachometer", JRK_PIN_FUNC_TACHOMETER },
+  { "counting", JRK_FBT_METHOD_PULSE_COUNTING },
+  { "timing", JRK_FBT_METHOD_PULSE_TIMING },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_fbt_timing_clock_names_short[] =
+{
+  { "12m", JRK_FBT_TIMING_CLOCK_12 },
+  { "6m", JRK_FBT_TIMING_CLOCK_6 },
+  { "3m", JRK_FBT_TIMING_CLOCK_3 },
+  { "1m5", JRK_FBT_TIMING_CLOCK_1_5 },
+  { "48m", JRK_FBT_TIMING_CLOCK_48 },
+  { "24m", JRK_FBT_TIMING_CLOCK_24 },
+  { NULL, 0 },
+};
+
+const jrk_name jrk_fbt_timing_clock_names_no_units[] =
+{
+  { "12", JRK_FBT_TIMING_CLOCK_12 },
+  { "6", JRK_FBT_TIMING_CLOCK_6 },
+  { "3", JRK_FBT_TIMING_CLOCK_3 },
+  { "1.5", JRK_FBT_TIMING_CLOCK_1_5 },
+  { "48", JRK_FBT_TIMING_CLOCK_48 },
+  { "24", JRK_FBT_TIMING_CLOCK_24 },
   { NULL, 0 },
 };
 
@@ -88,14 +105,14 @@ const jrk_name jrk_error_names_ui[] =
   { "Input invalid", 1 << JRK_ERROR_INPUT_INVALID },
   { "Input disconnect", 1 << JRK_ERROR_INPUT_DISCONNECT },
   { "Feedback disconnect", 1 << JRK_ERROR_FEEDBACK_DISCONNECT },
-  { "Max. current exceeded", 1 << JRK_ERROR_MAX_CURRENT_EXCEEDED },
+  { "Soft overcurrent", 1 << JRK_ERROR_SOFT_OVERCURRENT },
   { "Serial signal error", 1 << JRK_ERROR_SERIAL_SIGNAL },
   { "Serial overrun", 1 << JRK_ERROR_SERIAL_OVERRUN },
   { "Serial RX buffer full", 1 << JRK_ERROR_SERIAL_BUFFER_FULL },
   { "Serial CRC error", 1 << JRK_ERROR_SERIAL_CRC },
   { "Serial protocol error", 1 << JRK_ERROR_SERIAL_PROTOCOL },
   { "Serial timeout error", 1 << JRK_ERROR_SERIAL_TIMEOUT },
-  { "Overcurrent", 1 << JRK_ERROR_OVERCURRENT },
+  { "Hard overcurrent", 1 << JRK_ERROR_HARD_OVERCURRENT },
   { NULL, 0 },
 };
 
@@ -117,15 +134,6 @@ const jrk_name jrk_device_reset_names_ui[] =
   { "Stack overflow", JRK_RESET_STACK_OVERFLOW },
   { "Stack underflow", JRK_RESET_STACK_UNDERFLOW },
   { NULL, 0 },
-};
-
-const jrk_name jrk_pin_state_names_ui[] =
-{
-  { "High impedance", JRK_PIN_STATE_HIGH_IMPEDANCE },
-  { "Pulled up", JRK_PIN_STATE_PULLED_UP },
-  { "Output low", JRK_PIN_STATE_OUTPUT_LOW },
-  { "Output high", JRK_PIN_STATE_OUTPUT_HIGH },
-  { NULL, 0},
 };
 
 const char * jrk_look_up_product_name_short(uint32_t product)
@@ -160,13 +168,6 @@ const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset)
 {
   const char * str = "(Unknown)";
   jrk_code_to_name(jrk_device_reset_names_ui, device_reset, &str);
-  return str;
-}
-
-const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state)
-{
-  const char * str = "(Unknown)";
-  jrk_code_to_name(jrk_pin_state_names_ui, pin_state, &str);
   return str;
 }
 

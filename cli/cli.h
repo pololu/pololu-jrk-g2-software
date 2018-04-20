@@ -23,7 +23,6 @@
 
 void print_status(
   const jrk::variables &,
-  const jrk::overridable_settings &,
   const jrk::settings &,
   const std::string & name,
   const std::string & serial_number,

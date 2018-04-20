@@ -167,13 +167,13 @@ const char * jrk_get_firmware_version_string(jrk_handle * handle)
   return new_string;
 }
 
-jrk_error * jrk_set_setting_byte(jrk_handle * handle,
+jrk_error * jrk_set_eeprom_setting_byte(jrk_handle * handle,
   uint8_t address, uint8_t byte)
 {
   assert(handle != NULL);
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0x40, JRK_CMD_SET_SETTING, byte, address, NULL, 0, NULL));
+    0x40, JRK_CMD_SET_EEPROM_SETTING, byte, address, NULL, 0, NULL));
 
   if (error != NULL)
   {
@@ -188,6 +188,14 @@ jrk_error * jrk_set_target(jrk_handle * handle, uint16_t target)
   if (handle == NULL)
   {
     return jrk_error_create("Handle is null.");
+  }
+
+  // Cap the value since the firmware doesn't cap it, it could concievably
+  // cause some minor problems if people set targets outside of the allowed
+  // range, and the Arduino library does it.
+  if (target > 4095)
+  {
+    target = 4095;
   }
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
@@ -216,34 +224,6 @@ jrk_error * jrk_stop_motor(jrk_handle * handle)
   {
     error = jrk_error_add(error,
       "There was an error stopping the motor.");
-  }
-
-  return error;
-}
-
-jrk_error * jrk_run_motor(jrk_handle * handle)
-{
-  if (handle == NULL)
-  {
-    return jrk_error_create("Handle is null.");
-  }
-
-  jrk_error * error = NULL;
-
-  // Get the target value and clear halting errors at the same time.
-  uint8_t buffer[2];
-  if (error == NULL)
-  {
-    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
-    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
-  }
-  uint16_t target = buffer[0] | (buffer[1] << 8);
-
-  // Send a "Set target" command with the same target value to clear the
-  // "Awaiting command" error bit.
-  if (error == NULL)
-  {
-    error = jrk_set_target(handle, target);
   }
 
   return error;
@@ -281,12 +261,43 @@ jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
   return error;
 }
 
+jrk_error * jrk_run_motor(jrk_handle * handle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  // Get the target value and clear halting errors at the same time.
+  uint8_t buffer[2];
+  if (error == NULL)
+  {
+    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
+    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
+  }
+  uint16_t target = buffer[0] | (buffer[1] << 8);
+
+  // Send a "Set target" command with the same target value to clear the
+  // "Awaiting command" error bit.
+  if (error == NULL)
+  {
+    error = jrk_set_target(handle, target);
+  }
+
+  return error;
+}
+
 jrk_error * jrk_force_duty_cycle_target(jrk_handle * handle, int16_t duty_cycle)
 {
   if (handle == NULL)
   {
     return jrk_error_create("Handle is null.");
   }
+
+  if (duty_cycle > 600) { duty_cycle = 600; }
+  if (duty_cycle < -600) { duty_cycle = -600; }
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0x40, JRK_CMD_FORCE_DUTY_CYCLE_TARGET, duty_cycle, 0, NULL, 0, NULL));
@@ -307,6 +318,9 @@ jrk_error * jrk_force_duty_cycle(jrk_handle * handle, int16_t duty_cycle)
     return jrk_error_create("Handle is null.");
   }
 
+  if (duty_cycle > 600) { duty_cycle = 600; }
+  if (duty_cycle < -600) { duty_cycle = -600; }
+
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0x40, JRK_CMD_FORCE_DUTY_CYCLE, duty_cycle, 0, NULL, 0, NULL));
 
@@ -319,18 +333,42 @@ jrk_error * jrk_force_duty_cycle(jrk_handle * handle, int16_t duty_cycle)
   return error;
 }
 
-jrk_error * jrk_get_setting_segment(jrk_handle * handle,
+jrk_error * jrk_get_eeprom_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output)
 {
-  assert(handle != NULL);
-  assert(output != NULL);
-  assert(length && length <= JRK_MAX_USB_RESPONSE_SIZE);
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  if (output == NULL)
+  {
+    return jrk_error_create("Setting output pointer is null.");
+  }
+
+  if (index > 0xFF)
+  {
+    // The firmware would ignore the high bits if we tried to send this.
+    return jrk_error_create("Setting segment index is too large.");
+  }
+
+  if (length == 0)
+  {
+    return jrk_error_create("Setting segment length is zero.");
+  }
+
+  if (length > JRK_MAX_USB_RESPONSE_SIZE)
+  {
+    return jrk_error_create(
+      "Setting segment length is too large.");
+  }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0xC0, JRK_CMD_GET_SETTINGS, 0, index, output, length, &transferred));
+    0xC0, JRK_CMD_GET_EEPROM_SETTINGS, 0, index, output, length, &transferred));
   if (error != NULL)
   {
+    error = jrk_error_add(error, "There was an error reading settings.");
     return error;
   }
 
@@ -344,51 +382,104 @@ jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   return NULL;
 }
 
-jrk_error * jrk_set_overridable_setting_segment(jrk_handle * handle,
-  size_t index, size_t length, const uint8_t * buf)
+jrk_error * jrk_get_ram_setting_segment(jrk_handle * handle,
+  size_t index, size_t length, uint8_t * output)
 {
-  assert(handle != NULL);
-  assert(buf != NULL);
-  assert(length);
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  if (output == NULL)
+  {
+    return jrk_error_create("RAM setting output pointer is null.");
+  }
+
+  if (index > 0xFF)
+  {
+    // The firmware would ignore the high bits if we tried to send this.
+    return jrk_error_create(
+      "RAM setting segment index is too large.");
+  }
+
+  if (length == 0)
+  {
+    return jrk_error_create(
+      "RAM setting segment length is zero.");
+  }
+
+  if (length > JRK_MAX_USB_RESPONSE_SIZE)
+  {
+    return jrk_error_create(
+      "RAM setting segment length is too large.");
+  }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0x40, JRK_CMD_SET_OVERRIDABLE_SETTINGS, 0, index,
-    (uint8_t *)buf, length, &transferred));
+    0xC0, JRK_CMD_GET_RAM_SETTINGS, 0, index,
+    output, length, &transferred));
   if (error != NULL)
   {
+    error = jrk_error_add(error, "There was an error reading RAM settings.");
     return error;
   }
 
   if (transferred != length)
   {
     return jrk_error_create(
-      "Failed to set overridable settings.  Expected %u bytes, got %u.\n",
+      "Failed to read RAM settings.  Expected %u bytes, got %u.\n",
       (unsigned int)length, (unsigned int)transferred);
   }
 
   return NULL;
 }
 
-jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
-  size_t index, size_t length, uint8_t * output)
+jrk_error * jrk_set_ram_setting_segment(jrk_handle * handle,
+  size_t index, size_t length, const uint8_t * input)
 {
-  assert(handle != NULL);
-  assert(output != NULL);
-  assert(length && length <= JRK_MAX_USB_RESPONSE_SIZE);
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  if (input == NULL)
+  {
+    return jrk_error_create("RAM setting input pointer is null.");
+  }
+
+  if (index > 0xFF)
+  {
+    // The firmware would ignore the high bits if we tried to send this.
+    return jrk_error_create(
+      "RAM setting index is too large.");
+  }
+
+  if (length == 0)
+  {
+    return jrk_error_create(
+      "RAM setting segment length is zero.");
+  }
+
+  if (length > JRK_MAX_USB_RESPONSE_SIZE)
+  {
+    return jrk_error_create(
+      "RAM setting segment length is too large.");
+  }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0xC0, JRK_CMD_GET_OVERRIDABLE_SETTINGS, 0, index, output, length, &transferred));
+    0x40, JRK_CMD_SET_RAM_SETTINGS, 0, index,
+    (uint8_t *)input, length, &transferred));
   if (error != NULL)
   {
+    error = jrk_error_add(error, "There was an error settings RAM settings.");
     return error;
   }
 
   if (transferred != length)
   {
     return jrk_error_create(
-      "Failed to read overridable settings.  Expected %u bytes, got %u.\n",
+      "Failed to set RAM settings.  Expected %u bytes, got %u.\n",
       (unsigned int)length, (unsigned int)transferred);
   }
 
@@ -398,15 +489,39 @@ jrk_error * jrk_get_overridable_setting_segment(jrk_handle * handle,
 jrk_error * jrk_get_variable_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output, uint16_t flags)
 {
-  assert(handle != NULL);
-  assert(output != NULL);
-  assert(length && length <= JRK_MAX_USB_RESPONSE_SIZE);
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  if (output == NULL)
+  {
+    return jrk_error_create("Variable output pointer is null.");
+  }
+
+  if (index > 0xFF)
+  {
+    // The firmware would ignore the high bits if we tried to send this.
+    return jrk_error_create(
+      "Variable segment index is too large.");
+  }
+
+  if (length == 0)
+  {
+    return jrk_error_create("Variable segment length is zero.");
+  }
+
+  if (length > JRK_MAX_USB_RESPONSE_SIZE)
+  {
+    return jrk_error_create("Variable length is too large.");
+  }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0xC0, JRK_CMD_GET_VARIABLES, flags, index, output, length, &transferred));
   if (error != NULL)
   {
+    error = jrk_error_add(error, "There was an error reading variables.");
     return error;
   }
 
@@ -431,7 +546,7 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle)
 
   if (error == NULL)
   {
-    error = jrk_set_setting_byte(handle, JRK_SETTING_NOT_INITIALIZED, 1);
+    error = jrk_set_eeprom_setting_byte(handle, JRK_SETTING_NOT_INITIALIZED, 1);
   }
 
   if (error == NULL)
@@ -449,7 +564,7 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle)
       usleep(10000);
 
       uint8_t not_initialized;
-      error = jrk_get_setting_segment(handle, JRK_SETTING_NOT_INITIALIZED,
+      error = jrk_get_eeprom_setting_segment(handle, JRK_SETTING_NOT_INITIALIZED,
         1, &not_initialized);
       if (error != NULL)
       {

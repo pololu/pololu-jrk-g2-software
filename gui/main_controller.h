@@ -42,12 +42,13 @@ public:
   // the program is actually allowed to exit.
   bool exit();
 
+
+private:
   // This is called whenever something in the model has changed that might
   // require the window to be updated.  It includes no details about what
   // exactly changed.
-  void handle_model_changed();  // TODO: make this private
+  void handle_model_changed();
 
-private:
   void connect_device(jrk::device const & device);
   void disconnect_device_by_error(std::string const & error_message);
   void really_disconnect();
@@ -85,9 +86,8 @@ public:
   void handle_input_enable_crc_input(bool value);
   void handle_input_device_input(uint16_t value);
   void handle_input_device_number_input(bool value);
-  void handle_input_timeout_input(uint16_t value);
+  void handle_serial_timeout_input(uint32_t value);
   void handle_input_disable_compact_protocol_input(bool value);
-  void handle_input_never_sleep_input(bool value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_error_minimum_input(uint16_t input_error_minimum);
   void handle_input_error_maximum_input(uint16_t input_error_maximum);
@@ -110,12 +110,19 @@ public:
   void handle_feedback_analog_samples_exponent_input(uint8_t);
   void handle_feedback_detect_disconnect_input(bool);
   void handle_feedback_wraparound_input(bool);
+  void handle_fbt_method_input(uint8_t);
+  void handle_fbt_timing_clock_input(uint8_t);
+  void handle_fbt_timing_polarity_input(bool);
+  void handle_fbt_timing_timeout_input(uint16_t);
+  void handle_fbt_samples_input(uint8_t);
+  void handle_fbt_divider_exponent_input(uint8_t);
 
   void handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_integral_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_derivative_input(uint16_t multiplier, uint8_t exponent);
   void handle_pid_period_input(uint16_t);
   void handle_integral_limit_input(uint16_t);
+  void handle_integral_divider_exponent_input(uint8_t);
   void handle_reset_integral_input(bool);
   void handle_feedback_dead_zone_input(uint8_t);
 
@@ -144,10 +151,15 @@ public:
   void handle_coast_when_off_input(bool);
 
   void handle_error_enable_input(int index, int id);
+  void handle_error_hard_input(int index, bool state);
   void handle_clear_errors_input();
   void handle_reset_counts_input();
 
-  void handle_never_sleep_input(bool never_sleep);
+  void handle_disable_i2c_pullups_input(bool value);
+  void handle_analog_sda_pullup_input(bool value);
+  void handle_always_analog_sda_input(bool value);
+  void handle_always_analog_fba_input(bool value);
+  void handle_never_sleep_input(bool value);
   void handle_vin_calibration_input(int16_t vin_calibration);
 
   void handle_upload_complete();
@@ -163,16 +175,13 @@ private:
   void handle_settings_loaded();
 
   void recalculate_motor_asymmetric();
+  void recalculate_fbt_range();
 
 public:
 
   bool check_settings_applied_before_wizard();
 
 private:
-
-  void update_motor_status_message(bool prompt_to_resume);
-
-  // void update_motor_status_message(bool prompt_to_resume);
 
   // Holds a list of the relevant devices that are connected to the computer.
   std::vector<jrk::device> device_list;
@@ -238,3 +247,18 @@ private:
 
   main_window * window;
 };
+
+
+// TODO: rename these main_controller functions to match renamed settings:
+/**
+-  void handle_current_limit_forward_input(uint16_t);
+-  void handle_current_limit_reverse_input(uint16_t);
+-  void handle_max_current_forward_input(uint16_t);
+-  void handle_max_current_reverse_input(uint16_t);
++  void handle_encoded_hard_current_limit_forward_input(uint16_t);
++  void handle_encoded_hard_current_limit_reverse_input(uint16_t);
++  void handle_soft_current_limit_forward_input(uint16_t);
++  void handle_soft_current_limit_reverse_input(uint16_t);
+-  void handle_overcurrent_threshold_input(uint8_t);
++  void handle_hard_overcurrent_threshold_input(uint8_t);
+**/

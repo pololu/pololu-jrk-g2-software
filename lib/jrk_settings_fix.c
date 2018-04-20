@@ -6,7 +6,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t input_mode = jrk_settings_get_input_mode(settings);
-    if (input_mode > JRK_INPUT_MODE_PULSE_WIDTH)
+    if (input_mode > JRK_INPUT_MODE_RC)
     {
       input_mode = JRK_INPUT_MODE_SERIAL;
       jrk_sprintf(warnings,
@@ -329,6 +329,18 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    if (integral_divider_exponent > 15)
+    {
+      integral_divider_exponent = 15;
+      jrk_sprintf(warnings,
+        "Warning: The integral divider exponent was too high "
+        "so it will be changed to %u.\n", integral_divider_exponent);
+    }
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
+  }
+
+  {
     uint16_t integral_limit = jrk_settings_get_integral_limit(settings);
     if (integral_limit > 32767)
     {
@@ -365,15 +377,15 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
-    if (overcurrent_threshold < 1)
+    uint8_t hard_overcurrent_threshold = jrk_settings_get_hard_overcurrent_threshold(settings);
+    if (hard_overcurrent_threshold < 1)
     {
-      overcurrent_threshold = 1;
+      hard_overcurrent_threshold = 1;
       jrk_sprintf(warnings,
-        "Warning: The overcurrent threshold was too low "
-        "so it will be changed to %u.\n", overcurrent_threshold);
+        "Warning: The hard overcurrent threshold was too low "
+        "so it will be changed to %u.\n", hard_overcurrent_threshold);
     }
-    jrk_settings_set_overcurrent_threshold(settings, overcurrent_threshold);
+    jrk_settings_set_hard_overcurrent_threshold(settings, hard_overcurrent_threshold);
   }
 
   {
@@ -534,37 +546,37 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint16_t current_limit_code_forward = jrk_settings_get_current_limit_code_forward(settings);
-    if (current_limit_code_forward > 95)
+    uint16_t encoded_hard_current_limit_forward = jrk_settings_get_encoded_hard_current_limit_forward(settings);
+    if (encoded_hard_current_limit_forward > 95)
     {
-      current_limit_code_forward = 95;
+      encoded_hard_current_limit_forward = 95;
       jrk_sprintf(warnings,
-        "Warning: The current limit code forward was too high "
-        "so it will be changed to %u.\n", current_limit_code_forward);
+        "Warning: The encoded hard current limit forward was too high "
+        "so it will be changed to %u.\n", encoded_hard_current_limit_forward);
     }
-    jrk_settings_set_current_limit_code_forward(settings, current_limit_code_forward);
+    jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
   }
 
   {
-    uint16_t current_limit_code_reverse = jrk_settings_get_current_limit_code_reverse(settings);
-    if (current_limit_code_reverse > 95)
+    uint16_t encoded_hard_current_limit_reverse = jrk_settings_get_encoded_hard_current_limit_reverse(settings);
+    if (encoded_hard_current_limit_reverse > 95)
     {
-      current_limit_code_reverse = 95;
+      encoded_hard_current_limit_reverse = 95;
       jrk_sprintf(warnings,
-        "Warning: The current limit code reverse was too high "
-        "so it will be changed to %u.\n", current_limit_code_reverse);
+        "Warning: The encoded hard current limit reverse was too high "
+        "so it will be changed to %u.\n", encoded_hard_current_limit_reverse);
     }
-    jrk_settings_set_current_limit_code_reverse(settings, current_limit_code_reverse);
+    jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);
   }
 
   {
-    uint16_t max_current_forward = jrk_settings_get_max_current_forward(settings);
-    jrk_settings_set_max_current_forward(settings, max_current_forward);
+    uint16_t soft_current_limit_forward = jrk_settings_get_soft_current_limit_forward(settings);
+    jrk_settings_set_soft_current_limit_forward(settings, soft_current_limit_forward);
   }
 
   {
-    uint16_t max_current_reverse = jrk_settings_get_max_current_reverse(settings);
-    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+    uint16_t soft_current_limit_reverse = jrk_settings_get_soft_current_limit_reverse(settings);
+    jrk_settings_set_soft_current_limit_reverse(settings, soft_current_limit_reverse);
   }
 
   {
@@ -599,6 +611,80 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
         "so it will be changed to %d.\n", vin_calibration);
     }
     jrk_settings_set_vin_calibration(settings, vin_calibration);
+  }
+
+  {
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
+    if (fbt_method > JRK_FBT_METHOD_PULSE_TIMING)
+    {
+      fbt_method = JRK_FBT_METHOD_PULSE_COUNTING;
+      jrk_sprintf(warnings,
+        "Warning: The fbt method was invalid "
+        "so it will be changed to pulse counting.\n");
+    }
+    jrk_settings_set_fbt_method(settings, fbt_method);
+  }
+
+  {
+    uint8_t fbt_timing_clock = jrk_settings_get_fbt_timing_clock(settings);
+    if (fbt_timing_clock > JRK_FBT_TIMING_CLOCK_24)
+    {
+      fbt_timing_clock = JRK_FBT_TIMING_CLOCK_1_5;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing clock was invalid "
+        "so it will be changed to 1.5 MHz.\n");
+    }
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
+  }
+
+  {
+    uint16_t fbt_timing_timeout = jrk_settings_get_fbt_timing_timeout(settings);
+    if (fbt_timing_timeout < 1)
+    {
+      fbt_timing_timeout = 1;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing timeout was too low "
+        "so it will be changed to %u.\n", fbt_timing_timeout);
+    }
+    if (fbt_timing_timeout > 60000)
+    {
+      fbt_timing_timeout = 60000;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing timeout was too high "
+        "so it will be changed to %u.\n", fbt_timing_timeout);
+    }
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
+  }
+
+  {
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    if (fbt_samples < 1)
+    {
+      fbt_samples = 1;
+      jrk_sprintf(warnings,
+        "Warning: The fbt samples was too low "
+        "so it will be changed to %u.\n", fbt_samples);
+    }
+    if (fbt_samples > JRK_MAX_ALLOWED_FBT_SAMPLES)
+    {
+      fbt_samples = JRK_MAX_ALLOWED_FBT_SAMPLES;
+      jrk_sprintf(warnings,
+        "Warning: The fbt samples was too high "
+        "so it will be changed to %u.\n", fbt_samples);
+    }
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
+  }
+
+  {
+    uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
+    if (fbt_divider_exponent > 15)
+    {
+      fbt_divider_exponent = 15;
+      jrk_sprintf(warnings,
+        "Warning: The fbt divider exponent was too high "
+        "so it will be changed to %u.\n", fbt_divider_exponent);
+    }
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
   }
 
   // End of auto-generated settings fixing code.

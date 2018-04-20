@@ -46,12 +46,14 @@ class main_window : public QMainWindow
     QRadioButton * disabled_radio = NULL;
     QRadioButton * enabled_radio = NULL;
     QRadioButton * latched_radio = NULL;
+    QCheckBox * error_hard;
     QLabel * stopping_value = NULL;
     QLabel * count_value = NULL;
     QWidget * frame = NULL;
     QButtonGroup * error_enable_group = NULL;
     bool always_enabled = false;
     bool always_latched = false;
+    bool always_hard = false;
     int error_number = 0;
   };
 
@@ -84,9 +86,9 @@ public:
   void set_ttl_port(const std::string & ttl_port);
   void set_device_reset(const std::string & device_reset);
   void set_up_time(uint32_t);
-  void set_input(uint16_t);
+  void set_input(uint16_t, uint8_t);
   void set_target(uint16_t);
-  void set_feedback(uint16_t);
+  void set_feedback(uint16_t, uint8_t);
   void set_scaled_feedback(uint16_t);
   void set_feedback_not_applicable();
   void set_error(int16_t);
@@ -110,14 +112,12 @@ public:
   void set_manual_target_enabled(bool enabled);
   void set_manual_target_range(uint16_t min, uint16_t max);
   void set_manual_target_inputs(uint16_t target);
+  uint16_t get_manual_target_numeric_input();
 
   // Controls whether the apply settings action/button is enabled or
   // disabled.
   void set_apply_settings_enabled(bool enabled);
 
-  void set_vin_calibration(int16_t vin_calibration);
-
-  void set_never_sleep(bool never_sleep);
 
   void set_motor_status_message(std::string const & message,
     uint16_t error_flag = 0);
@@ -131,9 +131,8 @@ public:
   void set_input_enable_crc(bool enabled);
   void set_input_device_number(uint16_t value);
   void set_input_enable_device_number(bool enabled);
-  void set_input_serial_timeout(uint16_t value);
-  void set_input_compact_protocol(bool enabled);
-  void set_input_never_sleep(bool enabled);
+  void set_serial_timeout(uint32_t value);
+  void set_input_compact_protocol(bool enabled);  // TODO: fix this name and the others around here
   void set_input_error_minimum(uint16_t input_error_minimum);
   void set_input_error_maximum(uint16_t input_error_maximum);
   void set_input_minimum(uint16_t input_minimum);
@@ -146,6 +145,7 @@ public:
   void set_input_scaling_degree(uint8_t input_scaling_degree);
   void set_input_scaling_order_warning_label();
   void run_input_wizard(uint8_t input_mode);
+  void update_input_tab_enables();
 
   void set_feedback_mode(uint8_t feedback_mode);
   void set_feedback_invert(bool feedback_invert);
@@ -157,12 +157,21 @@ public:
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);
+  void set_fbt_method(uint8_t);
+  void set_fbt_timing_clock(uint8_t);
+  void set_fbt_timing_polarity(bool);
+  void set_fbt_timing_timeout(uint16_t);
+  void set_fbt_samples(uint8_t);
+  void set_fbt_divider_exponent(uint8_t);
+  void set_fbt_range_display(const std::string & message, bool invalid);
+  void update_feedback_tab_enables();
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);
   void set_pid_derivative(uint16_t multiplier, uint8_t exponent);
   void set_pid_period(uint16_t value);
   void set_integral_limit(uint16_t value);
+  void set_integral_divider_exponent(uint8_t exponent);
   void set_reset_integral(bool enabled);
   void set_feedback_dead_zone(uint8_t value);
 
@@ -190,9 +199,17 @@ public:
   void set_coast_when_off(bool value);
 
   void set_error_enable(uint16_t enable, uint16_t latch);
+  void set_error_hard(uint16_t hard);
   void set_error_flags_halting(uint16_t error_flags_halting);
   void increment_errors_occurred(uint16_t errors_occurred);
   void reset_error_counts();
+
+  void set_disable_i2c_pullups(bool enabled);
+  void set_analog_sda_pullup(bool enabled);
+  void set_always_analog_sda(bool enabled);
+  void set_always_analog_fba(bool enabled);
+  void set_never_sleep(bool enabled);
+  void set_vin_calibration(int16_t vin_calibration);
 
   void set_serial_baud_rate(uint32_t serial_baud_rate);
   void set_serial_device_number(uint8_t serial_device_number);
@@ -222,6 +239,8 @@ private:
   void set_spin_box(QSpinBox * box, int value);
   void set_double_spin_box(QDoubleSpinBox * spin, double value);
   void set_check_box(QCheckBox * check, bool value);
+
+  void center_at_startup_if_needed();
 
 signals:
   void input_changed(uint16_t);
@@ -276,7 +295,6 @@ private slots:
   void on_input_device_number_checkbox_stateChanged(int state);
   void on_input_timeout_spinbox_valueChanged(double value);
   void on_input_disable_compact_protocol_checkbox_stateChanged(int state);
-  void on_input_never_sleep_checkbox_stateChanged(int state);
   void on_input_error_minimum_spinbox_valueChanged(int value);
   void on_input_error_maximum_spinbox_valueChanged(int value);
   void on_input_minimum_spinbox_valueChanged(int value);
@@ -300,6 +318,12 @@ private slots:
   void on_feedback_analog_samples_combobox_currentIndexChanged(int index);
   void on_feedback_detect_disconnect_checkbox_stateChanged(int state);
   void on_feedback_wraparound_checkbox_stateChanged(int state);
+  void on_fbt_method_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_clock_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_polarity_combobox_currentIndexChanged(int index);
+  void on_fbt_timing_timeout_spinbox_valueChanged(int value);
+  void on_fbt_samples_spinbox_valueChanged(int value);
+  void on_fbt_divider_combobox_currentIndexChanged(int index);
   void on_feedback_learn_button_clicked();
 
   void on_pid_proportional_control_values_changed(int multiplier, int exponent);
@@ -308,6 +332,7 @@ private slots:
 
   void on_pid_period_spinbox_valueChanged(int value);
   void on_integral_limit_spinbox_valueChanged(int value);
+  void on_integral_divider_combobox_currentIndexChanged(int value);
   void on_reset_integral_checkbox_stateChanged(int state);
   void on_feedback_dead_zone_spinbox_valueChanged(int value);
 
@@ -334,8 +359,16 @@ private slots:
   void on_coast_when_off_button_group_buttonToggled(int id, bool checked);
 
   void error_enable_group_buttonToggled(int id, int index);
+  void error_hard_stateChanged(int state, int index);
   void on_errors_clear_errors_clicked();
   void on_errors_reset_counts_clicked();
+
+  void on_disable_i2c_pullups_stateChanged(int state);
+  void on_analog_sda_pullup_stateChanged(int state);
+  void on_always_analog_sda_stateChanged(int state);
+  void on_always_analog_fba_stateChanged(int state);
+  void on_never_sleep_checkbox_stateChanged(int state);
+  void on_vin_calibration_value_valueChanged(int value);
 
 private:
   void setup_ui();
@@ -357,7 +390,7 @@ private:
   QWidget * setup_feedback_tab();
   QWidget * setup_feedback_scaling_groupbox();
   QWidget * setup_feedback_analog_groupbox();
-  QWidget * setup_feedback_options_groupbox();
+  QWidget * setup_feedback_fbt_groupbox();
 
   QWidget * setup_pid_tab();
 
@@ -365,7 +398,11 @@ private:
 
   QWidget * setup_errors_tab();
   void setup_error_row(int error_number,
-    bool always_enabled, bool always_latched);
+    bool always_enabled, bool always_latched, bool always_hard);
+
+  QWidget * setup_advanced_tab();
+  QWidget * setup_pin_configuration_groupbox();
+  QWidget * setup_advanced_miscellaneous_groupbox();
 
   QTimer *update_timer = NULL;
 
@@ -474,14 +511,14 @@ private:
   QLabel *input_mode_label;
   QComboBox *input_mode_combobox;
 
-  // input tab "Analog to digital conversion" groupbox
+  // input tab "Analog input" groupbox
 
   QGroupBox *input_analog_groupbox;
   QLabel *input_analog_samples_label;
   QCheckBox *input_detect_disconnect_checkbox;
   QComboBox *input_analog_samples_combobox;
 
-  // input tab "Scaling (Analog and Pulse Width mode only)" groupbox
+  // input tab "Scaling" groupbox
 
   QGroupBox *input_scaling_groupbox;
   QLabel *input_scaling_order_warning_label;
@@ -512,7 +549,6 @@ private:
 
   QGroupBox *input_serial_groupbox;
   QButtonGroup *input_serial_mode_button_group;
-  QCheckBox *input_never_sleep_checkbox;
   QRadioButton *input_usb_dual_port_radio;
   QRadioButton *input_usb_chained_radio;
   QLabel *input_device_label;
@@ -520,9 +556,9 @@ private:
   QSpinBox *input_uart_fixed_baud_spinbox;;
   QCheckBox *input_enable_crc_checkbox;
   QCheckBox *input_device_number_checkbox;
-  QLabel *input_timeout_label;
+  QLabel *input_timeout_label;  // TODO: rename to serial_timeout_label
   QRadioButton *input_uart_fixed_baud_radio;
-  QDoubleSpinBox *input_timeout_spinbox;
+  QDoubleSpinBox *input_timeout_spinbox;  // TODO: rename to serial_timeout_spinbox
   QCheckBox *input_disable_compact_protocol_checkbox;
 
   // feedback tab
@@ -555,11 +591,20 @@ private:
   QLabel * feedback_analog_samples_label;
   QComboBox * feedback_analog_samples_combobox;
   QCheckBox * feedback_detect_disconnect_checkbox;
-
-  // feedback tab "Feedback options" groupbox
-
-  QGroupBox * feedback_options_groupbox;
   QCheckBox * feedback_wraparound_checkbox;
+
+  // feedback tab "FBT options" groupbox
+  QComboBox * fbt_method_combobox;
+  QLabel * fbt_timing_clock_label;
+  QComboBox * fbt_timing_clock_combobox;
+  QLabel * fbt_timing_polarity_label;
+  QComboBox * fbt_timing_polarity_combobox;
+  QLabel * fbt_timing_timeout_label;
+  QSpinBox * fbt_timing_timeout_spinbox;
+  QSpinBox * fbt_samples_spinbox;
+  QLabel * fbt_divider_label;
+  QComboBox * fbt_divider_combobox;
+  QLabel * fbt_range_label;
 
   // pid tab
 
@@ -568,6 +613,8 @@ private:
   QSpinBox * pid_period_spinbox;
   QLabel * integral_limit_label;
   QSpinBox * integral_limit_spinbox;
+  QLabel * integral_divider_label;
+  QComboBox * integral_divider_combobox;
   QCheckBox * reset_integral_checkbox;
   QLabel * feedback_dead_zone_label;
   QSpinBox * feedback_dead_zone_spinbox;
@@ -634,6 +681,7 @@ private:
   QLabel * errors_bit_mask_label;
   QLabel * errors_error_label;
   QLabel * errors_setting_label;
+  QLabel * errors_hard_label;
   QLabel * errors_stopping_motor_label;
   QLabel * errors_occurrence_count_label;
   QPushButton * errors_clear_errors;
@@ -646,9 +694,34 @@ private:
   QPushButton * run_motor_button;
   QPushButton * apply_settings_button;
 
+  // advanced tab
 
+  QWidget * advanced_page_widget;
+
+  QGroupBox * pin_configuration_groupbox;
+  QCheckBox * disable_i2c_pullups;
+  QCheckBox * analog_sda_pullup;
+  QCheckBox * always_analog_sda;
+  QCheckBox * always_analog_fba;
+
+  QGroupBox * advanced_miscellaneous_groupbox;
+  QCheckBox * never_sleep_checkbox;
+  QSpinBox * vin_calibration_value;
   bool start_event_reported = false;
 
   QString directory_hint;
 };
 
+// TODO: fix these names in the main_window class for settings that were renamed:
+/**
+-  void set_current_limit_code_forward(uint16_t);
+-  void set_current_limit_code_reverse(uint16_t);
++  void set_encoded_hard_current_limit_forward(uint16_t);
++  void set_encoded_hard_current_limit_reverse(uint16_t);
+-  void set_max_current_forward(uint16_t);
+-  void set_max_current_reverse(uint16_t);
++  void set_soft_current_limit_forward(uint16_t);
++  void set_soft_current_limit_reverse(uint16_t);
+-  void set_overcurrent_threshold(uint8_t);
++  void set_hard_overcurrent_threshold(uint8_t);
+**/

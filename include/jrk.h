@@ -58,7 +58,7 @@ void jrk_string_free(char *);
 
 // Simple name lookup ///////////////////////////////////////////////////////////
 
-/// Looks up a short code string without spaces representing the product.  The
+/// Looks up a short name string without spaces representing the product.  The
 /// product argument should be one of the JRK_PRODUCT_* macros, but if it is
 /// not, this function returns an empty string.  The returned string will be
 /// valid indefinitely and should not be freed.
@@ -93,12 +93,6 @@ const char * jrk_look_up_force_mode_name_ui(uint8_t force_mode);
 JRK_API
 const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset);
 
-/// Looks up the string corresponding to the specified pin state, e.g. "Output
-/// low".  The pin_state argument should be one of the JRK_PIN_STATE_* macros,
-/// but if it is not, this functions returns "(Unknown)".  The returned string
-/// will be valid indefinitely and should not be freed.
-JRK_API
-const char * jrk_look_up_pin_state_name_ui(uint8_t pin_state);
 
 // jrk_error ////////////////////////////////////////////////////////////////////
 
@@ -246,8 +240,8 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 //
 // The input mode setting specifies how you want to control the jrk.  It
 // determines the definition of the input and target variables.  The input
-// variable is raw measurement of the jrk's input.  The target variable is the
-// desired state of the system's output, and feeds into the PID feedback
+// variable is a raw measurement of the jrk's input.  The target variable is
+// the desired state of the system's output, and feeds into the PID feedback
 // algorithm.
 //
 // - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
@@ -261,7 +255,7 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 //   corresponds to an input value of 4092.  The jrk uses its input scaling
 //   feature to set the target variable.
 //
-// - If the input mode is "Pulse width" (JRK_INPUT_MODE_PULSE_WIDTH), the jrk
+// - If the input mode is "RC" (JRK_INPUT_MODE_RC), the jrk
 //   gets it input variable by reading RC pulses on its RC pin.  The input value
 //   is the width of the most recent pulse, in units of 2/3 microseconds.  The
 //   jrk uses its input scaling feature to set the target variable.
@@ -597,11 +591,6 @@ bool jrk_settings_get_feedback_detect_disconnect(const jrk_settings *);
 // feedback dead zone; once in the dead zone, the duty cycle and integral will
 // remain zero until the magnitude of the error exceeds twice the value of the
 // dead zone.
-//
-// Note that this feature conflicts with deceleration limits.  If you set the
-// feedback deadzone to a non-zero value, the jrk will set the duty cycle to
-// zero immediately in the feedback deadzone without respecting any deceleration
-// limits.
 JRK_API
 void jrk_settings_set_feedback_dead_zone(jrk_settings *,
   uint8_t feedback_dead_zone);
@@ -898,6 +887,18 @@ void jrk_settings_set_pid_period(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_pid_period(const jrk_settings *);
 
+// Sets the integral_divider_exponent setting.
+//
+// Causes the integral variable to accumulate more slowly.
+JRK_API
+void jrk_settings_set_integral_divider_exponent(jrk_settings *,
+  uint8_t integral_divider_exponent);
+
+// Gets the integral_divider_exponent setting, which is described in
+// jrk_settings_set_integral_divider_exponent.
+JRK_API
+uint8_t jrk_settings_get_integral_divider_exponent(const jrk_settings *);
+
 // Sets the integral_limit setting.
 //
 // The PID algorithm prevents the absolute value of the accumulated error
@@ -952,7 +953,7 @@ void jrk_settings_set_current_samples_exponent(jrk_settings *,
 JRK_API
 uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 
-// Sets the overcurrent_threshold setting.
+// Sets the hard_overcurrent_threshold setting.
 //
 // This is the number of consecutive PID periods where the the hardware current
 // chopping must occur before the jrk triggers a "Max. current exceeded" error.
@@ -961,33 +962,32 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 // starting up) but you still want to it to be an error when your motor leads
 // are shorted out.
 JRK_API
-void jrk_settings_set_overcurrent_threshold(jrk_settings *,
-  uint8_t overcurrent_threshold);
+void jrk_settings_set_hard_overcurrent_threshold(jrk_settings *,
+  uint8_t hard_overcurrent_threshold);
 
-// Gets the overcurrent_threshold setting, which is described in
-// jrk_settings_set_overcurrent_threshold.
+// Gets the hard_overcurrent_threshold setting, which is described in
+// jrk_settings_set_hard_overcurrent_threshold.
 JRK_API
-uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings *);
+uint8_t jrk_settings_get_hard_overcurrent_threshold(const jrk_settings *);
 
 // Sets the current_offset_calibration setting.
 //
 // You can use this current calibration setting to correct current measurements
-// and current limit settings that are off by a constant amount.
+// and current limit settings.
 //
-// The current sense circuitry on a umc04a jrk produces a constant voltage of
-// about 50 mV when the motor driver is powered, even if there is no current
-// flowing through the motor.  This offset must be subtracted from analog
-// voltages representing current limits or current measurements in order to
-// convert those values to amps.
+// The current sense circuitry on a umc04a/umc05a jrks produces a constant
+// voltage of about 50 mV (but with large variations from unit to unit) when the
+// motor driver is powered, even if there is no current flowing through the
+// motor.  This offset must be subtracted from analog voltages representing
+// current limits or current measurements as one of the first steps for
+// converting those voltages to amps.
 //
-// For the umc04a jrk models, this setting is defined by the formula:
+// For the umc04a/umc05a jrk models, this setting is defined by the formula:
 //
 //   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 //
 // This setting should be between -800 (for an offset of 0 mV) and 800 (for an
 // offset of 100 mV).
-//
-// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_offset_calibration(jrk_settings *,
   int16_t current_offset_calibration);
@@ -1008,8 +1008,6 @@ int16_t jrk_settings_get_current_offset_calibration(const jrk_settings *);
 // The default current_scale_calibration value is 0.
 // A current_scale_calibration value of 19 would increase the current
 // readings by about 1%.
-//
-// This setting is stored in the device's EEPROM but the device does not use it.
 JRK_API
 void jrk_settings_set_current_scale_calibration(jrk_settings *,
   int16_t current_scale_calibration);
@@ -1140,39 +1138,40 @@ void jrk_settings_set_max_duty_cycle_reverse(jrk_settings *,
 JRK_API
 uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 
-// Sets the current_limit_code_forward setting.
+// Sets the encoded_hard_current_limit_forward setting.
 //
 // Sets the current limit to be used when driving forward.
 //
-// This setting is not actually a current, it is a code telling the jrk how to
-// set up its current limiting hardware.
+// This setting is not actually a current, it is an encoded value telling
+// the jrk how to set up its current limiting hardware.
 //
 // The correspondence between this setting and the actual current limit
 // in milliamps depends on what product you are using.  See also:
 //
-// - jrk_current_limit_code_to_ma()
-// - jrk_current_limit_ma_to_code()
+// - jrk_current_limit_decode()
+// - jrk_current_limit_encode()
+// - jrk_get_recommended_encoded_hard_current_limits()
 JRK_API
-void jrk_settings_set_current_limit_code_forward(jrk_settings *,
-  uint16_t current_limit_code_forward);
+void jrk_settings_set_encoded_hard_current_limit_forward(jrk_settings *,
+  uint16_t encoded_hard_current_limit_forward);
 
-// Gets the current_limit_code_forward setting, which is described in
-// jrk_settings_set_current_limit_code_forward.
+// Gets the encoded_hard_current_limit_forward setting, which is described in
+// jrk_settings_set_encoded_hard_current_limit_forward.
 JRK_API
-uint16_t jrk_settings_get_current_limit_code_forward(const jrk_settings *);
+uint16_t jrk_settings_get_encoded_hard_current_limit_forward(const jrk_settings *);
 
-// Sets the current_limit_code_reverse setting.
+// Sets the encoded_hard_current_limit_reverse setting.
 //
 // Sets the current limit to be used when driving in reverse.
-// See the documentation of current_limit_code_forward.
+// See the documentation of encoded_hard_current_limit_forward.
 JRK_API
-void jrk_settings_set_current_limit_code_reverse(jrk_settings *,
-  uint16_t current_limit_code_reverse);
+void jrk_settings_set_encoded_hard_current_limit_reverse(jrk_settings *,
+  uint16_t encoded_hard_current_limit_reverse);
 
-// Gets the current_limit_code_reverse setting, which is described in
-// jrk_settings_set_current_limit_code_reverse.
+// Gets the encoded_hard_current_limit_reverse setting, which is described in
+// jrk_settings_set_encoded_hard_current_limit_reverse.
 JRK_API
-uint16_t jrk_settings_get_current_limit_code_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_encoded_hard_current_limit_reverse(const jrk_settings *);
 
 // Sets the brake_duration_forward setting.
 //
@@ -1205,39 +1204,39 @@ void jrk_settings_set_brake_duration_reverse(jrk_settings *,
 JRK_API
 uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 
-// Sets the max_current_forward setting.
+// Sets the soft_current_limit_forward setting.
 //
 // This is the maximum current while driving forward.  If the current exceeds
 // this value, the jrk will trigger a "Max. current exceeded" error.
 //
 // A value of 0 means no limit.
 //
-// For the umc04a jrks, the units of this setting are in milliamps.
+// For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
-void jrk_settings_set_max_current_forward(jrk_settings *,
-  uint16_t max_current_forward);
+void jrk_settings_set_soft_current_limit_forward(jrk_settings *,
+  uint16_t soft_current_limit_forward);
 
-// Gets the max_current_forward setting, which is described in
-// jrk_settings_set_max_current_forward.
+// Gets the soft_current_limit_forward setting, which is described in
+// jrk_settings_set_soft_current_limit_forward.
 JRK_API
-uint16_t jrk_settings_get_max_current_forward(const jrk_settings *);
+uint16_t jrk_settings_get_soft_current_limit_forward(const jrk_settings *);
 
-// Sets the max_current_reverse setting.
+// Sets the soft_current_limit_reverse setting.
 //
 // This is the maximum current while driving in reverse.  If the current exceeds
 // this value, the jrk will trigger a "Max. current exceeded" error.
 //
 // A value of 0 means no limit.
 //
-// For the umc04a jrks, the units of this setting are in milliamps.
+// For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 JRK_API
-void jrk_settings_set_max_current_reverse(jrk_settings *,
-  uint16_t max_current_reverse);
+void jrk_settings_set_soft_current_limit_reverse(jrk_settings *,
+  uint16_t soft_current_limit_reverse);
 
-// Gets the max_current_reverse setting, which is described in
-// jrk_settings_set_max_current_reverse.
+// Gets the soft_current_limit_reverse setting, which is described in
+// jrk_settings_set_soft_current_limit_reverse.
 JRK_API
-uint16_t jrk_settings_get_max_current_reverse(const jrk_settings *);
+uint16_t jrk_settings_get_soft_current_limit_reverse(const jrk_settings *);
 
 // Sets the coast_when_off setting.
 //
@@ -1326,421 +1325,158 @@ void jrk_settings_set_vin_calibration(jrk_settings *,
 JRK_API
 int16_t jrk_settings_get_vin_calibration(const jrk_settings *);
 
+// Sets the disable_i2c_pullups setting.
+//
+// This option disables the internal pull-up resistors on the SDA/AN and SCL
+// pins if those pins are being used for I2C communication.
+JRK_API
+void jrk_settings_set_disable_i2c_pullups(jrk_settings *,
+  bool disable_i2c_pullups);
+
+// Gets the disable_i2c_pullups setting, which is described in
+// jrk_settings_set_disable_i2c_pullups.
+JRK_API
+bool jrk_settings_get_disable_i2c_pullups(const jrk_settings *);
+
+// Sets the analog_sda_pullup setting.
+//
+// This option enables the internal pull-up resistor on the SDA/AN pin if it is
+// being used as an analog input.
+JRK_API
+void jrk_settings_set_analog_sda_pullup(jrk_settings *,
+  bool analog_sda_pullup);
+
+// Gets the analog_sda_pullup setting, which is described in
+// jrk_settings_set_analog_sda_pullup.
+JRK_API
+bool jrk_settings_get_analog_sda_pullup(const jrk_settings *);
+
+// Sets the always_analog_sda setting.
+//
+// This option causes the jrk to perform analog measurements on the SDA/AN pin
+// and configure SCL as a potentiometer power pin even if the "Input mode"
+// setting is not "Analog".
+JRK_API
+void jrk_settings_set_always_analog_sda(jrk_settings *,
+  bool always_analog_sda);
+
+// Gets the always_analog_sda setting, which is described in
+// jrk_settings_set_always_analog_sda.
+JRK_API
+bool jrk_settings_get_always_analog_sda(const jrk_settings *);
+
+// Sets the always_analog_fba setting.
+//
+// This option causes the jrk to perform analog measurements on the FBA pin
+// even if the "Feedback mode" setting is not "Analog".
+JRK_API
+void jrk_settings_set_always_analog_fba(jrk_settings *,
+  bool always_analog_fba);
+
+// Gets the always_analog_fba setting, which is described in
+// jrk_settings_set_always_analog_fba.
+JRK_API
+bool jrk_settings_get_always_analog_fba(const jrk_settings *);
+
+// Sets the fbt_method setting.
+//
+// This settings specifies what kind of pulse measurement to perform
+// on the FBT pin.
+//
+// JRK_FBT_METHOD_PULSE_COUNTING means the jrk will count the number of
+// rising edges on the pin, and is more suitable for fast tachometers.
+//
+// JRK_FBT_METHOD_PULSE_TIMING means the jrk will measure the pulse width
+// (duration) of pulses on the pin, and is more suitable for slow tachometers.
+JRK_API
+void jrk_settings_set_fbt_method(jrk_settings *,
+  uint8_t fbt_method);
+
+// Gets the fbt_method setting, which is described in
+// jrk_settings_set_fbt_method.
+JRK_API
+uint8_t jrk_settings_get_fbt_method(const jrk_settings *);
+
+// Sets the fbt_timing_clock setting.
+//
+// This specifies the speed of the clock (in MHz) to use for pulse timing on the
+// FBT pin.  The options are:
+//
+// - JRK_FBT_TIMING_CLOCK_1_5: 1.5 MHz
+// - JRK_FBT_TIMING_CLOCK_3: 3 MHz
+// - JRK_FBT_TIMING_CLOCK_6: 6 MHz
+// - JRK_FBT_TIMING_CLOCK_12: 12 MHz
+// - JRK_FBT_TIMING_CLOCK_24: 24 MHz
+// - JRK_FBT_TIMING_CLOCK_48: 48 MHz
+JRK_API
+void jrk_settings_set_fbt_timing_clock(jrk_settings *,
+  uint8_t fbt_timing_clock);
+
+// Gets the fbt_timing_clock setting, which is described in
+// jrk_settings_set_fbt_timing_clock.
+JRK_API
+uint8_t jrk_settings_get_fbt_timing_clock(const jrk_settings *);
+
+// Sets the fbt_timing_polarity setting.
+//
+// By default, the pulse timing mode on the FBT pin measures the time of
+// high pulses.  When true, this option causes it to measure low pulses.
+JRK_API
+void jrk_settings_set_fbt_timing_polarity(jrk_settings *,
+  bool fbt_timing_polarity);
+
+// Gets the fbt_timing_polarity setting, which is described in
+// jrk_settings_set_fbt_timing_polarity.
+JRK_API
+bool jrk_settings_get_fbt_timing_polarity(const jrk_settings *);
+
+// Sets the fbt_timing_timeout setting.
+//
+// The pulse timing mode for the FBT pin will assume the motor has stopped, and
+// start recording maximum-width pulses if it has not seen any pulses in this
+// amount of time.
+JRK_API
+void jrk_settings_set_fbt_timing_timeout(jrk_settings *,
+  uint16_t fbt_timing_timeout);
+
+// Gets the fbt_timing_timeout setting, which is described in
+// jrk_settings_set_fbt_timing_timeout.
+JRK_API
+uint16_t jrk_settings_get_fbt_timing_timeout(const jrk_settings *);
+
+// Sets the fbt_samples setting.
+//
+// The number of consecutive FBT measurements to average together in pulse
+// timing mode or to add together in pulse counting mode.
+JRK_API
+void jrk_settings_set_fbt_samples(jrk_settings *,
+  uint8_t fbt_samples);
+
+// Gets the fbt_samples setting, which is described in
+// jrk_settings_set_fbt_samples.
+JRK_API
+uint8_t jrk_settings_get_fbt_samples(const jrk_settings *);
+
+// Sets the fbt_divider_exponent setting.
+//
+// This setting specifies how many bits to shift the raw tachomter reading to
+// the right before using it to calculate the "feedback" variable.  The
+// default value is 0.
+JRK_API
+void jrk_settings_set_fbt_divider_exponent(jrk_settings *,
+  uint8_t fbt_divider_exponent);
+
+// Gets the fbt_divider_exponent setting, which is described in
+// jrk_settings_set_fbt_divider_exponent.
+JRK_API
+uint8_t jrk_settings_get_fbt_divider_exponent(const jrk_settings *);
+
 // End of auto-generated settings accessor prototypes.
 
 /// Returns an acheivable baud rate corresponding to the specified baud rate.
 /// Does not modify the settings object.
 JRK_API
 uint32_t jrk_settings_achievable_serial_baud_rate(const jrk_settings *, uint32_t);
-
-/// Sets the assigned function for a control pin.
-///
-/// The pin argument should be one of the JRK_PIN_NUM_* macros.
-///
-/// The func argument should be one of the JRK_PIN_FUNC_* macros.
-JRK_API
-void jrk_settings_set_pin_func(jrk_settings *, uint8_t pin, uint8_t func);
-
-/// Gets the pin function as described in jrk_settings_get_pin_func().
-JRK_API
-uint8_t jrk_settings_get_pin_func(const jrk_settings *, uint8_t pin);
-
-/// Sets whether the pin will have its internal pull-up enabled (if applicable).
-///
-/// Note that this setting is ignored by the device if the pin function is
-/// JRK_PIN_FUNC_DEFAULT.
-///
-/// The pin argument should be one of the JRK_PIN_NUM_* macros.
-JRK_API
-void jrk_settings_set_pin_pullup(jrk_settings *, uint8_t pin, bool pullup);
-
-/// Gets the pullup flag for a pin as described in jrk_settings_set_pin_pullup().
-JRK_API
-bool jrk_settings_get_pin_pullup(const jrk_settings *, uint8_t pin);
-
-/// Sets whether the pin will be used as an analog input (if applicable).
-///
-/// This flag causes the jrk to disable digital input functionality on that pin
-/// and regularly take analog readings of the pin.
-///
-/// Note that this setting is ignored by the device if the pin function is
-/// JRK_PIN_FUNC_DEFAULT.
-///
-/// The pin argument should be one of the JRK_PIN_NUM_* macros.
-JRK_API
-void jrk_settings_set_pin_analog(jrk_settings *, uint8_t pin, bool analog);
-
-/// Gets the analog flag for a pin as described in jrk_settings_set_pin_analog().
-JRK_API
-bool jrk_settings_get_pin_analog(const jrk_settings *, uint8_t pin);
-
-
-// jrk_overridable_settings /////////////////////////////////////////////////////
-
-/// Represents the settings that can be changed temporarily at run time
-/// without modifying the jrk's EEPROM.
-typedef struct jrk_overridable_settings jrk_overridable_settings;
-
-/// Copies a jrk_overridable_settings object.  If this function is successful,
-/// the caller must free the settings later by calling
-/// jrk_overridable_settings_free().
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_overridable_settings_copy(
-  const jrk_overridable_settings * source,
-  jrk_overridable_settings ** dest);
-
-/// Frees an overridable settings object.
-JRK_API
-void jrk_overridable_settings_free(jrk_overridable_settings *);
-
-// Beginning of auto-generated overridable settings accessor prototypes.
-
-// Sets the proportional_multiplier setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_proportional_multiplier() for more info.
-JRK_API
-void jrk_overridable_settings_set_proportional_multiplier(jrk_overridable_settings *,
-  uint16_t proportional_multiplier);
-
-// Gets the proportional_multiplier setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_proportional_multiplier() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_proportional_multiplier(const jrk_overridable_settings *);
-
-// Sets the proportional_exponent setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_proportional_exponent() for more info.
-JRK_API
-void jrk_overridable_settings_set_proportional_exponent(jrk_overridable_settings *,
-  uint8_t proportional_exponent);
-
-// Gets the proportional_exponent setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_proportional_exponent() for more info.
-JRK_API
-uint8_t jrk_overridable_settings_get_proportional_exponent(const jrk_overridable_settings *);
-
-// Sets the integral_multiplier setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_integral_multiplier() for more info.
-JRK_API
-void jrk_overridable_settings_set_integral_multiplier(jrk_overridable_settings *,
-  uint16_t integral_multiplier);
-
-// Gets the integral_multiplier setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_integral_multiplier() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_integral_multiplier(const jrk_overridable_settings *);
-
-// Sets the integral_exponent setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_integral_exponent() for more info.
-JRK_API
-void jrk_overridable_settings_set_integral_exponent(jrk_overridable_settings *,
-  uint8_t integral_exponent);
-
-// Gets the integral_exponent setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_integral_exponent() for more info.
-JRK_API
-uint8_t jrk_overridable_settings_get_integral_exponent(const jrk_overridable_settings *);
-
-// Sets the derivative_multiplier setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_derivative_multiplier() for more info.
-JRK_API
-void jrk_overridable_settings_set_derivative_multiplier(jrk_overridable_settings *,
-  uint16_t derivative_multiplier);
-
-// Gets the derivative_multiplier setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_derivative_multiplier() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_derivative_multiplier(const jrk_overridable_settings *);
-
-// Sets the derivative_exponent setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_derivative_exponent() for more info.
-JRK_API
-void jrk_overridable_settings_set_derivative_exponent(jrk_overridable_settings *,
-  uint8_t derivative_exponent);
-
-// Gets the derivative_exponent setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_derivative_exponent() for more info.
-JRK_API
-uint8_t jrk_overridable_settings_get_derivative_exponent(const jrk_overridable_settings *);
-
-// Sets the pid_period setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_pid_period() for more info.
-JRK_API
-void jrk_overridable_settings_set_pid_period(jrk_overridable_settings *,
-  uint16_t pid_period);
-
-// Gets the pid_period setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_pid_period() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_pid_period(const jrk_overridable_settings *);
-
-// Sets the integral_limit setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_integral_limit() for more info.
-JRK_API
-void jrk_overridable_settings_set_integral_limit(jrk_overridable_settings *,
-  uint16_t integral_limit);
-
-// Gets the integral_limit setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_integral_limit() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_integral_limit(const jrk_overridable_settings *);
-
-// Sets the reset_integral setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_reset_integral() for more info.
-JRK_API
-void jrk_overridable_settings_set_reset_integral(jrk_overridable_settings *,
-  bool reset_integral);
-
-// Gets the reset_integral setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_reset_integral() for more info.
-JRK_API
-bool jrk_overridable_settings_get_reset_integral(const jrk_overridable_settings *);
-
-// Sets the max_duty_cycle_while_feedback_out_of_range setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_duty_cycle_while_feedback_out_of_range() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_duty_cycle_while_feedback_out_of_range(jrk_overridable_settings *,
-  uint16_t max_duty_cycle_while_feedback_out_of_range);
-
-// Gets the max_duty_cycle_while_feedback_out_of_range setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_duty_cycle_while_feedback_out_of_range() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_duty_cycle_while_feedback_out_of_range(const jrk_overridable_settings *);
-
-// Sets the max_acceleration_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_acceleration_forward() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_acceleration_forward(jrk_overridable_settings *,
-  uint16_t max_acceleration_forward);
-
-// Gets the max_acceleration_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_acceleration_forward() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_acceleration_forward(const jrk_overridable_settings *);
-
-// Sets the max_acceleration_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_acceleration_reverse() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_acceleration_reverse(jrk_overridable_settings *,
-  uint16_t max_acceleration_reverse);
-
-// Gets the max_acceleration_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_acceleration_reverse() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_acceleration_reverse(const jrk_overridable_settings *);
-
-// Sets the max_deceleration_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_deceleration_forward() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_deceleration_forward(jrk_overridable_settings *,
-  uint16_t max_deceleration_forward);
-
-// Gets the max_deceleration_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_deceleration_forward() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_deceleration_forward(const jrk_overridable_settings *);
-
-// Sets the max_deceleration_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_deceleration_reverse() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_deceleration_reverse(jrk_overridable_settings *,
-  uint16_t max_deceleration_reverse);
-
-// Gets the max_deceleration_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_deceleration_reverse() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_deceleration_reverse(const jrk_overridable_settings *);
-
-// Sets the max_duty_cycle_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_duty_cycle_forward() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_duty_cycle_forward(jrk_overridable_settings *,
-  uint16_t max_duty_cycle_forward);
-
-// Gets the max_duty_cycle_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_duty_cycle_forward() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_duty_cycle_forward(const jrk_overridable_settings *);
-
-// Sets the max_duty_cycle_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_duty_cycle_reverse() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_duty_cycle_reverse(jrk_overridable_settings *,
-  uint16_t max_duty_cycle_reverse);
-
-// Gets the max_duty_cycle_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_duty_cycle_reverse() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_duty_cycle_reverse(const jrk_overridable_settings *);
-
-// Sets the current_limit_code_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_current_limit_code_forward() for more info.
-JRK_API
-void jrk_overridable_settings_set_current_limit_code_forward(jrk_overridable_settings *,
-  uint16_t current_limit_code_forward);
-
-// Gets the current_limit_code_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_current_limit_code_forward() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_current_limit_code_forward(const jrk_overridable_settings *);
-
-// Sets the current_limit_code_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_current_limit_code_reverse() for more info.
-JRK_API
-void jrk_overridable_settings_set_current_limit_code_reverse(jrk_overridable_settings *,
-  uint16_t current_limit_code_reverse);
-
-// Gets the current_limit_code_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_current_limit_code_reverse() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_current_limit_code_reverse(const jrk_overridable_settings *);
-
-// Sets the brake_duration_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_brake_duration_forward() for more info.
-JRK_API
-void jrk_overridable_settings_set_brake_duration_forward(jrk_overridable_settings *,
-  uint32_t brake_duration_forward);
-
-// Gets the brake_duration_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_brake_duration_forward() for more info.
-JRK_API
-uint32_t jrk_overridable_settings_get_brake_duration_forward(const jrk_overridable_settings *);
-
-// Sets the brake_duration_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_brake_duration_reverse() for more info.
-JRK_API
-void jrk_overridable_settings_set_brake_duration_reverse(jrk_overridable_settings *,
-  uint32_t brake_duration_reverse);
-
-// Gets the brake_duration_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_brake_duration_reverse() for more info.
-JRK_API
-uint32_t jrk_overridable_settings_get_brake_duration_reverse(const jrk_overridable_settings *);
-
-// Sets the max_current_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_current_forward() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_current_forward(jrk_overridable_settings *,
-  uint16_t max_current_forward);
-
-// Gets the max_current_forward setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_current_forward() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_current_forward(const jrk_overridable_settings *);
-
-// Sets the max_current_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_current_reverse() for more info.
-JRK_API
-void jrk_overridable_settings_set_max_current_reverse(jrk_overridable_settings *,
-  uint16_t max_current_reverse);
-
-// Gets the max_current_reverse setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_max_current_reverse() for more info.
-JRK_API
-uint16_t jrk_overridable_settings_get_max_current_reverse(const jrk_overridable_settings *);
-
-// Sets the coast_when_off setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_coast_when_off() for more info.
-JRK_API
-void jrk_overridable_settings_set_coast_when_off(jrk_overridable_settings *,
-  bool coast_when_off);
-
-// Gets the coast_when_off setting
-// in a jrk_overridable_settings object.
-//
-// See jrk_settings_set_coast_when_off() for more info.
-JRK_API
-bool jrk_overridable_settings_get_coast_when_off(const jrk_overridable_settings *);
-
-// End of auto-generated overridable settings accessor prototypes.
 
 
 // jrk_variables ////////////////////////////////////////////////////////////////
@@ -1845,9 +1581,9 @@ uint32_t jrk_variables_get_up_time(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables *);
 
-// Gets the tachometer_reading variable.
+// Gets the fbt_reading variable.
 JRK_API
-uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
+uint16_t jrk_variables_get_fbt_reading(const jrk_variables *);
 
 // Gets the raw_current variable.
 //
@@ -1855,9 +1591,9 @@ uint16_t jrk_variables_get_tachometer_reading(const jrk_variables *);
 JRK_API
 uint16_t jrk_variables_get_raw_current(const jrk_variables *);
 
-// Gets the current_limit_code variable.
+// Gets the encoded_hard_current_limit variable.
 JRK_API
-uint16_t jrk_variables_get_current_limit_code(const jrk_variables *);
+uint16_t jrk_variables_get_encoded_hard_current_limit(const jrk_variables *);
 
 // Gets the last_duty_cycle variable.
 JRK_API
@@ -1925,18 +1661,6 @@ uint16_t jrk_variables_get_analog_reading(const jrk_variables *, uint8_t pin);
 // will be 0.  See jrk_variables_get_analog_reading() for those pins.
 JRK_API
 bool jrk_variables_get_digital_reading(const jrk_variables *, uint8_t pin);
-
-/// Gets the pin state for the specified pin, i.e. what kind of input or output
-/// it is.
-///
-/// Note that the state might be misleading if the pin is being used as a serial
-/// or I2C pin.
-///
-/// This pin argument should be one of the JRK_PIN_NUM_* macros.
-///
-/// The return value is one of the JRK_PIN_STATE_* macros.
-JRK_API
-uint8_t jrk_variables_get_pin_state(const jrk_variables *, uint8_t pin);
 
 
 // jrk_device ///////////////////////////////////////////////////////////////////
@@ -2066,14 +1790,6 @@ jrk_error * jrk_set_target(jrk_handle *, uint16_t target);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_stop_motor(jrk_handle *);
 
-/// This function clears all of the latched errors including the "Awaiting
-/// command" error bit.
-///
-/// This is the command to use if you want the jrk to clear all of its errors
-/// and run the motor if possible.
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_run_motor(jrk_handle *);
-
 /// Sends a command to the jrk that causes it to clear latched errors in the
 /// "Error flags halting" varible except for "Awaiting command".
 ///
@@ -2082,6 +1798,23 @@ jrk_error * jrk_run_motor(jrk_handle *);
 /// cleared.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
+
+/// This function clears all of the latched errors including the "Awaiting
+/// command" error bit.
+///
+/// It uses two commands to do this:
+///
+/// 1. A "Get variable" command to fetch the current Target value from the jrk
+///    and clear all latched errors except "Awaiting command" as a side effect.
+/// 2. A "Set target" command to send the previously-fetched target to the jrk.
+///
+/// If you want to have control over what target gets set, you should use
+/// jrk_clear_errors() and jrk_set_target() separately instead of this function.
+///
+/// This is the command to use if you want the jrk to clear all of its errors
+/// and run the motor if possible.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_run_motor(jrk_handle *);
 
 /// Sends a "Force duty cycle target" command to the jrk.
 ///
@@ -2157,7 +1890,26 @@ JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
   uint16_t flags);
 
-/// Reads all of the jrk's non-volatile settings and returns them as an object.
+/// Reads the specified bytes from the jrk variables data structure.
+///
+/// The index parameter specifies the address of the first byte to read, and the
+/// length parameter specifies how many bytes to read.  The output parameter
+/// must point to a buffer that can hold the specified number of bytes.
+///
+/// You can use the JRK_VAR_* constants in jrk_protocol.h to determine
+/// the index and offset.
+///
+/// The flags parameter is the same as the flags parameter for
+/// jrk_get_variables().
+///
+/// For a higher-level version of this that just reads all variables,
+/// see jrk_get_variables().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_variable_segment(jrk_handle *,
+  size_t index, size_t length, uint8_t * output, uint16_t flags);
+
+/// Reads all of the jrk's non-volatile settings from EEPROM and returns them as
+/// an object.
 ///
 /// The settings parameter should be a non-null pointer to a jrk_settings
 /// pointer, which will receive a pointer to a new settings object if and only
@@ -2166,9 +1918,9 @@ jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
 ///
 /// To access fields in the settings, see the jrk_settings_* functions.
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
+jrk_error * jrk_get_eeprom_settings(jrk_handle *, jrk_settings ** settings);
 
-/// Writes all of the jrk's non-volatile settings.
+/// Writes all of the jrk's non-volatile EEPROM settings.
 ///
 /// Internally, this function copies the settings and calls jrk_settings_fix()
 /// to make sure that the settings will be valid when they are written to the
@@ -2181,47 +1933,102 @@ jrk_error * jrk_get_settings(jrk_handle *, jrk_settings ** settings);
 /// Be careful not to call this command in a fast loop to avoid wearing out the
 /// jrk's EEPROM, which is rated for only 100,000 write cycles.
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_set_settings(jrk_handle *, const jrk_settings *);
+jrk_error * jrk_set_eeprom_settings(jrk_handle *, const jrk_settings *);
 
-/// Reads the jrk's overridable settings.
+/// Reads the jrk's RAM settings.
 ///
-/// The overridable_settings parameter should be a non-null pointer to a
-/// jrk_overridable_settings pointer, which will receive a pointer to a new
+/// The RAM settings are a copy of the jrk's settings that is stored
+/// in RAM.  These settings are initialized from EEPROM when the jrk starts up
+/// or when it receives a jrk_reinitialize() command.  Most (but not all) of of
+/// the jrk's settings can be quickly and temporarily changed by writing to the
+/// RAM settings instead of writing to EEPROM.
+///
+/// The settings parameter should be a non-null pointer to a
+/// jrk_settings pointer, which will receive a pointer to a new
 /// object if and only if this function is successful.  The caller must free the
-/// overridable settings later by calling jrk_overridable_settings_free().
+/// settings later by calling jrk_settings_free().
 ///
-/// To access fields in the settings, see the jrk_overridable_settings_*
+/// To access fields in the settings, see the jrk_settings_*
 /// functions.
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_get_overridable_settings(jrk_handle *,
-  jrk_overridable_settings ** overridable_settings);
-
-/// Overrides the values for the jrk's overridable settings.
 ///
-/// Unlike jrk_set_settings(), this function does not fix any problems with the
-/// settings, so it may be possible to set invalid values that cause unexpected
-/// behavior.  (Note: This might change in the future.)
+/// For a lower-level version of this, see
+/// jrk_get_ram_settings_segment().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_ram_settings(jrk_handle *, jrk_settings **);
+
+/// Writes to all of the jrk's RAM settings.
+///
+/// See jrk_get_ram_settings() for information about what the
+/// RAM settings are.
+///
+/// Internally, this function copies the settings and calls jrk_settings_fix()
+/// to make sure that the settings will be valid when they are written to the
+/// device.  If you want to get warnings about what was changed, you should call
+/// jrk_settings_fix() yourself beforehand.
 ///
 /// You can use this command to temporarily change settings such as PID
 /// coefficients and motor limits without modifying EEPROM or reinitializing the
-/// jrk.  This command takes effect immediately.
+/// jrk.  This command takes effect immediately.  Some settings are not
+/// RAM in this way, so you will have to use jrk_set_eeprom_settings() and
+/// jrk_reinitialize() to change them.
 ///
-/// Note that this command works by overriding *all* of the jrk's overridable
+/// Note that this command works by RAM *all* of the jrk's RAM
 /// settings, so it needs knowledge of what those settings are.  If you are
 /// writing your own USB code, you can do something simpler by just overwriting
 /// the settings that you know and care about.  See the internal library
-/// function jrk_set_overridable_setting_segment, which takes an arbitrary index
+/// function jrk_set_ram_setting_segment, which takes an arbitrary index
 /// and length.
+///
+/// For a lower-level version of this, see
+/// jrk_set_ram_settings_segment().
 JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_set_overridable_settings(jrk_handle *,
-  const jrk_overridable_settings *);
+jrk_error * jrk_set_ram_settings(jrk_handle *,
+  const jrk_settings *);
 
-/// Resets the jrk's settings to their factory default values.
+/// Reads the specified bytes of the RAM settings.
+///
+/// See jrk_get_ram_settings() for information about what the
+/// RAM settings are.
+///
+/// The index parameter specifies the address of the first byte to retrieve,
+/// and the length parameter specifies how many bytes to retrieve.  The output
+/// parameter must point to a buffer large enough for the requested length.
+///
+/// You can use the JRK_SETTINGS_* constants in jrk_protocol.h to calculate
+/// the index and offset.
+///
+/// For a higher-level version of this that just reads all the RAM
+/// settings, see jrk_get_ram_settings().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_get_ram_setting_segment(jrk_handle *,
+  size_t index, size_t length, uint8_t * output);
+
+/// Sets the specified bytes of the RAM settings.
+///
+/// See jrk_get_ram_settings() for information about what the
+/// RAM settings are.
+///
+/// The index parameter specifies the address of the first byte to set,
+/// and the length parameter specifies how many bytes to set.  The input
+/// parameter must point to a buffer of the specified length.
+///
+/// You can use the JRK_SETTINGS_* constants in jrk_protocol.h to calculate
+/// the index and offset.
+///
+/// For a higher-level version of this that just sets all the RAM
+/// settings and fixes invalid settings, see jrk_set_ram_settings().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_set_ram_setting_segment(jrk_handle *,
+  size_t index, size_t length, const uint8_t * input);
+
+/// Resets the jrk's settings in RAM and EEPROM to their factory default values.
+/// Part of this process is calling jrk_reinitialize().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_restore_defaults(jrk_handle * handle);
 
 /// Causes the jrk to reload all of its settings from EEPROM and make them take
-/// effect.  See also jrk_reset().
+/// effect.  Note that this does not have an immediate effect; the effect
+/// happens at the end of the PID period.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_reinitialize(jrk_handle * handle);
 
@@ -2238,50 +2045,36 @@ jrk_error * jrk_get_debug_data(jrk_handle *, uint8_t * data, size_t * size);
 
 //// Current limiting and measurment ////////////////////////////////////////////
 
-/// Gets a list of the recommended current limit codes for the specified
+/// Gets a list of the recommended encoded hard current limits for the specified
 /// product.  They will be in ascending order by current limit in milliamps.
 JRK_API
-const uint16_t * jrk_get_recommended_current_limit_codes(
-  uint32_t product, size_t * code_count);
+const uint16_t * jrk_get_recommended_encoded_hard_current_limits(
+  uint32_t product, size_t * count);
 
-/// Converts max current codes to milliamps for the specified product.  You can
-/// use this to interpret the codes returned by
-/// jrk_settings_get_current_limit_code_forward() or
-/// jrk_settings_get_current_limit_code_reverse().
+/// Converts encoded current limit codes to milliamps for the specified product.  You can
+/// use this to interpret the encoded values returned by
+/// jrk_settings_get_encoded_hard_current_limit_forward() or
+/// jrk_settings_get_encoded_hard_current_limit_reverse().
 ///
-/// The code argument should be a current limit code.
-///
-/// See also jrk_current_limit_ma_to_code().
+/// See also jrk_current_limit_encode().
 JRK_API
-uint32_t jrk_current_limit_code_to_ma(const jrk_settings *, uint16_t code);
+uint32_t jrk_current_limit_decode(const jrk_settings *, uint16_t encoded_limit);
 
-// Converts a max current value in milliamps into a recommended max current
-// code.  You can use this to get the raw values needed by
-// jrk_settings_set_current_limit_code_forward() or
-// jrk_settings_set_current_limit_code_reverse().
+// Converts a current limit value in milliamps into a recommended encoded hard
+// current limit value.
+//
+// You can use this to get the encoded values needed by
+// jrk_settings_set_encoded_hard_current_limit_forward() or
+// jrk_settings_set_encoded_hard_current_limit_reverse().
 //
 // Note that this function only returns codes that are in the recommended set, a
 // subset of the codes supported by the device.
 //
 // The ma argument should be a current limit in milliamps.
 //
-// See also jrk_current_limit_code_to_ma().
+// See also jrk_current_limit_decode().
 JRK_API
-uint16_t jrk_current_limit_ma_to_code(const jrk_settings *, uint32_t ma);
-
-// Calculates or retrieves the measured motor current, in milliamps, given a
-// settings object and a variables object read from the same device.
-//
-// The function returns the measured current, in milliamps.
-//
-// If you don't want to actually fetch settings from the jrk, you can just
-// create a new settings object, set it to the right product, and fill it with
-// the default settings, using the jrk_settings_* functions of this library.
-//
-// Note for umc04a jrk models: If current chopping happened during the PID
-// period, the value returned here will not be trustable.
-JRK_API
-uint32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
+uint16_t jrk_current_limit_encode(const jrk_settings *, uint32_t ma);
 
 // Calculates the voltage on the current sense line in units of mV/64.
 //
@@ -2309,7 +2102,6 @@ uint32_t jrk_calculate_raw_current_mv64(
 JRK_API
 jrk_error * jrk_diagnose(
   const jrk_settings * settings,
-  const jrk_overridable_settings * osettings,
   const jrk_variables * vars,
   uint32_t flags,
   char ** diagnosis);

@@ -45,11 +45,12 @@ struct jrk_settings
   uint16_t derivative_multiplier;
   uint8_t derivative_exponent;
   uint16_t pid_period;
+  uint8_t integral_divider_exponent;
   uint16_t integral_limit;
   bool reset_integral;
   uint8_t pwm_frequency;
   uint8_t current_samples_exponent;
-  uint8_t overcurrent_threshold;
+  uint8_t hard_overcurrent_threshold;
   int16_t current_offset_calibration;
   int16_t current_scale_calibration;
   bool motor_invert;
@@ -60,25 +61,29 @@ struct jrk_settings
   uint16_t max_deceleration_reverse;
   uint16_t max_duty_cycle_forward;
   uint16_t max_duty_cycle_reverse;
-  uint16_t current_limit_code_forward;
-  uint16_t current_limit_code_reverse;
+  uint16_t encoded_hard_current_limit_forward;
+  uint16_t encoded_hard_current_limit_reverse;
   uint32_t brake_duration_forward;
   uint32_t brake_duration_reverse;
-  uint16_t max_current_forward;
-  uint16_t max_current_reverse;
+  uint16_t soft_current_limit_forward;
+  uint16_t soft_current_limit_reverse;
   bool coast_when_off;
   uint16_t error_enable;
   uint16_t error_latch;
   uint16_t error_hard;
   int16_t vin_calibration;
+  bool disable_i2c_pullups;
+  bool analog_sda_pullup;
+  bool always_analog_sda;
+  bool always_analog_fba;
+  uint8_t fbt_method;
+  uint8_t fbt_timing_clock;
+  bool fbt_timing_polarity;
+  uint16_t fbt_timing_timeout;
+  uint8_t fbt_samples;
+  uint8_t fbt_divider_exponent;
 
   // End of auto-generated settings struct members.
-
-  struct {
-    uint8_t func;
-    bool pullup;
-    bool analog;
-  } pin_settings[JRK_CONTROL_PIN_COUNT];
 };
 
 void jrk_settings_fill_with_defaults(jrk_settings * settings)
@@ -114,7 +119,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_pid_period(settings, 10);
   jrk_settings_set_integral_limit(settings, 1000);
   jrk_settings_set_current_samples_exponent(settings, 7);
-  jrk_settings_set_overcurrent_threshold(settings, 1);
+  jrk_settings_set_hard_overcurrent_threshold(settings, 1);
   jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(settings, 600);
   jrk_settings_set_max_acceleration_forward(settings, 600);
   jrk_settings_set_max_acceleration_reverse(settings, 600);
@@ -122,8 +127,12 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_max_deceleration_reverse(settings, 600);
   jrk_settings_set_max_duty_cycle_forward(settings, 600);
   jrk_settings_set_max_duty_cycle_reverse(settings, 600);
-  jrk_settings_set_current_limit_code_forward(settings, 26);
-  jrk_settings_set_current_limit_code_reverse(settings, 10);
+  jrk_settings_set_encoded_hard_current_limit_forward(settings, 26);
+  jrk_settings_set_encoded_hard_current_limit_reverse(settings, 26);
+  jrk_settings_set_fbt_method(settings, JRK_FBT_METHOD_PULSE_COUNTING);
+  jrk_settings_set_fbt_timing_clock(settings, JRK_FBT_TIMING_CLOCK_1_5);
+  jrk_settings_set_fbt_timing_timeout(settings, 100);
+  jrk_settings_set_fbt_samples(settings, 1);
 
   // End of auto-generated settings defaults.
 }
@@ -683,6 +692,18 @@ uint16_t jrk_settings_get_pid_period(const jrk_settings * settings)
   return settings->pid_period;
 }
 
+void jrk_settings_set_integral_divider_exponent(jrk_settings * settings, uint8_t integral_divider_exponent)
+{
+  if (settings == NULL) { return; }
+  settings->integral_divider_exponent = integral_divider_exponent;
+}
+
+uint8_t jrk_settings_get_integral_divider_exponent(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->integral_divider_exponent;
+}
+
 void jrk_settings_set_integral_limit(jrk_settings * settings, uint16_t integral_limit)
 {
   if (settings == NULL) { return; }
@@ -731,16 +752,16 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings * settings)
   return settings->current_samples_exponent;
 }
 
-void jrk_settings_set_overcurrent_threshold(jrk_settings * settings, uint8_t overcurrent_threshold)
+void jrk_settings_set_hard_overcurrent_threshold(jrk_settings * settings, uint8_t hard_overcurrent_threshold)
 {
   if (settings == NULL) { return; }
-  settings->overcurrent_threshold = overcurrent_threshold;
+  settings->hard_overcurrent_threshold = hard_overcurrent_threshold;
 }
 
-uint8_t jrk_settings_get_overcurrent_threshold(const jrk_settings * settings)
+uint8_t jrk_settings_get_hard_overcurrent_threshold(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->overcurrent_threshold;
+  return settings->hard_overcurrent_threshold;
 }
 
 void jrk_settings_set_current_offset_calibration(jrk_settings * settings, int16_t current_offset_calibration)
@@ -863,28 +884,28 @@ uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings * settings)
   return settings->max_duty_cycle_reverse;
 }
 
-void jrk_settings_set_current_limit_code_forward(jrk_settings * settings, uint16_t current_limit_code_forward)
+void jrk_settings_set_encoded_hard_current_limit_forward(jrk_settings * settings, uint16_t encoded_hard_current_limit_forward)
 {
   if (settings == NULL) { return; }
-  settings->current_limit_code_forward = current_limit_code_forward;
+  settings->encoded_hard_current_limit_forward = encoded_hard_current_limit_forward;
 }
 
-uint16_t jrk_settings_get_current_limit_code_forward(const jrk_settings * settings)
+uint16_t jrk_settings_get_encoded_hard_current_limit_forward(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->current_limit_code_forward;
+  return settings->encoded_hard_current_limit_forward;
 }
 
-void jrk_settings_set_current_limit_code_reverse(jrk_settings * settings, uint16_t current_limit_code_reverse)
+void jrk_settings_set_encoded_hard_current_limit_reverse(jrk_settings * settings, uint16_t encoded_hard_current_limit_reverse)
 {
   if (settings == NULL) { return; }
-  settings->current_limit_code_reverse = current_limit_code_reverse;
+  settings->encoded_hard_current_limit_reverse = encoded_hard_current_limit_reverse;
 }
 
-uint16_t jrk_settings_get_current_limit_code_reverse(const jrk_settings * settings)
+uint16_t jrk_settings_get_encoded_hard_current_limit_reverse(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->current_limit_code_reverse;
+  return settings->encoded_hard_current_limit_reverse;
 }
 
 void jrk_settings_set_brake_duration_forward(jrk_settings * settings, uint32_t brake_duration_forward)
@@ -911,28 +932,28 @@ uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings * settings)
   return settings->brake_duration_reverse;
 }
 
-void jrk_settings_set_max_current_forward(jrk_settings * settings, uint16_t max_current_forward)
+void jrk_settings_set_soft_current_limit_forward(jrk_settings * settings, uint16_t soft_current_limit_forward)
 {
   if (settings == NULL) { return; }
-  settings->max_current_forward = max_current_forward;
+  settings->soft_current_limit_forward = soft_current_limit_forward;
 }
 
-uint16_t jrk_settings_get_max_current_forward(const jrk_settings * settings)
+uint16_t jrk_settings_get_soft_current_limit_forward(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->max_current_forward;
+  return settings->soft_current_limit_forward;
 }
 
-void jrk_settings_set_max_current_reverse(jrk_settings * settings, uint16_t max_current_reverse)
+void jrk_settings_set_soft_current_limit_reverse(jrk_settings * settings, uint16_t soft_current_limit_reverse)
 {
   if (settings == NULL) { return; }
-  settings->max_current_reverse = max_current_reverse;
+  settings->soft_current_limit_reverse = soft_current_limit_reverse;
 }
 
-uint16_t jrk_settings_get_max_current_reverse(const jrk_settings * settings)
+uint16_t jrk_settings_get_soft_current_limit_reverse(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
-  return settings->max_current_reverse;
+  return settings->soft_current_limit_reverse;
 }
 
 void jrk_settings_set_coast_when_off(jrk_settings * settings, bool coast_when_off)
@@ -995,6 +1016,126 @@ int16_t jrk_settings_get_vin_calibration(const jrk_settings * settings)
   return settings->vin_calibration;
 }
 
+void jrk_settings_set_disable_i2c_pullups(jrk_settings * settings, bool disable_i2c_pullups)
+{
+  if (settings == NULL) { return; }
+  settings->disable_i2c_pullups = disable_i2c_pullups;
+}
+
+bool jrk_settings_get_disable_i2c_pullups(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->disable_i2c_pullups;
+}
+
+void jrk_settings_set_analog_sda_pullup(jrk_settings * settings, bool analog_sda_pullup)
+{
+  if (settings == NULL) { return; }
+  settings->analog_sda_pullup = analog_sda_pullup;
+}
+
+bool jrk_settings_get_analog_sda_pullup(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->analog_sda_pullup;
+}
+
+void jrk_settings_set_always_analog_sda(jrk_settings * settings, bool always_analog_sda)
+{
+  if (settings == NULL) { return; }
+  settings->always_analog_sda = always_analog_sda;
+}
+
+bool jrk_settings_get_always_analog_sda(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->always_analog_sda;
+}
+
+void jrk_settings_set_always_analog_fba(jrk_settings * settings, bool always_analog_fba)
+{
+  if (settings == NULL) { return; }
+  settings->always_analog_fba = always_analog_fba;
+}
+
+bool jrk_settings_get_always_analog_fba(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->always_analog_fba;
+}
+
+void jrk_settings_set_fbt_method(jrk_settings * settings, uint8_t fbt_method)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_method = fbt_method;
+}
+
+uint8_t jrk_settings_get_fbt_method(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_method;
+}
+
+void jrk_settings_set_fbt_timing_clock(jrk_settings * settings, uint8_t fbt_timing_clock)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_timing_clock = fbt_timing_clock;
+}
+
+uint8_t jrk_settings_get_fbt_timing_clock(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_timing_clock;
+}
+
+void jrk_settings_set_fbt_timing_polarity(jrk_settings * settings, bool fbt_timing_polarity)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_timing_polarity = fbt_timing_polarity;
+}
+
+bool jrk_settings_get_fbt_timing_polarity(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_timing_polarity;
+}
+
+void jrk_settings_set_fbt_timing_timeout(jrk_settings * settings, uint16_t fbt_timing_timeout)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_timing_timeout = fbt_timing_timeout;
+}
+
+uint16_t jrk_settings_get_fbt_timing_timeout(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_timing_timeout;
+}
+
+void jrk_settings_set_fbt_samples(jrk_settings * settings, uint8_t fbt_samples)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_samples = fbt_samples;
+}
+
+uint8_t jrk_settings_get_fbt_samples(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_samples;
+}
+
+void jrk_settings_set_fbt_divider_exponent(jrk_settings * settings, uint8_t fbt_divider_exponent)
+{
+  if (settings == NULL) { return; }
+  settings->fbt_divider_exponent = fbt_divider_exponent;
+}
+
+uint8_t jrk_settings_get_fbt_divider_exponent(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->fbt_divider_exponent;
+}
+
 // End of auto-generated settings accessors.
 
 uint32_t jrk_settings_achievable_serial_baud_rate(
@@ -1003,40 +1144,4 @@ uint32_t jrk_settings_achievable_serial_baud_rate(
   if (settings == NULL) { return 0; }
   uint16_t brg = jrk_baud_rate_to_brg(baud);
   return jrk_baud_rate_from_brg(brg);
-}
-
-void jrk_settings_set_pin_func(jrk_settings * settings, uint8_t pin, uint8_t func)
-{
-  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return; }
-  settings->pin_settings[pin].func = func;
-}
-
-uint8_t jrk_settings_get_pin_func(const jrk_settings * settings, uint8_t pin)
-{
-  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
-  return settings->pin_settings[pin].func;
-}
-
-void jrk_settings_set_pin_pullup(jrk_settings * settings, uint8_t pin, bool pullup)
-{
-  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return; }
-  settings->pin_settings[pin].pullup = pullup;
-}
-
-bool jrk_settings_get_pin_pullup(const jrk_settings * settings, uint8_t pin)
-{
-  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
-  return settings->pin_settings[pin].pullup;
-}
-
-void jrk_settings_set_pin_analog(jrk_settings * settings, uint8_t pin, bool analog)
-{
-  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return; }
-  settings->pin_settings[pin].analog = analog;
-}
-
-bool jrk_settings_get_pin_analog(const jrk_settings * settings, uint8_t pin)
-{
-  if (!settings || pin >= JRK_CONTROL_PIN_COUNT) { return 0; }
-  return settings->pin_settings[pin].analog;
 }

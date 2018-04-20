@@ -1,0 +1,86 @@
+; Copyright (C) 2018 Pololu Corporation
+
+[Strings]
+DriverPackageDisplayName="Pololu Jrk G2 Virtual COM Port Drivers"
+ManufacturerName="Pololu Corporation"
+ServiceName="Microsoft USB Serial Driver"
+p00B7m01="Pololu Jrk G2 18v27 Command Port"
+p00B7m03="Pololu Jrk G2 18v27 TTL Port"
+p00B9m01="Pololu Jrk G2 24v21 Command Port"
+p00B9m03="Pololu Jrk G2 24v21 TTL Port"
+p00BFm01="Pololu Jrk G2 18v19 Command Port"
+p00BFm03="Pololu Jrk G2 18v19 TTL Port"
+p00C1m01="Pololu Jrk G2 24v13 Command Port"
+p00C1m03="Pololu Jrk G2 24v13 TTL Port"
+
+[DefaultInstall]
+CopyINF=jrk-g2-serial.inf
+
+[Version]
+DriverVer=04/13/2018,1.0.0
+Signature=$Windows NT$
+Class=Ports
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
+Provider=%ManufacturerName%
+CatalogFile=pololu.cat
+DriverPackageDisplayName=%DriverPackageDisplayName%
+PnpLockdown=1
+
+[Manufacturer]
+%ManufacturerName%=Models,NTx86,NTamd64,NTarm
+
+[DestinationDirs]
+DefaultDestDir=12
+FakeModemCopyFileSection=12
+
+[Models.NTx86]
+%p00B7m01%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_01
+%p00B7m03%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_03
+%p00B9m01%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_01
+%p00B9m03%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_03
+%p00BFm01%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_01
+%p00BFm03%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_03
+%p00C1m01%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_01
+%p00C1m03%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_03
+
+[Models.NTamd64]
+%p00B7m01%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_01
+%p00B7m03%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_03
+%p00B9m01%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_01
+%p00B9m03%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_03
+%p00BFm01%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_01
+%p00BFm03%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_03
+%p00C1m01%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_01
+%p00C1m03%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_03
+
+[Models.NTarm]
+%p00B7m01%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_01
+%p00B7m03%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_03
+%p00B9m01%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_01
+%p00B9m03%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_03
+%p00BFm01%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_01
+%p00BFm03%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_03
+%p00C1m01%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_01
+%p00C1m03%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_03
+
+[DriverInstall]
+Include=mdmcpq.inf,usb.inf
+CopyFiles=FakeModemCopyFileSection
+AddReg=DriverAddReg
+
+[DriverAddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,usbser.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+[DriverInstall.Services]
+Include=mdmcpq.inf
+AddService=usbser,0x2,DriverService
+
+[DriverService]
+DisplayName=%ServiceName%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\usbser.sys
+LoadOrderGroup=Base

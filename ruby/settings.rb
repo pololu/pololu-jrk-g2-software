@@ -2,15 +2,15 @@ Settings = [
   {
     name: 'input_mode',
     type: :enum,
-    max: 'JRK_INPUT_MODE_PULSE_WIDTH',
+    max: 'JRK_INPUT_MODE_RC',
     default: 'JRK_INPUT_MODE_SERIAL',
     default_is_zero: true,
     english_default: 'serial',
     comment: <<EOF
 The input mode setting specifies how you want to control the jrk.  It
 determines the definition of the input and target variables.  The input
-variable is raw measurement of the jrk's input.  The target variable is the
-desired state of the system's output, and feeds into the PID feedback
+variable is a raw measurement of the jrk's input.  The target variable is
+the desired state of the system's output, and feeds into the PID feedback
 algorithm.
 
 - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
@@ -24,7 +24,7 @@ algorithm.
   corresponds to an input value of 4092.  The jrk uses its input scaling
   feature to set the target variable.
 
-- If the input mode is "Pulse width" (JRK_INPUT_MODE_PULSE_WIDTH), the jrk
+- If the input mode is "RC" (JRK_INPUT_MODE_RC), the jrk
   gets it input variable by reading RC pulses on its RC pin.  The input value
   is the width of the most recent pulse, in units of 2/3 microseconds.  The
   jrk uses its input scaling feature to set the target variable.
@@ -274,11 +274,6 @@ The jrk uses hysteresis to keep the system from simply riding the edge of the
 feedback dead zone; once in the dead zone, the duty cycle and integral will
 remain zero until the magnitude of the error exceeds twice the value of the
 dead zone.
-
-Note that this feature conflicts with deceleration limits.  If you set the
-feedback deadzone to a non-zero value, the jrk will set the duty cycle to
-zero immediately in the feedback deadzone without respecting any deceleration
-limits.
 EOF
   },
   {
@@ -426,7 +421,6 @@ EOF
   {
     name: 'proportional_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -439,7 +433,6 @@ EOF
   {
     name: 'proportional_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -448,7 +441,6 @@ EOF
   {
     name: 'integral_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -464,7 +456,6 @@ EOF
   {
     name: 'integral_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -473,7 +464,6 @@ EOF
   {
     name: 'derivative_multiplier',
     type: :uint16_t,
-    overridable: true,
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
@@ -486,7 +476,6 @@ EOF
   {
     name: 'derivative_exponent',
     type: :uint8_t,
-    overridable: true,
     max: 18,
     comment:
       "The allowed range of this setting is 0 to 18.\n" \
@@ -495,7 +484,6 @@ EOF
   {
     name: 'pid_period',
     type: :uint16_t,
-    overridable: true,
     range: 1..8191,
     default: 10,
     comment: <<EOF
@@ -506,9 +494,17 @@ disabled.
 EOF
   },
   {
+    name: 'integral_divider_exponent',
+    type: :uint8_t,
+    range: 0..15,
+    default: 0,
+    comment: <<EOF
+Causes the integral variable to accumulate more slowly.
+EOF
+  },
+  {
     name: 'integral_limit',
     type: :uint16_t,
-    overridable: true,
     default: 1000,
     max: 0x7FFF,
     comment:
@@ -518,7 +514,6 @@ EOF
   {
     name: 'reset_integral',
     type: :bool,
-    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_RESET_INTEGRAL',
     comment:
@@ -542,13 +537,13 @@ EOF
     name: 'current_samples_exponent',
     type: :uint8_t,
     range: 0..10,
-    default: 7,  # TODO: are we going to reduce this?
+    default: 7,
     comment:
       "This setting specifies how many analog samples to take when measuring\n" \
       "the current.  The number of samples will be 2^x, where x is this setting.",
   },
   {
-    name: 'overcurrent_threshold',
+    name: 'hard_overcurrent_threshold',
     type: :uint8_t,
     default: 1,
     min: 1,
@@ -569,22 +564,21 @@ EOF
     max: 800,
     comment: <<EOF
 You can use this current calibration setting to correct current measurements
-and current limit settings that are off by a constant amount.
+and current limit settings.
 
-The current sense circuitry on a umc04a jrk produces a constant voltage of
-about 50 mV when the motor driver is powered, even if there is no current
-flowing through the motor.  This offset must be subtracted from analog
-voltages representing current limits or current measurements in order to
-convert those values to amps.
+The current sense circuitry on a umc04a/umc05a jrks produces a constant
+voltage of about 50 mV (but with large variations from unit to unit) when the
+motor driver is powered, even if there is no current flowing through the
+motor.  This offset must be subtracted from analog voltages representing
+current limits or current measurements as one of the first steps for
+converting those voltages to amps.
 
-For the umc04a jrk models, this setting is defined by the formula:
+For the umc04a/umc05a jrk models, this setting is defined by the formula:
 
   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 
 This setting should be between -800 (for an offset of 0 mV) and 800 (for an
 offset of 100 mV).
-
-This setting is stored in the device's EEPROM but the device does not use it.
 EOF
   },
   {
@@ -603,8 +597,6 @@ current by (1875 + current_scale_calibration).
 The default current_scale_calibration value is 0.
 A current_scale_calibration value of 19 would increase the current
 readings by about 1%.
-
-This setting is stored in the device's EEPROM but the device does not use it.
 EOF
   },
   {
@@ -621,7 +613,6 @@ EOF
   {
     name: 'max_duty_cycle_while_feedback_out_of_range',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -633,7 +624,6 @@ EOF
   {
     name: 'max_acceleration_forward',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -646,7 +636,6 @@ EOF
   {
     name: 'max_acceleration_reverse',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -659,7 +648,6 @@ EOF
   {
     name: 'max_deceleration_forward',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -672,7 +660,6 @@ EOF
   {
     name: 'max_deceleration_reverse',
     type: :uint16_t,
-    overridable: true,
     range: 1..600,
     default: 600,
     comment: <<EOF
@@ -685,7 +672,6 @@ EOF
   {
     name: 'max_duty_cycle_forward',
     type: :uint16_t,
-    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -699,7 +685,6 @@ EOF
   {
     name: 'max_duty_cycle_reverse',
     type: :uint16_t,
-    overridable: true,
     max: 600,
     default: 600,
     comment: <<EOF
@@ -711,39 +696,36 @@ A value of 600 means 100%.
 EOF
   },
   {
-    name: 'current_limit_code_forward',
+    name: 'encoded_hard_current_limit_forward',
     type: :uint16_t,
-    overridable: true,
-    default: 26,  # about 10 A on umc04a
+    default: 26,
     max: 95,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
-This setting is not actually a current, it is a code telling the jrk how to
-set up its current limiting hardware.
+This setting is not actually a current, it is an encoded value telling
+the jrk how to set up its current limiting hardware.
 
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
 
-- jrk_current_limit_code_to_ma()
-- jrk_current_limit_ma_to_code()
-- jrk_current_limig_code_step()
+- jrk_current_limit_decode()
+- jrk_current_limit_encode()
+- jrk_get_recommended_encoded_hard_current_limits()
 EOF
   },
   {
-    name: 'current_limit_code_reverse',
+    name: 'encoded_hard_current_limit_reverse',
     type: :uint16_t,
-    overridable: true,
-    default: 10,
+    default: 26,
     max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
-      "See the documentation of current_limit_code_forward."
+      "See the documentation of encoded_hard_current_limit_forward."
   },
   {
     name: 'brake_duration_forward',
     type: :uint32_t,
-    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -757,7 +739,6 @@ EOF
   {
     name: 'brake_duration_reverse',
     type: :uint32_t,
-    overridable: true,
     max: 'JRK_MAX_ALLOWED_BRAKE_DURATION',
     custom_eeprom: true,
     custom_fix: true,
@@ -770,37 +751,34 @@ between 0 and 5 * 255 (JRK_MAX_ALLOWED_BRAKE_DURATION).
 EOF
   },
   {
-    name: 'max_current_forward',
+    name: 'soft_current_limit_forward',
     type: :uint16_t,
     default: 0,
-    overridable: true,
     comment: <<EOF
 This is the maximum current while driving forward.  If the current exceeds
 this value, the jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a jrks, the units of this setting are in milliamps.
+For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 EOF
   },
   {
-    name: 'max_current_reverse',
+    name: 'soft_current_limit_reverse',
     type: :uint16_t,
     default: 0,
-    overridable: true,
     comment: <<EOF
 This is the maximum current while driving in reverse.  If the current exceeds
 this value, the jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a jrks, the units of this setting are in milliamps.
+For the umc04a/umc05a jrks, the units of this setting are in milliamps.
 EOF
   },
   {
     name: 'coast_when_off',
     type: :bool,
-    overridable: true,
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_COAST_WHEN_OFF',
     comment:
@@ -861,6 +839,130 @@ One of the steps in the process is to multiply the VIN voltage reading by
 
 So for every 8 counts that you add or subtract from the vin_calibration
 setting, you increase or decrease the VIN voltage reading by about 1%.
+EOF
+  },
+  {
+    name: 'disable_i2c_pullups',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_DISABLE_I2C_PULLUPS',
+    comment: <<EOF
+This option disables the internal pull-up resistors on the SDA/AN and SCL
+pins if those pins are being used for I2C communication.
+EOF
+  },
+  {
+    name: 'analog_sda_pullup',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_ANALOG_SDA_PULLUP',
+    comment: <<EOF
+This option enables the internal pull-up resistor on the SDA/AN pin if it is
+being used as an analog input.
+EOF
+  },
+  {
+    name: 'always_analog_sda',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA',
+    comment: <<EOF
+This option causes the jrk to perform analog measurements on the SDA/AN pin
+and configure SCL as a potentiometer power pin even if the "Input mode"
+setting is not "Analog".
+EOF
+  },
+  {
+    name: 'always_analog_fba',
+    type: :bool,
+    address: 'JRK_SETTING_OPTIONS_BYTE1',
+    bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_FBA',
+    comment: <<EOF
+This option causes the jrk to perform analog measurements on the FBA pin
+even if the "Feedback mode" setting is not "Analog".
+EOF
+  },
+  {
+    name: 'fbt_method',
+    type: :enum,
+    max: 'JRK_FBT_METHOD_PULSE_TIMING',
+    default: 'JRK_FBT_METHOD_PULSE_COUNTING',
+    english_default: 'pulse counting',
+    comment: <<EOF
+This settings specifies what kind of pulse measurement to perform
+on the FBT pin.
+
+JRK_FBT_METHOD_PULSE_COUNTING means the jrk will count the number of
+rising edges on the pin, and is more suitable for fast tachometers.
+
+JRK_FBT_METHOD_PULSE_TIMING means the jrk will measure the pulse width
+(duration) of pulses on the pin, and is more suitable for slow tachometers.
+EOF
+  },
+  {
+    name: 'fbt_timing_clock',
+    type: :enum,
+    english_default: '1.5 MHz',
+    default: 'JRK_FBT_TIMING_CLOCK_1_5',
+    max: 'JRK_FBT_TIMING_CLOCK_24',
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_TIMING_CLOCK',
+    mask: 'JRK_FBT_OPTIONS_TIMING_CLOCK_MASK',
+    comment: <<EOF
+This specifies the speed of the clock (in MHz) to use for pulse timing on the
+FBT pin.  The options are:
+
+- JRK_FBT_TIMING_CLOCK_1_5: 1.5 MHz
+- JRK_FBT_TIMING_CLOCK_3: 3 MHz
+- JRK_FBT_TIMING_CLOCK_6: 6 MHz
+- JRK_FBT_TIMING_CLOCK_12: 12 MHz
+- JRK_FBT_TIMING_CLOCK_24: 24 MHz
+- JRK_FBT_TIMING_CLOCK_48: 48 MHz
+EOF
+  },
+  {
+    name: 'fbt_timing_polarity',
+    type: :bool,
+    address: 'JRK_SETTING_FBT_OPTIONS',
+    bit_address: 'JRK_FBT_OPTIONS_TIMING_POLARITY',
+    comment: <<EOF
+By default, the pulse timing mode on the FBT pin measures the time of
+high pulses.  When true, this option causes it to measure low pulses.
+EOF
+  },
+  {
+    name: 'fbt_timing_timeout',
+    type: :uint16_t,
+    default: 100,
+    min: 1,
+    max: 60000,
+    comment: <<EOF
+The pulse timing mode for the FBT pin will assume the motor has stopped, and
+start recording maximum-width pulses if it has not seen any pulses in this
+amount of time.
+EOF
+  },
+  {
+    name: 'fbt_samples',
+    type: :uint8_t,
+    min: 1,
+    max: 'JRK_MAX_ALLOWED_FBT_SAMPLES',
+    default: 1,
+    comment: <<EOF
+The number of consecutive FBT measurements to average together in pulse
+timing mode or to add together in pulse counting mode.
+EOF
+  },
+  {
+    name: 'fbt_divider_exponent',
+    type: :uint8_t,
+    default: 0,
+    range: 0..15,
+    address: 'JRK_SETTING_FBT_DIVIDER_EXPONENT',
+    comment: <<EOF
+This setting specifies how many bits to shift the raw tachomter reading to
+the right before using it to calculate the "feedback" variable.  The
+default value is 0.
 EOF
   },
 ]

@@ -86,7 +86,7 @@ bool main_controller::disconnect_device()
   return true;
 }
 
-void main_controller::connect_device(jrk::device const & device)
+void main_controller::connect_device(const jrk::device & device)
 {
   assert(device.is_present());
 
@@ -108,6 +108,18 @@ void main_controller::connect_device(jrk::device const & device)
     handle_model_changed();
     return;
   }
+
+  // Clear the variables read from the device because they don't apply anymore.
+  variables.pointer_reset();
+  current_chopping_count = 0;
+
+  // Clear the settings from the device because they don't apply anymore and
+  // we'd like the manual target interface to get reinitialized.
+  cached_settings.pointer_reset();
+
+  window->reset_graph();
+
+  window->reset_error_counts();
 
   // Get the command port name.
   try
@@ -132,7 +144,7 @@ void main_controller::connect_device(jrk::device const & device)
   // Load the settings from the device.
   try
   {
-    settings = device_handle.get_settings();
+    settings = device_handle.get_eeprom_settings();
     handle_settings_loaded();
   }
   catch (const std::exception & e)
@@ -140,18 +152,10 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
-  // Clear the variables read from the device because they don't apply anymore.
-  variables.pointer_reset();
-  current_chopping_count = 0;
-
-  window->reset_graph();
-
-  window->reset_error_counts();
-
   handle_model_changed();
 }
 
-void main_controller::disconnect_device_by_error(std::string const & error_message)
+void main_controller::disconnect_device_by_error(const std::string & error_message)
 {
   really_disconnect();
   disconnected_by_user = false;
@@ -164,7 +168,7 @@ void main_controller::really_disconnect()
   settings_modified = false;
 }
 
-void main_controller::set_connection_error(std::string const & error_message)
+void main_controller::set_connection_error(const std::string & error_message)
 {
   connection_error = true;
   connection_error_message = error_message;
@@ -183,10 +187,10 @@ void main_controller::reload_settings(bool ask)
 
   try
   {
-    settings = device_handle.get_settings();
+    settings = device_handle.get_eeprom_settings();
     handle_settings_loaded();
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
     settings_modified = true;
     show_exception(e, "There was an error loading the settings from the device.");
@@ -457,9 +461,6 @@ void main_controller::handle_device_changed()
     window->set_cmd_port(cmd_port);
     window->set_ttl_port(ttl_port);
 
-    window->set_device_reset(
-      jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
-
     window->set_connection_status("", false);
   }
   else
@@ -479,6 +480,7 @@ void main_controller::handle_device_changed()
       window->set_connection_status(connection_error_message, true);
     }
     else
+
     {
       window->set_connection_status("", false);
     }
@@ -493,10 +495,12 @@ void main_controller::handle_device_changed()
 
 void main_controller::handle_variables_changed()
 {
+  window->set_device_reset(
+    jrk_look_up_device_reset_name_ui(variables.get_device_reset()));
+
   window->set_up_time(variables.get_up_time());
 
-  window->set_input(variables.get_input());
-  // TODO: also show nice units in parentheses
+  window->set_input(variables.get_input(), cached_settings.get_input_mode());
 
   window->set_target(variables.get_target());
 
@@ -506,8 +510,7 @@ void main_controller::handle_variables_changed()
   }
   else
   {
-    window->set_feedback(variables.get_feedback());
-    // TODO: also show version with nice units in parentheses
+    window->set_feedback(variables.get_feedback(), cached_settings.get_feedback_mode());
 
     window->set_scaled_feedback(variables.get_scaled_feedback());
     window->set_error(variables.get_error());
@@ -519,8 +522,7 @@ void main_controller::handle_variables_changed()
   // Note: The cached_settings we have here might not correspond to the
   // variables we have fetched if the settings were just applied, so this
   // calculation might be off at that time, but it's not a big deal.
-  window->set_current(
-    jrk::calculate_measured_current_ma(cached_settings, variables));
+  window->set_current(variables.get_current());
   window->set_raw_current_mv(
     jrk::calculate_raw_current_mv64(cached_settings, variables) / 64);
 
@@ -559,9 +561,8 @@ void main_controller::handle_settings_changed()
   window->set_input_enable_crc(settings.get_serial_enable_crc());
   window->set_input_device_number(settings.get_serial_device_number());
   window->set_input_enable_device_number(settings.get_serial_enable_14bit_device_number());
-  window->set_input_serial_timeout(settings.get_serial_timeout());
+  window->set_serial_timeout(settings.get_serial_timeout());
   window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
-  window->set_input_never_sleep(settings.get_never_sleep());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_error_minimum(settings.get_input_error_minimum());
   window->set_input_error_maximum(settings.get_input_error_maximum());
@@ -574,6 +575,7 @@ void main_controller::handle_settings_changed()
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
   window->set_input_scaling_order_warning_label();
+
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_invert(settings.get_feedback_invert());
   window->set_feedback_error_minimum(settings.get_feedback_error_minimum());
@@ -585,9 +587,17 @@ void main_controller::handle_settings_changed()
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
   window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());
   window->set_feedback_wraparound(settings.get_feedback_wraparound());
+  window->set_fbt_method(settings.get_fbt_method());
+  window->set_fbt_timing_clock(settings.get_fbt_timing_clock());
+  window->set_fbt_timing_polarity(settings.get_fbt_timing_polarity());
+  window->set_fbt_timing_timeout(settings.get_fbt_timing_timeout());
+  window->set_fbt_samples(settings.get_fbt_samples());
+  window->set_fbt_divider_exponent(settings.get_fbt_divider_exponent());
+  recalculate_fbt_range();
 
   window->set_pid_period(settings.get_pid_period());
   window->set_integral_limit(settings.get_integral_limit());
+  window->set_integral_divider_exponent(settings.get_integral_divider_exponent());
   window->set_reset_integral(settings.get_reset_integral());
   window->set_feedback_dead_zone(settings.get_feedback_dead_zone());
 
@@ -614,23 +624,36 @@ void main_controller::handle_settings_changed()
   window->set_max_acceleration_reverse(settings.get_max_acceleration_reverse());
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
   window->set_brake_duration_reverse(settings.get_brake_duration_reverse());
-  window->set_current_limit_code_reverse(settings.get_current_limit_code_reverse());
-  window->set_max_current_reverse(settings.get_max_current_reverse());
+  window->set_current_limit_code_reverse(
+    settings.get_encoded_hard_current_limit_reverse());
+  window->set_max_current_reverse(settings.get_soft_current_limit_reverse());
 
   window->set_max_duty_cycle_forward(settings.get_max_duty_cycle_forward());
   window->set_max_acceleration_forward(settings.get_max_acceleration_forward());
   window->set_max_deceleration_forward(settings.get_max_deceleration_forward());
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
-  window->set_current_limit_code_forward(settings.get_current_limit_code_forward());
+  window->set_current_limit_code_forward(
+    settings.get_encoded_hard_current_limit_forward());
 
-  window->set_max_current_forward(settings.get_max_current_forward());
+  window->set_max_current_forward(settings.get_soft_current_limit_forward());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
   window->set_current_samples_exponent(settings.get_current_samples_exponent());
-  window->set_overcurrent_threshold(settings.get_overcurrent_threshold());
+  window->set_overcurrent_threshold(settings.get_hard_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
+  window->set_error_hard(settings.get_error_hard());
+
+  window->set_disable_i2c_pullups(settings.get_disable_i2c_pullups());
+  window->set_analog_sda_pullup(settings.get_analog_sda_pullup());
+  window->set_always_analog_sda(settings.get_always_analog_sda());
+  window->set_always_analog_fba(settings.get_always_analog_fba());
+  window->set_never_sleep(settings.get_never_sleep());
+  window->set_vin_calibration(settings.get_vin_calibration());
+
+  window->update_input_tab_enables();
+  window->update_feedback_tab_enables();
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }
@@ -639,16 +662,26 @@ void main_controller::handle_settings_loaded()
 {
   recalculate_motor_asymmetric();
 
-  window->set_manual_target_enabled(
-    settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
+  if (!cached_settings.is_present() ||
+    cached_settings.get_feedback_mode() != settings.get_feedback_mode() ||
+    cached_settings.get_input_mode() != settings.get_input_mode())
+  {
+    // The cached feedback mode and input mode are going to be set for the first
+    // time or are about to change.  We should reinitialize the manual target
+    // interface.
 
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-  {
-    window->set_manual_target_range(1448, 2648);
-  }
-  else
-  {
-    window->set_manual_target_range(0, 4095);
+    window->set_manual_target_enabled(
+      settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
+
+    if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
+    {
+      window->set_manual_target_range(1448, 2648);
+    }
+    else
+    {
+      window->set_manual_target_range(0, 4095);
+    }
+    window->set_manual_target_inputs(2048);
   }
 
   cached_settings = settings;
@@ -658,7 +691,7 @@ void main_controller::handle_settings_loaded()
 
 uint32_t main_controller::current_limit_code_to_ma(uint16_t code)
 {
-  return jrk::current_limit_code_to_ma(settings, code);
+  return jrk::current_limit_decode(settings, code);
 }
 
 void main_controller::recalculate_motor_asymmetric()
@@ -672,10 +705,141 @@ void main_controller::recalculate_motor_asymmetric()
       settings.get_max_deceleration_reverse()) ||
     (settings.get_brake_duration_forward() !=
       settings.get_brake_duration_reverse()) ||
-    (settings.get_current_limit_code_forward() !=
-      settings.get_current_limit_code_reverse()) ||
-    (settings.get_max_current_forward() !=
-      settings.get_max_current_reverse());
+    (settings.get_encoded_hard_current_limit_forward() !=
+      settings.get_encoded_hard_current_limit_reverse()) ||
+    (settings.get_soft_current_limit_forward() !=
+      settings.get_soft_current_limit_reverse());
+}
+
+void main_controller::recalculate_fbt_range()
+{
+  if (!settings.is_present()) { return; }
+
+  if (settings.get_feedback_mode() != JRK_FEEDBACK_MODE_FREQUENCY)
+  {
+    // We are not actually doing frequency feedback, so don't display the label.
+    // While it would be interesting to tell users what frequency range can be
+    // measured on FBT using the FBT_READING variable (which is always active),
+    // that is different from telling them what frequencies can be measured on
+    // the "Feedback" variable which is normally what we are doing.
+    window->set_fbt_range_display("", false);
+    return;
+  }
+
+  uint8_t method = settings.get_fbt_method();
+  uint8_t divider_exponent = settings.get_fbt_divider_exponent();
+
+  int min_freq_hz = 0;
+  int max_freq_hz = 0;
+
+  if (method == JRK_FBT_METHOD_PULSE_COUNTING)
+  {
+    uint16_t sample_period =
+      settings.get_pid_period() * settings.get_fbt_samples();
+    if (sample_period == 0) { sample_period = 1; }
+
+    // count = freq_khz * pid_period * samples >> divider_exponent
+
+    // We need roughly 50 counts for a decently accurate measurement.
+    int min_counts = 50;
+    min_freq_hz = 1000 * (min_counts << divider_exponent) / sample_period;
+
+    // The counts are capped at 2047 (so they can be added or subtracted from
+    // 2048 when we computer the feedback variable) and we want a margin.
+    int max_counts = 2000;
+    max_freq_hz = 1000 * (max_counts << divider_exponent) / sample_period;
+
+    // There is a limit to how fast the timer hardware can operate.
+    // The datasheet makes it seem like it should work up to 50 MHz, ad we
+    // tested it at 6 MHz.
+    int hardware_limit = 50000000;
+    if (max_freq_hz > hardware_limit)
+    {
+      max_freq_hz = hardware_limit;
+    }
+
+    // The timer and fbt_reading variable are 16-bit, so that also limits
+    // the maximum frequency.
+    int timer_limit = 1000 * 0xFFFF / sample_period;
+    if (max_freq_hz > timer_limit)
+    {
+      max_freq_hz = timer_limit;
+    }
+  }
+  else if (method == JRK_FBT_METHOD_PULSE_TIMING)
+  {
+    uint8_t timing_clock = settings.get_fbt_timing_clock();
+    bool timing_polarity = settings.get_fbt_timing_polarity();
+    uint8_t timing_timeout = settings.get_fbt_timing_timeout();
+
+    int k = 0x4000000;
+    int slowest_width = 58982;  // 0x10000 * 0.90
+    int slowest_fb = k / slowest_width >> divider_exponent;
+    if (slowest_fb < 50)
+    {
+      slowest_fb = 50;
+      slowest_width = k / slowest_fb >> divider_exponent;
+    }
+
+    int fastest_fb = 2000;  // 2048*0.9
+    int fastest_width = k / fastest_fb >> divider_exponent;
+    if (fastest_width < 50)
+    {
+      fastest_width = 50;
+      fastest_fb = k / fastest_width >> divider_exponent;
+    }
+
+    int clock_hz = 1;
+    switch (timing_clock)
+    {
+    case JRK_FBT_TIMING_CLOCK_48:  clock_hz = 48000000; break;
+    case JRK_FBT_TIMING_CLOCK_24:  clock_hz = 24000000; break;
+    case JRK_FBT_TIMING_CLOCK_12:  clock_hz = 12000000; break;
+    case JRK_FBT_TIMING_CLOCK_6:   clock_hz = 6000000;  break;
+    case JRK_FBT_TIMING_CLOCK_3:   clock_hz = 3000000;  break;
+    case JRK_FBT_TIMING_CLOCK_1_5: clock_hz = 1500000;  break;
+    }
+
+    // When we convert from pulse widths to actual frequencies, we just assume
+    // the signal consists of two equal high and low pulses, so our pulse width
+    // measurement represents half of signal period.  If the two pulses are not
+    // equal, that would change this conversion, and at that point it would make
+    // mroe sense to talk about the measurable pulse width range instead of the
+    // masurable frequency range.
+    min_freq_hz = clock_hz / (slowest_width * 2);
+    max_freq_hz = clock_hz / (fastest_width * 2);
+
+    // The timeout imposes another lower bound on our frequency range.
+    //
+    // The timeout shouldn't be 0, but if it is, then set it to a high number like
+    // 10 MHz to make it sure to cause a warning.
+    int timeout_hz = timing_timeout ? (1000 / timing_timeout) : 10000000;
+    if (min_freq_hz < timeout_hz)
+    {
+      min_freq_hz = timeout_hz;
+    }
+  }
+
+  if (min_freq_hz >= max_freq_hz)
+  {
+    window->set_fbt_range_display("Warning: invalid settings", true);
+    return;
+  }
+
+  std::ostringstream ss;
+  if (method == JRK_FBT_METHOD_PULSE_TIMING)
+  {
+    ss << "Frequency measurement range (at 50% duty cycle): ";
+  }
+  else
+  {
+    ss << "Frequency measurement range: ";
+  }
+  ss << convert_hz_to_string(min_freq_hz)
+     << " to "
+     << convert_hz_to_string(max_freq_hz);
+
+  window->set_fbt_range_display(ss.str(), false);
 }
 
 void main_controller::handle_input_mode_input(uint8_t input_mode)
@@ -742,7 +906,7 @@ void main_controller::handle_input_device_number_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_input_timeout_input(uint16_t value)
+void main_controller::handle_serial_timeout_input(uint32_t value)
 {
   if (!connected()) { return; }
   settings.set_serial_timeout(value);
@@ -754,14 +918,6 @@ void main_controller::handle_input_disable_compact_protocol_input(bool value)
 {
   if (!connected()) { return; }
   settings.set_serial_disable_compact_protocol(value);
-  settings_modified = true;
-  handle_settings_changed();
-}
-
-void main_controller::handle_input_never_sleep_input(bool value)
-{
-  if (!connected()) { return; }
-  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -870,19 +1026,13 @@ bool main_controller::check_settings_applied_before_wizard()
   return true;
 }
 
-void main_controller::update_motor_status_message(bool prompt_to_resume)
-{
-
-}
-
-
 void main_controller::handle_input_learn()
 {
   if (!connected()) { return; }
   if (!check_settings_applied_before_wizard()) { return; }
 
   if (settings.get_input_mode() != JRK_INPUT_MODE_ANALOG &&
-    settings.get_input_mode() != JRK_INPUT_MODE_PULSE_WIDTH)
+    settings.get_input_mode() != JRK_INPUT_MODE_RC)
   {
     // Should not happen because the button is disabled.
     window->show_info_message(
@@ -970,6 +1120,54 @@ void main_controller::handle_feedback_wraparound_input(bool value)
   handle_settings_changed();
 }
 
+void main_controller::handle_fbt_method_input(uint8_t mode)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_method(mode);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_clock_input(uint8_t clock)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_clock(clock);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_polarity_input(bool polarity)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_polarity(polarity);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_timing_timeout_input(uint16_t timeout)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_timing_timeout(timeout);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_samples_input(uint8_t count)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_samples(count);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_fbt_divider_exponent_input(uint8_t exponent)
+{
+  if (!connected()) { return; }
+  settings.set_fbt_divider_exponent(exponent);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
 void main_controller::handle_pid_proportional_input(uint16_t multiplier, uint8_t exponent)
 {
   if (!connected()) { return; }
@@ -1009,6 +1207,14 @@ void main_controller::handle_integral_limit_input(uint16_t value)
 {
   if (!connected()) { return; }
   settings.set_integral_limit(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_integral_divider_exponent_input(uint8_t value)
+{
+  if (!connected()) { return; }
+  settings.set_integral_divider_exponent(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1056,8 +1262,9 @@ void main_controller::handle_motor_asymmetric_input(bool asymmetric)
     settings.set_max_acceleration_reverse(settings.get_max_acceleration_forward());
     settings.set_max_deceleration_reverse(settings.get_max_deceleration_forward());
     settings.set_brake_duration_reverse(settings.get_brake_duration_forward());
-    settings.set_current_limit_code_reverse(settings.get_current_limit_code_forward());
-    settings.set_max_current_reverse(settings.get_max_current_forward());
+    settings.set_encoded_hard_current_limit_reverse(
+      settings.get_encoded_hard_current_limit_forward());
+    settings.set_soft_current_limit_reverse(settings.get_soft_current_limit_forward());
   }
 
   settings_modified = true;
@@ -1144,33 +1351,33 @@ void main_controller::handle_brake_duration_reverse_input(uint32_t deceleration)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_forward_input(uint16_t current)
+void main_controller::handle_current_limit_forward_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_current_limit_code_forward(current);
+  settings.set_encoded_hard_current_limit_forward(limit);
   if (!motor_asymmetric)
   {
-    settings.set_current_limit_code_reverse(current);
+    settings.set_encoded_hard_current_limit_reverse(limit);
   }
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_reverse_input(uint16_t current)
+void main_controller::handle_current_limit_reverse_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_current_limit_code_reverse(current);
+  settings.set_encoded_hard_current_limit_reverse(limit);
   settings_modified = true;
   handle_settings_changed();
 }
 
-void main_controller::handle_max_current_forward_input(uint16_t current)
+void main_controller::handle_max_current_forward_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_max_current_forward(current);
+  settings.set_soft_current_limit_forward(limit);
   if (!motor_asymmetric)
   {
-    settings.set_max_current_reverse(current);
+    settings.set_soft_current_limit_reverse(limit);
   }
   settings_modified = true;
   handle_settings_changed();
@@ -1179,7 +1386,7 @@ void main_controller::handle_max_current_forward_input(uint16_t current)
 void main_controller::handle_max_current_reverse_input(uint16_t current)
 {
   if (!connected()) { return; }
-  settings.set_max_current_reverse(current);
+  settings.set_soft_current_limit_reverse(current);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1211,7 +1418,7 @@ void main_controller::handle_current_samples_exponent_input(uint8_t exponent)
 void main_controller::handle_overcurrent_threshold_input(uint8_t threshold)
 {
   if (!connected()) { return; }
-  settings.set_overcurrent_threshold(threshold);
+  settings.set_hard_overcurrent_threshold(threshold);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1261,6 +1468,26 @@ void main_controller::handle_error_enable_input(int index, int id)
   handle_settings_changed();
 }
 
+void main_controller::handle_error_hard_input(int index, bool state)
+{
+  if (!connected()) { return; }
+  uint16_t hard_value = settings.get_error_hard();
+
+  if (state)
+  {
+    hard_value |= 1 << index;
+  }
+  else
+  {
+    hard_value &= ~(1 << index);
+  }
+
+  settings.set_error_hard(hard_value);
+
+  settings_modified = true;
+  handle_settings_changed();
+}
+
 void main_controller::handle_clear_errors_input()
 {
   if (!connected()) { return; }
@@ -1273,10 +1500,42 @@ void main_controller::handle_reset_counts_input()
   window->reset_error_counts();
 }
 
-void main_controller::handle_never_sleep_input(bool never_sleep)
+void main_controller::handle_disable_i2c_pullups_input(bool value)
 {
   if (!connected()) { return; }
-  jrk_settings_set_never_sleep(settings.get_pointer(), never_sleep);
+  settings.set_disable_i2c_pullups(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_analog_sda_pullup_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_analog_sda_pullup(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_always_analog_sda_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_always_analog_sda(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_always_analog_fba_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_always_analog_fba(value);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_never_sleep_input(bool value)
+{
+  if (!connected()) { return; }
+  settings.set_never_sleep(value);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1284,7 +1543,7 @@ void main_controller::handle_never_sleep_input(bool never_sleep)
 void main_controller::handle_vin_calibration_input(int16_t vin_calibration)
 {
   if (!connected()) { return; }
-  jrk_settings_set_vin_calibration(settings.get_pointer(), vin_calibration);
+  settings.set_vin_calibration(vin_calibration);
   settings_modified = true;
   handle_settings_changed();
 }
@@ -1311,7 +1570,7 @@ void main_controller::apply_settings()
       window->confirm(warnings.append("\nAccept these changes and apply settings?")))
     {
       settings = fixed_settings;
-      device_handle.set_settings(settings);
+      device_handle.set_eeprom_settings(settings);
       device_handle.reinitialize();
       cached_settings = settings;
       settings_modified = false;  // this must be last in case exceptions are thrown
@@ -1337,16 +1596,6 @@ void main_controller::stop_motor()
   {
     show_exception(e);
   }
-
-  if (cached_settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-  {
-    // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
-    // speed, starting at a speed of zero.
-    //
-    // If the user wants to go back to the speed they were previously using, they
-    // can just press 'Run motor' instead of messing with the scroll bar.
-    window->set_manual_target_inputs(2048);
-  }
 }
 
 void main_controller::run_motor()
@@ -1355,7 +1604,13 @@ void main_controller::run_motor()
 
   try
   {
-    device_handle.run_motor();
+    // Clear the "Awaiting command" error by sending a "Set target" command,
+    // just like the original jrk utility.
+    uint16_t target = window->get_manual_target_numeric_input();
+    device_handle.set_target(target);
+
+    // Clear all the other latched errors.
+    device_handle.clear_errors();
   }
   catch (const std::exception & e)
   {
