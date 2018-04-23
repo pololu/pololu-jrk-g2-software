@@ -22,7 +22,7 @@ struct jrk_variables {
   uint8_t device_reset;
   uint32_t up_time;
   uint16_t rc_pulse_width;
-  uint16_t tachometer_reading;
+  uint16_t fbt_reading;
   uint16_t raw_current;
   uint16_t current_limit_code;
   int16_t last_duty_cycle;
@@ -136,7 +136,7 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   vars->device_reset = buf[JRK_VAR_DEVICE_RESET];
   vars->up_time = read_uint32_t(buf + JRK_VAR_UP_TIME);
   vars->rc_pulse_width = read_uint16_t(buf + JRK_VAR_RC_PULSE_WIDTH);
-  vars->tachometer_reading = read_uint16_t(buf + JRK_VAR_TACHOMETER_READING);
+  vars->fbt_reading = read_uint16_t(buf + JRK_VAR_FBT_READING);
   vars->raw_current = read_uint16_t(buf + JRK_VAR_RAW_CURRENT);
   vars->current_limit_code = read_uint16_t(buf + JRK_VAR_CURRENT_LIMIT_CODE);
   vars->last_duty_cycle = read_int16_t(buf + JRK_VAR_LAST_DUTY_CYCLE);
@@ -161,39 +161,23 @@ static void write_buffer_to_variables(const uint8_t * buf, jrk_variables * vars)
   }
 
   {
-    vars->pin_info[JRK_PIN_NUM_SCL].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_SCL);
+    vars->pin_info[JRK_PIN_NUM_SCL].analog_reading = 0xFFFF;
 
     vars->pin_info[JRK_PIN_NUM_SDA].analog_reading =
       read_uint16_t(buf + JRK_VAR_ANALOG_READING_SDA);
 
-    vars->pin_info[JRK_PIN_NUM_TX].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_TX);
+    vars->pin_info[JRK_PIN_NUM_TX].analog_reading = 0xFFFF;
 
-    vars->pin_info[JRK_PIN_NUM_RX].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_RX);
+    vars->pin_info[JRK_PIN_NUM_RX].analog_reading = 0xFFFF;
 
     vars->pin_info[JRK_PIN_NUM_RC].analog_reading = 0xFFFF;
 
-    vars->pin_info[JRK_PIN_NUM_AUX].analog_reading =
-      read_uint16_t(buf + JRK_VAR_ANALOG_READING_AUX);
+    vars->pin_info[JRK_PIN_NUM_AUX].analog_reading = 0xFFFF;
 
     vars->pin_info[JRK_PIN_NUM_FBA].analog_reading =
       read_uint16_t(buf + JRK_VAR_ANALOG_READING_FBA);
 
     vars->pin_info[JRK_PIN_NUM_FBT].analog_reading = 0xFFFF;
-  }
-
-  {
-    uint16_t s = read_uint16_t(buf + JRK_VAR_PIN_STATES);
-    vars->pin_info[JRK_PIN_NUM_SCL].pin_state = s >> (JRK_PIN_NUM_SCL * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_SDA].pin_state = s >> (JRK_PIN_NUM_SDA * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_TX].pin_state = s >> (JRK_PIN_NUM_TX * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_RX].pin_state = s >> (JRK_PIN_NUM_RX * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_RC].pin_state = s >> (JRK_PIN_NUM_RC * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_AUX].pin_state = s >> (JRK_PIN_NUM_AUX * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_FBA].pin_state = s >> (JRK_PIN_NUM_FBA * 2) & 3;
-    vars->pin_info[JRK_PIN_NUM_FBT].pin_state = s >> (JRK_PIN_NUM_FBT * 2) & 3;
   }
 }
 
@@ -357,10 +341,10 @@ uint16_t jrk_variables_get_rc_pulse_width(const jrk_variables * vars)
   return vars->rc_pulse_width;
 }
 
-uint16_t jrk_variables_get_tachometer_reading(const jrk_variables * vars)
+uint16_t jrk_variables_get_fbt_reading(const jrk_variables * vars)
 {
   if (vars == NULL) { return 0; }
-  return vars->tachometer_reading;
+  return vars->fbt_reading;
 }
 
 uint16_t jrk_variables_get_raw_current(const jrk_variables * vars)

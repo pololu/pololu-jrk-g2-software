@@ -76,7 +76,7 @@ void input_wizard::set_input(uint16_t value)
 
   input_value->setText(QString::number(value));
 
-  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  if (input_mode == JRK_INPUT_MODE_RC)
   {
     input_pretty->setText("(" +
       QString::fromStdString(convert_rc_12bit_to_us_string(input)) + ")");
@@ -359,7 +359,7 @@ bool input_wizard::learn_min()
 
   // Set the error range: when the input is outside of this range, the jrk
   // considers it to be an error.
-  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  if (input_mode == JRK_INPUT_MODE_RC)
   {
     // We usually want 500 us to 2500 us to be the error range for RC inputs,
     // but we try to keep a margin of 10 us between the error range and the
@@ -392,7 +392,7 @@ bool input_wizard::check_range_not_too_big(const uint16_range & range)
 
 uint16_t input_wizard::full_range() const
 {
-  if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+  if (input_mode == JRK_INPUT_MODE_RC)
   {
     // Standard RC full range is 1500 to 3000 (units of 2/3 us).
     return 1500;
@@ -408,7 +408,7 @@ void input_wizard::update_learn_text()
   case NEUTRAL:
     learn_page->setTitle(tr("Step 1 of 3: Neutral"));
 
-    if (input_mode == JRK_INPUT_MODE_PULSE_WIDTH)
+    if (input_mode == JRK_INPUT_MODE_RC)
     {
       instruction_label->setText(tr(
         "Verify that you have connected your pulse width input to the RC pin.  "

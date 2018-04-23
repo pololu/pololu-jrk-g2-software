@@ -6,7 +6,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
   {
     uint8_t input_mode = jrk_settings_get_input_mode(settings);
-    if (input_mode > JRK_INPUT_MODE_PULSE_WIDTH)
+    if (input_mode > JRK_INPUT_MODE_RC)
     {
       input_mode = JRK_INPUT_MODE_SERIAL;
       jrk_sprintf(warnings,
@@ -329,6 +329,18 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    if (integral_divider_exponent > 15)
+    {
+      integral_divider_exponent = 15;
+      jrk_sprintf(warnings,
+        "Warning: The integral divider exponent was too high "
+        "so it will be changed to %u.\n", integral_divider_exponent);
+    }
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
+  }
+
+  {
     uint16_t integral_limit = jrk_settings_get_integral_limit(settings);
     if (integral_limit > 32767)
     {
@@ -599,6 +611,80 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
         "so it will be changed to %d.\n", vin_calibration);
     }
     jrk_settings_set_vin_calibration(settings, vin_calibration);
+  }
+
+  {
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
+    if (fbt_method > JRK_FBT_METHOD_PULSE_TIMING)
+    {
+      fbt_method = JRK_FBT_METHOD_PULSE_COUNTING;
+      jrk_sprintf(warnings,
+        "Warning: The fbt method was invalid "
+        "so it will be changed to pulse counting.\n");
+    }
+    jrk_settings_set_fbt_method(settings, fbt_method);
+  }
+
+  {
+    uint8_t fbt_timing_clock = jrk_settings_get_fbt_timing_clock(settings);
+    if (fbt_timing_clock > JRK_FBT_TIMING_CLOCK_24)
+    {
+      fbt_timing_clock = JRK_FBT_TIMING_CLOCK_1_5;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing clock was invalid "
+        "so it will be changed to 1.5 MHz.\n");
+    }
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
+  }
+
+  {
+    uint16_t fbt_timing_timeout = jrk_settings_get_fbt_timing_timeout(settings);
+    if (fbt_timing_timeout < 1)
+    {
+      fbt_timing_timeout = 1;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing timeout was too low "
+        "so it will be changed to %u.\n", fbt_timing_timeout);
+    }
+    if (fbt_timing_timeout > 60000)
+    {
+      fbt_timing_timeout = 60000;
+      jrk_sprintf(warnings,
+        "Warning: The fbt timing timeout was too high "
+        "so it will be changed to %u.\n", fbt_timing_timeout);
+    }
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
+  }
+
+  {
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    if (fbt_samples < 1)
+    {
+      fbt_samples = 1;
+      jrk_sprintf(warnings,
+        "Warning: The fbt samples was too low "
+        "so it will be changed to %u.\n", fbt_samples);
+    }
+    if (fbt_samples > JRK_MAX_ALLOWED_FBT_SAMPLES)
+    {
+      fbt_samples = JRK_MAX_ALLOWED_FBT_SAMPLES;
+      jrk_sprintf(warnings,
+        "Warning: The fbt samples was too high "
+        "so it will be changed to %u.\n", fbt_samples);
+    }
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
+  }
+
+  {
+    uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
+    if (fbt_divider_exponent > 15)
+    {
+      fbt_divider_exponent = 15;
+      jrk_sprintf(warnings,
+        "Warning: The fbt divider exponent was too high "
+        "so it will be changed to %u.\n", fbt_divider_exponent);
+    }
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
   }
 
   // End of auto-generated settings fixing code.

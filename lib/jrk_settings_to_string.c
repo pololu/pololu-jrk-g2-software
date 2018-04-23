@@ -1,25 +1,5 @@
 #include "jrk_internal.h"
 
-static void print_pin_config_to_yaml(jrk_string * str,
-  const jrk_settings * settings, uint8_t pin,  const char * config_name)
-{
-  assert(str != NULL);
-  assert(config_name != NULL);
-
-  const char * pullup_str = "";
-  if (jrk_settings_get_pin_pullup(settings, pin)) { pullup_str = " pullup"; }
-
-  const char * analog_str = "";
-  if (jrk_settings_get_pin_analog(settings, pin)) { analog_str = " analog"; }
-
-  const char * func_str = "";
-  jrk_code_to_name(jrk_pin_func_names,
-    jrk_settings_get_pin_func(settings, pin), &func_str);
-
-  jrk_sprintf(str, "%s: %s%s%s\n", config_name, func_str,
-    pullup_str, analog_str);
-}
-
 jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string)
 {
   if (string == NULL)
@@ -262,6 +242,11 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
+    uint8_t integral_divider_exponent = jrk_settings_get_integral_divider_exponent(settings);
+    jrk_sprintf(&str, "integral_divider_exponent: %u\n", integral_divider_exponent);
+  }
+
+  {
     uint16_t integral_limit = jrk_settings_get_integral_limit(settings);
     jrk_sprintf(&str, "integral_limit: %u\n", integral_limit);
   }
@@ -396,18 +381,66 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "vin_calibration: %d\n", vin_calibration);
   }
 
-  // End of auto-generated settings file printing code.
+  {
+    bool disable_i2c_pullups = jrk_settings_get_disable_i2c_pullups(settings);
+    jrk_sprintf(&str, "disable_i2c_pullups: %s\n",
+      disable_i2c_pullups ? "true" : "false");
+  }
 
   {
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_SCL, "pin_config_scl");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_SDA, "pin_config_sda");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_TX, "pin_config_tx");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_RX, "pin_config_rx");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_RC, "pin_config_rc");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_AUX, "pin_config_aux");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_FBA, "pin_config_fba");
-    print_pin_config_to_yaml(&str, settings, JRK_PIN_NUM_FBT, "pin_config_fbt");
+    bool analog_sda_pullup = jrk_settings_get_analog_sda_pullup(settings);
+    jrk_sprintf(&str, "analog_sda_pullup: %s\n",
+      analog_sda_pullup ? "true" : "false");
   }
+
+  {
+    bool always_analog_sda = jrk_settings_get_always_analog_sda(settings);
+    jrk_sprintf(&str, "always_analog_sda: %s\n",
+      always_analog_sda ? "true" : "false");
+  }
+
+  {
+    bool always_analog_fba = jrk_settings_get_always_analog_fba(settings);
+    jrk_sprintf(&str, "always_analog_fba: %s\n",
+      always_analog_fba ? "true" : "false");
+  }
+
+  {
+    uint8_t fbt_method = jrk_settings_get_fbt_method(settings);
+    const char * value_str = "";
+    jrk_code_to_name(jrk_fbt_method_names_short, fbt_method, &value_str);
+    jrk_sprintf(&str, "fbt_method: %s\n", value_str);
+  }
+
+  {
+    uint8_t fbt_timing_clock = jrk_settings_get_fbt_timing_clock(settings);
+    const char * value_str = "";
+    jrk_code_to_name(jrk_fbt_timing_clock_names_short, fbt_timing_clock, &value_str);
+    jrk_sprintf(&str, "fbt_timing_clock: %s\n", value_str);
+  }
+
+  {
+    bool fbt_timing_polarity = jrk_settings_get_fbt_timing_polarity(settings);
+    jrk_sprintf(&str, "fbt_timing_polarity: %s\n",
+      fbt_timing_polarity ? "true" : "false");
+  }
+
+  {
+    uint16_t fbt_timing_timeout = jrk_settings_get_fbt_timing_timeout(settings);
+    jrk_sprintf(&str, "fbt_timing_timeout: %u\n", fbt_timing_timeout);
+  }
+
+  {
+    uint8_t fbt_samples = jrk_settings_get_fbt_samples(settings);
+    jrk_sprintf(&str, "fbt_samples: %u\n", fbt_samples);
+  }
+
+  {
+    uint8_t fbt_divider_exponent = jrk_settings_get_fbt_divider_exponent(settings);
+    jrk_sprintf(&str, "fbt_divider_exponent: %u\n", fbt_divider_exponent);
+  }
+
+  // End of auto-generated settings file printing code.
 
   if (str.data == NULL)
   {

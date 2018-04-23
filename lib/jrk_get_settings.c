@@ -192,6 +192,11 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
+    uint8_t integral_divider_exponent = buf[JRK_SETTING_INTEGRAL_DIVIDER_EXPONENT];
+    jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
+  }
+
+  {
     uint16_t integral_limit = read_uint16_t(buf + JRK_SETTING_INTEGRAL_LIMIT);
     jrk_settings_set_integral_limit(settings, integral_limit);
   }
@@ -311,6 +316,56 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     jrk_settings_set_vin_calibration(settings, vin_calibration);
   }
 
+  {
+    bool disable_i2c_pullups = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_DISABLE_I2C_PULLUPS & 1;
+    jrk_settings_set_disable_i2c_pullups(settings, disable_i2c_pullups);
+  }
+
+  {
+    bool analog_sda_pullup = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_ANALOG_SDA_PULLUP & 1;
+    jrk_settings_set_analog_sda_pullup(settings, analog_sda_pullup);
+  }
+
+  {
+    bool always_analog_sda = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA & 1;
+    jrk_settings_set_always_analog_sda(settings, always_analog_sda);
+  }
+
+  {
+    bool always_analog_fba = buf[JRK_SETTING_OPTIONS_BYTE1] >> JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_FBA & 1;
+    jrk_settings_set_always_analog_fba(settings, always_analog_fba);
+  }
+
+  {
+    uint8_t fbt_method = buf[JRK_SETTING_FBT_METHOD];
+    jrk_settings_set_fbt_method(settings, fbt_method);
+  }
+
+  {
+    uint8_t fbt_timing_clock = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_TIMING_CLOCK & JRK_FBT_OPTIONS_TIMING_CLOCK_MASK;
+    jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
+  }
+
+  {
+    bool fbt_timing_polarity = buf[JRK_SETTING_FBT_OPTIONS] >> JRK_FBT_OPTIONS_TIMING_POLARITY & 1;
+    jrk_settings_set_fbt_timing_polarity(settings, fbt_timing_polarity);
+  }
+
+  {
+    uint16_t fbt_timing_timeout = read_uint16_t(buf + JRK_SETTING_FBT_TIMING_TIMEOUT);
+    jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
+  }
+
+  {
+    uint8_t fbt_samples = buf[JRK_SETTING_FBT_SAMPLES];
+    jrk_settings_set_fbt_samples(settings, fbt_samples);
+  }
+
+  {
+    uint8_t fbt_divider_exponent = buf[JRK_SETTING_FBT_DIVIDER_EXPONENT];
+    jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
+  }
+
   // End of auto-generated buffer-to-settings code.
 
   {
@@ -335,50 +390,6 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     uint32_t timeout = read_uint16_t(buf + JRK_SETTING_SERIAL_TIMEOUT)
       * JRK_SERIAL_TIMEOUT_UNITS;
     jrk_settings_set_serial_timeout(settings, timeout);
-  }
-
-  {
-    uint8_t config;
-
-    config = buf[JRK_SETTING_PIN_CONFIG_SCL];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_SCL, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_SCL, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_SCL, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_SDA];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_SDA, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_SDA, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_SDA, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_TX];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_TX, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_TX, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_TX, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_RX];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_RX, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_RX, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_RX, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_RC];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_RC, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_RC, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_RC, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_AUX];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_AUX, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_AUX, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_AUX, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_FBA];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_FBA, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_FBA, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_FBA, config >> JRK_PIN_PULLUP & 1);
-
-    config = buf[JRK_SETTING_PIN_CONFIG_FBT];
-    jrk_settings_set_pin_func(settings, JRK_PIN_NUM_FBT, config & JRK_PIN_FUNC_MASK);
-    jrk_settings_set_pin_analog(settings, JRK_PIN_NUM_FBT, config >> JRK_PIN_ANALOG & 1);
-    jrk_settings_set_pin_pullup(settings, JRK_PIN_NUM_FBT, config >> JRK_PIN_PULLUP & 1);
   }
 }
 
@@ -413,8 +424,17 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
     jrk_settings_set_product(new_settings, product);
   }
 
+  // Set the context here because any error from jrk_get_setting_segment will
+  // already have got context.
+  if (error != NULL)
+  {
+    error = jrk_error_add(error,
+      "There was an error reading settings from the device.");
+  }
+
   // Read all the settings from the device into a buffer.
   uint8_t buf[JRK_SETTINGS_SIZE];
+  if (error == NULL)
   {
     memset(buf, 0, sizeof(buf));
     size_t index = 1;
@@ -430,26 +450,86 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
     }
   }
 
-  // Store the settings in the new settings object.
-  if (error == NULL)
-  {
-    write_buffer_to_settings(buf, new_settings);
-  }
-
   // Pass the new settings to the caller.
   if (error == NULL)
   {
+    write_buffer_to_settings(buf, new_settings);
     *settings = new_settings;
     new_settings = NULL;
   }
 
   jrk_settings_free(new_settings);
 
+  return error;
+}
+
+jrk_error * jrk_get_ram_settings(jrk_handle * handle, jrk_settings ** settings)
+{
+  if (settings == NULL)
+  {
+    return jrk_error_create("RAM settings output pointer is null.");
+  }
+
+  *settings = NULL;
+
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
+
+  // Allocate the new settings object.
+  jrk_settings * new_settings = NULL;
+  if (error == NULL)
+  {
+    error = jrk_settings_create(&new_settings);
+  }
+
+  // Specify what product these settings are for.
+  if (error == NULL)
+  {
+    jrk_settings_set_product(new_settings, product);
+  }
+
+  // Set the context here because any error from jrk_get_setting_segment will
+  // already have got context.
   if (error != NULL)
   {
     error = jrk_error_add(error,
-      "There was an error reading settings from the device.");
+      "There was an error reading RAM settings from the device.");
   }
+
+  // Read all the settings from the device into a buffer.
+  uint8_t buf[JRK_SETTINGS_SIZE];
+  if (error == NULL)
+  {
+    memset(buf, 0, sizeof(buf));
+    size_t index = 1;
+    while (index < sizeof(buf) && error == NULL)
+    {
+      size_t length = JRK_MAX_USB_RESPONSE_SIZE;
+      if (index + length > sizeof(buf))
+      {
+        length = sizeof(buf) - index;
+      }
+      error = jrk_get_ram_setting_segment(handle,
+        index, length, buf + index);
+      index += length;
+    }
+  }
+
+  // Pass the new settings to the caller.
+  if (error == NULL)
+  {
+    write_buffer_to_settings(buf, new_settings);
+    *settings = new_settings;
+    new_settings = NULL;
+  }
+
+  jrk_settings_free(new_settings);
 
   return error;
 }
