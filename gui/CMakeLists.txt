@@ -51,6 +51,8 @@ if (WIN32)
   )
 endif ()
 
-target_link_libraries (gui Qt5::Widgets lib bootloader)
+find_package(Qt5PrintSupport REQUIRED)
+
+target_link_libraries (gui Qt5::Widgets Qt5::PrintSupport lib bootloader)
 
 install(TARGETS gui DESTINATION bin)

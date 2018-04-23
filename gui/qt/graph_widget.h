@@ -27,7 +27,8 @@ public:
     QDoubleSpinBox *range;
     QDoubleSpinBox * center_value;
     QCheckBox *display;
-    QString color;
+    QString default_color;
+    QString dark_color;
     QCPAxis *axis;
     QCPGraph *graph;
     int32_t plot_value = 0;
@@ -65,8 +66,9 @@ private:
   void setup_ui();
 
   // Used to add new plot
-  void setup_plot(plot& x, QString display_text, QString color,
-    bool signed_range, double range, bool default_visible = false);
+  void setup_plot(plot& x, QString display_text, QString default_color,
+    QString dark_color, bool signed_range, double range,
+    bool default_visible = false);
 
   void remove_data_to_scroll(uint32_t time);
 

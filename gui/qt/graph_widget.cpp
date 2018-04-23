@@ -23,6 +23,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
     custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
     custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
+
     custom_plot->axisRect()->setRangeDragAxes(0, 0);
     custom_plot->axisRect()->setRangeZoomAxes(0, 0);
 
@@ -127,27 +128,27 @@ void graph_widget::setup_ui()
   bottom_control_layout->addWidget(domain, 0);
   bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignRight);
 
-  setup_plot(input, "Input", "#00ffff", false, 4095);
+  setup_plot(input, "Input", "#00ffff", "#ff355e", false, 4095);
 
-  setup_plot(target, "Target", "#0000ff", false, 4095, true);
+  setup_plot(target, "Target", "#0000ff", "#ff6037", false, 4095, true);
 
-  setup_plot(feedback, "Feedback", "#ff8296", false, 4095);
+  setup_plot(feedback, "Feedback", "#ff8296", "#ffcc33", false, 4095);
 
-  setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", false, 4095, true);
+  setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", "#ccff00", false, 4095, true);
 
-  setup_plot(error, "Error", "#9400d3", true, 4095);
+  setup_plot(error, "Error", "#9400d3", "#aaf0d1", true, 4095);
 
-  setup_plot(integral, "Integral", "#ff8c00", true, 0x7fff);
+  setup_plot(integral, "Integral", "#ff8c00", "#ff6eff", true, 0x7fff);
 
-  setup_plot(duty_cycle_target, "Duty cycle target", "#32cd32", true, 600);
+  setup_plot(duty_cycle_target, "Duty cycle target", "#32cd32", "#fd5b78", true, 600);
 
-  setup_plot(duty_cycle, "Duty cycle", "#006400", true, 600);
+  setup_plot(duty_cycle, "Duty cycle", "#006400", "#ff9933", true, 600);
 
-  setup_plot(raw_current, "Raw current (mV)", "#660066", false, 4095);
+  setup_plot(raw_current, "Raw current (mV)", "#660066", "#ffff66", false, 4095);
 
-  setup_plot(current, "Current (mA)", "#b8860b", false, 100000);
+  setup_plot(current, "Current (mA)", "#b8860b", "#66ff66", false, 100000);
 
-  setup_plot(current_chopping, "Current chopping", "#ff00ff", false, 1);
+  setup_plot(current_chopping, "Current chopping", "#ff00ff", "#50bfe6", false, 1);
 
   QFrame * division_frame = new QFrame();
   division_frame->setFrameShadow(QFrame::Plain);
@@ -205,10 +206,11 @@ void graph_widget::setup_ui()
   QMetaObject::connectSlotsByName(this);
 }
 
-void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
-  bool signed_range, double range, bool default_visible)
+void graph_widget::setup_plot(plot& plot, QString display_text, QString default_color,
+  QString dark_color, bool signed_range, double range, bool default_visible)
 {
-  plot.color = color;
+  plot.default_color = default_color;
+  plot.dark_color = dark_color;
 
   plot.range_value = range;
 
@@ -229,7 +231,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
 
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
-  plot.display->setStyleSheet("border: 2px solid "+ color + ";"
+  plot.display->setStyleSheet("border: 2px solid "+ plot.default_color + ";"
     "padding: 2px;"
     "background-color: white;");
   plot.display->setCheckable(true);
@@ -268,7 +270,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   font.setPointSize(14);
 
   plot.axis->setTickLabelFont(font);
-  plot.axis->setTickLabelColor(color);
+  plot.axis->setTickLabelColor(default_color);
   plot.axis->setTickLabelPadding(0);
   plot.axis->setRange(-plot.range_value, plot.range_value);
   plot.axis->setBasePen(QPen(Qt::NoPen));
@@ -283,7 +285,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
   plot_visible_layout->addWidget(plot.reset_button, row, 4, Qt::AlignCenter);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
-  plot.graph->setPen(QPen(plot.color));
+  plot.graph->setPen(QPen(plot.default_color));
   plot.graph->pen().color().setAlpha(120);
 
   connect(plot.allow_interaction, &QRadioButton::clicked, [=]
@@ -303,9 +305,11 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString color,
     }
     else if (!checked && plot.allow_interaction->isChecked())
     {
+      //Removes the currently plot_interaction axis.
       custom_plot->axisRect()->setRangeDragAxes(0, 0);
       custom_plot->axisRect()->setRangeZoomAxes(0, 0);
 
+      // Used to reset the plot_interaction_radios to un-checked.
       QRadioButton * temp_button = new QRadioButton();
       plot_interaction_radios->addButton(temp_button, -1);
       temp_button->setChecked(true);
