@@ -21,8 +21,8 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click to open graph window");
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
-    custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
-    custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 0, Qt::SolidLine));
+    custom_plot->xAxis->basePen().setWidthF(0);
+    custom_plot->yAxis->basePen().setWidthF(0);
 
     custom_plot->axisRect()->setRangeDragAxes(0, 0);
     custom_plot->axisRect()->setRangeZoomAxes(0, 0);
@@ -36,8 +36,8 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
     custom_plot->axisRect()->setMargins(QMargins(20, 10, 20, 40));
-    custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
-    custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+    custom_plot->xAxis->basePen().setWidthF(1);
+    custom_plot->yAxis->basePen().setWidthF(1);
   }
 
   for(auto plot : all_plots)
