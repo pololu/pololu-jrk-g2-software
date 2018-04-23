@@ -1,7 +1,7 @@
 #include "cli.h"
 
 static const char help[] =
-  CLI_NAME ": Pololu Jrk Command-line Utility\n"
+  CLI_NAME ": Pololu Jrk G2 Command-line Utility\n"
   "Version " SOFTWARE_VERSION_STRING "\n"
   "Usage: " CLI_NAME " OPTIONS\n"
   "\n"
