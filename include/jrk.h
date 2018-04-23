@@ -1770,21 +1770,31 @@ const jrk_device * jrk_handle_get_device(const jrk_handle *);
 JRK_API JRK_WARN_UNUSED
 const char * jrk_get_firmware_version_string(jrk_handle *);
 
-/// Sends a "Set target" command to the jrk, which clears the "Awaiting command"
-/// error bit and (if the input mode is serial) will set the jrk's input and
-/// target variables.
+/// Sets the target of the Jrk to a value in the range 0 to 4095.
 ///
-/// The target should be between 0 and 4095, and its meaning depends on what
-/// feedback mode the jrk is in and its feedback scaling settings.
+/// The target can represent a target duty cycle, speed, or position depending
+/// on the feedback mode.
+///
+/// This functions sends a "Set target" command to the jrk, which clears the
+/// "Awaiting command" error bit and (if the input mode is serial) will set
+/// the jrk's input and target variables.
 ///
 /// This is the main command you would use to control the jrk over USB.
+///
+/// See also jrk_force_duty_cycle_target(), jrk_force_duty_cycle(),
+/// jrk_variables_get_target().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_set_target(jrk_handle *, uint16_t target);
 
-/// Sends a "Motor off" command to the jrk.
+/// Turns the motor off.
 ///
-/// This command turns the motor off by setting the "Awaiting command" error
-/// bit.  The jrk will not restart the motor until it receives a
+/// This function sends a "Motor off" command to the Jrk, which sets the
+/// "Awaiting command" error bit.  The Jrk will respect the configured
+/// deceleration limit while decelerating to a duty cycle of 0, unless the
+/// "Awaiting command" error has been configured as a hard error.  Once the duty
+/// cycle reaches zero, the Jrk will either brake or coast.
+///
+/// The jrk will not restart the motor until it receives a
 /// jrk_set_target(), jrk_force_duty_cycle_target(), or jrk_force_duty_cycle()
 /// command.
 JRK_API JRK_WARN_UNUSED
@@ -1816,9 +1826,10 @@ jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_run_motor(jrk_handle *);
 
-/// Sends a "Force duty cycle target" command to the jrk.
+/// Forces the duty cycle target of the Jrk to a value in the range
+/// -600 to +600.
 ///
-/// The jrk will ignore the results of the usual algorithm for choosing the duty
+/// The Jrk will ignore the results of the usual algorithm for choosing the duty
 /// cycle target, and instead set it to be equal to the target specified by this
 /// command.  The jrk will set its 'Integral' variable to 0 while in this mode.
 ///
@@ -1826,31 +1837,33 @@ jrk_error * jrk_run_motor(jrk_handle *);
 /// control of the motor for some time, while still respecting errors and motor
 /// limits as usual.
 ///
-/// The duty_cycle argument should be between -600 and 600.
+/// This function sends a "Force duty cycle target" command to the Jrk G2, which
+/// clears the "Awaiting command" error bit.
 ///
-/// You can get out of this mode using jrk_set_target(), jrk_force_duty_cycle(),
+/// To get out of this mode, use jrk_set_target(), jrk_force_duty_cycle(),
 /// or jrk_stop_motor().
 ///
 /// See jrk_variables_get_force_mode() and jrk_variables_get_duty_cycle_target().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_force_duty_cycle_target(jrk_handle *, int16_t duty_cycle);
 
-/// Sends a "Force duty cycle" command to the jrk.
+/// Forces the duty cycle of the Jrk to a value in the range -600 to +600.
 ///
 /// The jrk will ignore the results of the usual algorithm for choosing the duty
-/// cycle, and instead set it to be equal to the target specified by this
+/// cycle, and instead set it to be equal to the value specified by this
 /// command, ignoring all motor limits except the maximum duty cycle parameters,
 /// and ignoring the 'Input invalid', 'Input disconnect', and 'Feedback
-/// disconnect' errors.  This command will have an immediate effect, so it
-/// doesn't matter if the PID period is set to something really long.  The jrk
-/// will set its 'Integral' variable to 0 while in this mode.
+/// disconnect' errors.  This command will have an immediate effect, regardless
+/// of the PID period.  The jrk will set its 'Integral' variable to 0 while in
+/// this mode.
 ///
 /// This is useful if the jrk is configured to use feedback but you want to take
-/// control of the motor for some time, without respecting motor limits.
+/// control of the motor for some time, without respecting most motor limits.
 ///
-/// The duty_cycle argument should be between -600 and 600.
+/// This function sends a "Force duty cycle" command to the Jrk G2, which
+/// clears the "Awaiting command" error bit.
 ///
-/// You can get out of this mode using jrk_set_target(), jrk_force_duty_cycle(),
+/// To get out of this mode, use jrk_set_target(), jrk_force_duty_cycle(),
 /// or jrk_stop_motor().
 ///
 /// See jrk_variables_get_force_mode() and jrk_variables_get_duty_cycle_target().
