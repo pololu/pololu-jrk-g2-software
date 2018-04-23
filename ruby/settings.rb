@@ -7,27 +7,27 @@ Settings = [
     default_is_zero: true,
     english_default: 'serial',
     comment: <<EOF
-The input mode setting specifies how you want to control the jrk.  It
+The input mode setting specifies how you want to control the Jrk.  It
 determines the definition of the input and target variables.  The input
-variable is a raw measurement of the jrk's input.  The target variable is
+variable is a raw measurement of the Jrk's input.  The target variable is
 the desired state of the system's output, and feeds into the PID feedback
 algorithm.
 
-- If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the jrk gets it
+- If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the Jrk gets it
   input and target settings over its USB, serial, or I2C interfaces.  You
-  would send Set Target commands to the jrk to set both the input and target
+  would send Set Target commands to the Jrk to set both the input and target
   variables.
 
-- If the input mode is "Analog voltage" (JRK_INPUT_MODE_ANALOG), the jrk gets
+- If the input mode is "Analog voltage" (JRK_INPUT_MODE_ANALOG), the Jrk gets
   it input variable by reading the voltage on its SDA/AN pin.  A signal level
   of 0 V corresponds to an input value of 0, and a signal elvel of 5 V
-  corresponds to an input value of 4092.  The jrk uses its input scaling
+  corresponds to an input value of 4092.  The Jrk uses its input scaling
   feature to set the target variable.
 
-- If the input mode is "RC" (JRK_INPUT_MODE_RC), the jrk
+- If the input mode is "RC" (JRK_INPUT_MODE_RC), the Jrk
   gets it input variable by reading RC pulses on its RC pin.  The input value
   is the width of the most recent pulse, in units of 2/3 microseconds.  The
-  jrk uses its input scaling feature to set the target variable.
+  Jrk uses its input scaling feature to set the target variable.
 EOF
   },
   {
@@ -55,7 +55,7 @@ EOF
     range: 0..4095,
     comment: <<EOF
 This is one of the parameters of the input scaling feature, which is how the
-jrk calculates its target value from its raw input.
+Jrk calculates its target value from its raw input.
 
 By default, the input scaling:
 
@@ -149,10 +149,10 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE2',
     bit_address: 'JRK_OPTIONS_BYTE2_INPUT_DETECT_DISCONNECT',
     comment:
-      "If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the jrk to\n" \
+      "If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the Jrk to\n" \
       "drive its designated potentiometer power pins (SCL and/or AUX) low once per\n" \
       "PID period and make sure that the input potentiometer reading on the SDA/AN\n" \
-      "pin also goes low.  If it does not go low, the jrk signals an input\n" \
+      "pin also goes low.  If it does not go low, the Jrk signals an input\n" \
       "disconnect error.\n\n" \
       "If you enable this setting, we recommend powering your potentiometer from\n" \
       "GND and SCL."
@@ -173,7 +173,7 @@ EOF
     english_default: 'analog',
     max: 'JRK_FEEDBACK_MODE_FREQUENCY',
     comment: <<EOF
-The feedback mode setting specifies whether the jrk is using feedback from
+The feedback mode setting specifies whether the Jrk is using feedback from
 the output of the system, and if so defines what interface is used to
 measure that feedback.
 
@@ -183,7 +183,7 @@ measure that feedback.
   calculation.  This means that a target of 2648 corresponds to driving the
   motor full speed forward, 2048 is brake, and 1448 is full-speed reverse.
 
-- If the feedback mode is "Analog" (JRK_FEEDBACK_MODE_ANALOG), the jrk gets
+- If the feedback mode is "Analog" (JRK_FEEDBACK_MODE_ANALOG), the Jrk gets
   its feedback by measuring the voltage on the FBA pin.  A level of 0 V
   corresponds to a feedback value of 0, and a level of 5 V corresponds to a
   feedback value of 4092.  The feedback scaling algorithm computes the scaled
@@ -191,7 +191,7 @@ measure that feedback.
   target to compute the duty cycle target.
 
 - If the feedback mode is "Frequency (digital)"
-  (JRK_FEEDBACK_MODE_FREQUENCY), the jrk gets it feedback by counting rising
+  (JRK_FEEDBACK_MODE_FREQUENCY), the Jrk gets it feedback by counting rising
   edges on its FBT pin.  When the target is greater than 2048, the feedback
   value is 2048 plus the number of rising edges detected during the PID
   period.  Otherwise, the the feedback is 2048 minus the the number of rising
@@ -253,10 +253,10 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE2',
     bit_address: 'JRK_OPTIONS_BYTE2_FEEDBACK_DETECT_DISCONNECT',
     comment:
-      "If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the jrk\n" \
+      "If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the Jrk\n" \
       "to drive its designated potentiometer power pins (SCL and/or AUX) low once\n" \
       "per PID period and make sure that the feedback potentiometer reading on FBA\n" \
-      "also goes low.  If it does not go low, the jrk signals a feedback\n" \
+      "also goes low.  If it does not go low, the Jrk signals a feedback\n" \
       "disconnect error.\n\n" \
       "If you enable this setting, we recommend powering your potentiometer from\n" \
       "GND and AUX."
@@ -265,12 +265,12 @@ EOF
     name: 'feedback_dead_zone',
     type: :uint8_t,
     comment: <<EOF
-The jrk sets the duty cycle target to zero and resets the integral
+The Jrk sets the duty cycle target to zero and resets the integral
 whenever the magnitude of the error is smaller than this setting. This is
 useful for preventing the motor from driving when the target is very close to
 scaled feedback.
 
-The jrk uses hysteresis to keep the system from simply riding the edge of the
+The Jrk uses hysteresis to keep the system from simply riding the edge of the
 feedback dead zone; once in the dead zone, the duty cycle and integral will
 remain zero until the magnitude of the error exceeds twice the value of the
 dead zone.
@@ -295,7 +295,7 @@ EOF
       "feedback minus the target.  With this setting enabled, the PID algorithm\n" \
       "will add or subtract 4096 from that error value to get it into the -2048 to\n" \
       "2048 range.  This is useful for systems where the output of the system wraps\n" \
-      "around, so that 0 is next to 4095.  The jrk will know how to take the\n" \
+      "around, so that 0 is next to 4095.  The Jrk will know how to take the\n" \
       "shortest path from one point to another even if it involves wrapping around\n" \
       "from 0 to 4095 or vice versa.",
   },
@@ -307,26 +307,26 @@ EOF
     english_default: 'USB dual port',
     max: 'JRK_SERIAL_MODE_UART',
     comment: <<EOF
-The serial mode determines how bytes are transferred between the jrk's UART
+The serial mode determines how bytes are transferred between the Jrk's UART
 (TX and RX pins), its two USB virtual serial ports (the command port and the
 TTL Port), and its serial command processor.
 
 - If the serial mode is "USB dual port" (JRK_SERIAL_MODE_USB_DUAL_PORT), the
-  command port can be used to send commands to the jrk and receive responses
+  command port can be used to send commands to the Jrk and receive responses
   from it, while the TTL port can be used to send and receives bytes on the
   TX and RX lines.  The baud rate you set by the USB host on the TTL port
   determines the baud rate used on the TX and RX lines.
 
 - If the serial mode is "USB chained" (JRK_SERIAL_MODE_USB_CHAINED), the
   comamnd port can be used to both transmit bytes on the TX line and send
-  commands to the jrk.  The jrk's responses to those commands will be sent to
+  commands to the Jrk.  The Jrk's responses to those commands will be sent to
   the command port but not the TX line.  If the input mode is serial, bytes
   received on the RX line will be sent to the command put but will not be
-  interpreted as command bytes by the jrk.  The baud rate set by the USB host
+  interpreted as command bytes by the Jrk.  The baud rate set by the USB host
   on the command port determines the baud rate used on the TX and RX lines.
 
 - If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX lines
-  can be used to send commands to the jrk and receive responses from it.  Any
+  can be used to send commands to the Jrk and receive responses from it.  Any
   byte received on RX will be sent to the command port, but bytes sent from
   the command port will be ignored.
 EOF
@@ -362,11 +362,11 @@ EOF
     default: 11,
     custom_fix: true,
     comment: <<EOF
-This is the serial device number used in the Pololu protocol on the jrk's
-serial interfaces, and the I2C device address used on the jrk's I2C
+This is the serial device number used in the Pololu protocol on the Jrk's
+serial interfaces, and the I2C device address used on the Jrk's I2C
 interface.
 
-By default, the jrk only pays attention to the lower 7 bits of this setting,
+By default, the Jrk only pays attention to the lower 7 bits of this setting,
 but if you enable 14-bit serial device numbers (see
 serial_enable_14bit_device_number) then it will use the lower 14 bits.
 
@@ -380,10 +380,10 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE1',
     bit_address: 'JRK_OPTIONS_BYTE1_NEVER_SLEEP',
     comment: <<EOF
-By default, if the jrk is powered from a USB bus that is in suspend mode
+By default, if the Jrk is powered from a USB bus that is in suspend mode
 (e.g. the computer is sleeping) and VIN power is not present, it will go to
 sleep to reduce its current consumption and comply with the USB
-specification.  If you enable the "Never sleep" option, the jrk will never go
+specification.  If you enable the "Never sleep" option, the Jrk will never go
 to sleep.
 EOF
   },
@@ -393,7 +393,7 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE1',
     bit_address: 'JRK_OPTIONS_BYTE1_SERIAL_ENABLE_CRC',
     comment: <<EOF
-If set to true, the jrk requires a 7-bit CRC byte at the end of each serial
+If set to true, the Jrk requires a 7-bit CRC byte at the end of each serial
 command, and if the CRC byte is wrong then it ignores the command and sets
 the serial CRC error bit.
 EOF
@@ -404,8 +404,8 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE1',
     bit_address: 'JRK_OPTIONS_BYTE1_SERIAL_ENABLE_14BIT_DEVICE_NUMBER',
     comment: <<EOF
-If enabled, the jrk's Pololu protocol will require a 14-bit device number to
-be sent with every command.  This option allows you to put more than 128 jrk
+If enabled, the Jrk's Pololu protocol will require a 14-bit device number to
+be sent with every command.  This option allows you to put more than 128 Jrk
 devices on one serial bus.
 EOF
   },
@@ -415,7 +415,7 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE1',
     bit_address: 'JRK_OPTIONS_BYTE1_SERIAL_DISABLE_COMPACT_PROTOCOL',
     comment: <<EOF
-If enabled, the jrk will not respond to compact protocol commands.
+If enabled, the Jrk will not respond to compact protocol commands.
 EOF
   },
   {
@@ -449,8 +449,8 @@ EOF
       "determine its effect on the motor duty cycle.\n\n" \
       "The integral coefficient is defined by this mathematical expression:\n" \
       "  integral_multiplier / 2^(integral_exponent)\n\n" \
-      "Note: On the original jrks (jrk 12v12 and jrk 21v3), the formula was\n" \
-      "different.  Those jrks added 3 to the integral_exponent before using\n" \
+      "Note: On the original Jrks (Jrk 12v12 and Jrk 21v3), the formula was\n" \
+      "different.  Those Jrks added 3 to the integral_exponent before using\n" \
       "it as a power of 2."
   },
   {
@@ -487,7 +487,7 @@ EOF
     range: 1..8191,
     default: 10,
     comment: <<EOF
-The PID period specifies how often the jrk should calculate its input and
+The PID period specifies how often the Jrk should calculate its input and
 feedback, run its PID calculation, and update the motor speed, in units of
 milliseconds.  This period is still used even if feedback and PID are
 disabled.
@@ -549,7 +549,7 @@ EOF
     min: 1,
     comment: <<EOF
 This is the number of consecutive PID periods where the the hardware current
-chopping must occur before the jrk triggers a "Max. current exceeded\" error.
+chopping must occur before the Jrk triggers a "Max. current exceeded\" error.
 The default of 1 means that any current chopping is an error.  You can set it
 to a higher value if you expect some current chopping to happen (e.g. when
 starting up) but you still want to it to be an error when your motor leads
@@ -566,14 +566,14 @@ EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings.
 
-The current sense circuitry on a umc04a/umc05a jrks produces a constant
+The current sense circuitry on a umc04a/umc05a Jrks produces a constant
 voltage of about 50 mV (but with large variations from unit to unit) when the
 motor driver is powered, even if there is no current flowing through the
 motor.  This offset must be subtracted from analog voltages representing
 current limits or current measurements as one of the first steps for
 converting those voltages to amps.
 
-For the umc04a/umc05a jrk models, this setting is defined by the formula:
+For the umc04a/umc05a Jrk models, this setting is defined by the formula:
 
   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 
@@ -704,7 +704,7 @@ EOF
 Sets the current limit to be used when driving forward.
 
 This setting is not actually a current, it is an encoded value telling
-the jrk how to set up its current limiting hardware.
+the Jrk how to set up its current limiting hardware.
 
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
@@ -756,11 +756,11 @@ EOF
     default: 0,
     comment: <<EOF
 This is the maximum current while driving forward.  If the current exceeds
-this value, the jrk will trigger a "Max. current exceeded" error.
+this value, the Jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a/umc05a jrks, the units of this setting are in milliamps.
+For the umc04a/umc05a Jrks, the units of this setting are in milliamps.
 EOF
   },
   {
@@ -769,11 +769,11 @@ EOF
     default: 0,
     comment: <<EOF
 This is the maximum current while driving in reverse.  If the current exceeds
-this value, the jrk will trigger a "Max. current exceeded" error.
+this value, the Jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a/umc05a jrks, the units of this setting are in milliamps.
+For the umc04a/umc05a Jrks, the units of this setting are in milliamps.
 EOF
   },
   {
@@ -782,7 +782,7 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_COAST_WHEN_OFF',
     comment:
-      "By default, the jrk drives both motor outputs low when the motor is\n" \
+      "By default, the Jrk drives both motor outputs low when the motor is\n" \
       "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \
       "If enabled, this setting causes it to instead tri-state both inputs, making\n" \
       "the motor coast."
@@ -796,7 +796,7 @@ This setting is a bitmap specifying which errors are enabled.
 This includes errors that are enabled and latched.
 
 The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
-always enabled, so the jrk ignores the bits for those errors.
+always enabled, so the Jrk ignores the bits for those errors.
 EOF
   },
   {
@@ -805,12 +805,12 @@ EOF
     comment: <<EOF
 This setting is a bitmap specifying which errors are enabled and latched.
 
-When a latched error occurs, the jrk will not clear the corresponding error
-bit (and thus not restart the motor) until the jrk receives a command to
+When a latched error occurs, the Jrk will not clear the corresponding error
+bit (and thus not restart the motor) until the Jrk receives a command to
 clear the error bits.
 
 The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
-always latched if they are enabled, so the jrk ignores the bits for those
+always latched if they are enabled, so the Jrk ignores the bits for those
 errors.
 EOF
   },
@@ -820,11 +820,11 @@ EOF
     comment: <<EOF
 This setting is a bitmap specifying which errors are hard errors.
 
-If a hard error is enabled and it happens, the jrk will set the motor's duty
+If a hard error is enabled and it happens, the Jrk will set the motor's duty
 cycle to 0 immediately without respecting deceleration limits.
 
 The JRK_ERROR_* macros specify the bits in the bitmap.  Certain errors are
-always hard errors, so the jrk ignores the bits for those errors.
+always hard errors, so the Jrk ignores the bits for those errors.
 EOF
   },
   {
@@ -867,7 +867,7 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE1',
     bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_SDA',
     comment: <<EOF
-This option causes the jrk to perform analog measurements on the SDA/AN pin
+This option causes the Jrk to perform analog measurements on the SDA/AN pin
 and configure SCL as a potentiometer power pin even if the "Input mode"
 setting is not "Analog".
 EOF
@@ -878,7 +878,7 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE1',
     bit_address: 'JRK_OPTIONS_BYTE1_ALWAYS_ANALOG_FBA',
     comment: <<EOF
-This option causes the jrk to perform analog measurements on the FBA pin
+This option causes the Jrk to perform analog measurements on the FBA pin
 even if the "Feedback mode" setting is not "Analog".
 EOF
   },
@@ -892,10 +892,10 @@ EOF
 This settings specifies what kind of pulse measurement to perform
 on the FBT pin.
 
-JRK_FBT_METHOD_PULSE_COUNTING means the jrk will count the number of
+JRK_FBT_METHOD_PULSE_COUNTING means the Jrk will count the number of
 rising edges on the pin, and is more suitable for fast tachometers.
 
-JRK_FBT_METHOD_PULSE_TIMING means the jrk will measure the pulse width
+JRK_FBT_METHOD_PULSE_TIMING means the Jrk will measure the pulse width
 (duration) of pulses on the pin, and is more suitable for slow tachometers.
 EOF
   },

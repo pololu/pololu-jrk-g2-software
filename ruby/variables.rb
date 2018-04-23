@@ -64,11 +64,11 @@ EOF
     comment: <<EOF
 This is the measured current as calculated by the firmware.
 
-For the umc04a jrk models, this is in units of milliamps.
+For the umc04a Jrk models, this is in units of milliamps.
 
 For most applications it is better to use jrk_calculate_measured_current_ma()
 because it will always return the current in units of milliamps.  This
-function might return different units when used on different models of jrks
+function might return different units when used on different models of Jrks
 in the future.
 EOF
   },
