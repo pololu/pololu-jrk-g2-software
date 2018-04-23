@@ -52,6 +52,7 @@ void nice_spin_box::stepBy(int step_value)
   {
     QMap<int, int>::const_iterator it;
 
+    code = value();
     it = mapping.find(code);
 
     while (it.value() == mapping.value(value()))

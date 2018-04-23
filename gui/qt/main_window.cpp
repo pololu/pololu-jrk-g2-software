@@ -811,9 +811,8 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
     jrk::get_recommended_current_limit_codes(product);
 
   QMap<int, int> mapping;
-  for (size_t i = 0; i < code_table.size(); i++)
+  for (uint16_t code : code_table)
   {
-    uint16_t code = code_table[i];
     uint32_t current = controller->current_limit_code_to_ma(code);
     mapping.insert(code, current);
   }
