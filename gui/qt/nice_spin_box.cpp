@@ -93,9 +93,9 @@ int nice_spin_box::valueFromText(const QString& text) const
   {
     double return_value;
 
-    for (int j = 0; j < mapping.size(); ++j)
+    for (auto value : mapping.values())
     {
-      int temp_value = mapping.values().at(j);
+      int temp_value = value;
 
       // Used to compare the entered_value to the hundredth times 1000 to an int entered_value
       // ex.  does (4.92 * 1000) == 4923 (would be false without calculation below)
@@ -105,7 +105,7 @@ int nice_spin_box::valueFromText(const QString& text) const
 
       if (entered_value >= temp_value)
       {
-        return_value = mapping.keys().at(j);
+        return_value = mapping.key(value);
       }
     }
 
