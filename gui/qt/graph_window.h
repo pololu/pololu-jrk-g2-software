@@ -4,7 +4,7 @@
 
 #include <QWidget>
 #include <QApplication>
-#include <QtPrintSupport\qprinter.h>
+#include <QtPrintSupport/QPrinter>
 #include <QPainter>
 #include <QFileDialog>
 #include <QStyle>

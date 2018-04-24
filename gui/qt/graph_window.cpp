@@ -19,12 +19,15 @@ void graph_window::setup_ui()
 
   options_menu = menu_bar->addMenu(tr("Options"));
 
-  save_pdf_action = new QAction(tr("&Save PDF"));
+  save_pdf_action = new QAction();
+  save_pdf_action->setText(tr("&Save PDF"));
   save_pdf_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
-  dark_theme_action = new QAction(tr("&Use dark theme"));
+  dark_theme_action = new QAction();
+  dark_theme_action->setText(tr("&Use dark theme"));
 
-  default_theme_action = new QAction(tr("&Use default theme"));
+  default_theme_action = new QAction();
+  default_theme_action->setText(tr("&Use default theme"));
 
   options_menu->addAction(save_pdf_action);
   options_menu->addAction(dark_theme_action);
