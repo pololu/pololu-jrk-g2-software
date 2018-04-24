@@ -3301,7 +3301,8 @@ void main_window::setup_error_row(int error_number,
   row.error_enable_group->addButton(row.enabled_radio, 1);
   row.error_enable_group->addButton(row.latched_radio, 2);
 
-  connect(row.error_enable_group, QOverload<int>::of(&QButtonGroup::buttonClicked),
+  connect(row.error_enable_group, static_cast<void (QButtonGroup::*)(int)>
+    (&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
   row.error_hard = new QCheckBox(tr("Hard"));
