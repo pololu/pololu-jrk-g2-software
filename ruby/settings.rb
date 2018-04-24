@@ -444,7 +444,7 @@ EOF
     max: 1023,
     comment:
       "The allowed range of this setting is 0 to 1023.\n\n" \
-      "In the PID algorithm, the accumulated error (known as error sum)\n" \
+      "In the PID algorithm, the integral variable (known as error sum)\n" \
       "is multiplied by a number called the integral coefficient to\n" \
       "determine its effect on the motor duty cycle.\n\n" \
       "The integral coefficient is defined by this mathematical expression:\n" \
@@ -507,9 +507,16 @@ EOF
     type: :uint16_t,
     default: 1000,
     max: 0x7FFF,
-    comment:
-      "The PID algorithm prevents the absolute value of the accumulated error\n" \
-      "(known as error sum) from exceeding this limit.",
+    comment: <<EOF
+The PID algorithm prevents the absolute value of the integral variable
+(also known as error sum) from exceeding this limit.  This can help limit
+integral wind-up.  The limit can range from 0 to 32767.
+
+Note that the maximum value of the integral term can be computed as the
+integral coefficient times the integral limit: if this is very small
+compared to 600 (maximum duty cycle), the integral term will have at most
+a very small effect on the duty cycle.
+EOF
   },
   {
     name: 'reset_integral',
@@ -517,8 +524,8 @@ EOF
     address: 'JRK_SETTING_OPTIONS_BYTE3',
     bit_address: 'JRK_OPTIONS_BYTE3_RESET_INTEGRAL',
     comment:
-      "If this setting is set to true, the PID algorithm will reset the accumulated\n" \
-      "error (also known as error sum) whenever the absolute value of the\n" \
+      "If this setting is set to true, the PID algorithm will reset the integral\n" \
+      "variable (also known as error sum) whenever the absolute value of the\n" \
       "proportional term (see proportional_multiplier) exceeds 600."
   },
   {
@@ -619,6 +626,13 @@ EOF
 If the feedback is beyond the range specified by the feedback error
 minimum and feedback error maximum values, then the duty cycle's magnitude
 cannot exceed this value.
+
+This option helps limit possible damage to systems by reducing the maximum
+duty cycle whenever the feedback is outside the range specified by the
+feedback error minimum and feedback error maximum values.  This can be
+used, for example, to slowly bring a system back into its valid range of
+operation when it is dangerously near a limit.  The Feedback disconnect
+error should be disabled when this option is used.
 EOF
   },
   {
@@ -784,8 +798,8 @@ EOF
     comment:
       "By default, the Jrk drives both motor outputs low when the motor is\n" \
       "stopped (duty cycle is zero or there is an error), causing it to brake.\n" \
-      "If enabled, this setting causes it to instead tri-state both inputs, making\n" \
-      "the motor coast."
+      "If enabled, this setting causes it to instead tri-state both outputs,\n" \
+      "making the motor coast."
   },
   {
     name: 'error_enable',

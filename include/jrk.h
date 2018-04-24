@@ -808,7 +808,7 @@ uint8_t jrk_settings_get_proportional_exponent(const jrk_settings *);
 //
 // The allowed range of this setting is 0 to 1023.
 //
-// In the PID algorithm, the accumulated error (known as error sum)
+// In the PID algorithm, the integral variable (known as error sum)
 // is multiplied by a number called the integral coefficient to
 // determine its effect on the motor duty cycle.
 //
@@ -901,8 +901,14 @@ uint8_t jrk_settings_get_integral_divider_exponent(const jrk_settings *);
 
 // Sets the integral_limit setting.
 //
-// The PID algorithm prevents the absolute value of the accumulated error
-// (known as error sum) from exceeding this limit.
+// The PID algorithm prevents the absolute value of the integral variable
+// (also known as error sum) from exceeding this limit.  This can help limit
+// integral wind-up.  The limit can range from 0 to 32767.
+//
+// Note that the maximum value of the integral term can be computed as the
+// integral coefficient times the integral limit: if this is very small
+// compared to 600 (maximum duty cycle), the integral term will have at most
+// a very small effect on the duty cycle.
 JRK_API
 void jrk_settings_set_integral_limit(jrk_settings *,
   uint16_t integral_limit);
@@ -914,8 +920,8 @@ uint16_t jrk_settings_get_integral_limit(const jrk_settings *);
 
 // Sets the reset_integral setting.
 //
-// If this setting is set to true, the PID algorithm will reset the accumulated
-// error (also known as error sum) whenever the absolute value of the
+// If this setting is set to true, the PID algorithm will reset the integral
+// variable (also known as error sum) whenever the absolute value of the
 // proportional term (see proportional_multiplier) exceeds 600.
 JRK_API
 void jrk_settings_set_reset_integral(jrk_settings *,
@@ -1037,6 +1043,13 @@ bool jrk_settings_get_motor_invert(const jrk_settings *);
 // If the feedback is beyond the range specified by the feedback error
 // minimum and feedback error maximum values, then the duty cycle's magnitude
 // cannot exceed this value.
+//
+// This option helps limit possible damage to systems by reducing the maximum
+// duty cycle whenever the feedback is outside the range specified by the
+// feedback error minimum and feedback error maximum values.  This can be
+// used, for example, to slowly bring a system back into its valid range of
+// operation when it is dangerously near a limit.  The Feedback disconnect
+// error should be disabled when this option is used.
 JRK_API
 void jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(jrk_settings *,
   uint16_t max_duty_cycle_while_feedback_out_of_range);
@@ -1242,8 +1255,8 @@ uint16_t jrk_settings_get_soft_current_limit_reverse(const jrk_settings *);
 //
 // By default, the Jrk drives both motor outputs low when the motor is
 // stopped (duty cycle is zero or there is an error), causing it to brake.
-// If enabled, this setting causes it to instead tri-state both inputs, making
-// the motor coast.
+// If enabled, this setting causes it to instead tri-state both outputs,
+// making the motor coast.
 JRK_API
 void jrk_settings_set_coast_when_off(jrk_settings *,
   bool coast_when_off);
