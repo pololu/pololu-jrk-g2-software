@@ -2927,7 +2927,7 @@ QWidget *main_window::setup_motor_tab()
   detect_motor_button = new QPushButton(tr("&Learn..."));
   detect_motor_button->setObjectName("detect_motor_button");
   connect(detect_motor_button, &QPushButton::clicked,
-    this, &on_feedback_learn_button_clicked);
+    this, &main_window::on_feedback_learn_button_clicked);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
