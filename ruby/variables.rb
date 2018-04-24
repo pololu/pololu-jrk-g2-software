@@ -7,8 +7,8 @@ The input variable is a raw, unscaled value representing a measurement taken
 by the Jrk of the input to the system.  In serial input mode, the input is
 equal to the target, which can be set to any value from 0 to 4095 using
 serial commands.  In analog input mode, the input is a measurement the
-voltage on the RX pin, where 0 is 0 V and 4092 is a voltage equal the Jrk's
-5V pin (approximately 4.8 V).  In pulse width input mode, the input is the
+voltage on the SDA pin, where 0 is 0 V and 4092 is a voltage equal the Jrk's
+5V pin (approximately 4.8 V).  In RC input mode, the input is the
 duration of the last pulse measured, in units of 2/3 us.
 END
   },
@@ -38,8 +38,8 @@ END
     name: 'scaled_feedback',
     type: :uint16_t,
     comment: <<END
-The scaled feedback is calculated the feedback using the Jrk's configurable
-feedback scaling settings.
+The scaled feedback is calculated from the feedback using the Jrk's
+configurable feedback scaling settings.
 END
   },
   {
@@ -64,10 +64,11 @@ In no feedback mode (open-loop speed control mode), the duty cycle target is
 normally the target minus 2048. In other feedback modes, the duty cycle
 target is normally the sum of the proportional, integral, and derivative
 terms of the PID algorithm.  In any mode, the duty cycle target can be
-overridden with a Force Duty Cycle Target command.
+overridden with a jrk_force_duty_cycle_target().
 
 If an error is stopping the motor, the duty cycle target variable will not be
-affected, but the duty cycle variable will change/decelerate to zero.
+directly affected, but the duty cycle variable will change/decelerate to
+zero.
 END
   },
   {
@@ -75,12 +76,11 @@ END
     type: :int16_t,
     comment: <<END
 The duty cycle variable is the duty cycle at which the jrk is currently
-driving the motor.  A value of -600 means full speed reverse, while a
-value of 600 means full speed forward.  A value of 0 means stopped
-(braking or coasting).  The duty cycle could be different from the duty
-cycle target because it normally takes into account the Jrk's configurable
-motor limits and errors.  The duty cycle can be overridden with a Force
-Duty Cycle command.
+driving the motor.  A value of -600 means full speed reverse, while a value
+of 600 means full speed forward.  A value of 0 means stopped (braking or
+coasting).  The duty cycle could be different from the duty cycle target
+because it normally takes into account the Jrk's configurable motor limits
+and errors.  The duty cycle can be overridden with jrk_force_duty_cycle().
 END
   },
   {
@@ -102,7 +102,7 @@ END
 This variable is true if the Jrk's most recent PID cycle took more time than
 the configured PID period.  This indicates that the Jrk does not have time to
 perform all of its tasks at the desired rate.  Most often, this is caused by
-the requested number of analog samples for input, feedback, or current
+the configured number of analog samples for input, feedback, or current
 sensing being too high for the configured PID period.
 END
   },
