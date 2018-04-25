@@ -1,6 +1,4 @@
-#include <QGuiApplication>
-#include <QtCore>
-#include <QDesktopWidget>
+#include <QStyleFactory>
 #include "main_controller.h"
 #include "main_window.h"
 
@@ -17,6 +15,12 @@ int main(int argc, char ** argv)
 
 #ifdef _WIN32
   SetProcessDPIAware();
+#endif
+
+  // On non-Windows systems, use Qt's fusion style instead of a
+  // native style.
+#ifndef _WIN32
+  QApplication::setStyle(QStyleFactory::create("fusion"));
 #endif
 
   QApplication app(argc, argv);
