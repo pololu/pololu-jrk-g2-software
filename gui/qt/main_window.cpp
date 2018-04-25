@@ -2941,7 +2941,7 @@ QWidget *main_window::setup_motor_tab()
   detect_motor_button = new QPushButton(tr("&Learn..."));
   detect_motor_button->setObjectName("detect_motor_button");
   connect(detect_motor_button, &QPushButton::clicked,
-    this, &on_feedback_learn_button_clicked);
+    this, &main_window::on_feedback_learn_button_clicked);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
@@ -3314,7 +3314,8 @@ void main_window::setup_error_row(int error_number,
   row.error_enable_group->addButton(row.enabled_radio, 1);
   row.error_enable_group->addButton(row.latched_radio, 2);
 
-  connect(row.error_enable_group, QOverload<int>::of(&QButtonGroup::buttonClicked),
+  connect(row.error_enable_group,
+    static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
   row.error_hard = new QCheckBox();

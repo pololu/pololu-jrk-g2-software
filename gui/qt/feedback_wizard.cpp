@@ -84,7 +84,7 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
     settings.get_max_duty_cycle_reverse()) / DUTY_CYCLE_FACTOR;
 
   setWindowTitle("Feedback setup wizard");
-  setWindowIcon(QIcon(":app_icon")); //TODO: make sure this works
+  setWindowIcon(QIcon(":app_icon"));
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
   setPage(INTRO, setup_intro_page());
@@ -103,14 +103,16 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
 
   // Handle the next and back buttons with custom slots.
   disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
-  connect(button(NextButton), &QAbstractButton::clicked, this, &handle_next);
+  connect(button(NextButton), &QAbstractButton::clicked,
+    this, &feedback_wizard::handle_next);
   disconnect(button(BackButton), &QAbstractButton::clicked, 0, 0);
-  connect(button(BackButton), &QAbstractButton::clicked, this, &handle_back);
+  connect(button(BackButton), &QAbstractButton::clicked,
+    this, &feedback_wizard::handle_back);
 
   connect(qApp, &QApplication::focusChanged,
-    this, &focus_changed);
+    this, &feedback_wizard::focus_changed);
 
-  connect(this, &QDialog::finished, this, &copy_form_into_result);
+  connect(this, &QDialog::finished, this, &feedback_wizard::copy_form_into_result);
 }
 
 void feedback_wizard::showEvent(QShowEvent * event)
@@ -759,7 +761,7 @@ QWidget * feedback_wizard::setup_motor_invert_widget()
   motor_invert_radio_true->setText(tr(
     "Inverted motor direction (\"forward\" means OUTA negative, OUTB positive)"));
   connect(motor_invert_radio_true, &QRadioButton::toggled,
-    this, &motor_invert_changed);
+    this, &feedback_wizard::motor_invert_changed);
 
   QVBoxLayout * motor_invert_layout = new QVBoxLayout();
   motor_invert_layout->addWidget(motor_invert_radio_false);
@@ -791,7 +793,7 @@ QWidget * feedback_wizard::setup_feedback_invert_widget()
   feedback_invert_radio_true->setText(tr(
     "Inverted feedback direction (feedback decreases during forward motion)"));
   connect(feedback_invert_radio_true, &QRadioButton::toggled,
-    this, &feedback_invert_changed);
+    this, &feedback_wizard::feedback_invert_changed);
 
   QVBoxLayout * feedback_invert_layout = new QVBoxLayout();
   feedback_invert_layout->addWidget(feedback_invert_radio_false);
@@ -822,22 +824,22 @@ QWidget * feedback_wizard::setup_maxmin_widget()
   learn_fwd_value = new QLineEdit();
   learn_fwd_value->setValidator(int_validator);
   connect(learn_fwd_value, &QLineEdit::textChanged,
-    this, &update_learn_page_completeness);
+    this, &feedback_wizard::update_learn_page_completeness);
 
   learn_fwd_button = new QPushButton(tr("Sample"));
   connect(learn_fwd_button, &QAbstractButton::clicked,
-    this, &learn_fwd_button_pressed);
+    this, &feedback_wizard::learn_fwd_button_pressed);
 
   learn_rev_label = new QLabel();
 
   learn_rev_value = new QLineEdit();
   learn_rev_value->setValidator(int_validator);
   connect(learn_rev_value, &QLineEdit::textChanged,
-    this, &update_learn_page_completeness);
+    this, &feedback_wizard::update_learn_page_completeness);
 
   learn_rev_button = new QPushButton(tr("Sample"));
   connect(learn_rev_button, &QAbstractButton::clicked,
-    this, &learn_rev_button_pressed);
+    this, &feedback_wizard::learn_rev_button_pressed);
 
   {
     int width = fontMetrics().width("99999999");
@@ -894,12 +896,16 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
   motor_instruction_label->setWordWrap(true);
 
   reverse_button = new QPushButton(tr("Drive reverse"));
-  connect(reverse_button, &QAbstractButton::pressed, this, &reverse_button_pressed);
-  connect(reverse_button, &QAbstractButton::released, this, &drive_button_released);
+  connect(reverse_button, &QAbstractButton::pressed,
+    this, &feedback_wizard::reverse_button_pressed);
+  connect(reverse_button, &QAbstractButton::released,
+    this, &feedback_wizard::drive_button_released);
 
   forward_button = new QPushButton(tr("Drive forward"));
-  connect(forward_button, &QAbstractButton::pressed, this, &forward_button_pressed);
-  connect(forward_button, &QAbstractButton::released, this, &drive_button_released);
+  connect(forward_button, &QAbstractButton::pressed,
+    this, &feedback_wizard::forward_button_pressed);
+  connect(forward_button, &QAbstractButton::released,
+    this, &feedback_wizard::drive_button_released);
 
   QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
 
@@ -913,7 +919,8 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
 
   max_duty_cycle_note = new QLabel();
 
-  connect(duty_cycle_input, QOverload<int>::of(&QSpinBox::valueChanged),
+  connect(duty_cycle_input,
+    static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
     this, &feedback_wizard::duty_cycle_input_changed);
 
   // Just in case the input is already at its maximum value.
@@ -1022,14 +1029,15 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   scaling_layout->addWidget(order_warning_label, 0, 2, 4, 1);
   scaling_layout->setColumnStretch(2, 1);
 
-  connect(final_error_max_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &update_order_warning);
-  connect(final_max_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &update_order_warning);
-  connect(final_min_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &update_order_warning);
-  connect(final_error_min_spinbox, QOverload<int>::of(&QSpinBox::valueChanged),
-    this, &update_order_warning);
+  auto valueChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
+  connect(final_error_max_spinbox, valueChanged,
+    this, &feedback_wizard::update_order_warning);
+  connect(final_max_spinbox, valueChanged,
+    this, &feedback_wizard::update_order_warning);
+  connect(final_min_spinbox, valueChanged,
+    this, &feedback_wizard::update_order_warning);
+  connect(final_error_min_spinbox, valueChanged,
+    this, &feedback_wizard::update_order_warning);
 
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(completed_label);
