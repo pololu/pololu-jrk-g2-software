@@ -1,3 +1,4 @@
+#include <QProcessEnvironment>
 #include <QStyleFactory>
 #include "main_controller.h"
 #include "main_window.h"
@@ -24,6 +25,17 @@ int main(int argc, char ** argv)
 #endif
 
   QApplication app(argc, argv);
+
+  // An easy way to support systems with small screens.
+  auto env = QProcessEnvironment::systemEnvironment();
+  int size = env.value("JRK2GUI_FONT_SIZE").toInt();
+  if (size > 0)
+  {
+    QFont font = app.font();
+    font.setPointSize(size);
+    app.setFont(font);
+  }
+
   main_controller controller;
   main_window window;
   controller.set_window(&window);
