@@ -2171,6 +2171,16 @@ QWidget * main_window::setup_variables_box()
     &ttl_port_label, &ttl_port_value);
   ttl_port_label->setText(tr("TTL port:"));
 
+#ifdef __APPLE__
+  {
+    cmd_port_value->setText("/dev/cu.usbmodem01234567x");
+    int width = cmd_port_value->sizeHint().width();
+    cmd_port_value->setText("");
+    cmd_port_value->setMinimumWidth(width);
+    ttl_port_value->setMinimumWidth(width);
+  }
+#endif
+
   setup_read_only_text_field(layout, row++, value_size,
     &device_reset_label, &device_reset_value);
   device_reset_label->setText(tr("Last reset:"));
