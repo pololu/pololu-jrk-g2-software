@@ -96,7 +96,7 @@ void graph_widget::setup_ui()
 
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
-  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
@@ -288,6 +288,9 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.graph->setPen(QPen(plot.default_color));
   plot.graph->pen().color().setAlpha(120);
 
+  plot.graph->setSelectable(QCP::SelectionType::stWhole);
+  plot.graph->selectionDecorator()->setPen(QPen(plot.default_color));
+
   connect(plot.allow_interaction, &QRadioButton::clicked, [=]
   {
     plot.display->setChecked(true);
@@ -327,6 +330,12 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     drag_axes.append(custom_plot->axisRect()->axis(QCPAxis::atLeft, (id)));
     custom_plot->axisRect()->setRangeDragAxes(drag_axes);
     custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
+  });
+
+  connect(plot.graph, static_cast<void (QCPGraph::*)(bool)>
+    (&QCPGraph::selectionChanged), [=](bool selected)
+  {
+    plot.allow_interaction->click();
   });
 
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
