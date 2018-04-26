@@ -25,6 +25,7 @@ from source.
     `JRK2GUI_FONT_SIZE` variable.
   - Fixed compilation issues on Ubuntu and macOS.
   - Changed the GUI to use Qt's Fusion theme on non-Windows platforms.
+  - Increased the width of the Feedback Wizard.
   - Added scripts to build Linux and macOS installers.
 - 1.0.0 (2018-04-20): Original release.
 
