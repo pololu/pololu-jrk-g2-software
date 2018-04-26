@@ -95,6 +95,10 @@ void graph_window::raise_window()
 
 void graph_window::save_pdf()
 {
+  bool temp_pause = grabbed_widget->graph_paused;
+
+  grabbed_widget->graph_paused = true;
+
   QPrinter printer(QPrinter::HighResolution);
   printer.setOutputFormat(QPrinter::PdfFormat);
 
@@ -117,10 +121,10 @@ void graph_window::save_pdf()
   printer.setFullPage(false);
 
   QPainter painter(&printer);
-  painter.setRenderHints(QPainter::SmoothPixmapTransform);
+  painter.setRenderHint(QPainter::TextAntialiasing);
 
   QFont font;
-  font.setPixelSize(10.0);
+  font.setPixelSize(12.0);
   font.setUnderline(true);
 
   QLabel * position_label = new QLabel(tr("Position"));
@@ -135,12 +139,14 @@ void graph_window::save_pdf()
   temp_table->addWidget(position_label, 0, 1);
   temp_table->addWidget(scale_label, 0, 2);
 
-  for (int i = 1; i < grabbed_widget->all_plots.count(); ++i)
+  int i = 1;
+
+  for (;i < grabbed_widget->all_plots.count(); ++i)
   {
     int column = 0;
 
     QFont font;
-    font.setPixelSize(10.0);
+    font.setPointSizeF(10.0);
 
     QString color = grabbed_widget->all_plots[i]->default_color;
 
@@ -182,10 +188,12 @@ void graph_window::save_pdf()
   painter.translate(-width()/ 2, -height()/ 2);
 
   QPixmap p = grabbed_widget->custom_plot->grab();
-  painter.drawPixmap(0, 0, p);
+  painter.drawPixmap(20, 0, p);
 
   QPixmap pix = temp_widget->grab();
-  painter.drawPixmap(p.width()/2 + 20, 20, pix);
+  painter.drawPixmap(p.width()/2 + 40, 20, pix);
+
+  grabbed_widget->graph_paused = temp_pause;
 }
 
 void graph_window::switch_to_dark()
