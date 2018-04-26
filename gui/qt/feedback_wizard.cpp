@@ -92,6 +92,7 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   setPage(CONCLUSION, setup_conclusion_page());
 
   QSize size = sizeHint();
+  size.setWidth(size.width() * 4 / 3);
   size.setHeight(size.height() * 4 / 3);
   setFixedSize(size);
 
