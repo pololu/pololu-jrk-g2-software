@@ -31,6 +31,8 @@ void nice_spin_box::set_mapping(QMap<int, int>& sent_map)
   {
     mapping = sent_map;
 
+    while(!mapping.contains(code))
+      code--;
     setValue(code);
 
     // The "key" values can be within any range so the range of the
@@ -53,6 +55,7 @@ void nice_spin_box::stepBy(int step_value)
     QMap<int, int>::const_iterator it;
 
     code = value();
+
     it = mapping.find(code);
 
     while (it.value() == mapping.value(value()))
