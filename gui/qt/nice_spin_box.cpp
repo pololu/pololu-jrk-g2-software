@@ -1,5 +1,7 @@
 #include "nice_spin_box.h"
 
+#include <iostream>
+
 nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
   : display_in_milli(display_in_milli), QSpinBox(parent)
 {
@@ -20,6 +22,8 @@ nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
 
 void nice_spin_box::set_code_from_value(int value)
 {
+  int temp_code = valueFromText(cleanText());
+
   code = value;
 }
 
@@ -31,8 +35,6 @@ void nice_spin_box::set_mapping(QMap<int, int>& sent_map)
   {
     mapping = sent_map;
 
-    while(!mapping.contains(code))
-      code--;
     setValue(code);
 
     // The "key" values can be within any range so the range of the
@@ -52,16 +54,24 @@ void nice_spin_box::stepBy(int step_value)
   }
   else
   {
-    QMap<int, int>::const_iterator it;
-
     code = value();
 
-    it = mapping.find(code);
+    code += step_value;
 
-    while (it.value() == mapping.value(value()))
-      it += step_value;
+    while (!mapping.contains(code))
+      code += step_value;
 
-    code = it.key();
+    while ((mapping.value(code) == mapping.value(value())))
+    {
+      code += step_value;
+    }
+
+    if (mapping.value(code) - (mapping.value(code) % 10) == 0)
+    {
+      code += step_value;
+    }
+
+    code = mapping.keys(mapping.value(code)).first();
 
   }
 
@@ -94,7 +104,7 @@ int nice_spin_box::valueFromText(const QString& text) const
 
   if (!mapping.empty())
   {
-    double return_value;
+    double return_value = 0;
 
     for (auto value : mapping.values())
     {
@@ -109,10 +119,9 @@ int nice_spin_box::valueFromText(const QString& text) const
       if (entered_value >= temp_value)
       {
         return_value = mapping.key(value);
+        return return_value;
       }
     }
-
-    return return_value;
   }
   else
     return entered_value;
@@ -128,7 +137,10 @@ QString nice_spin_box::textFromValue(int val) const
       return QString::number(mapping.value(val));
     }
     else
-      return QString::number(mapping.value(val)/1000.0, 'f', decimals);
+    {
+      int temp_val = mapping.value(val);
+      return QString::number((temp_val - (temp_val % 10))/1000.0, 'f', decimals);
+    }
   }
   else
   {

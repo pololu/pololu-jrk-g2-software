@@ -797,7 +797,6 @@ void main_window::set_brake_duration_reverse(uint32_t brake_duration)
 
 void main_window::set_current_limit_code_forward(uint16_t current_limit)
 {
-  std::cout << current_limit << std::endl;
   set_spin_box(current_limit_forward_spinbox, current_limit);
 }
 
@@ -816,14 +815,7 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
   {
     uint32_t current = controller->current_limit_code_to_ma(code);
 
-    if (mapping.empty())
-    {
-      mapping.insert(code, current);
-    }
-    else if (current > mapping.last())
-    {
-      mapping.insert(code, current);
-    }
+    mapping.insert(code, current);
   }
 
   current_limit_forward_spinbox->set_mapping(mapping);
@@ -1711,8 +1703,6 @@ void main_window::on_brake_duration_reverse_spinbox_valueChanged(int value)
 void main_window::on_current_limit_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-
-  std::cout << value << std::endl;
   controller->handle_current_limit_forward_input(value);
 }
 
