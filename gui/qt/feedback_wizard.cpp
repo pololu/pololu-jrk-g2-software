@@ -540,7 +540,7 @@ void feedback_wizard::update_learn_page()
     break;
 
   case FEEDBACK_DIR:
-    learn_page->setTitle(tr("Step 2 of 3: Feeedback direction"));
+    learn_page->setTitle(tr("Step 2 of 3: Feedback direction"));
     top_instruction_label->setText("Choose the feedback direction:");
     motor_instruction_label->setText(tr(
       "You can click and hold the buttons below to see how the feedback "
