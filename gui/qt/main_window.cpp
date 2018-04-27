@@ -3004,11 +3004,11 @@ QWidget *main_window::setup_motor_tab()
 
   max_deceleration_forward_spinbox = new QSpinBox();
   max_deceleration_forward_spinbox->setObjectName("max_deceleration_forward_spinbox");
-  max_deceleration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  max_deceleration_forward_spinbox->setRange(1, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
   max_deceleration_reverse_spinbox = new QSpinBox();
   max_deceleration_reverse_spinbox->setObjectName("max_deceleration_reverse_spinbox");
-  max_deceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  max_deceleration_reverse_spinbox->setRange(1, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
   max_deceleration_means_label = new QLabel(tr("(600 means no limit)"));
 
