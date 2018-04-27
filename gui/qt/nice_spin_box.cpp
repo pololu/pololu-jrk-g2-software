@@ -119,9 +119,9 @@ int nice_spin_box::valueFromText(const QString& text) const
       if (entered_value >= temp_value)
       {
         return_value = mapping.key(value);
-        return return_value;
       }
     }
+    return return_value;
   }
   else
     return entered_value;
@@ -139,7 +139,7 @@ QString nice_spin_box::textFromValue(int val) const
     else
     {
       int temp_val = mapping.value(val);
-      return QString::number((temp_val - (temp_val % 10))/1000.0, 'f', decimals);
+      return QString::number(mapping.value(val)/1000.0, 'f', decimals);
     }
   }
   else
