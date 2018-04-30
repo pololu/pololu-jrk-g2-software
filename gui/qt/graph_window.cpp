@@ -21,21 +21,13 @@ void graph_window::setup_ui()
 
   options_menu = menu_bar->addMenu(tr("Options"));
 
-  save_pdf_action = new QAction(this);
-  save_pdf_action->setText(tr("&Save PDF"));
-  save_pdf_action->setShortcut(Qt::CTRL + Qt::Key_S);
-
   dark_theme_action = new QAction(this);
   dark_theme_action->setText(tr("&Use dark theme"));
 
   default_theme_action = new QAction(this);
   default_theme_action->setText(tr("&Use default theme"));
 
-  options_menu->addAction(save_pdf_action);
   options_menu->addAction(dark_theme_action);
-
-  connect(save_pdf_action, &QAction::triggered, this,
-    &graph_window::save_pdf);
 
   connect(dark_theme_action, &QAction::triggered, this,
     &graph_window::switch_to_dark);
@@ -91,109 +83,6 @@ void graph_window::raise_window()
   raise();
 
   activateWindow();
-}
-
-void graph_window::save_pdf()
-{
-  bool temp_pause = grabbed_widget->graph_paused;
-
-  grabbed_widget->graph_paused = true;
-
-  QPrinter printer(QPrinter::HighResolution);
-  printer.setOutputFormat(QPrinter::PdfFormat);
-
-  QString fileName = QFileDialog::getSaveFileName((QWidget* )0,
-    "Export PDF", QString(), "*.pdf");
-
-  if (fileName.isEmpty())
-  {
-    return;
-  }
-
-  if (QFileInfo(fileName).suffix().isEmpty())
-  {
-    fileName.append(".pdf");
-  }
-
-  printer.setOutputFileName(fileName);
-  printer.setPageMargins(10, 10, 10, 10, QPrinter::Millimeter);
-  printer.setPageOrientation(QPageLayout::Landscape);
-  printer.setFullPage(false);
-
-  QPainter painter(&printer);
-  painter.setRenderHint(QPainter::TextAntialiasing);
-
-  QFont font;
-  font.setPixelSize(12.0);
-  font.setUnderline(true);
-
-  QLabel * position_label = new QLabel(tr("Position"));
-
-  QLabel * scale_label = new QLabel(tr("Scale"));
-
-  position_label->setFont(font);
-  scale_label->setFont(font);
-
-  QGridLayout * temp_table = new QGridLayout();
-  temp_table->setHorizontalSpacing(10);
-  temp_table->addWidget(position_label, 0, 1);
-  temp_table->addWidget(scale_label, 0, 2);
-
-  int i = 1;
-
-  for (;i < grabbed_widget->all_plots.count(); ++i)
-  {
-    int column = 0;
-
-    QFont font;
-    font.setPointSizeF(10.0);
-
-    QString color = grabbed_widget->all_plots[i]->default_color;
-
-    if (dark_theme)
-    {
-      color = grabbed_widget->all_plots[i]->dark_color;
-    }
-
-    QLabel * display = new QLabel();
-    display->setStyleSheet("QLabel{border: 2px solid "+ color + ";}");
-    QLabel * center_value = new QLabel();
-    QLabel * range = new QLabel();
-
-    display->setFont(font);
-    center_value->setFont(font);
-    range->setFont(font);
-
-    display->setText(grabbed_widget->all_plots[i]->display->text());
-    center_value->setText(grabbed_widget->all_plots[i]->center_value->cleanText());
-    range->setText(grabbed_widget->all_plots[i]->range->cleanText());
-    temp_table->addWidget(display, i, column);
-    temp_table->addWidget(center_value, i, ++column);
-    temp_table->addWidget(range, i, ++column);
-
-    temp_table->setRowStretch(i, 0);
-  }
-
-  QWidget * temp_widget = new QWidget();
-  temp_widget->setLayout(temp_table);
-
-  qreal xscale = printer.pageRect().width() /
-    qreal(grabbed_widget->custom_plot->width() + temp_widget->width());
-  qreal yscale = printer.pageRect().height() /
-    qreal(grabbed_widget->custom_plot->height() + temp_widget->height());
-  qreal scale = qMin(xscale * 2, yscale * 2);
-  painter.translate(printer.paperRect().x() + printer.pageRect().width()/ 2,
-                    printer.paperRect().y() + printer.pageRect().height()/2);
-  painter.scale(scale, scale);
-  painter.translate(-width()/ 2, -height()/ 2);
-
-  QPixmap p = grabbed_widget->custom_plot->grab();
-  painter.drawPixmap(20, 0, p);
-
-  QPixmap pix = temp_widget->grab();
-  painter.drawPixmap(p.width()/2 + 40, 20, pix);
-
-  grabbed_widget->graph_paused = temp_pause;
 }
 
 void graph_window::switch_to_dark()
