@@ -858,6 +858,22 @@ static void run(const arguments & args)
     handle(selector).clear_errors();
   }
 
+  if (args.run_motor)
+  {
+    if (args.set_target)
+    {
+      // We are going to set the target later, so don't set it to some old value
+      // now, especially since the old value might be buffered from a previous
+      // PID period.
+      handle(selector).clear_errors();
+    }
+    else
+    {
+      // Clears errors, reads the target, sends a Set Target command.
+      handle(selector).run_motor();
+    }
+  }
+
   if (args.set_target)
   {
     handle(selector).set_target(args.target);
@@ -871,11 +887,6 @@ static void run(const arguments & args)
   if (args.force_duty_cycle)
   {
     handle(selector).force_duty_cycle(args.force_duty_cycle_value);
-  }
-
-  if (args.run_motor)
-  {
-    handle(selector).run_motor();
   }
 
   if (args.stop_motor)
