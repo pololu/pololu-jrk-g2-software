@@ -2429,7 +2429,7 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_enable_crc_checkbox = new QCheckBox(tr("Enable CRC"));
   input_enable_crc_checkbox->setObjectName("input_enable_crc_checkbox");
 
-  input_device_label = new QLabel(tr("Device Number:"));
+  input_device_label = new QLabel(tr("Device number:"));
   input_device_label->setObjectName("input_device_label");
 
   input_device_spinbox = new QSpinBox();
