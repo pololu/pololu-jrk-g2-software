@@ -3,8 +3,6 @@
 #include <QString>
 #include <QMessageBox>
 
-#include <iostream>
-
 graph_widget::graph_widget(QWidget * parent)
 {
   setup_ui();
@@ -96,7 +94,11 @@ void graph_widget::setup_ui()
 
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
-  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom |
+    QCP::iSelectPlottables);
+
+  connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
+    this, SLOT(graph_clicked(QMouseEvent*)));
 
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
@@ -186,6 +188,7 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 100), 0, Qt::DotLine));
   custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridVisible(true);
+  custom_plot->yAxis->setSelectableParts(QCPAxis::spNone);
 
   custom_plot->yAxis->setRange(-50,50);
   custom_plot->xAxis->setTickLabelPadding(10);
@@ -263,6 +266,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
 
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
+  plot_axis_ticker->setTickCount(1);
+  plot_axis_ticker->setSubTickCount(0);
   plot_axis_ticker->addTick(0, "\u2B9E");
   plot.axis->setTicker(plot_axis_ticker);
 
@@ -277,8 +282,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setTickPen(QPen(Qt::NoPen));
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
+  plot.axis->setSelectedBasePen(QPen(plot.default_color));
+  plot.axis->setSelectedTickLabelColor(plot.default_color);
 
-  plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
+  connect(plot.axis, SIGNAL(mousePress(QMouseEvent*)),
+    this, SLOT(graph_clicked(QMouseEvent*)));
+
+  // plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
   plot_visible_layout->addWidget(plot.center_value, row, 2);
   plot_visible_layout->addWidget(plot.range, row, 3);
@@ -286,10 +296,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.default_color));
-  plot.graph->pen().color().setAlpha(120);
 
-  plot.graph->setSelectable(QCP::SelectionType::stWhole);
-  plot.graph->selectionDecorator()->setPen(QPen(plot.default_color));
+  QPen decorator_pen(QColor(plot.default_color));
+  decorator_pen.setWidth(2.5);
+
+  plot.graph->selectionDecorator()->setPen(decorator_pen);
+  // plot.graph->selectionDecorator()->pen().setWidth(2);
+  // plot.graph->selectionDecorator()->pen().setColor(QColor(plot.default_color));
 
   connect(plot.allow_interaction, &QRadioButton::clicked, [=]
   {
@@ -330,12 +343,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     drag_axes.append(custom_plot->axisRect()->axis(QCPAxis::atLeft, (id)));
     custom_plot->axisRect()->setRangeDragAxes(drag_axes);
     custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
-  });
-
-  connect(plot.graph, static_cast<void (QCPGraph::*)(bool)>
-    (&QCPGraph::selectionChanged), [=](bool selected)
-  {
-    plot.allow_interaction->click();
   });
 
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
@@ -427,6 +434,16 @@ void graph_widget::set_line_visible()
 {
   for (auto plot : all_plots)
   {
+    if (plot->display->isChecked())
+    {
+      plot->graph->setSelectable(QCP::stWhole);
+      plot->axis->setSelectableParts(QCPAxis::spTickLabels);
+    }
+    else
+    {
+      plot->graph->setSelectable(QCP::stNone);
+      plot->axis->setSelectableParts(QCPAxis::spNone);
+    }
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis->setVisible(plot->display->isChecked());
   }
@@ -465,11 +482,43 @@ void graph_widget::on_reset_all_button_clicked()
     for (auto plot : all_plots)
     {
       plot->reset_button->click();
-
     }
 
     custom_plot->replot();
   }
   else
     return;
+}
+
+void graph_widget::graph_clicked(QMouseEvent * event)
+{
+  QList<QCPAxis *> drag_axes;
+  QCPAxis * temp_axis = Q_NULLPTR;
+  QCPGraph * temp_graph;
+
+  double temp_value = 5;
+
+  for(auto plot : custom_plot->axisRect()->graphs())
+  {
+    plot->setPen(QPen(plot->pen().color(), 1));
+
+    double select_test_value = plot->selectTest(event->pos(), true);
+    if (select_test_value != -1 &&
+      select_test_value <= temp_value)
+    {
+      temp_axis = plot->valueAxis();
+      temp_value = select_test_value;
+      temp_graph = plot;
+    }
+  }
+
+  if (temp_axis != Q_NULLPTR)
+  {
+    temp_graph->setPen(QPen(temp_graph->pen().color(), 2));
+    custom_plot->replot();
+    drag_axes.append(temp_axis);
+
+    custom_plot->axisRect()->setRangeDragAxes(drag_axes);
+    custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
+  }
 }

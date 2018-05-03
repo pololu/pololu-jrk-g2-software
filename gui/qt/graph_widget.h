@@ -90,4 +90,5 @@ private slots:
   void set_line_visible();
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
+  void graph_clicked(QMouseEvent*);
 };
