@@ -94,8 +94,7 @@ void graph_widget::setup_ui()
 
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
-  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom |
-    QCP::iSelectPlottables);
+  custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
   connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
     this, SLOT(graph_clicked(QMouseEvent*)));
@@ -296,13 +295,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(plot.default_color));
-
-  QPen decorator_pen(QColor(plot.default_color));
-  decorator_pen.setWidth(2.5);
-
-  plot.graph->selectionDecorator()->setPen(decorator_pen);
-  // plot.graph->selectionDecorator()->pen().setWidth(2);
-  // plot.graph->selectionDecorator()->pen().setColor(QColor(plot.default_color));
 
   connect(plot.allow_interaction, &QRadioButton::clicked, [=]
   {
