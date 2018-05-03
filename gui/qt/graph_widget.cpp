@@ -484,6 +484,9 @@ void graph_widget::on_reset_all_button_clicked()
 
 void graph_widget::graph_clicked(QMouseEvent * event)
 {
+  custom_plot->axisRect()->setRangeDragAxes(0, 0);
+  custom_plot->axisRect()->setRangeZoomAxes(0, 0);
+
   QList<QCPAxis *> drag_axes;
   QCPAxis * temp_axis = Q_NULLPTR;
   QCPGraph * temp_graph;
