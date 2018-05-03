@@ -284,9 +284,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setSelectedBasePen(QPen(plot.default_color));
   plot.axis->setSelectedTickLabelColor(plot.default_color);
 
-  connect(plot.axis, SIGNAL(mousePress(QMouseEvent*)),
-    this, SLOT(graph_clicked(QMouseEvent*)));
-
   // plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
   plot_visible_layout->addWidget(plot.center_value, row, 2);
@@ -294,7 +291,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot_visible_layout->addWidget(plot.reset_button, row, 4, Qt::AlignCenter);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
-  plot.graph->setPen(QPen(plot.default_color));
+  plot.graph->setPen(QPen(QColor(plot.default_color), 1));
 
   connect(plot.allow_interaction, &QRadioButton::clicked, [=]
   {
