@@ -8,7 +8,7 @@ This repository contains the source code of the configuration and control softwa
 the [Jrk G2 USB Motor Controllers with Feedback](jrk).
 There are two programs:
 the Pololu Jrk G2 Configuration Utility (jrk2gui)
-and the Pololu Jrk G2 Command-line Utility (jrk2gui).
+and the Pololu Jrk G2 Command-line Utility (jrk2cmd).
 
 ## Installation
 
