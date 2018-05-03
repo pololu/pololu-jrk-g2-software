@@ -333,7 +333,7 @@ static arguments parse_args(int argc, char ** argv)
     else if (arg == "--speed")
     {
       args.set_target = true;
-      int32_t speed = parse_arg_int<int16_t>(arg_reader, -600, 600);
+      int32_t speed = parse_arg_int<int16_t>(arg_reader, -2048, 2047);
       args.target = 2048 + speed;
     }
     else if (arg == "--stop" || arg == "--stop-motor" || arg == "--stopmotor"
