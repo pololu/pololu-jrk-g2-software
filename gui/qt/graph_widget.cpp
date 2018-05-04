@@ -209,27 +209,29 @@ void graph_widget::setup_ui()
 }
 
 void graph_widget::setup_plot(plot& plot, QString display_text, QString default_color,
-  QString dark_color, bool signed_range, double range, bool default_visible)
+  QString dark_color, bool signed_range, double scale, bool default_visible)
 {
+  plot.plot_name = display_text;
+
   plot.default_color = default_color;
   plot.dark_color = dark_color;
 
-  plot.range_value = range;
+  plot.range_value = scale;
 
-  plot.range = new QDoubleSpinBox();
-  plot.range->setDecimals(1);
-  plot.range->setSingleStep(1);
-  plot.range->setAccelerated(true);
-  plot.range->setRange(0, plot.range_value);
-  plot.range->setValue(plot.range_value/5.0);
+  plot.scale = new QDoubleSpinBox();
+  plot.scale->setDecimals(1);
+  plot.scale->setSingleStep(1);
+  plot.scale->setAccelerated(true);
+  plot.scale->setRange(0, plot.range_value);
+  plot.scale->setValue(plot.range_value/5.0);
 
-  plot.center_value = new QDoubleSpinBox();
-  plot.center_value->setDecimals(0);
-  plot.center_value->setSingleStep(1);
-  plot.center_value->setAccelerated(true);
-  plot.center_value->setRange(-plot.range_value, plot.range_value);
+  plot.position = new QDoubleSpinBox();
+  plot.position->setDecimals(0);
+  plot.position->setSingleStep(1);
+  plot.position->setAccelerated(true);
+  plot.position->setRange(-plot.range_value, plot.range_value);
 
-  plot.center_value->setValue(0);
+  plot.position->setValue(0);
 
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
@@ -249,8 +251,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   connect(plot.reset_button, &QPushButton::clicked, [=]
   {
-    plot.range->setValue(plot.range_value/5.0);
-    plot.center_value->setValue(0);
+    plot.scale->setValue(plot.range_value/5.0);
+    plot.position->setValue(0);
 
     custom_plot->replot();
   });
@@ -286,8 +288,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   // plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
-  plot_visible_layout->addWidget(plot.center_value, row, 2);
-  plot_visible_layout->addWidget(plot.range, row, 3);
+  plot_visible_layout->addWidget(plot.position, row, 2);
+  plot_visible_layout->addWidget(plot.scale, row, 3);
   plot_visible_layout->addWidget(plot.reset_button, row, 4, Qt::AlignCenter);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
@@ -339,28 +341,28 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   {
     double position_value = -(newRange.lower + newRange.upper);
 
-    plot.center_value->setRange(-newRange.upper, -newRange.lower);
+    plot.position->setRange(-newRange.upper, -newRange.lower);
 
     {
-      QSignalBlocker blocker(plot.center_value);
-      plot.center_value->setValue(position_value/2);
+      QSignalBlocker blocker(plot.position);
+      plot.position->setValue(position_value/2);
     }
 
     {
-      QSignalBlocker blocker(plot.range);
-      plot.range->setValue((-newRange.lower + newRange.upper)/10);
+      QSignalBlocker blocker(plot.scale);
+      plot.scale->setValue((-newRange.lower + newRange.upper)/10);
     }
 
     custom_plot->replot();
   });
 
-  connect(plot.range, static_cast<void (QDoubleSpinBox::*)(double)>
+  connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(double)>
     (&QDoubleSpinBox::valueChanged), [=](double value)
   {
     {
       QSignalBlocker blocker(plot.axis);
-      plot.axis->setRangeLower(-(value * 5.0) - (plot.center_value->value()));
-      plot.axis->setRangeUpper((value * 5.0) - (plot.center_value->value()));
+      plot.axis->setRangeLower(-(value * 5.0) - (plot.position->value()));
+      plot.axis->setRangeUpper((value * 5.0) - (plot.position->value()));
     }
 
     plot.allow_interaction->click();
@@ -368,13 +370,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     custom_plot->replot();
   });
 
-  connect(plot.center_value, static_cast<void (QDoubleSpinBox::*)(double)>
+  connect(plot.position, static_cast<void (QDoubleSpinBox::*)(double)>
     (&QDoubleSpinBox::valueChanged), [=](double value)
   {
     {
       QSignalBlocker blocker(plot.axis);
-      plot.axis->setRangeLower(-(plot.range->value() * 5.0) - (value));
-      plot.axis->setRangeUpper((plot.range->value() * 5.0) - (value));
+      plot.axis->setRangeLower(-(plot.scale->value() * 5.0) - (value));
+      plot.axis->setRangeUpper((plot.scale->value() * 5.0) - (value));
     }
 
     plot.allow_interaction->click();
@@ -390,7 +392,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 }
 
 // modifies the x-axis based on the domain value
-// and removes data outside of visible range
+// and removes data outside of visible scale
 void graph_widget::remove_data_to_scroll(uint32_t time)
 {
   key = time; // stores a local copy of time value

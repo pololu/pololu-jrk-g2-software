@@ -24,8 +24,8 @@ public:
 
   struct plot
   {
-    QDoubleSpinBox *range;
-    QDoubleSpinBox * center_value;
+    QDoubleSpinBox *scale;
+    QDoubleSpinBox * position;
     QCheckBox *display;
     QString default_color;
     QString dark_color;
@@ -36,6 +36,7 @@ public:
     bool default_visible = false;
     QRadioButton * allow_interaction;
     QPushButton *reset_button;
+    QString plot_name;
   };
 
   QList<plot *> all_plots;
@@ -67,7 +68,7 @@ private:
 
   // Used to add new plot
   void setup_plot(plot& x, QString display_text, QString default_color,
-    QString dark_color, bool signed_range, double range,
+    QString dark_color, bool signed_range, double scale,
     bool default_visible = false);
 
   void remove_data_to_scroll(uint32_t time);

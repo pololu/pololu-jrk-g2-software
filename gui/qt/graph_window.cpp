@@ -21,13 +21,27 @@ void graph_window::setup_ui()
 
   options_menu = menu_bar->addMenu(tr("Options"));
 
-  dark_theme_action = new QAction(this);
+  save_settings_action = new QAction();
+  save_settings_action->setText("Save settings");
+
+  load_settings_action = new QAction();
+  load_settings_action->setText("Load settings");
+
+  dark_theme_action = new QAction();
   dark_theme_action->setText(tr("&Use dark theme"));
 
-  default_theme_action = new QAction(this);
+  default_theme_action = new QAction();
   default_theme_action->setText(tr("&Use default theme"));
 
+  options_menu->addAction(save_settings_action);
+  options_menu->addAction(load_settings_action);
   options_menu->addAction(dark_theme_action);
+
+  connect(save_settings_action, &QAction::triggered, this,
+    &graph_window::save_settings);
+
+  connect(load_settings_action, &QAction::triggered, this,
+    &graph_window::load_settings);
 
   connect(dark_theme_action, &QAction::triggered, this,
     &graph_window::switch_to_dark);
@@ -83,6 +97,61 @@ void graph_window::raise_window()
   raise();
 
   activateWindow();
+}
+
+void graph_window::save_settings()
+{
+  QString filename = QFileDialog::getSaveFileName((QWidget* )0,
+    "Save graph settings", QString(), "*.txt");
+
+  if (filename.isEmpty())
+  {
+    return;
+  }
+
+  if (QFileInfo(filename).suffix().isEmpty())
+  {
+    filename.append(".txt");
+  }
+
+  QFile file_out(filename);
+  if (file_out.open(QFile::WriteOnly | QFile::Text)) {
+    QTextStream out(&file_out);
+    for(auto plot : grabbed_widget->all_plots)
+    {
+      out << plot->plot_name << "," << plot->display->isChecked() << "," <<
+        plot->position->cleanText() <<
+        "," << plot->scale->cleanText() << '\n';
+    }
+  } else {
+    return;
+  }
+  file_out.close();
+}
+
+void graph_window::load_settings()
+{
+  QStringList all_plots_settings;
+
+  QString filename = QFileDialog::getOpenFileName();
+
+  QFile file_in(filename);
+  if (file_in.open(QFile::ReadOnly | QFile::Text)) {
+    QTextStream stream_in(&file_in);
+    while (!stream_in.atEnd())
+      all_plots_settings += stream_in.readLine();
+  } else {
+    return;
+  }
+
+  for (int i = 0; i < all_plots_settings.size(); i++)
+  {
+    QStringList settings = all_plots_settings[i].split(",");
+
+    grabbed_widget->all_plots[i]->display->setChecked(settings[1].toInt());
+    grabbed_widget->all_plots[i]->position->setValue(settings[2].toDouble());
+    grabbed_widget->all_plots[i]->scale->setValue(settings[3].toDouble());
+  }
 }
 
 void graph_window::switch_to_dark()
