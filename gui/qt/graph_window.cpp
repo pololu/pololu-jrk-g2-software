@@ -23,9 +23,11 @@ void graph_window::setup_ui()
 
   save_settings_action = new QAction();
   save_settings_action->setText("Save settings");
+  save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
   load_settings_action = new QAction();
   load_settings_action->setText("Load settings");
+  load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
 
   dark_theme_action = new QAction();
   dark_theme_action->setText(tr("&Use dark theme"));
@@ -102,7 +104,7 @@ void graph_window::raise_window()
 void graph_window::save_settings()
 {
   QString filename = QFileDialog::getSaveFileName((QWidget* )0,
-    "Save graph settings", QString(), "*.txt");
+    "Save graph settings", QString(), "*.txt", Q_NULLPTR, QFileDialog::DontConfirmOverwrite);
 
   if (filename.isEmpty())
   {
@@ -112,6 +114,20 @@ void graph_window::save_settings()
   if (QFileInfo(filename).suffix().isEmpty())
   {
     filename.append(".txt");
+  }
+
+  if (QFile::exists(filename))
+  {
+    QStringList fn = filename.split(".");
+
+    int i = 1;
+
+    while (QFile::exists(filename))
+    {
+      filename = QString("%1(%2).%3").arg(fn[0]).arg(i).arg(fn[1]);
+
+      i++;
+    }
   }
 
   QFile file_out(filename);
@@ -133,7 +149,8 @@ void graph_window::load_settings()
 {
   QStringList all_plots_settings;
 
-  QString filename = QFileDialog::getOpenFileName();
+  QString filename = QFileDialog::getOpenFileName((QWidget* )0,
+    "Load graph settings", QString(), "*.txt");
 
   QFile file_in(filename);
   if (file_in.open(QFile::ReadOnly | QFile::Text)) {
