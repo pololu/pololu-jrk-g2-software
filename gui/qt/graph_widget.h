@@ -34,7 +34,6 @@ public:
     int32_t plot_value = 0;
     double range_value = 0;
     bool default_visible = false;
-    QRadioButton * allow_interaction;
     QPushButton *reset_button;
     QString plot_name;
   };
@@ -72,18 +71,18 @@ private:
     bool default_visible = false);
 
   void remove_data_to_scroll(uint32_t time);
+  void set_graph_interaction_axis(QCPAxis*, QCPGraph*);
+  void reset_graph_interaction_axes();
 
   QWidget *central_widget;
   QPushButton *pause_run_button;
   QSpinBox *domain;
   QPushButton *show_all_none;
-  QButtonGroup * plot_interaction_radios;
   QPushButton *reset_all_button;
 
   uint32_t key; // used to store local copy of time value
 
   int row = 1;
-  int axis_index = 0;
 
 private slots:
   void change_ranges();

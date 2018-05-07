@@ -18,18 +18,13 @@ void graph_widget::set_preview_mode(bool preview_mode)
 {
   if (preview_mode)
   {
+    reset_graph_interaction_axes();
+
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click to open graph window");
     custom_plot->axisRect()->setMargins(QMargins(5, 5, 5, 5));
     custom_plot->xAxis->basePen().setWidthF(0);
     custom_plot->yAxis->basePen().setWidthF(0);
-
-    custom_plot->axisRect()->setRangeDragAxes(0, 0);
-    custom_plot->axisRect()->setRangeZoomAxes(0, 0);
-
-    QRadioButton * temp_button = new QRadioButton();
-    plot_interaction_radios->addButton(temp_button, -1);
-    temp_button->setChecked(true);
   }
   else
   {
@@ -108,9 +103,6 @@ void graph_widget::setup_ui()
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
 
-  plot_interaction_radios = new QButtonGroup();
-  plot_interaction_radios->setExclusive(true);
-
   reset_all_button = new QPushButton(tr("Reset all"), this);
   reset_all_button->setStyleSheet("QPushButton{padding: 3px 2px 3px 2px;}");
   reset_all_button->setObjectName("reset_all_button");
@@ -120,11 +112,10 @@ void graph_widget::setup_ui()
     this, SLOT(show_all_none_clicked()));
 
   plot_visible_layout = new QGridLayout();
-  plot_visible_layout->addWidget(show_all_none, 0, 1);
-  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 2, Qt::AlignCenter);
-  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 3, Qt::AlignCenter);
-  plot_visible_layout->addWidget(reset_all_button, 0, 4, Qt::AlignLeft);
-
+  plot_visible_layout->addWidget(show_all_none, 0, 0);
+  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
+  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 2, Qt::AlignCenter);
+  plot_visible_layout->addWidget(reset_all_button, 0, 3, Qt::AlignLeft);
 
   QHBoxLayout * bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(new QLabel(tr(" Time (s):")), 0, Qt::AlignRight);
@@ -252,10 +243,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
 
-  plot.allow_interaction = new QRadioButton();
-  plot.allow_interaction->setToolTip("Click to drag " + display_text + " plot postion");
-  plot_interaction_radios->addButton(plot.allow_interaction, ++axis_index);
-
   plot.reset_button = new QPushButton(tr("\u27f2"));
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 2px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
@@ -298,54 +285,19 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setSelectedTickLabelColor(Qt::black);
   plot.axis->setSelectableParts(QCPAxis::spTickLabels);
 
-  // plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
-  plot_visible_layout->addWidget(plot.display, row, 1);
-  plot_visible_layout->addWidget(plot.position, row, 2);
-  plot_visible_layout->addWidget(plot.scale, row, 3);
-  plot_visible_layout->addWidget(plot.reset_button, row, 4, Qt::AlignCenter);
+  plot_visible_layout->addWidget(plot.display, row, 0);
+  plot_visible_layout->addWidget(plot.position, row, 1);
+  plot_visible_layout->addWidget(plot.scale, row, 2);
+  plot_visible_layout->addWidget(plot.reset_button, row, 3, Qt::AlignCenter);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(QColor(plot.default_color), 1));
 
-  connect(plot.allow_interaction, &QRadioButton::clicked, [=]
-  {
-    plot.display->setChecked(true);
-    set_line_visible();
-
-    custom_plot->replot();
-  });
-
   connect(plot.display, &QCheckBox::toggled, [=](bool checked)
   {
-    if (checked)
-    {
-      QSignalBlocker blocker(plot.allow_interaction);
-      plot.allow_interaction->click();
-    }
-    else if (!checked && plot.allow_interaction->isChecked())
-    {
-      //Removes the currently plot_interaction axis.
-      custom_plot->axisRect()->setRangeDragAxes(0, 0);
-      custom_plot->axisRect()->setRangeZoomAxes(0, 0);
-
-      // Used to reset the plot_interaction_radios to un-checked.
-      QRadioButton * temp_button = new QRadioButton();
-      plot_interaction_radios->addButton(temp_button, -1);
-      temp_button->setChecked(true);
-    }
-
     set_line_visible();
 
     custom_plot->replot();
-  });
-
-  connect(plot_interaction_radios, static_cast<void (QButtonGroup::*)(int)>
-    (&QButtonGroup::buttonClicked), [=](int id)
-  {
-    // QList<QCPAxis *> drag_axes;
-    // drag_axes.append(custom_plot->axisRect()->axis(QCPAxis::atLeft, (id)));
-    // custom_plot->axisRect()->setRangeDragAxes(drag_axes);
-    // custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
   });
 
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
@@ -371,29 +323,38 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(double)>
     (&QDoubleSpinBox::valueChanged), [=](double value)
   {
+    if (value < 0.1)
+    {
+      plot.scale->setDecimals(2);
+    }
+
+    plot.display->setCheckState(Qt::Checked);
+
+    reset_graph_interaction_axes();
+
     {
       QSignalBlocker blocker(plot.axis);
       plot.axis->setRangeLower(-(value * 5.0) - (plot.position->value()));
       plot.axis->setRangeUpper((value * 5.0) - (plot.position->value()));
     }
 
-    plot.allow_interaction->click();
-
-    custom_plot->replot();
+    set_graph_interaction_axis(plot.axis, plot.graph);
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(double)>
     (&QDoubleSpinBox::valueChanged), [=](double value)
   {
+    plot.display->setCheckState(Qt::Checked);
+
+    reset_graph_interaction_axes();
+
     {
       QSignalBlocker blocker(plot.axis);
       plot.axis->setRangeLower(-(plot.scale->value() * 5.0) - (value));
       plot.axis->setRangeUpper((plot.scale->value() * 5.0) - (value));
     }
 
-    plot.allow_interaction->click();
-
-    custom_plot->replot();
+    set_graph_interaction_axis(plot.axis, plot.graph);
   });
 
   connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
@@ -417,6 +378,37 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
     plot->graph->data()->removeBefore(domain->value() * 1000);
 
   custom_plot->replot();
+}
+
+void graph_widget::set_graph_interaction_axis(QCPAxis * axis, QCPGraph * graph)
+{
+  graph->setPen(QPen(graph->pen().color(), 2));
+
+  QFont font;
+  font.setPointSize(18);
+
+  axis->setTickLabelFont(font);
+
+  custom_plot->replot();
+
+  custom_plot->axisRect()->setRangeDragAxes(0, axis);
+  custom_plot->axisRect()->setRangeZoomAxes(0, axis);
+}
+
+void graph_widget::reset_graph_interaction_axes()
+{
+  custom_plot->axisRect()->setRangeDragAxes(0, 0);
+  custom_plot->axisRect()->setRangeZoomAxes(0, 0);
+
+  for (auto plot : all_plots)
+  {
+    plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
+
+    QFont font;
+    font.setPointSize(14);
+
+    plot->axis->setTickLabelFont(font);
+  }
 }
 
 void graph_widget::change_ranges()
@@ -445,6 +437,7 @@ void graph_widget::set_line_visible()
     {
       plot->graph->setSelectable(QCP::stNone);
     }
+
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis->setVisible(plot->display->isChecked());
   }
@@ -486,6 +479,8 @@ void graph_widget::on_reset_all_button_clicked()
     }
 
     custom_plot->replot();
+
+    reset_graph_interaction_axes();
   }
   else
     return;
@@ -493,22 +488,10 @@ void graph_widget::on_reset_all_button_clicked()
 
 void graph_widget::graph_clicked(QMouseEvent * event)
 {
-  custom_plot->axisRect()->setRangeDragAxes(0, 0);
-  custom_plot->axisRect()->setRangeZoomAxes(0, 0);
+  reset_graph_interaction_axes();
 
-  QList<QCPAxis *> drag_axes;
   QCPAxis * temp_axis = Q_NULLPTR;
   QCPGraph * temp_graph;
-
-  for (auto plot : all_plots)
-  {
-    plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
-
-    QFont font;
-    font.setPointSize(14);
-
-    plot->axis->setTickLabelFont(font);
-  }
 
   if (event->localPos().x() < 20)
   {
@@ -552,17 +535,6 @@ void graph_widget::graph_clicked(QMouseEvent * event)
 
   if (temp_axis != Q_NULLPTR)
   {
-    temp_graph->setPen(QPen(temp_graph->pen().color(), 2));
-
-    QFont font;
-    font.setPointSize(18);
-
-    temp_axis->setTickLabelFont(font);
-
-    custom_plot->replot();
-    drag_axes.append(temp_axis);
-
-    custom_plot->axisRect()->setRangeDragAxes(drag_axes);
-    custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
+    set_graph_interaction_axis(temp_axis, temp_graph);
   }
 }
