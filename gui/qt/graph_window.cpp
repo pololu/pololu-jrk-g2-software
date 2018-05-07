@@ -21,18 +21,18 @@ void graph_window::setup_ui()
 
   options_menu = menu_bar->addMenu(tr("Options"));
 
-  save_settings_action = new QAction();
+  save_settings_action = new QAction(this);
   save_settings_action->setText("Save settings");
   save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
-  load_settings_action = new QAction();
+  load_settings_action = new QAction(this);
   load_settings_action->setText("Load settings");
   load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
 
-  dark_theme_action = new QAction();
+  dark_theme_action = new QAction(this);
   dark_theme_action->setText(tr("&Use dark theme"));
 
-  default_theme_action = new QAction();
+  default_theme_action = new QAction(this);
   default_theme_action->setText(tr("&Use default theme"));
 
   options_menu->addAction(save_settings_action);
