@@ -3,6 +3,8 @@
 #include <QString>
 #include <QMessageBox>
 
+#include <iostream>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   setup_ui();
@@ -203,8 +205,6 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoomAxes(0, 0);
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 
-
-
   QMetaObject::connectSlotsByName(this);
 }
 
@@ -226,8 +226,19 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.scale->setValue(plot.range_value/5.0);
 
   plot.position = new QDoubleSpinBox();
-  plot.position->setDecimals(0);
-  plot.position->setSingleStep(1);
+  plot.position->setRange(-plot.range_value, plot.range_value);
+  plot.position->setMinimumWidth(plot.position->sizeHint().width());
+
+  if (plot.range_value < 10)
+  {
+    plot.position->setDecimals(1);
+    plot.position->setSingleStep(0.1);
+  }
+  else
+  {
+    plot.position->setDecimals(0);
+    plot.position->setSingleStep(1);
+  }
   plot.position->setAccelerated(true);
   plot.position->setRange(-plot.range_value, plot.range_value);
 
@@ -267,9 +278,9 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
 
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
-  plot_axis_ticker->setTickCount(1);
+  plot_axis_ticker->setTickCount(0);
   plot_axis_ticker->setSubTickCount(0);
-  plot_axis_ticker->addTick(0, "\u2B9E");
+  plot_axis_ticker->addTick(0, tr("\u2B9E"));
   plot.axis->setTicker(plot_axis_ticker);
 
   QFont font;
@@ -284,7 +295,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setSubTickPen(QPen(Qt::NoPen));
   plot.axis->grid()->setVisible(false);
   plot.axis->setSelectedBasePen(QPen(plot.default_color));
-  plot.axis->setSelectedTickLabelColor(plot.default_color);
+  plot.axis->setSelectedTickLabelColor(Qt::black);
+  plot.axis->setSelectableParts(QCPAxis::spTickLabels);
 
   // plot_visible_layout->addWidget(plot.allow_interaction, row, 0);
   plot_visible_layout->addWidget(plot.display, row, 1);
@@ -330,10 +342,10 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot_interaction_radios, static_cast<void (QButtonGroup::*)(int)>
     (&QButtonGroup::buttonClicked), [=](int id)
   {
-    QList<QCPAxis *> drag_axes;
-    drag_axes.append(custom_plot->axisRect()->axis(QCPAxis::atLeft, (id)));
-    custom_plot->axisRect()->setRangeDragAxes(drag_axes);
-    custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
+    // QList<QCPAxis *> drag_axes;
+    // drag_axes.append(custom_plot->axisRect()->axis(QCPAxis::atLeft, (id)));
+    // custom_plot->axisRect()->setRangeDragAxes(drag_axes);
+    // custom_plot->axisRect()->setRangeZoomAxes(drag_axes);
   });
 
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&)>
@@ -428,12 +440,10 @@ void graph_widget::set_line_visible()
     if (plot->display->isChecked())
     {
       plot->graph->setSelectable(QCP::stWhole);
-      plot->axis->setSelectableParts(QCPAxis::spTickLabels);
     }
     else
     {
       plot->graph->setSelectable(QCP::stNone);
-      plot->axis->setSelectableParts(QCPAxis::spNone);
     }
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis->setVisible(plot->display->isChecked());
@@ -490,25 +500,65 @@ void graph_widget::graph_clicked(QMouseEvent * event)
   QCPAxis * temp_axis = Q_NULLPTR;
   QCPGraph * temp_graph;
 
-  double temp_value = 5;
-
-  for(auto plot : custom_plot->axisRect()->graphs())
+  for (auto plot : all_plots)
   {
-    plot->setPen(QPen(plot->pen().color(), 1));
+    plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
-    double select_test_value = plot->selectTest(event->pos(), true);
-    if (select_test_value != -1 &&
-      select_test_value <= temp_value)
+    QFont font;
+    font.setPointSize(14);
+
+    plot->axis->setTickLabelFont(font);
+  }
+
+  if (event->localPos().x() < 20)
+  {
+    double temp_axis_value = 0.025;
+
+    for (auto plot : all_plots)
     {
-      temp_axis = plot->valueAxis();
-      temp_value = select_test_value;
-      temp_graph = plot;
+      if (!plot->display->isChecked())
+      {
+        continue;
+      }
+      double select_test_value = (double)(event->localPos().y() - 10)/
+        (double)(custom_plot->axisRect()->size().height()) -
+        (double)plot->axis->range().upper/plot->axis->range().size();
+
+      if (qFabs(select_test_value) <= qFabs(temp_axis_value))
+      {
+        temp_axis_value = select_test_value;
+        temp_axis = plot->axis;
+        temp_graph = plot->graph;
+      }
+    }
+  }
+  else
+  {
+    double temp_value = 2;
+
+    for (auto plot : custom_plot->axisRect()->graphs())
+    {
+      double select_test_value = plot->selectTest(event->localPos(), true);
+
+      if (select_test_value != -1 &&
+        select_test_value <= temp_value)
+      {
+        temp_axis = plot->valueAxis();
+        temp_value = select_test_value;
+        temp_graph = plot;
+      }
     }
   }
 
   if (temp_axis != Q_NULLPTR)
   {
     temp_graph->setPen(QPen(temp_graph->pen().color(), 2));
+
+    QFont font;
+    font.setPointSize(18);
+
+    temp_axis->setTickLabelFont(font);
+
     custom_plot->replot();
     drag_axes.append(temp_axis);
 
