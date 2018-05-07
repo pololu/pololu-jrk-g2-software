@@ -104,7 +104,7 @@ void graph_window::raise_window()
 void graph_window::save_settings()
 {
   QString filename = QFileDialog::getSaveFileName((QWidget* )0,
-    "Save graph settings", QString(), "*.txt", Q_NULLPTR, QFileDialog::DontConfirmOverwrite);
+    "Save graph settings", QString(), "*.txt", Q_NULLPTR);
 
   if (filename.isEmpty())
   {
@@ -114,20 +114,6 @@ void graph_window::save_settings()
   if (QFileInfo(filename).suffix().isEmpty())
   {
     filename.append(".txt");
-  }
-
-  if (QFile::exists(filename))
-  {
-    QStringList fn = filename.split(".");
-
-    int i = 1;
-
-    while (QFile::exists(filename))
-    {
-      filename = QString("%1(%2).%3").arg(fn[0]).arg(i).arg(fn[1]);
-
-      i++;
-    }
   }
 
   QFile file_out(filename);
