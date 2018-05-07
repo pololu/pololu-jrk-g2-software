@@ -173,12 +173,12 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(3);
 
-  custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
-  custom_plot->xAxis2->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
+  custom_plot->xAxis->grid()->setPen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
+  custom_plot->xAxis2->grid()->setPen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
 
-  custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
-  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 100), 0, Qt::DotLine));
-  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setPen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
+  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 110), 0, Qt::DashDotDotLine));
+  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
   custom_plot->yAxis->grid()->setSubGridVisible(true);
   custom_plot->yAxis->setSelectableParts(QCPAxis::spNone);
 
@@ -323,11 +323,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(double)>
     (&QDoubleSpinBox::valueChanged), [=](double value)
   {
-    if (value < 0.1)
-    {
-      plot.scale->setDecimals(2);
-    }
-
     plot.display->setCheckState(Qt::Checked);
 
     reset_graph_interaction_axes();
