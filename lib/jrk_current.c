@@ -466,8 +466,9 @@ static uint8_t jrk_get_rsense_denominator(uint32_t product)
 // Calculates the measured current in milliamps for a "type 1" board:
 // umc04a or umc05a.
 //
-// This is the same as the calculation that is done in the firmware to
-// produce 'current' variable (see jrk_variables_get_current()).
+// This is the same as the calculation that is done in the firmware to produce
+// 'current' variable (see jrk_variables_get_current()), except that it does not
+// cap the value at 0xFFFF.
 //
 // raw_current: From jrk_variables_get_raw_current().
 // encoded_current_limit: The hardware current limiting configuration, from
@@ -476,7 +477,7 @@ static uint8_t jrk_get_rsense_denominator(uint32_t product)
 //   Sense resistor resistance, in units of mohms.
 // current_offset_calibration: from jrk_settings_get_current_offset_calibration()
 // current_scale_calibration: from jrk_settings_get_current_scale_calibration()
-static uint16_t jrk_calculate_measured_current_ma_type1(
+static uint32_t jrk_calculate_measured_current_ma_type1(
   uint16_t raw_current,
   uint16_t encoded_current_limit,
   int16_t duty_cycle,
@@ -524,14 +525,7 @@ static uint16_t jrk_calculate_measured_current_ma_type1(
   uint32_t current32 = current * scale * rsense_denominator /
     (duty_cycle_unsigned * rsense_numerator);
 
-  if (current32 > 0xFFFF)
-  {
-    return 0xFFFF;
-  }
-  else
-  {
-    return current32;
-  }
+  return current32;
 }
 
 uint32_t jrk_current_limit_decode(
@@ -601,21 +595,6 @@ uint16_t jrk_current_limit_encode(const jrk_settings * settings, uint32_t ma)
     }
   }
   return code;
-}
-
-uint32_t jrk_calculate_measured_current_ma(
-  const jrk_settings * settings, const jrk_variables * vars)
-{
-  uint32_t product = jrk_settings_get_product(settings);
-  if (!product || !vars) { return 0; }
-
-  if (product == JRK_PRODUCT_UMC04A_30V || product == JRK_PRODUCT_UMC04A_40V ||
-    product == JRK_PRODUCT_UMC05A_30V || product == JRK_PRODUCT_UMC05A_40V)
-  {
-    return jrk_variables_get_current(vars);
-  }
-
-  return 0;
 }
 
 uint32_t jrk_calculate_raw_current_mv64(

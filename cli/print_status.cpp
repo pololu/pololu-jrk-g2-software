@@ -122,7 +122,7 @@ void print_status(const jrk::variables & vars,
   }
 
   std::cout << left_column << "Current: "
-    << jrk::calculate_measured_current_ma(settings, vars) << " mA"
+    << vars.get_current() << " mA"
     << std::endl;
 
   if (full_output)
@@ -212,5 +212,5 @@ void print_status(const jrk::variables & vars,
   // This will be a long line, so don't make it longer using 'left_column'.
   // Use quotes so that YAML parsers don't complain about special characters
   // like colons.
-  std::cout << "Diagnosis: \'" << diagnosis << "\'" << std::endl;
+  std::cout << "Overall status: \'" << diagnosis << "\'" << std::endl;
 }

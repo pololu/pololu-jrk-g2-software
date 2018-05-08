@@ -6,7 +6,6 @@
 #include <cassert>
 #include <cmath>
 #include <sstream>
-#include <iostream>  // tmphax
 
 // This is how often we fetch the variables from the device.
 static const uint32_t UPDATE_INTERVAL_MS = 50;
@@ -86,7 +85,7 @@ bool main_controller::disconnect_device()
   return true;
 }
 
-void main_controller::connect_device(jrk::device const & device)
+void main_controller::connect_device(const jrk::device & device)
 {
   assert(device.is_present());
 
@@ -108,6 +107,18 @@ void main_controller::connect_device(jrk::device const & device)
     handle_model_changed();
     return;
   }
+
+  // Clear the variables read from the device because they don't apply anymore.
+  variables.pointer_reset();
+  current_chopping_count = 0;
+
+  // Clear the settings from the device because they don't apply anymore and
+  // we'd like the manual target interface to get reinitialized.
+  cached_settings.pointer_reset();
+
+  window->reset_graph();
+
+  window->reset_error_counts();
 
   // Get the command port name.
   try
@@ -140,18 +151,10 @@ void main_controller::connect_device(jrk::device const & device)
     show_exception(e, "There was an error loading settings from the device.");
   }
 
-  // Clear the variables read from the device because they don't apply anymore.
-  variables.pointer_reset();
-  current_chopping_count = 0;
-
-  window->reset_graph();
-
-  window->reset_error_counts();
-
   handle_model_changed();
 }
 
-void main_controller::disconnect_device_by_error(std::string const & error_message)
+void main_controller::disconnect_device_by_error(const std::string & error_message)
 {
   really_disconnect();
   disconnected_by_user = false;
@@ -164,7 +167,7 @@ void main_controller::really_disconnect()
   settings_modified = false;
 }
 
-void main_controller::set_connection_error(std::string const & error_message)
+void main_controller::set_connection_error(const std::string & error_message)
 {
   connection_error = true;
   connection_error_message = error_message;
@@ -186,7 +189,7 @@ void main_controller::reload_settings(bool ask)
     settings = device_handle.get_eeprom_settings();
     handle_settings_loaded();
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
     settings_modified = true;
     show_exception(e, "There was an error loading the settings from the device.");
@@ -518,8 +521,7 @@ void main_controller::handle_variables_changed()
   // Note: The cached_settings we have here might not correspond to the
   // variables we have fetched if the settings were just applied, so this
   // calculation might be off at that time, but it's not a big deal.
-  window->set_current(
-    jrk::calculate_measured_current_ma(cached_settings, variables));
+  window->set_current(variables.get_current());
   window->set_raw_current_mv(
     jrk::calculate_raw_current_mv64(cached_settings, variables) / 64);
 
@@ -558,7 +560,7 @@ void main_controller::handle_settings_changed()
   window->set_input_enable_crc(settings.get_serial_enable_crc());
   window->set_input_device_number(settings.get_serial_device_number());
   window->set_input_enable_device_number(settings.get_serial_enable_14bit_device_number());
-  window->set_input_serial_timeout(settings.get_serial_timeout());
+  window->set_serial_timeout(settings.get_serial_timeout());
   window->set_input_compact_protocol(settings.get_serial_disable_compact_protocol());
   window->set_input_invert(settings.get_input_invert());
   window->set_input_error_minimum(settings.get_input_error_minimum());
@@ -616,6 +618,7 @@ void main_controller::handle_settings_changed()
 
   window->set_motor_asymmetric(motor_asymmetric);
 
+  window->get_recommended_current_limit_codes(settings.get_product());
   window->set_max_duty_cycle_reverse(settings.get_max_duty_cycle_reverse());
   window->set_max_acceleration_reverse(settings.get_max_acceleration_reverse());
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
@@ -630,24 +633,8 @@ void main_controller::handle_settings_changed()
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_current_limit_code_forward(
     settings.get_encoded_hard_current_limit_forward());
-  window->set_max_current_forward(settings.get_soft_current_limit_forward());
 
-  {
-    std::ostringstream meaning;
-    meaning << "(";
-    meaning << convert_current_limit_ma_to_string(
-      jrk::current_limit_decode(
-        settings, settings.get_encoded_hard_current_limit_forward()));
-    if (motor_asymmetric)
-    {
-      meaning << ", ";
-      meaning << convert_current_limit_ma_to_string(
-        jrk::current_limit_decode(
-          settings, settings.get_encoded_hard_current_limit_reverse()));
-    }
-    meaning << ")";
-    window->set_current_limit_meaning(meaning.str().c_str());
-  }
+  window->set_max_current_forward(settings.get_soft_current_limit_forward());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
@@ -674,21 +661,36 @@ void main_controller::handle_settings_loaded()
 {
   recalculate_motor_asymmetric();
 
-  window->set_manual_target_enabled(
-    settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
+  if (!cached_settings.is_present() ||
+    cached_settings.get_feedback_mode() != settings.get_feedback_mode() ||
+    cached_settings.get_input_mode() != settings.get_input_mode())
+  {
+    // The cached feedback mode and input mode are going to be set for the first
+    // time or are about to change.  We should reinitialize the manual target
+    // interface.
 
-  if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-  {
-    window->set_manual_target_range(1448, 2648);
-  }
-  else
-  {
-    window->set_manual_target_range(0, 4095);
+    window->set_manual_target_enabled(
+      settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
+
+    if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
+    {
+      window->set_manual_target_range(1448, 2648);
+    }
+    else
+    {
+      window->set_manual_target_range(0, 4095);
+    }
+    window->set_manual_target_inputs(2048);
   }
 
   cached_settings = settings;
 
   settings_modified = false;
+}
+
+uint32_t main_controller::current_limit_code_to_ma(uint16_t code)
+{
+  return jrk::current_limit_decode(settings, code);
 }
 
 void main_controller::recalculate_motor_asymmetric()
@@ -903,7 +905,7 @@ void main_controller::handle_input_device_number_input(bool value)
   handle_settings_changed();
 }
 
-void main_controller::handle_input_timeout_input(uint16_t value)
+void main_controller::handle_serial_timeout_input(uint32_t value)
 {
   if (!connected()) { return; }
   settings.set_serial_timeout(value);
@@ -1599,16 +1601,6 @@ void main_controller::stop_motor()
   {
     show_exception(e);
   }
-
-  if (cached_settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-  {
-    // Set the inputs back to 2048 so it is easy to smoothly drag them to a new
-    // speed, starting at a speed of zero.
-    //
-    // If the user wants to go back to the speed they were previously using, they
-    // can just press 'Run motor' instead of messing with the scroll bar.
-    window->set_manual_target_inputs(2048);
-  }
 }
 
 void main_controller::run_motor()
@@ -1617,7 +1609,13 @@ void main_controller::run_motor()
 
   try
   {
-    device_handle.run_motor();
+    // Clear the "Awaiting command" error by sending a "Set target" command,
+    // just like the original jrk utility.
+    uint16_t target = window->get_manual_target_numeric_input();
+    device_handle.set_target(target);
+
+    // Clear all the other latched errors.
+    device_handle.clear_errors();
   }
   catch (const std::exception & e)
   {

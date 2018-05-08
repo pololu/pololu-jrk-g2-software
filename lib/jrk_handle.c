@@ -229,34 +229,6 @@ jrk_error * jrk_stop_motor(jrk_handle * handle)
   return error;
 }
 
-jrk_error * jrk_run_motor(jrk_handle * handle)
-{
-  if (handle == NULL)
-  {
-    return jrk_error_create("Handle is null.");
-  }
-
-  jrk_error * error = NULL;
-
-  // Get the target value and clear halting errors at the same time.
-  uint8_t buffer[2];
-  if (error == NULL)
-  {
-    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
-    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
-  }
-  uint16_t target = buffer[0] | (buffer[1] << 8);
-
-  // Send a "Set target" command with the same target value to clear the
-  // "Awaiting command" error bit.
-  if (error == NULL)
-  {
-    error = jrk_set_target(handle, target);
-  }
-
-  return error;
-}
-
 jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
 {
   if (error_flags != NULL)
@@ -284,6 +256,34 @@ jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
   {
     error = jrk_error_add(error,
       "There was an error while clearing errors.");
+  }
+
+  return error;
+}
+
+jrk_error * jrk_run_motor(jrk_handle * handle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  // Get the target value and clear halting errors at the same time.
+  uint8_t buffer[2];
+  if (error == NULL)
+  {
+    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
+    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
+  }
+  uint16_t target = buffer[0] | (buffer[1] << 8);
+
+  // Send a "Set target" command with the same target value to clear the
+  // "Awaiting command" error bit.
+  if (error == NULL)
+  {
+    error = jrk_set_target(handle, target);
   }
 
   return error;

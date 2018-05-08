@@ -5,6 +5,7 @@
 #include "graph_window.h"
 #include "elided_label.h"
 #include "pid_constant_control.h"
+#include "nice_spin_box.h"
 #include "jrk.hpp"
 
 #include <QMainWindow>
@@ -115,6 +116,7 @@ public:
   void set_manual_target_enabled(bool enabled);
   void set_manual_target_range(uint16_t min, uint16_t max);
   void set_manual_target_inputs(uint16_t target);
+  uint16_t get_manual_target_numeric_input();
 
   // Controls whether the apply settings action/button is enabled or
   // disabled.
@@ -133,8 +135,8 @@ public:
   void set_input_enable_crc(bool enabled);
   void set_input_device_number(uint16_t value);
   void set_input_enable_device_number(bool enabled);
-  void set_input_serial_timeout(uint16_t value);
-  void set_input_compact_protocol(bool enabled);
+  void set_serial_timeout(uint32_t value);
+  void set_input_compact_protocol(bool enabled);  // TODO: fix this name and the others around here
   void set_input_error_minimum(uint16_t input_error_minimum);
   void set_input_error_maximum(uint16_t input_error_maximum);
   void set_input_minimum(uint16_t input_minimum);
@@ -190,7 +192,7 @@ public:
   void set_brake_duration_reverse(uint32_t);
   void set_current_limit_code_forward(uint16_t);
   void set_current_limit_code_reverse(uint16_t);
-  void set_current_limit_meaning(const char *);
+  void get_recommended_current_limit_codes(uint32_t);
   void set_max_current_forward(uint16_t);
   void set_max_current_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
@@ -558,9 +560,9 @@ private:
   QSpinBox *input_uart_fixed_baud_spinbox;;
   QCheckBox *input_enable_crc_checkbox;
   QCheckBox *input_device_number_checkbox;
-  QLabel *input_timeout_label;
+  QLabel *input_timeout_label;  // TODO: rename to serial_timeout_label
   QRadioButton *input_uart_fixed_baud_radio;
-  QDoubleSpinBox *input_timeout_spinbox;
+  QDoubleSpinBox *input_timeout_spinbox;  // TODO: rename to serial_timeout_spinbox
   QCheckBox *input_disable_compact_protocol_checkbox;
 
   // feedback tab
@@ -654,12 +656,12 @@ private:
   QSpinBox * brake_duration_forward_spinbox;
   QSpinBox * brake_duration_reverse_spinbox;
   QLabel * current_limit_label;
-  QSpinBox * current_limit_forward_spinbox;
-  QSpinBox * current_limit_reverse_spinbox;
+  nice_spin_box * current_limit_forward_spinbox;
+  nice_spin_box * current_limit_reverse_spinbox;
   QLabel * current_limit_means_label;
   QLabel * max_current_label;
-  QSpinBox * max_current_forward_spinbox;
-  QSpinBox * max_current_reverse_spinbox;
+  nice_spin_box * max_current_forward_spinbox;
+  nice_spin_box * max_current_reverse_spinbox;
   QLabel * max_current_means_label;
   QLabel * current_offset_calibration_label;
   QSpinBox * current_offset_calibration_spinbox;

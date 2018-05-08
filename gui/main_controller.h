@@ -86,7 +86,7 @@ public:
   void handle_input_enable_crc_input(bool value);
   void handle_input_device_input(uint16_t value);
   void handle_input_device_number_input(bool value);
-  void handle_input_timeout_input(uint16_t value);
+  void handle_serial_timeout_input(uint32_t value);
   void handle_input_disable_compact_protocol_input(bool value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_error_minimum_input(uint16_t input_error_minimum);
@@ -163,6 +163,8 @@ public:
   void handle_vin_calibration_input(int16_t vin_calibration);
 
   void handle_upload_complete();
+
+  uint32_t current_limit_code_to_ma(uint16_t code);
 
 private:
   // This is called whenever it is possible that we have connected to a

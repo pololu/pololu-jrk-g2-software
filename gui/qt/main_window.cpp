@@ -8,6 +8,7 @@
 #include "message_box.h"
 #include "elided_label.h"
 #include "pid_constant_control.h"
+#include "nice_spin_box.h"
 
 #include <to_string.h>
 
@@ -364,6 +365,11 @@ void main_window::set_manual_target_inputs(uint16_t target)
   suppress_events = false;
 }
 
+uint16_t main_window::get_manual_target_numeric_input()
+{
+  return manual_target_entry_value->value();
+}
+
 void main_window::set_apply_settings_enabled(bool enabled)
 {
   apply_settings_button->setEnabled(enabled);
@@ -460,9 +466,9 @@ void main_window::set_input_enable_device_number(bool enabled)
   set_check_box(input_device_number_checkbox, enabled);
 }
 
-void main_window::set_input_serial_timeout(uint16_t value)
+void main_window::set_serial_timeout(uint32_t value)
 {
-  set_double_spin_box(input_timeout_spinbox, value);
+  set_double_spin_box(input_timeout_spinbox, value / 1000.0);
 }
 
 void main_window::set_input_compact_protocol(bool enabled)
@@ -799,19 +805,31 @@ void main_window::set_brake_duration_reverse(uint32_t brake_duration)
   set_spin_box(brake_duration_reverse_spinbox, brake_duration);
 }
 
-void main_window::set_current_limit_code_forward(uint16_t current)
+void main_window::set_current_limit_code_forward(uint16_t current_limit)
 {
-  set_spin_box(current_limit_forward_spinbox, current);
+  set_spin_box(current_limit_forward_spinbox, current_limit);
 }
 
-void main_window::set_current_limit_code_reverse(uint16_t current)
+void main_window::set_current_limit_code_reverse(uint16_t current_limit)
 {
-  set_spin_box(current_limit_reverse_spinbox, current);
+  set_spin_box(current_limit_reverse_spinbox, current_limit);
 }
 
-void main_window::set_current_limit_meaning(const char * str)
+void main_window::get_recommended_current_limit_codes(uint32_t product)
 {
-  current_limit_means_label->setText(str);
+  const std::vector<uint16_t> code_table =
+    jrk::get_recommended_encoded_hard_current_limits(product);
+
+  QMap<int, int> mapping;
+  for (size_t i = 0; i < code_table.size(); i++)
+  {
+    uint16_t code = code_table[i];
+    uint32_t current = controller->current_limit_code_to_ma(code);
+    mapping.insert(code, current);
+  }
+
+  current_limit_forward_spinbox->set_mapping(mapping);
+  current_limit_reverse_spinbox->set_mapping(mapping);
 }
 
 void main_window::set_max_current_forward(uint16_t current)
@@ -896,7 +914,7 @@ void main_window::set_error_hard(uint16_t hard)
   for (error_row & row : error_rows)
   {
     bool is_hard = hard >> row.error_number & 1;
-    set_check_box(row.error_hard, is_hard);
+    set_check_box(row.error_hard, is_hard || row.always_hard);
   }
 }
 
@@ -1379,7 +1397,7 @@ void main_window::on_input_device_number_checkbox_stateChanged(int state)
 void main_window::on_input_timeout_spinbox_valueChanged(double value)
 {
   if (suppress_events) { return; }
-  controller->handle_input_timeout_input(value);
+  controller->handle_serial_timeout_input(qRound(value * 100) * 10);
 }
 
 void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int state)
@@ -2412,9 +2430,9 @@ QWidget * main_window::setup_input_serial_groupbox()
 
   input_timeout_spinbox = new QDoubleSpinBox();
   input_timeout_spinbox->setObjectName("input_timeout_spinbox");
-  input_timeout_spinbox->setSingleStep(JRK_SERIAL_TIMEOUT_UNITS);
+  input_timeout_spinbox->setSingleStep(0.01);
   input_timeout_spinbox->setDecimals(2);
-  input_timeout_spinbox->setRange(0, JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
+  input_timeout_spinbox->setRange(0, 655.35);
 
   input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
   input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
@@ -2868,6 +2886,7 @@ QWidget * main_window::setup_pid_tab()
 
   feedback_dead_zone_spinbox = new QSpinBox();
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
+  feedback_dead_zone_spinbox->setRange(0, 255);
 
   QHBoxLayout * coefficient_layout = new QHBoxLayout();
   coefficient_layout->addWidget(pid_proportional_control);
@@ -2992,31 +3011,30 @@ QWidget *main_window::setup_motor_tab()
   brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  // TODO: let people enter current limits in A instead of with codes
-  current_limit_label = new QLabel(tr("Current limit code:"));
+  // TODO: change the variable names to hard_current_limit too
+  current_limit_label = new QLabel(tr("Hard current limit (A):"));
   current_limit_label->setObjectName("current_limit_label");
 
-  current_limit_forward_spinbox = new QSpinBox();
+  current_limit_forward_spinbox = new nice_spin_box();
   current_limit_forward_spinbox->setObjectName("current_limit_forward_spinbox");
-  current_limit_forward_spinbox->setRange(0, 95);
+  current_limit_forward_spinbox->set_decimals(2);
 
-  current_limit_reverse_spinbox = new QSpinBox();
+  current_limit_reverse_spinbox = new nice_spin_box();
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
-  current_limit_reverse_spinbox->setRange(0, 95);
+  current_limit_reverse_spinbox->set_decimals(2);
 
-  current_limit_means_label = new QLabel(tr("(0 to 95)"));
-  current_limit_means_label->setObjectName("current_limit_means_label");
-
-  // TODO: let people enter max currents in A instead of mA
-  max_current_label = new QLabel(tr("Max current (mA):"));
+  // TODO: change the variable names to soft_current_limit too
+  max_current_label = new QLabel(tr("Soft current limit (A):"));
   max_current_label->setObjectName("max_current_label");
 
-  max_current_forward_spinbox = new QSpinBox();
+  max_current_forward_spinbox = new nice_spin_box();
   max_current_forward_spinbox->setObjectName("max_current_forward_spinbox");
+  max_current_forward_spinbox->set_decimals(3);
   max_current_forward_spinbox->setRange(0, 65535);
 
-  max_current_reverse_spinbox = new QSpinBox();
+  max_current_reverse_spinbox = new nice_spin_box();
   max_current_reverse_spinbox->setObjectName("max_current_reverse_spinbox");
+  max_current_reverse_spinbox->set_decimals(3);
   max_current_reverse_spinbox->setRange(0, 65535);
 
   max_current_means_label = new QLabel(tr("(0 means no limit)"));
@@ -3071,7 +3089,6 @@ QWidget *main_window::setup_motor_tab()
   motor_controls_layout->addWidget(current_limit_label, ++row, 0);
   motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2);
-  motor_controls_layout->addWidget(current_limit_means_label, row, 3);
   motor_controls_layout->addWidget(max_current_label, ++row, 0);
   motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2);
@@ -3261,6 +3278,7 @@ void main_window::setup_error_row(int error_number,
   row.error_number = error_number;
   row.always_enabled = always_enabled;
   row.always_latched = always_latched;
+  row.always_hard = always_hard;
 
   uint16_t error_mask = 1 << error_number;
 
@@ -3305,13 +3323,15 @@ void main_window::setup_error_row(int error_number,
     (&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
-  row.error_hard = new QCheckBox(tr("Hard"));
+  row.error_hard = new QCheckBox();
   row.error_hard->setObjectName("error_hard");
+  if (always_hard)
+  {
+    row.error_hard->setEnabled(false);
+  }
 
   connect(row.error_hard, &QCheckBox::stateChanged,
     [=] (int state) { error_hard_stateChanged(state, row.error_number); });
-
-  QLabel * always_hard_label = new QLabel(tr("Yes"));
 
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
@@ -3330,15 +3350,7 @@ void main_window::setup_error_row(int error_number,
   errors_page_layout->addWidget(row.disabled_radio, r + 1, 2);
   errors_page_layout->addWidget(row.enabled_radio, r + 1, 3);
   errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
-
-  if (always_hard)
-  {
-    errors_page_layout->addWidget(always_hard_label, r + 1, 5, Qt::AlignCenter);
-  }
-  else
-  {
-    errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
-  }
+  errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
 
   errors_page_layout->addWidget(row.stopping_value, r + 1, 6);
   errors_page_layout->addWidget(row.count_value, r + 1, 7);

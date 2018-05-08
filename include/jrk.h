@@ -973,13 +973,14 @@ uint8_t jrk_settings_get_hard_overcurrent_threshold(const jrk_settings *);
 // Sets the current_offset_calibration setting.
 //
 // You can use this current calibration setting to correct current measurements
-// and current limit settings that are off by a constant amount.
+// and current limit settings.
 //
 // The current sense circuitry on a umc04a/umc05a jrks produces a constant
-// voltage of about 50 mV when the motor driver is powered, even if there is no
-// current flowing through the motor.  This offset must be subtracted from
-// analog voltages representing current limits or current measurements in order
-// to convert those values to amps.
+// voltage of about 50 mV (but with large variations from unit to unit) when the
+// motor driver is powered, even if there is no current flowing through the
+// motor.  This offset must be subtracted from analog voltages representing
+// current limits or current measurements as one of the first steps for
+// converting those voltages to amps.
 //
 // For the umc04a/umc05a jrk models, this setting is defined by the formula:
 //
@@ -1789,14 +1790,6 @@ jrk_error * jrk_set_target(jrk_handle *, uint16_t target);
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_stop_motor(jrk_handle *);
 
-/// This function clears all of the latched errors including the "Awaiting
-/// command" error bit.
-///
-/// This is the command to use if you want the jrk to clear all of its errors
-/// and run the motor if possible.
-JRK_API JRK_WARN_UNUSED
-jrk_error * jrk_run_motor(jrk_handle *);
-
 /// Sends a command to the jrk that causes it to clear latched errors in the
 /// "Error flags halting" varible except for "Awaiting command".
 ///
@@ -1805,6 +1798,23 @@ jrk_error * jrk_run_motor(jrk_handle *);
 /// cleared.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_clear_errors(jrk_handle *, uint16_t * error_flags);
+
+/// This function clears all of the latched errors including the "Awaiting
+/// command" error bit.
+///
+/// It uses two commands to do this:
+///
+/// 1. A "Get variable" command to fetch the current Target value from the jrk
+///    and clear all latched errors except "Awaiting command" as a side effect.
+/// 2. A "Set target" command to send the previously-fetched target to the jrk.
+///
+/// If you want to have control over what target gets set, you should use
+/// jrk_clear_errors() and jrk_set_target() separately instead of this function.
+///
+/// This is the command to use if you want the jrk to clear all of its errors
+/// and run the motor if possible.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_run_motor(jrk_handle *);
 
 /// Sends a "Force duty cycle target" command to the jrk.
 ///
@@ -2065,20 +2075,6 @@ uint32_t jrk_current_limit_decode(const jrk_settings *, uint16_t encoded_limit);
 // See also jrk_current_limit_decode().
 JRK_API
 uint16_t jrk_current_limit_encode(const jrk_settings *, uint32_t ma);
-
-// Calculates or retrieves the measured motor current, in milliamps, given a
-// settings object and a variables object read from the same device.
-//
-// The function returns the measured current, in milliamps.
-//
-// If you don't want to actually fetch settings from the jrk, you can just
-// create a new settings object, set it to the right product, and fill it with
-// the default settings, using the jrk_settings_* functions of this library.
-//
-// Note for umc04a jrk models: If current chopping happened during the PID
-// period, the value returned here will not be trustable.
-JRK_API
-uint32_t jrk_calculate_measured_current_ma(const jrk_settings *, const jrk_variables *);
 
 // Calculates the voltage on the current sense line in units of mV/64.
 //
