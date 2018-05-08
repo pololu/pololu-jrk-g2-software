@@ -267,12 +267,11 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
   plot_axis_ticker->setTickCount(0);
   plot_axis_ticker->setSubTickCount(0);
-  plot_axis_ticker->addTick(0, "\u2B9E");
+  plot_axis_ticker->addTick(0, "\u25b6");
   plot.axis->setTicker(plot_axis_ticker);
 
   QFont font;
   font.setPointSize(14);
-  font.setStyleHint(QFont::SansSerif);
 
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(default_color);
