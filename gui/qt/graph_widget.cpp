@@ -271,7 +271,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setTicker(plot_axis_ticker);
 
   QFont font;
-  font.setPointSize(18);
+  font.setPointSize(16);
 
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(default_color);
@@ -380,7 +380,7 @@ void graph_widget::set_graph_interaction_axis(QCPAxis * axis, QCPGraph * graph)
   graph->setPen(QPen(graph->pen().color(), 2));
 
   QFont font;
-  font.setPointSize(22);
+  font.setPointSize(20);
 
   axis->setTickLabelFont(font);
 
@@ -400,7 +400,7 @@ void graph_widget::reset_graph_interaction_axes()
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
     QFont font;
-    font.setPointSize(18);
+    font.setPointSize(16);
 
     plot->axis->setTickLabelFont(font);
   }
