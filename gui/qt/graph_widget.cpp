@@ -243,7 +243,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
 
-  plot.reset_button = new QPushButton("\u21ba");
+  plot.reset_button = new QPushButton("\u27f2");
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 2px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
@@ -267,11 +267,12 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
   plot_axis_ticker->setTickCount(0);
   plot_axis_ticker->setSubTickCount(0);
-  plot_axis_ticker->addTick(0, "\u27a4");
+  plot_axis_ticker->addTick(0, "\u2B9E");
   plot.axis->setTicker(plot_axis_ticker);
 
   QFont font;
   font.setPointSize(14);
+  font.setStyleHint(QFont::SansSerif);
 
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(default_color);
