@@ -243,8 +243,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
 
-  plot.reset_button = new QPushButton("\u27f2");
-  plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 2px;}");
+  plot.reset_button = new QPushButton("\u21ba");
+  plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
   connect(plot.reset_button, &QPushButton::clicked, [=]
@@ -256,7 +256,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   });
 
   QFont button_font;
-  button_font.setPointSize(12);
+  button_font.setPointSize(14);
   button_font.setBold(true);
   plot.reset_button->setFont(button_font);
 
@@ -271,7 +271,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setTicker(plot_axis_ticker);
 
   QFont font;
-  font.setPointSize(14);
+  font.setPointSize(18);
 
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(default_color);
@@ -380,7 +380,7 @@ void graph_widget::set_graph_interaction_axis(QCPAxis * axis, QCPGraph * graph)
   graph->setPen(QPen(graph->pen().color(), 2));
 
   QFont font;
-  font.setPointSize(18);
+  font.setPointSize(22);
 
   axis->setTickLabelFont(font);
 
@@ -400,7 +400,7 @@ void graph_widget::reset_graph_interaction_axes()
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
     QFont font;
-    font.setPointSize(14);
+    font.setPointSize(18);
 
     plot->axis->setTickLabelFont(font);
   }
