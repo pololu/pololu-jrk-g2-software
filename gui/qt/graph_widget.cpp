@@ -265,7 +265,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
 
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
-  plot_axis_ticker->setTickCount(0);
+  plot_axis_ticker->setTickCount(1);
   plot_axis_ticker->setSubTickCount(0);
   plot_axis_ticker->addTick(0, "\u25b6");
   plot.axis->setTicker(plot_axis_ticker);
