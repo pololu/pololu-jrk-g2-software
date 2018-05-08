@@ -104,7 +104,7 @@ void graph_widget::setup_ui()
   show_all_none->setObjectName("show_all_none");
 
   reset_all_button = new QPushButton(tr("Reset all"), this);
-  reset_all_button->setStyleSheet("QPushButton{padding: 3px 2px 3px 2px;}");
+  // reset_all_button->setStyleSheet("QPushButton{padding: 3px 2px 3px 2px;}");
   reset_all_button->setObjectName("reset_all_button");
   reset_all_button->setToolTip("Reset all plots\nposition and scale");
 
