@@ -102,9 +102,10 @@ void graph_widget::setup_ui()
 
   show_all_none = new QPushButton("Show all/none");
   show_all_none->setObjectName("show_all_none");
+  show_all_none->setStyleSheet("QPushButton{padding: 4px;}");
 
   reset_all_button = new QPushButton(tr("Reset all"), this);
-  // reset_all_button->setStyleSheet("QPushButton{padding: 3px 2px 3px 2px;}");
+  reset_all_button->setStyleSheet("QPushButton{padding: 4px;}");
   reset_all_button->setObjectName("reset_all_button");
   reset_all_button->setToolTip("Reset all plots\nposition and scale");
 
@@ -255,11 +256,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
     custom_plot->replot();
   });
-
-  QFont button_font;
-  button_font.setPointSize(14);
-  button_font.setBold(true);
-  plot.reset_button->setFont(button_font);
 
   plot.default_visible = default_visible;
 

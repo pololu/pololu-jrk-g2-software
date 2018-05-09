@@ -12,8 +12,6 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QApplication>
-#include <QRadioButton>
-#include <QButtonGroup>
 
 class graph_widget : public QWidget
 {
