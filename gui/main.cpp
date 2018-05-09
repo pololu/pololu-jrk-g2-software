@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QtCore>
 #include <QDesktopWidget>
+#include <QStyleFactory>
 #include "main_controller.h"
 #include "main_window.h"
 
