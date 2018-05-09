@@ -1,6 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
   <qresource prefix="/">
     <file alias="app_icon">../../images/app.icns</file>
-    <file alias="reset_icon">../../images/reset_arrow.icns</file>
+    <file alias="reset_icon">../../images/reset_arrow.png</file>
   </qresource>
 </RCC>
