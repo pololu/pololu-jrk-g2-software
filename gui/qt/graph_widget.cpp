@@ -30,7 +30,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
-    custom_plot->axisRect()->setMargins(QMargins(20, 10, 20, 40));
+    custom_plot->axisRect()->setMargins(QMargins(30, 10, 30, 50));
     custom_plot->xAxis->basePen().setWidthF(1);
     custom_plot->yAxis->basePen().setWidthF(1);
   }
@@ -243,7 +243,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
 
-  plot.reset_button = new QPushButton("\u21ba");
+  plot.reset_button = new QPushButton();
+  plot.reset_button->setIcon(QIcon(":reset_icon"));
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
@@ -488,7 +489,7 @@ void graph_widget::graph_clicked(QMouseEvent * event)
   QCPAxis * temp_axis = Q_NULLPTR;
   QCPGraph * temp_graph;
 
-  if (event->localPos().x() < 20)
+  if (event->localPos().x() < 30)
   {
     double temp_axis_value = 0.025;
 
