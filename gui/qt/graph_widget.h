@@ -7,13 +7,12 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
-#include <QSpinBox>
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QApplication>
-#include <QScreen>
 #include <QFontDatabase>
+#include <QString>
 
 class graph_widget : public QWidget
 {
@@ -73,7 +72,6 @@ private:
   void remove_data_to_scroll(uint32_t time);
   void set_graph_interaction_axis(QCPAxis*, QCPGraph*);
   void reset_graph_interaction_axes();
-  void set_font_size(int, int);
 
   QWidget *central_widget;
   QPushButton *pause_run_button;

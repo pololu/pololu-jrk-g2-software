@@ -1,13 +1,11 @@
 #include "graph_widget.h"
 
-#include <QString>
 #include <QMessageBox>
-
-#include <iostream>
 
 graph_widget::graph_widget(QWidget * parent)
 {
-  int id = QFontDatabase::addApplicationFont(":arrow_font");
+  // Uses the embedded dejavu sans font to aide in cross platform continuity.
+  int id = QFontDatabase::addApplicationFont(":dejavu_sans");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
   font.setFamily(family);
 
@@ -271,7 +269,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot_axis_ticker->addTick(0, "\u27a4");
   plot.axis->setTicker(plot_axis_ticker);
 
-  set_font_size(22, 16);
+  font.setPointSize(25);
 
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(default_color);
@@ -379,7 +377,7 @@ void graph_widget::set_graph_interaction_axis(QCPAxis * axis, QCPGraph * graph)
 {
   graph->setPen(QPen(graph->pen().color(), 2));
 
-  set_font_size(27, 20);
+  font.setPointSize(25);
 
   axis->setTickLabelFont(font);
 
@@ -389,6 +387,7 @@ void graph_widget::set_graph_interaction_axis(QCPAxis * axis, QCPGraph * graph)
   custom_plot->axisRect()->setRangeZoomAxes(0, axis);
 }
 
+// Clears selected axes from range drag and zoom.
 void graph_widget::reset_graph_interaction_axes()
 {
   custom_plot->axisRect()->setRangeDragAxes(0, 0);
@@ -398,19 +397,10 @@ void graph_widget::reset_graph_interaction_axes()
   {
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
-    set_font_size(22, 16);
+    font.setPointSize(20);
 
     plot->axis->setTickLabelFont(font);
   }
-}
-
-void graph_widget::set_font_size(int win_size, int other_size)
-{
-  // #ifdef _WIN32
-    font.setPixelSize(other_size);
-  // #else
-    // font.setPixelSize(other_size);
-  // #endif
 }
 
 void graph_widget::change_ranges()
@@ -466,6 +456,7 @@ void graph_widget::show_all_none_clicked()
   set_line_visible();
 }
 
+// Resets all position and scale values to default.
 void graph_widget::on_reset_all_button_clicked()
 {
   QMessageBox mbox(QMessageBox::Question, "",
@@ -488,6 +479,17 @@ void graph_widget::on_reset_all_button_clicked()
     return;
 }
 
+// This is a reimplementation of the QWidget::mousePressEvent slot.
+// Since the added y-axes are stacked, in order to have to pointer connected
+// to the axis' zero point be in the same horizontal position, QCPAxis::selectTest
+// can not be used. Using QCPAxis::selectTest would always select the axis on the
+// top layer. This function compares proportions in the following way:
+// (mousePress y-position - 10)/(axisRect size - 10) - (plot axis upper range)/(plot axis size)
+// The subtraction of "10" is to compensate for the top margin. The result with the
+// smallest value is selected to allow range drag and zoom.
+// Due to the graph containing multiple scrolling plots, QCPAbstactPlottable::selectTest
+// is used to determine the plot being selected.
+
 void graph_widget::graph_clicked(QMouseEvent * event)
 {
   reset_graph_interaction_axes();
@@ -497,16 +499,17 @@ void graph_widget::graph_clicked(QMouseEvent * event)
 
   if (event->localPos().x() < 30)
   {
-    double temp_axis_value = 0.025;
+    double temp_axis_value = 0.025; // Selection tolerance for mouse press.
 
     for (auto plot : all_plots)
     {
+      // Ignores plots which are not visible.
       if (!plot->display->isChecked())
       {
         continue;
       }
       double select_test_value = (double)(event->localPos().y() - 10)/
-        (double)(custom_plot->axisRect()->size().height()) -
+        (double)(custom_plot->axisRect()->size().height() - 10) -
         (double)plot->axis->range().upper/plot->axis->range().size();
 
       if (qFabs(select_test_value) <= qFabs(temp_axis_value))
