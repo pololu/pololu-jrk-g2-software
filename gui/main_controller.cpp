@@ -144,6 +144,7 @@ void main_controller::connect_device(const jrk::device & device)
   try
   {
     settings = device_handle.get_eeprom_settings();
+    recalculate_motor_asymmetric();
     handle_settings_loaded();
   }
   catch (const std::exception & e)
@@ -659,8 +660,6 @@ void main_controller::handle_settings_changed()
 
 void main_controller::handle_settings_loaded()
 {
-  recalculate_motor_asymmetric();
-
   if (!cached_settings.is_present() ||
     cached_settings.get_feedback_mode() != settings.get_feedback_mode() ||
     cached_settings.get_input_mode() != settings.get_input_mode())
