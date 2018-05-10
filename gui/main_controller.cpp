@@ -683,7 +683,6 @@ void main_controller::handle_settings_loaded()
   }
 
   cached_settings = settings;
-
   settings_modified = false;
 }
 
@@ -1570,15 +1569,13 @@ void main_controller::apply_settings()
       settings = fixed_settings;
       device_handle.set_eeprom_settings(settings);
       device_handle.reinitialize();
-      cached_settings = settings;
-      settings_modified = false;  // this must be last in case exceptions are thrown
+      handle_settings_loaded();
     }
   }
   catch (const std::exception & e)
   {
     show_exception(e);
   }
-  handle_settings_loaded();
   handle_settings_changed();
 }
 
