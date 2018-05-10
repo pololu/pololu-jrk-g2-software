@@ -7,6 +7,10 @@
 
 graph_widget::graph_widget(QWidget * parent)
 {
+  int id = QFontDatabase::addApplicationFont(":arrow_font");
+  QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+  font.setFamily(family);
+
   setup_ui();
 
   connect(domain, SIGNAL(valueChanged(int)),
@@ -264,15 +268,10 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   QSharedPointer<QCPAxisTickerText> plot_axis_ticker(new QCPAxisTickerText);
   plot_axis_ticker->setTickCount(1);
   plot_axis_ticker->setSubTickCount(0);
-  plot_axis_ticker->addTick(0, "\u25b6");
+  plot_axis_ticker->addTick(0, "\u27a4");
   plot.axis->setTicker(plot_axis_ticker);
 
-  QFont font;
-
-  if (_WIN32)
-    font.setPointSize(22);
-  else
-    font.setPointSize(16);
+  set_font_size(22, 16);
 
   plot.axis->setTickLabelFont(font);
   plot.axis->setTickLabelColor(default_color);
@@ -380,12 +379,7 @@ void graph_widget::set_graph_interaction_axis(QCPAxis * axis, QCPGraph * graph)
 {
   graph->setPen(QPen(graph->pen().color(), 2));
 
-  QFont font;
-
-  if (_WIN32)
-    font.setPointSize(27);
-  else
-    font.setPointSize(20);
+  set_font_size(27, 20);
 
   axis->setTickLabelFont(font);
 
@@ -404,15 +398,19 @@ void graph_widget::reset_graph_interaction_axes()
   {
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
-    QFont font;
-
-    if (_WIN32)
-      font.setPointSize(22);
-    else
-      font.setPointSize(16);
+    set_font_size(22, 16);
 
     plot->axis->setTickLabelFont(font);
   }
+}
+
+void graph_widget::set_font_size(int win_size, int other_size)
+{
+  // #ifdef _WIN32
+    font.setPixelSize(other_size);
+  // #else
+    // font.setPixelSize(other_size);
+  // #endif
 }
 
 void graph_widget::change_ranges()

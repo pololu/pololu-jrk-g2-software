@@ -12,6 +12,8 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QApplication>
+#include <QScreen>
+#include <QFontDatabase>
 
 class graph_widget : public QWidget
 {
@@ -71,12 +73,15 @@ private:
   void remove_data_to_scroll(uint32_t time);
   void set_graph_interaction_axis(QCPAxis*, QCPGraph*);
   void reset_graph_interaction_axes();
+  void set_font_size(int, int);
 
   QWidget *central_widget;
   QPushButton *pause_run_button;
   QSpinBox *domain;
   QPushButton *show_all_none;
   QPushButton *reset_all_button;
+
+  QFont font;
 
   uint32_t key; // used to store local copy of time value
 
