@@ -6,7 +6,7 @@
 graph_widget::graph_widget(QWidget * parent)
 {
   // Uses the embedded symbola font to aide in cross platform continuity.
-  int id = QFontDatabase::addApplicationFont(":symbola");
+  int id = QFontDatabase::addApplicationFont(":dejavu_sans");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
   font.setFamily(family);
   font2.setFamily(family);
@@ -98,6 +98,7 @@ void graph_widget::setup_ui()
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
   custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+  custom_plot->setNoAntialiasingOnDrag(true);
 
   connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
     this, SLOT(graph_clicked(QMouseEvent*)));
@@ -276,7 +277,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_label->setPositionAlignment(Qt::AlignRight | Qt::AlignVCenter);
   plot.axis_label->setFont(font);
   plot.axis_label->setColor(default_color);
-  plot.axis_label->setText("\u2b9e");
+  plot.axis_label->setText("\u25b6");
   plot.axis_label->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_label->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_label->position->setAxisRect(custom_plot->axisRect());
@@ -290,7 +291,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_top_label->setPositionAlignment(Qt::AlignCenter);
   plot.axis_top_label->setFont(font2);
   plot.axis_top_label->setColor(default_color);
-  plot.axis_top_label->setText("\u2b9d");
+  plot.axis_top_label->setText("\u25b2");
   plot.axis_top_label->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_top_label->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_top_label->position->setAxisRect(custom_plot->axisRect());
@@ -302,7 +303,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_top_label2->setPositionAlignment(Qt::AlignCenter);
   plot.axis_top_label2->setFont(font2);
   plot.axis_top_label2->setColor(default_color);
-  plot.axis_top_label2->setText("\u2b9d");
+  plot.axis_top_label2->setText("\u25b2");
   plot.axis_top_label2->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_top_label2->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_top_label2->position->setAxisRect(custom_plot->axisRect());
@@ -314,7 +315,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_top_label3->setPositionAlignment(Qt::AlignCenter);
   plot.axis_top_label3->setFont(font2);
   plot.axis_top_label3->setColor(default_color);
-  plot.axis_top_label3->setText("\u2b9d");
+  plot.axis_top_label3->setText("\u25b2");
   plot.axis_top_label3->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_top_label3->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_top_label3->position->setAxisRect(custom_plot->axisRect());
@@ -326,7 +327,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_bottom_label->setPositionAlignment(Qt::AlignCenter);
   plot.axis_bottom_label->setFont(font2);
   plot.axis_bottom_label->setColor(default_color);
-  plot.axis_bottom_label->setText("\u2b9f");
+  plot.axis_bottom_label->setText("\u25bc");
   plot.axis_bottom_label->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_bottom_label->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_bottom_label->position->setAxisRect(custom_plot->axisRect());
@@ -338,7 +339,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_bottom_label2->setPositionAlignment(Qt::AlignCenter);
   plot.axis_bottom_label2->setFont(font2);
   plot.axis_bottom_label2->setColor(default_color);
-  plot.axis_bottom_label2->setText("\u2b9f");
+  plot.axis_bottom_label2->setText("\u25bc");
   plot.axis_bottom_label2->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_bottom_label2->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_bottom_label2->position->setAxisRect(custom_plot->axisRect());
@@ -350,7 +351,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_bottom_label3->setPositionAlignment(Qt::AlignCenter);
   plot.axis_bottom_label3->setFont(font2);
   plot.axis_bottom_label3->setColor(default_color);
-  plot.axis_bottom_label3->setText("\u2b9f");
+  plot.axis_bottom_label3->setText("\u25bc");
   plot.axis_bottom_label3->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_bottom_label3->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_bottom_label3->position->setAxisRect(custom_plot->axisRect());
@@ -378,8 +379,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     double position_value = -(newRange.upper + newRange.lower)/2.0;
     double scale_value = (-newRange.lower + newRange.upper)/10;
 
-    set_axis_text(plot, newRange.upper, newRange.lower);
-
     if (scale_value < 1.0)
     {
       plot.scale->setDecimals(2);
@@ -399,6 +398,8 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
       plot.scale->setValue(scale_value);
     }
 
+    set_axis_text(plot);
+
     custom_plot->replot();
   });
 
@@ -413,13 +414,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     double lower_range = -(value.toDouble() * 5.0) - (plot.position->value());
     double upper_range = (value.toDouble() * 5.0) - (plot.position->value());
 
-    set_axis_text(plot, upper_range, lower_range);
-
     {
       QSignalBlocker blocker(plot.axis);
       plot.axis->setRangeLower(lower_range);
       plot.axis->setRangeUpper(upper_range);
     }
+
+    set_axis_text(plot);
 
     set_graph_interaction_axis(plot);
   });
@@ -434,13 +435,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     double lower_range = -(plot.scale->value() * 5.0) - (value.toDouble());
     double upper_range = (plot.scale->value() * 5.0) - (value.toDouble());
 
-    set_axis_text(plot, upper_range, lower_range);
-
     {
       QSignalBlocker blocker(plot.axis);
       plot.axis->setRangeLower(lower_range);
       plot.axis->setRangeUpper(upper_range);
     }
+
+    set_axis_text(plot);
 
     set_graph_interaction_axis(plot);
   });
@@ -468,41 +469,7 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
 
     if (plot->graph->visible())
     {
-      bool out_top = false;
-      bool out_bottom = false;
-
-      QCPGraphDataContainer::const_iterator begin = plot->graph->data()->
-        at(plot->graph->data()->dataRange().begin()); // get range begin iterator from index
-      QCPGraphDataContainer::const_iterator end = plot->graph->data()->
-        at(plot->graph->data()->dataRange().end()); // get range end iterator from index
-
-      for (QCPGraphDataContainer::const_iterator it=begin; it!=end; ++it)
-      {
-        if (it->value > plot->axis->range().upper)
-        {
-          out_top = true;
-        }
-
-        if (it->value < plot->axis->range().lower)
-        {
-          out_bottom = true;
-        }
-      }
-
-      plot->axis_top_label->setVisible(out_top && !in_preview);
-      plot->axis_bottom_label->setVisible(out_bottom && !in_preview);
-      plot->axis_top_label->position->setCoords(0.25, plot->axis->range().upper);
-      plot->axis_bottom_label->position->setCoords(0.25, plot->axis->range().lower);
-
-      plot->axis_top_label2->setVisible(out_top && !in_preview);
-      plot->axis_bottom_label2->setVisible(out_bottom && !in_preview);
-      plot->axis_top_label2->position->setCoords(0.50, plot->axis->range().upper);
-      plot->axis_bottom_label2->position->setCoords(0.50, plot->axis->range().lower);
-
-      plot->axis_top_label3->setVisible(out_top && !in_preview);
-      plot->axis_bottom_label3->setVisible(out_bottom && !in_preview);
-      plot->axis_bottom_label3->position->setCoords(0.75, plot->axis->range().lower);
-      plot->axis_top_label3->position->setCoords(0.75, plot->axis->range().upper);
+      set_axis_text(*plot);
     }
   }
 
@@ -553,22 +520,22 @@ void graph_widget::reset_graph_interaction_axes()
   }
 }
 
-void graph_widget::set_axis_text(plot plot, double up_range, double low_range)
+void graph_widget::set_axis_text(plot plot)
 {
-  if (low_range >= 0)
+  if (plot.axis->range().lower >= 0)
   {
-    plot.axis_label->setText("\u2b9f");
-    plot.axis_label->position->setCoords(0, low_range);
+    plot.axis_label->setText("\u25bc");
+    plot.axis_label->position->setCoords(0, plot.axis->range().lower);
   }
-  else if (up_range <= 0)
+  else if (plot.axis->range().upper <= 0)
   {
-    plot.axis_label->setText("\u2b9d");
-    plot.axis_label->position->setCoords(0, up_range);
+    plot.axis_label->setText("\u25b2");
+    plot.axis_label->position->setCoords(0, plot.axis->range().upper);
 
   }
   else
   {
-    plot.axis_label->setText("\u2b9e");
+    plot.axis_label->setText("\u25b6");
     plot.axis_label->position->setCoords(0, 0);
 
   }
@@ -592,18 +559,18 @@ void graph_widget::set_axis_text(plot plot, double up_range, double low_range)
   }
   plot.axis_top_label->setVisible(out_top);
   plot.axis_bottom_label->setVisible(out_bottom);
-  plot.axis_top_label->position->setCoords(0.25, up_range);
-  plot.axis_bottom_label->position->setCoords(0.25, low_range);
+  plot.axis_top_label->position->setCoords(0.25, plot.axis->range().upper);
+  plot.axis_bottom_label->position->setCoords(0.25, plot.axis->range().lower);
 
   plot.axis_top_label2->setVisible(out_top);
   plot.axis_bottom_label2->setVisible(out_bottom);
-  plot.axis_top_label2->position->setCoords(0.50, up_range);
-  plot.axis_bottom_label2->position->setCoords(0.50, low_range);
+  plot.axis_top_label2->position->setCoords(0.50, plot.axis->range().upper);
+  plot.axis_bottom_label2->position->setCoords(0.50, plot.axis->range().lower);
 
   plot.axis_top_label3->setVisible(out_top);
   plot.axis_bottom_label3->setVisible(out_bottom);
-  plot.axis_bottom_label3->position->setCoords(0.75, low_range);
-  plot.axis_top_label3->position->setCoords(0.75, up_range);
+  plot.axis_top_label3->position->setCoords(0.75, plot.axis->range().upper);
+  plot.axis_bottom_label3->position->setCoords(0.75, plot.axis->range().lower);
 }
 
 void graph_widget::change_ranges()

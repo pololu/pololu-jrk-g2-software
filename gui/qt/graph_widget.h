@@ -80,7 +80,7 @@ private:
   void remove_data_to_scroll(uint32_t time);
   void set_graph_interaction_axis(plot x);
   void reset_graph_interaction_axes();
-  void set_axis_text(plot plot, double up_range, double low_range);
+  void set_axis_text(plot plot);
 
   QWidget *central_widget;
   QPushButton *pause_run_button;
