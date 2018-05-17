@@ -6,8 +6,10 @@
 graph_widget::graph_widget(QWidget * parent)
 {
   // Uses the embedded dejavu sans font to aide in cross platform continuity.
-  font.setFamily(":symbola");
-  font2.setFamily(":symbola");
+  int id = QFontDatabase::addApplicationFont(":symbola");
+  QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+  font.setFamily(family);
+  font2.setFamily(family);
 
   setup_ui();
 
