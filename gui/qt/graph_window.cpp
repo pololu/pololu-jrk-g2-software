@@ -152,8 +152,11 @@ void graph_window::load_settings()
     QStringList settings = all_plots_settings[i].split(",");
 
     grabbed_widget->all_plots[i]->display->setChecked(settings[1].toInt());
-    grabbed_widget->all_plots[i]->position->setValue(settings[2].toDouble());
-    grabbed_widget->all_plots[i]->scale->setValue(settings[3].toDouble());
+    // grabbed_widget->all_plots[i]->position->setValue(settings[2].toDouble());
+    // grabbed_widget->all_plots[i]->scale->setValue(settings[3].toDouble());
+    double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
+    double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
+    grabbed_widget->all_plots[i]->axis->setRange(lower_range, upper_range);
   }
 }
 

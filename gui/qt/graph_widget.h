@@ -35,6 +35,14 @@ public:
     bool default_visible = false;
     QPushButton *reset_button;
     QString plot_name;
+    // QSharedPointer<QCPAxisTickerText> plot_axis_ticker;
+    QCPItemText * axis_label;
+    QCPItemText * axis_top_label;
+    QCPItemText * axis_top_label2;
+    QCPItemText * axis_top_label3;
+    QCPItemText * axis_bottom_label;
+    QCPItemText * axis_bottom_label2;
+    QCPItemText * axis_bottom_label3;
   };
 
   QList<plot *> all_plots;
@@ -70,8 +78,9 @@ private:
     bool default_visible = false);
 
   void remove_data_to_scroll(uint32_t time);
-  void set_graph_interaction_axis(QCPAxis*, QCPGraph*);
+  void set_graph_interaction_axis(plot x);
   void reset_graph_interaction_axes();
+  void set_axis_text(plot plot, double up_range, double low_range);
 
   QWidget *central_widget;
   QPushButton *pause_run_button;
@@ -80,10 +89,12 @@ private:
   QPushButton *reset_all_button;
 
   QFont font;
+  QFont font2;
 
   uint32_t key; // used to store local copy of time value
 
   int row = 1;
+  bool in_preview = false;
 
 private slots:
   void change_ranges();
