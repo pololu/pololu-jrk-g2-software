@@ -571,40 +571,37 @@ void graph_widget::set_axis_text(plot plot, double up_range, double low_range)
 
   }
 
-  if (graph_paused)
+  bool out_top = false;
+  bool out_bottom = false;
+  QCPGraphDataContainer::const_iterator begin = plot.graph->data()->at(plot.graph->data()->dataRange().begin()); // get range begin iterator from index
+  QCPGraphDataContainer::const_iterator end = plot.graph->data()->at(plot.graph->data()->dataRange().end()); // get range end iterator from index
+
+  for (QCPGraphDataContainer::const_iterator it=begin; it!=end; ++it)
   {
-    bool out_top = false;
-    bool out_bottom = false;
-    QCPGraphDataContainer::const_iterator begin = plot.graph->data()->at(plot.graph->data()->dataRange().begin()); // get range begin iterator from index
-    QCPGraphDataContainer::const_iterator end = plot.graph->data()->at(plot.graph->data()->dataRange().end()); // get range end iterator from index
-
-    for (QCPGraphDataContainer::const_iterator it=begin; it!=end; ++it)
+    if (it->value > plot.axis->range().upper)
     {
-      if (it->value > plot.axis->range().upper)
-      {
-        out_top = true;
-      }
-
-      if (it->value < plot.axis->range().lower)
-      {
-        out_bottom = true;
-      }
+      out_top = true;
     }
-    plot.axis_top_label->setVisible(out_top);
-    plot.axis_bottom_label->setVisible(out_bottom);
-    plot.axis_top_label->position->setCoords(0.25, up_range);
-    plot.axis_bottom_label->position->setCoords(0.25, low_range);
 
-    plot.axis_top_label2->setVisible(out_top);
-    plot.axis_bottom_label2->setVisible(out_bottom);
-    plot.axis_top_label2->position->setCoords(0.50, up_range);
-    plot.axis_bottom_label2->position->setCoords(0.50, low_range);
-
-    plot.axis_top_label3->setVisible(out_top);
-    plot.axis_bottom_label3->setVisible(out_bottom);
-    plot.axis_bottom_label3->position->setCoords(0.75, low_range);
-    plot.axis_top_label3->position->setCoords(0.75, up_range);
+    if (it->value < plot.axis->range().lower)
+    {
+      out_bottom = true;
+    }
   }
+  plot.axis_top_label->setVisible(out_top);
+  plot.axis_bottom_label->setVisible(out_bottom);
+  plot.axis_top_label->position->setCoords(0.25, up_range);
+  plot.axis_bottom_label->position->setCoords(0.25, low_range);
+
+  plot.axis_top_label2->setVisible(out_top);
+  plot.axis_bottom_label2->setVisible(out_bottom);
+  plot.axis_top_label2->position->setCoords(0.50, up_range);
+  plot.axis_bottom_label2->position->setCoords(0.50, low_range);
+
+  plot.axis_top_label3->setVisible(out_top);
+  plot.axis_bottom_label3->setVisible(out_bottom);
+  plot.axis_bottom_label3->position->setCoords(0.75, low_range);
+  plot.axis_top_label3->position->setCoords(0.75, up_range);
 }
 
 void graph_widget::change_ranges()
