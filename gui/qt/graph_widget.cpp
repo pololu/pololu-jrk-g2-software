@@ -5,7 +5,6 @@
 
 graph_widget::graph_widget(QWidget * parent)
 {
-  // Uses the embedded symbola font to aide in cross platform continuity.
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
   font.setFamily(family);
@@ -34,6 +33,8 @@ void graph_widget::set_preview_mode(bool preview_mode)
   }
   else
   {
+    // reset_graph_interaction_axes();
+
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
     custom_plot->axisRect()->setMargins(QMargins(30, 25, 30, 50));
@@ -46,6 +47,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
     if (plot->display->isChecked())
     {
       plot->axis_label->setVisible(!preview_mode);
+      set_axis_text(*plot);
     }
   }
 
@@ -80,6 +82,11 @@ void graph_widget::plot_data(uint32_t time)
   for (auto plot : all_plots)
   {
     plot->graph->addData(time, plot->plot_value);
+
+    if (custom_plot->viewport().width() != viewport_width)
+    {
+      set_axis_text(*plot);
+    }
   }
 
   if (graph_paused)
@@ -97,8 +104,8 @@ void graph_widget::setup_ui()
 
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
+  custom_plot->setAntialiasedElements(QCP::aePlottables);
   custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-  custom_plot->setNoAntialiasingOnDrag(true);
 
   connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
     this, SLOT(graph_clicked(QMouseEvent*)));
@@ -219,24 +226,17 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   plot.scale = new QDoubleSpinBox();
   plot.scale->setDecimals(1);
-  plot.scale->setSingleStep(1);
+  plot.scale->setSingleStep(.1);
   plot.scale->setAccelerated(true);
-  plot.scale->setRange(0.01, 1000000);
+  plot.scale->setRange(0, 1000000);
   plot.scale->setValue(plot.range_value/5.0);
+  plot.scale->setSpecialValueText("< 0.1");
+  plot.scale->setFixedWidth(plot.scale->sizeHint().width());
 
   plot.position = new QDoubleSpinBox();
+  plot.position->setDecimals(1);
+  plot.position->setSingleStep(0.1);
   plot.position->setMinimumWidth(plot.position->sizeHint().width());
-
-  if (plot.range_value < 10)
-  {
-    plot.position->setDecimals(1);
-    plot.position->setSingleStep(0.1);
-  }
-  else
-  {
-    plot.position->setDecimals(0);
-    plot.position->setSingleStep(1);
-  }
 
   plot.position->setAccelerated(true);
   plot.position->setRange(-1000000, 1000000);
@@ -256,13 +256,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
-  connect(plot.reset_button, &QPushButton::clicked, [=]
-  {
-    plot.scale->setValue(plot.range_value/5.0);
-    plot.position->setValue(0);
-
-    custom_plot->replot();
-  });
 
   plot.default_visible = default_visible;
 
@@ -284,7 +277,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_label->position->setAxes(0, plot.axis);
   plot.axis_label->position->setCoords(0, 0);
 
-  font2.setPointSize(10);
+  font2.setPointSize(15);
 
   plot.axis_top_label  = new QCPItemText(custom_plot);
   plot.axis_top_label->setClipToAxisRect(false);
@@ -298,29 +291,29 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_top_label->position->setAxes(0, plot.axis);
   plot.axis_top_label->setVisible(false);
 
-  plot.axis_top_label2  = new QCPItemText(custom_plot);
-  plot.axis_top_label2->setClipToAxisRect(false);
-  plot.axis_top_label2->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_top_label2->setFont(font2);
-  plot.axis_top_label2->setColor(default_color);
-  plot.axis_top_label2->setText("\u25b2");
-  plot.axis_top_label2->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_top_label2->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_top_label2->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_top_label2->position->setAxes(0, plot.axis);
-  plot.axis_top_label2->setVisible(false);
+  plot.axis_top_label_left  = new QCPItemText(custom_plot);
+  plot.axis_top_label_left->setClipToAxisRect(false);
+  plot.axis_top_label_left->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_top_label_left->setFont(font2);
+  plot.axis_top_label_left->setColor(default_color);
+  plot.axis_top_label_left->setText("\u25b2");
+  plot.axis_top_label_left->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_top_label_left->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_top_label_left->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_top_label_left->position->setAxes(0, plot.axis);
+  plot.axis_top_label_left->setVisible(false);
 
-  plot.axis_top_label3  = new QCPItemText(custom_plot);
-  plot.axis_top_label3->setClipToAxisRect(false);
-  plot.axis_top_label3->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_top_label3->setFont(font2);
-  plot.axis_top_label3->setColor(default_color);
-  plot.axis_top_label3->setText("\u25b2");
-  plot.axis_top_label3->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_top_label3->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_top_label3->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_top_label3->position->setAxes(0, plot.axis);
-  plot.axis_top_label3->setVisible(false);
+  plot.axis_top_label_right  = new QCPItemText(custom_plot);
+  plot.axis_top_label_right->setClipToAxisRect(false);
+  plot.axis_top_label_right->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_top_label_right->setFont(font2);
+  plot.axis_top_label_right->setColor(default_color);
+  plot.axis_top_label_right->setText("\u25b2");
+  plot.axis_top_label_right->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_top_label_right->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_top_label_right->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_top_label_right->position->setAxes(0, plot.axis);
+  plot.axis_top_label_right->setVisible(false);
 
   plot.axis_bottom_label  = new QCPItemText(custom_plot);
   plot.axis_bottom_label->setClipToAxisRect(false);
@@ -334,29 +327,36 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_bottom_label->position->setAxes(0, plot.axis);
   plot.axis_bottom_label->setVisible(false);
 
-  plot.axis_bottom_label2  = new QCPItemText(custom_plot);
-  plot.axis_bottom_label2->setClipToAxisRect(false);
-  plot.axis_bottom_label2->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_bottom_label2->setFont(font2);
-  plot.axis_bottom_label2->setColor(default_color);
-  plot.axis_bottom_label2->setText("\u25bc");
-  plot.axis_bottom_label2->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_bottom_label2->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_bottom_label2->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_bottom_label2->position->setAxes(0, plot.axis);
-  plot.axis_bottom_label2->setVisible(false);
+  plot.axis_bottom_label_left  = new QCPItemText(custom_plot);
+  plot.axis_bottom_label_left->setClipToAxisRect(false);
+  plot.axis_bottom_label_left->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_bottom_label_left->setFont(font2);
+  plot.axis_bottom_label_left->setColor(default_color);
+  plot.axis_bottom_label_left->setText("\u25bc");
+  plot.axis_bottom_label_left->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_bottom_label_left->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_bottom_label_left->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_bottom_label_left->position->setAxes(0, plot.axis);
+  plot.axis_bottom_label_left->setVisible(false);
 
-  plot.axis_bottom_label3  = new QCPItemText(custom_plot);
-  plot.axis_bottom_label3->setClipToAxisRect(false);
-  plot.axis_bottom_label3->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_bottom_label3->setFont(font2);
-  plot.axis_bottom_label3->setColor(default_color);
-  plot.axis_bottom_label3->setText("\u25bc");
-  plot.axis_bottom_label3->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_bottom_label3->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_bottom_label3->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_bottom_label3->position->setAxes(0, plot.axis);
-  plot.axis_bottom_label3->setVisible(false);
+  plot.axis_bottom_label_right  = new QCPItemText(custom_plot);
+  plot.axis_bottom_label_right->setClipToAxisRect(false);
+  plot.axis_bottom_label_right->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_bottom_label_right->setFont(font2);
+  plot.axis_bottom_label_right->setColor(default_color);
+  plot.axis_bottom_label_right->setText("\u25bc");
+  plot.axis_bottom_label_right->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_bottom_label_right->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_bottom_label_right->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_bottom_label_right->position->setAxes(0, plot.axis);
+  plot.axis_bottom_label_right->setVisible(false);
+
+  plot.axis_top_and_bottom.append(plot.axis_top_label);
+  plot.axis_top_and_bottom.append(plot.axis_top_label_left);
+  plot.axis_top_and_bottom.append(plot.axis_top_label_right);
+  plot.axis_top_and_bottom.append(plot.axis_bottom_label);
+  plot.axis_top_and_bottom.append(plot.axis_bottom_label_left);
+  plot.axis_top_and_bottom.append(plot.axis_bottom_label_right);
 
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.position, row, 1);
@@ -365,6 +365,12 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(QColor(plot.default_color), 1));
+  plot.graph->setLineStyle(QCPGraph::lsStepCenter);
+
+  connect(plot.reset_button, &QPushButton::clicked, [=]
+  {
+    plot.axis->setRange(-plot.range_value, plot.range_value);
+  });
 
   connect(plot.display, &QCheckBox::toggled, [=](bool checked)
   {
@@ -379,15 +385,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     double position_value = -(newRange.upper + newRange.lower)/2.0;
     double scale_value = (-newRange.lower + newRange.upper)/10;
 
-    if (scale_value < 1.0)
-    {
-      plot.scale->setDecimals(2);
-    }
-    else
-    {
-      plot.scale->setDecimals(1);
-    }
-
     {
       QSignalBlocker blocker(plot.position);
       plot.position->setValue(position_value);
@@ -399,54 +396,19 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     }
 
     set_axis_text(plot);
-
-    custom_plot->replot();
   });
-
 
   connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(const QString&)>
     (&QDoubleSpinBox::valueChanged), [=](const QString& value)
   {
-    plot.display->setCheckState(Qt::Checked);
-
-    reset_graph_interaction_axes();
-
-    double lower_range = -(value.toDouble() * 5.0) - (plot.position->value());
-    double upper_range = (value.toDouble() * 5.0) - (plot.position->value());
-
-    {
-      QSignalBlocker blocker(plot.axis);
-      plot.axis->setRangeLower(lower_range);
-      plot.axis->setRangeUpper(upper_range);
-    }
-
-    set_axis_text(plot);
-
-    set_graph_interaction_axis(plot);
+    set_range(plot);
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString&)>
     (&QDoubleSpinBox::valueChanged), [=](const QString& value)
   {
-    plot.display->setCheckState(Qt::Checked);
-
-    reset_graph_interaction_axes();
-
-    double lower_range = -(plot.scale->value() * 5.0) - (value.toDouble());
-    double upper_range = (plot.scale->value() * 5.0) - (value.toDouble());
-
-    {
-      QSignalBlocker blocker(plot.axis);
-      plot.axis->setRangeLower(lower_range);
-      plot.axis->setRangeUpper(upper_range);
-    }
-
-    set_axis_text(plot);
-
-    set_graph_interaction_axis(plot);
+    set_range(plot);
   });
-
-  connect(plot.display, SIGNAL(clicked()), this, SLOT(set_line_visible()));
 
   all_plots.append(&plot);
 
@@ -466,11 +428,6 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
   for (auto plot : all_plots)
   {
     plot->graph->data()->removeBefore(domain->value() * 1000);
-
-    if (plot->graph->visible())
-    {
-      set_axis_text(*plot);
-    }
   }
 
   custom_plot->replot();
@@ -481,17 +438,12 @@ void graph_widget::set_graph_interaction_axis(plot plot)
   plot.graph->setPen(QPen(plot.graph->pen().color(), 2));
 
   font.setPointSize(25);
-  font2.setPointSize(15);
+  font2.setPointSize(20);
 
   plot.axis_label->setFont(font);
-  plot.axis_top_label->setFont(font2);
-  plot.axis_top_label2->setFont(font2);
-  plot.axis_top_label3->setFont(font2);
-  plot.axis_bottom_label->setFont(font2);
-  plot.axis_bottom_label2->setFont(font2);
-  plot.axis_bottom_label3->setFont(font2);
 
-  custom_plot->replot();
+  for (auto label : plot.axis_top_and_bottom)
+    label->setFont(font2);
 
   custom_plot->axisRect()->setRangeDragAxes(0, plot.axis);
   custom_plot->axisRect()->setRangeZoomAxes(0, plot.axis);
@@ -508,15 +460,12 @@ void graph_widget::reset_graph_interaction_axes()
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
     font.setPointSize(20);
-    font2.setPointSize(10);
+    font2.setPointSize(15);
 
     plot->axis_label->setFont(font);
-    plot->axis_top_label->setFont(font2);
-    plot->axis_top_label2->setFont(font2);
-    plot->axis_top_label3->setFont(font2);
-    plot->axis_bottom_label->setFont(font2);
-    plot->axis_bottom_label2->setFont(font2);
-    plot->axis_bottom_label3->setFont(font2);
+
+    for (auto label : plot->axis_top_and_bottom)
+      label->setFont(font2);
   }
 }
 
@@ -542,35 +491,93 @@ void graph_widget::set_axis_text(plot plot)
 
   bool out_top = false;
   bool out_bottom = false;
-  QCPGraphDataContainer::const_iterator begin = plot.graph->data()->at(plot.graph->data()->dataRange().begin()); // get range begin iterator from index
-  QCPGraphDataContainer::const_iterator end = plot.graph->data()->at(plot.graph->data()->dataRange().end()); // get range end iterator from index
+  QCPGraphDataContainer::const_iterator begin = plot.graph->data()->
+    at(plot.graph->data()->dataRange().begin()); // get range begin iterator from index
+  QCPGraphDataContainer::const_iterator end = plot.graph->data()->
+    at(plot.graph->data()->dataRange().end()); // get range end iterator from index
 
   for (QCPGraphDataContainer::const_iterator it=begin; it!=end; ++it)
   {
-    if (it->value > plot.axis->range().upper)
+    if (it->value > plot.axis->range().upper && !in_preview)
     {
       out_top = true;
     }
 
-    if (it->value < plot.axis->range().lower)
+    if (it->value < plot.axis->range().lower && !in_preview)
     {
       out_bottom = true;
     }
   }
-  plot.axis_top_label->setVisible(out_top);
-  plot.axis_bottom_label->setVisible(out_bottom);
-  plot.axis_top_label->position->setCoords(0.25, plot.axis->range().upper);
-  plot.axis_bottom_label->position->setCoords(0.25, plot.axis->range().lower);
 
-  plot.axis_top_label2->setVisible(out_top);
-  plot.axis_bottom_label2->setVisible(out_bottom);
-  plot.axis_top_label2->position->setCoords(0.50, plot.axis->range().upper);
-  plot.axis_bottom_label2->position->setCoords(0.50, plot.axis->range().lower);
+  int temp_width = custom_plot->viewport().width();
 
-  plot.axis_top_label3->setVisible(out_top);
-  plot.axis_bottom_label3->setVisible(out_bottom);
-  plot.axis_top_label3->position->setCoords(0.75, plot.axis->range().upper);
-  plot.axis_bottom_label3->position->setCoords(0.75, plot.axis->range().lower);
+  if (temp_width <= 500)
+  {
+    plot.axis_top_label->setVisible(out_top);
+    plot.axis_bottom_label->setVisible(out_bottom);
+
+    plot.axis_top_label_left->setVisible(false);
+    plot.axis_bottom_label_left->setVisible(false);
+
+    plot.axis_top_label_right->setVisible(false);
+    plot.axis_bottom_label_right->setVisible(false);
+
+    plot.axis_top_label->position->setCoords(0.50, plot.axis->range().upper);
+    plot.axis_bottom_label->position->setCoords(0.50, plot.axis->range().lower);
+  }
+  else if (temp_width > 500 && temp_width <= 1000)
+  {
+    plot.axis_top_label->setVisible(out_top);
+    plot.axis_bottom_label->setVisible(out_bottom);
+
+    plot.axis_top_label_left->setVisible(out_top);
+    plot.axis_bottom_label_left->setVisible(out_bottom);
+
+    plot.axis_top_label_right->setVisible(false);
+    plot.axis_bottom_label_right->setVisible(false);
+
+    plot.axis_top_label_left->position->setCoords(0.333, plot.axis->range().upper);
+    plot.axis_bottom_label_left->position->setCoords(0.333, plot.axis->range().lower);
+    plot.axis_top_label->position->setCoords(0.666, plot.axis->range().upper);
+    plot.axis_bottom_label->position->setCoords(0.666, plot.axis->range().lower);
+  }
+  else if (temp_width > 1500)
+  {
+    plot.axis_top_label->setVisible(out_top);
+    plot.axis_bottom_label->setVisible(out_bottom);
+
+    plot.axis_top_label_left->setVisible(out_top);
+    plot.axis_bottom_label_left->setVisible(out_bottom);
+
+    plot.axis_top_label_right->setVisible(out_top);
+    plot.axis_bottom_label_right->setVisible(out_bottom);
+
+    plot.axis_top_label_left->position->setCoords(0.25, plot.axis->range().upper);
+    plot.axis_bottom_label_left->position->setCoords(0.25, plot.axis->range().lower);
+    plot.axis_top_label->position->setCoords(0.50, plot.axis->range().upper);
+    plot.axis_bottom_label->position->setCoords(0.50, plot.axis->range().lower);
+    plot.axis_top_label_right->position->setCoords(0.75, plot.axis->range().upper);
+    plot.axis_bottom_label_right->position->setCoords(0.75, plot.axis->range().lower);
+  }
+}
+
+void graph_widget::set_range(plot plot)
+{
+  plot.display->setCheckState(Qt::Checked);
+
+  reset_graph_interaction_axes();
+
+  double lower_range = -(plot.scale->value() * 5.0) - (plot.position->value());
+  double upper_range = (plot.scale->value() * 5.0) - (plot.position->value());
+
+  {
+    QSignalBlocker blocker(plot.axis);
+    plot.axis->setRange(lower_range, upper_range);
+  }
+
+  set_axis_text(plot);
+
+  set_graph_interaction_axis(plot);
 }
 
 void graph_widget::change_ranges()
@@ -602,6 +609,7 @@ void graph_widget::set_line_visible()
 
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis_label->setVisible(plot->display->isChecked());
+    set_axis_text(*plot);
   }
 
   custom_plot->replot();
@@ -650,95 +658,94 @@ void graph_widget::on_reset_all_button_clicked()
 }
 
 // This is a reimplementation of the QWidget::mousePressEvent slot.
-// Since the added y-axes are stacked, in order to have to pointer connected
-// to the axis' zero point be in the same horizontal position, QCPAxis::selectTest
-// can not be used. Using QCPAxis::selectTest would always select the axis on the
-// top layer. This function compares proportions in the following way:
-// (mousePress y-position - 10)/(axisRect size - 10) - (plot axis upper range)/(plot axis size)
-// The subtraction of "10" is to compensate for the top margin. The result with the
-// smallest value is selected to allow range drag and zoom.
 // Due to the graph containing multiple scrolling plots, QCPAbstactPlottable::selectTest
 // is used to determine the plot being selected.
 
 void graph_widget::graph_clicked(QMouseEvent * event)
 {
+  if (in_preview)
+  {
+    return;
+  }
+
   reset_graph_interaction_axes();
 
   plot * temp_plot = Q_NULLPTR;
 
-  if (event->localPos().x() < 30)
+  int temp_view_height = custom_plot->viewport().height();
+
+  if (event->localPos().x() < custom_plot->axisRect()->left())
   {
-    double temp_axis_value = 8.0; // Selection tolerance for mouse press.
+    double temp_axis_value = (double)temp_view_height * 0.02; // Selection tolerance for mouse press.
 
     for (auto plot : all_plots)
     {
       // Ignores plots which are not visible.
-      if (!plot->display->isChecked())
+      if (plot->display->isChecked())
       {
-        continue;
-      }
+        double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
 
-      double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
-
-      if (qFabs(select_test_value) <= qFabs(temp_axis_value))
-      {
-        temp_plot = plot;
+        if (qFabs(select_test_value) <= qFabs(temp_axis_value))
+        {
+          temp_plot = plot;
+        }
       }
     }
   }
   else if (event->localPos().y() <= custom_plot->axisRect()->top())
   {
-    double temp_axis_value = 1000.0; // Selection tolerance for mouse press.
+    double temp_axis_value = (double)temp_view_height * 2.0; // Selection tolerance for mouse press.
 
     for (auto plot : all_plots)
     {
       // Ignores plots which are not visible.
-      if (!plot->display->isChecked() || !plot->axis_top_label->visible())
+      if (plot->display->isChecked() && plot->axis_top_label->visible())
       {
-        continue;
-      }
+        double select_test_value = plot->axis_top_label->selectTest(event->localPos(), false);
 
-      double select_test_value = plot->axis_top_label->selectTest(event->localPos(), false);
-
-      if (qFabs(select_test_value) <= qFabs(temp_axis_value))
-      {
-        temp_plot = plot;
+        if (qFabs(select_test_value) <= qFabs(temp_axis_value))
+        {
+          temp_plot = plot;
+        }
       }
     }
   }
   else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
   {
-    double temp_axis_value = 1000.0; // Selection tolerance for mouse press.
+    double temp_axis_value = (double)temp_view_height * 2.0; // Selection tolerance for mouse press.
 
     for (auto plot : all_plots)
     {
       // Ignores plots which are not visible.
-      if (!plot->display->isChecked() || !plot->axis_bottom_label->visible())
+      if (plot->display->isChecked() && plot->axis_bottom_label->visible())
       {
-        continue;
-      }
+        double select_test_value = plot->axis_bottom_label->selectTest(event->localPos(), false);
 
-      double select_test_value = plot->axis_bottom_label->selectTest(event->localPos(), false);
-
-      if (qFabs(select_test_value) <= qFabs(temp_axis_value))
-      {
-        temp_plot = plot;
+        if (qFabs(select_test_value) <= qFabs(temp_axis_value))
+        {
+          temp_plot = plot;
+        }
       }
     }
   }
   else
   {
-    double temp_value = 2;
+    double temp_value = 5;
 
-    for (auto plot : all_plots)
+    while (temp_plot == Q_NULLPTR && temp_value != 20)
     {
-      double select_test_value = plot->graph->selectTest(event->localPos(), true);
-
-      if (select_test_value != -1 &&
-        select_test_value <= temp_value)
+      for (auto plot : all_plots)
       {
-        temp_plot = plot;
+        double select_test_value = plot->graph->selectTest(event->localPos(), true);
+
+        if (select_test_value != -1 &&
+          select_test_value <= temp_value)
+        {
+          temp_plot = plot;
+        }
       }
+
+      temp_value += 5;
     }
   }
 

@@ -35,14 +35,14 @@ public:
     bool default_visible = false;
     QPushButton *reset_button;
     QString plot_name;
-    // QSharedPointer<QCPAxisTickerText> plot_axis_ticker;
     QCPItemText * axis_label;
     QCPItemText * axis_top_label;
-    QCPItemText * axis_top_label2;
-    QCPItemText * axis_top_label3;
+    QCPItemText * axis_top_label_left;
+    QCPItemText * axis_top_label_right;
     QCPItemText * axis_bottom_label;
-    QCPItemText * axis_bottom_label2;
-    QCPItemText * axis_bottom_label3;
+    QCPItemText * axis_bottom_label_left;
+    QCPItemText * axis_bottom_label_right;
+    QList<QCPItemText *> axis_top_and_bottom;
   };
 
   QList<plot *> all_plots;
@@ -81,8 +81,8 @@ private:
   void set_graph_interaction_axis(plot x);
   void reset_graph_interaction_axes();
   void set_axis_text(plot plot);
+  void set_range(plot plot);
 
-  QWidget *central_widget;
   QPushButton *pause_run_button;
   QSpinBox *domain;
   QPushButton *show_all_none;
@@ -95,6 +95,8 @@ private:
 
   int row = 1;
   bool in_preview = false;
+
+  int viewport_width = 0;
 
 private slots:
   void change_ranges();
