@@ -37,11 +37,11 @@ public:
     QString plot_name;
     QCPItemText * axis_label;
     QCPItemText * axis_top_label;
-    QCPItemText * axis_top_label_left;
-    QCPItemText * axis_top_label_right;
+    QCPItemText * axis_top_label2;
+    QCPItemText * axis_top_label3;
     QCPItemText * axis_bottom_label;
-    QCPItemText * axis_bottom_label_left;
-    QCPItemText * axis_bottom_label_right;
+    QCPItemText * axis_bottom_label2;
+    QCPItemText * axis_bottom_label3;
     QList<QCPItemText *> axis_top_and_bottom;
   };
 
@@ -97,6 +97,7 @@ private:
   bool in_preview = false;
 
   int viewport_width = 0;
+  int plot_size = 0;
 
 private slots:
   void change_ranges();

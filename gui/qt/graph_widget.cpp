@@ -33,8 +33,6 @@ void graph_widget::set_preview_mode(bool preview_mode)
   }
   else
   {
-    // reset_graph_interaction_axes();
-
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
     custom_plot->axisRect()->setMargins(QMargins(30, 25, 30, 50));
@@ -83,11 +81,13 @@ void graph_widget::plot_data(uint32_t time)
   {
     plot->graph->addData(time, plot->plot_value);
 
-    if (custom_plot->viewport().width() != viewport_width)
+    if (custom_plot->viewport().width() != viewport_width && plot->graph->visible())
     {
       set_axis_text(*plot);
     }
   }
+
+  viewport_width = custom_plot->viewport().width();
 
   if (graph_paused)
     return;
@@ -291,29 +291,29 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_top_label->position->setAxes(0, plot.axis);
   plot.axis_top_label->setVisible(false);
 
-  plot.axis_top_label_left  = new QCPItemText(custom_plot);
-  plot.axis_top_label_left->setClipToAxisRect(false);
-  plot.axis_top_label_left->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_top_label_left->setFont(font2);
-  plot.axis_top_label_left->setColor(default_color);
-  plot.axis_top_label_left->setText("\u25b2");
-  plot.axis_top_label_left->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_top_label_left->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_top_label_left->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_top_label_left->position->setAxes(0, plot.axis);
-  plot.axis_top_label_left->setVisible(false);
+  plot.axis_top_label2  = new QCPItemText(custom_plot);
+  plot.axis_top_label2->setClipToAxisRect(false);
+  plot.axis_top_label2->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_top_label2->setFont(font2);
+  plot.axis_top_label2->setColor(default_color);
+  plot.axis_top_label2->setText("\u25b2");
+  plot.axis_top_label2->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_top_label2->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_top_label2->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_top_label2->position->setAxes(0, plot.axis);
+  plot.axis_top_label2->setVisible(false);
 
-  plot.axis_top_label_right  = new QCPItemText(custom_plot);
-  plot.axis_top_label_right->setClipToAxisRect(false);
-  plot.axis_top_label_right->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_top_label_right->setFont(font2);
-  plot.axis_top_label_right->setColor(default_color);
-  plot.axis_top_label_right->setText("\u25b2");
-  plot.axis_top_label_right->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_top_label_right->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_top_label_right->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_top_label_right->position->setAxes(0, plot.axis);
-  plot.axis_top_label_right->setVisible(false);
+  plot.axis_top_label3  = new QCPItemText(custom_plot);
+  plot.axis_top_label3->setClipToAxisRect(false);
+  plot.axis_top_label3->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_top_label3->setFont(font2);
+  plot.axis_top_label3->setColor(default_color);
+  plot.axis_top_label3->setText("\u25b2");
+  plot.axis_top_label3->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_top_label3->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_top_label3->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_top_label3->position->setAxes(0, plot.axis);
+  plot.axis_top_label3->setVisible(false);
 
   plot.axis_bottom_label  = new QCPItemText(custom_plot);
   plot.axis_bottom_label->setClipToAxisRect(false);
@@ -327,36 +327,36 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_bottom_label->position->setAxes(0, plot.axis);
   plot.axis_bottom_label->setVisible(false);
 
-  plot.axis_bottom_label_left  = new QCPItemText(custom_plot);
-  plot.axis_bottom_label_left->setClipToAxisRect(false);
-  plot.axis_bottom_label_left->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_bottom_label_left->setFont(font2);
-  plot.axis_bottom_label_left->setColor(default_color);
-  plot.axis_bottom_label_left->setText("\u25bc");
-  plot.axis_bottom_label_left->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_bottom_label_left->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_bottom_label_left->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_bottom_label_left->position->setAxes(0, plot.axis);
-  plot.axis_bottom_label_left->setVisible(false);
+  plot.axis_bottom_label2  = new QCPItemText(custom_plot);
+  plot.axis_bottom_label2->setClipToAxisRect(false);
+  plot.axis_bottom_label2->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_bottom_label2->setFont(font2);
+  plot.axis_bottom_label2->setColor(default_color);
+  plot.axis_bottom_label2->setText("\u25bc");
+  plot.axis_bottom_label2->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_bottom_label2->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_bottom_label2->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_bottom_label2->position->setAxes(0, plot.axis);
+  plot.axis_bottom_label2->setVisible(false);
 
-  plot.axis_bottom_label_right  = new QCPItemText(custom_plot);
-  plot.axis_bottom_label_right->setClipToAxisRect(false);
-  plot.axis_bottom_label_right->setPositionAlignment(Qt::AlignCenter);
-  plot.axis_bottom_label_right->setFont(font2);
-  plot.axis_bottom_label_right->setColor(default_color);
-  plot.axis_bottom_label_right->setText("\u25bc");
-  plot.axis_bottom_label_right->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
-  plot.axis_bottom_label_right->position->setTypeY(QCPItemPosition::ptPlotCoords);
-  plot.axis_bottom_label_right->position->setAxisRect(custom_plot->axisRect());
-  plot.axis_bottom_label_right->position->setAxes(0, plot.axis);
-  plot.axis_bottom_label_right->setVisible(false);
+  plot.axis_bottom_label3  = new QCPItemText(custom_plot);
+  plot.axis_bottom_label3->setClipToAxisRect(false);
+  plot.axis_bottom_label3->setPositionAlignment(Qt::AlignCenter);
+  plot.axis_bottom_label3->setFont(font2);
+  plot.axis_bottom_label3->setColor(default_color);
+  plot.axis_bottom_label3->setText("\u25bc");
+  plot.axis_bottom_label3->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
+  plot.axis_bottom_label3->position->setTypeY(QCPItemPosition::ptPlotCoords);
+  plot.axis_bottom_label3->position->setAxisRect(custom_plot->axisRect());
+  plot.axis_bottom_label3->position->setAxes(0, plot.axis);
+  plot.axis_bottom_label3->setVisible(false);
 
   plot.axis_top_and_bottom.append(plot.axis_top_label);
-  plot.axis_top_and_bottom.append(plot.axis_top_label_left);
-  plot.axis_top_and_bottom.append(plot.axis_top_label_right);
   plot.axis_top_and_bottom.append(plot.axis_bottom_label);
-  plot.axis_top_and_bottom.append(plot.axis_bottom_label_left);
-  plot.axis_top_and_bottom.append(plot.axis_bottom_label_right);
+  plot.axis_top_and_bottom.append(plot.axis_top_label2);
+  plot.axis_top_and_bottom.append(plot.axis_bottom_label2);
+  plot.axis_top_and_bottom.append(plot.axis_top_label3);
+  plot.axis_top_and_bottom.append(plot.axis_bottom_label3);
 
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.position, row, 1);
@@ -511,53 +511,15 @@ void graph_widget::set_axis_text(plot plot)
 
   int temp_width = custom_plot->viewport().width();
 
-  if (temp_width <= 500)
+  temp_width = qBound(1, temp_width/350, 3);
+
+  for (int i = 0; i < (plot.axis_top_and_bottom.count()/2); i++)
   {
-    plot.axis_top_label->setVisible(out_top);
-    plot.axis_bottom_label->setVisible(out_bottom);
-
-    plot.axis_top_label_left->setVisible(false);
-    plot.axis_bottom_label_left->setVisible(false);
-
-    plot.axis_top_label_right->setVisible(false);
-    plot.axis_bottom_label_right->setVisible(false);
-
-    plot.axis_top_label->position->setCoords(0.50, plot.axis->range().upper);
-    plot.axis_bottom_label->position->setCoords(0.50, plot.axis->range().lower);
-  }
-  else if (temp_width > 500 && temp_width <= 1000)
-  {
-    plot.axis_top_label->setVisible(out_top);
-    plot.axis_bottom_label->setVisible(out_bottom);
-
-    plot.axis_top_label_left->setVisible(out_top);
-    plot.axis_bottom_label_left->setVisible(out_bottom);
-
-    plot.axis_top_label_right->setVisible(false);
-    plot.axis_bottom_label_right->setVisible(false);
-
-    plot.axis_top_label_left->position->setCoords(0.333, plot.axis->range().upper);
-    plot.axis_bottom_label_left->position->setCoords(0.333, plot.axis->range().lower);
-    plot.axis_top_label->position->setCoords(0.666, plot.axis->range().upper);
-    plot.axis_bottom_label->position->setCoords(0.666, plot.axis->range().lower);
-  }
-  else if (temp_width > 1500)
-  {
-    plot.axis_top_label->setVisible(out_top);
-    plot.axis_bottom_label->setVisible(out_bottom);
-
-    plot.axis_top_label_left->setVisible(out_top);
-    plot.axis_bottom_label_left->setVisible(out_bottom);
-
-    plot.axis_top_label_right->setVisible(out_top);
-    plot.axis_bottom_label_right->setVisible(out_bottom);
-
-    plot.axis_top_label_left->position->setCoords(0.25, plot.axis->range().upper);
-    plot.axis_bottom_label_left->position->setCoords(0.25, plot.axis->range().lower);
-    plot.axis_top_label->position->setCoords(0.50, plot.axis->range().upper);
-    plot.axis_bottom_label->position->setCoords(0.50, plot.axis->range().lower);
-    plot.axis_top_label_right->position->setCoords(0.75, plot.axis->range().upper);
-    plot.axis_bottom_label_right->position->setCoords(0.75, plot.axis->range().lower);
+    int j = i * 2;
+    plot.axis_top_and_bottom[j]->setVisible(out_top && (temp_width > i));
+    plot.axis_top_and_bottom[j + 1]->setVisible(out_bottom && (temp_width > i));
+    plot.axis_top_and_bottom[j]->position->setCoords((double)(i + 1)/((double)temp_width + 1.0), plot.axis->range().upper);
+    plot.axis_top_and_bottom[j + 1]->position->setCoords((double)(i + 1)/((double)temp_width + 1.0), plot.axis->range().lower);
   }
 }
 
