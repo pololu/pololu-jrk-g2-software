@@ -513,13 +513,37 @@ void graph_widget::set_axis_text(plot plot)
 
   temp_width = qBound(1, temp_width/350, 3);
 
-  for (int i = 0; i < (plot.axis_top_and_bottom.count()/2); i++)
+  plot.axis_top_label->setVisible(out_top);
+  plot.axis_bottom_label->setVisible(out_bottom);
+
+  plot.axis_top_label2->setVisible(out_top && (temp_width > 1));
+  plot.axis_bottom_label2->setVisible(out_bottom && (temp_width > 1));
+
+  plot.axis_top_label3->setVisible(out_top && (temp_width > 2));
+  plot.axis_bottom_label3->setVisible(out_bottom && (temp_width > 2));
+
+  switch (temp_width)
   {
-    int j = i * 2;
-    plot.axis_top_and_bottom[j]->setVisible(out_top && (temp_width > i));
-    plot.axis_top_and_bottom[j + 1]->setVisible(out_bottom && (temp_width > i));
-    plot.axis_top_and_bottom[j]->position->setCoords((double)(i + 1)/((double)temp_width + 1.0), plot.axis->range().upper);
-    plot.axis_top_and_bottom[j + 1]->position->setCoords((double)(i + 1)/((double)temp_width + 1.0), plot.axis->range().lower);
+    case 1:
+      plot.axis_top_label->position->setCoords(0.50, plot.axis->range().upper);
+      plot.axis_bottom_label->position->setCoords(0.50, plot.axis->range().lower);
+      break;
+    case 2:
+      plot.axis_top_label->position->setCoords(0.20, plot.axis->range().upper);
+      plot.axis_bottom_label->position->setCoords(0.20, plot.axis->range().lower);
+      plot.axis_top_label2->position->setCoords(0.80, plot.axis->range().upper);
+      plot.axis_bottom_label2->position->setCoords(0.80, plot.axis->range().lower);
+      break;
+    case 3:
+      plot.axis_top_label->position->setCoords(0.20, plot.axis->range().upper);
+      plot.axis_bottom_label->position->setCoords(0.20, plot.axis->range().lower);
+      plot.axis_top_label2->position->setCoords(0.50, plot.axis->range().upper);
+      plot.axis_bottom_label2->position->setCoords(0.50, plot.axis->range().lower);
+      plot.axis_top_label3->position->setCoords(0.80, plot.axis->range().upper);
+      plot.axis_bottom_label3->position->setCoords(0.80, plot.axis->range().lower);
+      break;
+    default:
+      break;
   }
 }
 
