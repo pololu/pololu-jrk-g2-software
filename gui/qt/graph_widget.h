@@ -13,6 +13,8 @@
 #include <QApplication>
 #include <QFontDatabase>
 #include <QString>
+#include <QLineEdit>
+#include <QObject>
 
 class graph_widget : public QWidget
 {
@@ -36,13 +38,8 @@ public:
     QPushButton *reset_button;
     QString plot_name;
     QCPItemText * axis_label;
-    QCPItemText * axis_top_label;
-    QCPItemText * axis_top_label2;
-    QCPItemText * axis_top_label3;
-    QCPItemText * axis_bottom_label;
-    QCPItemText * axis_bottom_label2;
-    QCPItemText * axis_bottom_label3;
     QList<QCPItemText *> axis_top_and_bottom;
+    QLineEdit * scale_edit;
   };
 
   QList<plot *> all_plots;
@@ -88,6 +85,8 @@ private:
   QPushButton *show_all_none;
   QPushButton *reset_all_button;
 
+  QDoubleValidator * scale_validator;
+
   QFont font;
   QFont font2;
 
@@ -106,4 +105,5 @@ private slots:
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
   void graph_clicked(QMouseEvent*);
+  void fix_scale();
 };
