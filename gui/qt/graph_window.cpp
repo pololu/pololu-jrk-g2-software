@@ -121,7 +121,7 @@ void graph_window::save_settings()
     QTextStream out(&file_out);
     for(auto plot : grabbed_widget->all_plots)
     {
-      out << plot->plot_name << "," << plot->display->isChecked() << "," <<
+      out << plot->display->text() << "," << plot->display->isChecked() << "," <<
         plot->position->cleanText() <<
         "," << plot->scale->cleanText() << '\n';
     }

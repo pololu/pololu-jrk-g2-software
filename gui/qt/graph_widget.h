@@ -33,11 +33,10 @@ public:
     QCPAxis *axis;
     QCPGraph *graph;
     int32_t plot_value = 0;
-    double range_value = 0;
-    bool default_visible = false;
     QPushButton *reset_button;
-    QString plot_name;
     QCPItemText * axis_label;
+    QCPItemText * axis_position_label;
+    QCPItemText * axis_scale_label;
     QList<QCPItemText *> axis_top_and_bottom;
     QLineEdit * scale_edit;
   };
@@ -71,14 +70,13 @@ private:
 
   // Used to add new plot
   void setup_plot(plot& x, QString display_text, QString default_color,
-    QString dark_color, bool signed_range, double scale,
-    bool default_visible = false);
+    QString dark_color, double scale, bool default_visible = false);
 
   void remove_data_to_scroll(uint32_t time);
   void set_graph_interaction_axis(plot x);
   void reset_graph_interaction_axes();
-  void set_axis_text(plot plot);
-  void set_range(plot plot);
+  void set_axis_text(plot x);
+  void set_range(plot x);
 
   QPushButton *pause_run_button;
   QSpinBox *domain;
@@ -96,7 +94,6 @@ private:
   bool in_preview = false;
 
   int viewport_width = 0;
-  int plot_size = 0;
 
 private slots:
   void change_ranges();
@@ -104,6 +101,6 @@ private slots:
   void set_line_visible();
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
-  void graph_clicked(QMouseEvent*);
+  void mouse_press(QMouseEvent*);
   void fix_scale();
 };
