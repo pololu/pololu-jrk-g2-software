@@ -99,6 +99,9 @@ void graph_widget::setup_ui()
   custom_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
   custom_plot->axisRect()->setMargins(QMargins(30, 25, 30, 50));
 
+  scale_validator = new QDoubleValidator(0.01, 1000000, 2);
+  scale_validator->setNotation(QDoubleValidator::StandardNotation);
+
   connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
     this, SLOT(graph_clicked(QMouseEvent*)));
 
@@ -203,8 +206,6 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoomAxes(0, 0);
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 
-  scale_validator = new QDoubleValidator(0.01, 1000000, 2);
-  scale_validator->setNotation(QDoubleValidator::StandardNotation);
 
   QMetaObject::connectSlotsByName(this);
 }
