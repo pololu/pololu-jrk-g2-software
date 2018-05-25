@@ -272,7 +272,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_label->setPositionAlignment(Qt::AlignRight | Qt::AlignVCenter);
   plot.axis_label->setFont(font);
   plot.axis_label->setColor(default_color);
-  plot.axis_label->setText("\u25b6");
+  plot.axis_label->setText("\u27a4");
   plot.axis_label->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_label->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_label->position->setAxisRect(custom_plot->axisRect());
@@ -492,18 +492,21 @@ void graph_widget::set_axis_text(plot plot)
 {
   if (plot.axis->range().lower >= 0)
   {
-    plot.axis_label->setText("\u25bc");
+    plot.axis_label->setRotation(90);
+
     plot.axis_label->position->setCoords(0, plot.axis->range().lower);
   }
   else if (plot.axis->range().upper <= 0)
   {
-    plot.axis_label->setText("\u25b2");
+    plot.axis_label->setRotation(270);
+
     plot.axis_label->position->setCoords(0, plot.axis->range().upper);
 
   }
   else
   {
-    plot.axis_label->setText("\u25b6");
+    plot.axis_label->setRotation(0);
+
     plot.axis_label->position->setCoords(0, 0);
   }
 
