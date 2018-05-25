@@ -10,7 +10,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_mode = JRK_INPUT_MODE_SERIAL;
       jrk_sprintf(warnings,
-        "Warning: The input mode was invalid "
+        "Warning: The input mode is invalid "
         "so it will be changed to serial.\n");
     }
     jrk_settings_set_input_mode(settings, input_mode);
@@ -22,7 +22,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_error_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input error minimum was too high "
+        "Warning: The input error minimum is too high "
         "so it will be changed to %u.\n", input_error_minimum);
     }
     jrk_settings_set_input_error_minimum(settings, input_error_minimum);
@@ -34,7 +34,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_error_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input error maximum was too high "
+        "Warning: The input error maximum is too high "
         "so it will be changed to %u.\n", input_error_maximum);
     }
     jrk_settings_set_input_error_maximum(settings, input_error_maximum);
@@ -46,7 +46,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input minimum was too high "
+        "Warning: The input minimum is too high "
         "so it will be changed to %u.\n", input_minimum);
     }
     jrk_settings_set_input_minimum(settings, input_minimum);
@@ -58,7 +58,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input maximum was too high "
+        "Warning: The input maximum is too high "
         "so it will be changed to %u.\n", input_maximum);
     }
     jrk_settings_set_input_maximum(settings, input_maximum);
@@ -70,7 +70,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_neutral_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input neutral minimum was too high "
+        "Warning: The input neutral minimum is too high "
         "so it will be changed to %u.\n", input_neutral_minimum);
     }
     jrk_settings_set_input_neutral_minimum(settings, input_neutral_minimum);
@@ -82,7 +82,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_neutral_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The input neutral maximum was too high "
+        "Warning: The input neutral maximum is too high "
         "so it will be changed to %u.\n", input_neutral_maximum);
     }
     jrk_settings_set_input_neutral_maximum(settings, input_neutral_maximum);
@@ -94,7 +94,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       output_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The output minimum was too high "
+        "Warning: The output minimum is too high "
         "so it will be changed to %u.\n", output_minimum);
     }
     jrk_settings_set_output_minimum(settings, output_minimum);
@@ -106,7 +106,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       output_neutral = 4095;
       jrk_sprintf(warnings,
-        "Warning: The output neutral was too high "
+        "Warning: The output neutral is too high "
         "so it will be changed to %u.\n", output_neutral);
     }
     jrk_settings_set_output_neutral(settings, output_neutral);
@@ -118,7 +118,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       output_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The output maximum was too high "
+        "Warning: The output maximum is too high "
         "so it will be changed to %u.\n", output_maximum);
     }
     jrk_settings_set_output_maximum(settings, output_maximum);
@@ -130,7 +130,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_scaling_degree = JRK_SCALING_DEGREE_LINEAR;
       jrk_sprintf(warnings,
-        "Warning: The input scaling degree was invalid "
+        "Warning: The input scaling degree is invalid "
         "so it will be changed to linear.\n");
     }
     jrk_settings_set_input_scaling_degree(settings, input_scaling_degree);
@@ -142,7 +142,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       input_analog_samples_exponent = 10;
       jrk_sprintf(warnings,
-        "Warning: The input analog samples exponent was too high "
+        "Warning: The input analog samples exponent is too high "
         "so it will be changed to %u.\n", input_analog_samples_exponent);
     }
     jrk_settings_set_input_analog_samples_exponent(settings, input_analog_samples_exponent);
@@ -154,7 +154,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       feedback_mode = JRK_FEEDBACK_MODE_ANALOG;
       jrk_sprintf(warnings,
-        "Warning: The feedback mode was invalid "
+        "Warning: The feedback mode is invalid "
         "so it will be changed to analog.\n");
     }
     jrk_settings_set_feedback_mode(settings, feedback_mode);
@@ -166,7 +166,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       feedback_error_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The feedback error minimum was too high "
+        "Warning: The feedback error minimum is too high "
         "so it will be changed to %u.\n", feedback_error_minimum);
     }
     jrk_settings_set_feedback_error_minimum(settings, feedback_error_minimum);
@@ -178,7 +178,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       feedback_error_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The feedback error maximum was too high "
+        "Warning: The feedback error maximum is too high "
         "so it will be changed to %u.\n", feedback_error_maximum);
     }
     jrk_settings_set_feedback_error_maximum(settings, feedback_error_maximum);
@@ -190,7 +190,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       feedback_minimum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The feedback minimum was too high "
+        "Warning: The feedback minimum is too high "
         "so it will be changed to %u.\n", feedback_minimum);
     }
     jrk_settings_set_feedback_minimum(settings, feedback_minimum);
@@ -202,7 +202,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       feedback_maximum = 4095;
       jrk_sprintf(warnings,
-        "Warning: The feedback maximum was too high "
+        "Warning: The feedback maximum is too high "
         "so it will be changed to %u.\n", feedback_maximum);
     }
     jrk_settings_set_feedback_maximum(settings, feedback_maximum);
@@ -219,7 +219,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       feedback_analog_samples_exponent = 10;
       jrk_sprintf(warnings,
-        "Warning: The feedback analog samples exponent was too high "
+        "Warning: The feedback analog samples exponent is too high "
         "so it will be changed to %u.\n", feedback_analog_samples_exponent);
     }
     jrk_settings_set_feedback_analog_samples_exponent(settings, feedback_analog_samples_exponent);
@@ -231,7 +231,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       serial_mode = JRK_SERIAL_MODE_USB_DUAL_PORT;
       jrk_sprintf(warnings,
-        "Warning: The serial mode was invalid "
+        "Warning: The serial mode is invalid "
         "so it will be changed to USB dual port.\n");
     }
     jrk_settings_set_serial_mode(settings, serial_mode);
@@ -243,7 +243,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       proportional_multiplier = 1023;
       jrk_sprintf(warnings,
-        "Warning: The proportional multiplier was too high "
+        "Warning: The proportional multiplier is too high "
         "so it will be changed to %u.\n", proportional_multiplier);
     }
     jrk_settings_set_proportional_multiplier(settings, proportional_multiplier);
@@ -255,7 +255,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       proportional_exponent = 18;
       jrk_sprintf(warnings,
-        "Warning: The proportional exponent was too high "
+        "Warning: The proportional exponent is too high "
         "so it will be changed to %u.\n", proportional_exponent);
     }
     jrk_settings_set_proportional_exponent(settings, proportional_exponent);
@@ -267,7 +267,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       integral_multiplier = 1023;
       jrk_sprintf(warnings,
-        "Warning: The integral multiplier was too high "
+        "Warning: The integral multiplier is too high "
         "so it will be changed to %u.\n", integral_multiplier);
     }
     jrk_settings_set_integral_multiplier(settings, integral_multiplier);
@@ -279,7 +279,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       integral_exponent = 18;
       jrk_sprintf(warnings,
-        "Warning: The integral exponent was too high "
+        "Warning: The integral exponent is too high "
         "so it will be changed to %u.\n", integral_exponent);
     }
     jrk_settings_set_integral_exponent(settings, integral_exponent);
@@ -291,7 +291,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       derivative_multiplier = 1023;
       jrk_sprintf(warnings,
-        "Warning: The derivative multiplier was too high "
+        "Warning: The derivative multiplier is too high "
         "so it will be changed to %u.\n", derivative_multiplier);
     }
     jrk_settings_set_derivative_multiplier(settings, derivative_multiplier);
@@ -303,7 +303,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       derivative_exponent = 18;
       jrk_sprintf(warnings,
-        "Warning: The derivative exponent was too high "
+        "Warning: The derivative exponent is too high "
         "so it will be changed to %u.\n", derivative_exponent);
     }
     jrk_settings_set_derivative_exponent(settings, derivative_exponent);
@@ -315,14 +315,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       pid_period = 1;
       jrk_sprintf(warnings,
-        "Warning: The pid period was too low "
+        "Warning: The pid period is too low "
         "so it will be changed to %u.\n", pid_period);
     }
     if (pid_period > 8191)
     {
       pid_period = 8191;
       jrk_sprintf(warnings,
-        "Warning: The pid period was too high "
+        "Warning: The pid period is too high "
         "so it will be changed to %u.\n", pid_period);
     }
     jrk_settings_set_pid_period(settings, pid_period);
@@ -334,7 +334,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       integral_divider_exponent = 15;
       jrk_sprintf(warnings,
-        "Warning: The integral divider exponent was too high "
+        "Warning: The integral divider exponent is too high "
         "so it will be changed to %u.\n", integral_divider_exponent);
     }
     jrk_settings_set_integral_divider_exponent(settings, integral_divider_exponent);
@@ -346,7 +346,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       integral_limit = 32767;
       jrk_sprintf(warnings,
-        "Warning: The integral limit was too high "
+        "Warning: The integral limit is too high "
         "so it will be changed to %u.\n", integral_limit);
     }
     jrk_settings_set_integral_limit(settings, integral_limit);
@@ -358,7 +358,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       pwm_frequency = JRK_PWM_FREQUENCY_20;
       jrk_sprintf(warnings,
-        "Warning: The pwm frequency was invalid "
+        "Warning: The pwm frequency is invalid "
         "so it will be changed to 20 kHz.\n");
     }
     jrk_settings_set_pwm_frequency(settings, pwm_frequency);
@@ -370,7 +370,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       current_samples_exponent = 10;
       jrk_sprintf(warnings,
-        "Warning: The current samples exponent was too high "
+        "Warning: The current samples exponent is too high "
         "so it will be changed to %u.\n", current_samples_exponent);
     }
     jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
@@ -382,7 +382,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       hard_overcurrent_threshold = 1;
       jrk_sprintf(warnings,
-        "Warning: The hard overcurrent threshold was too low "
+        "Warning: The hard overcurrent threshold is too low "
         "so it will be changed to %u.\n", hard_overcurrent_threshold);
     }
     jrk_settings_set_hard_overcurrent_threshold(settings, hard_overcurrent_threshold);
@@ -394,14 +394,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       current_offset_calibration = -800;
       jrk_sprintf(warnings,
-        "Warning: The current offset calibration was too low "
+        "Warning: The current offset calibration is too low "
         "so it will be changed to %d.\n", current_offset_calibration);
     }
     if (current_offset_calibration > 800)
     {
       current_offset_calibration = 800;
       jrk_sprintf(warnings,
-        "Warning: The current offset calibration was too high "
+        "Warning: The current offset calibration is too high "
         "so it will be changed to %d.\n", current_offset_calibration);
     }
     jrk_settings_set_current_offset_calibration(settings, current_offset_calibration);
@@ -413,14 +413,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       current_scale_calibration = -1875;
       jrk_sprintf(warnings,
-        "Warning: The current scale calibration was too low "
+        "Warning: The current scale calibration is too low "
         "so it will be changed to %d.\n", current_scale_calibration);
     }
     if (current_scale_calibration > 1875)
     {
       current_scale_calibration = 1875;
       jrk_sprintf(warnings,
-        "Warning: The current scale calibration was too high "
+        "Warning: The current scale calibration is too high "
         "so it will be changed to %d.\n", current_scale_calibration);
     }
     jrk_settings_set_current_scale_calibration(settings, current_scale_calibration);
@@ -432,14 +432,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_duty_cycle_while_feedback_out_of_range = 1;
       jrk_sprintf(warnings,
-        "Warning: The max duty cycle while feedback out of range was too low "
+        "Warning: The max duty cycle while feedback out of range is too low "
         "so it will be changed to %u.\n", max_duty_cycle_while_feedback_out_of_range);
     }
     if (max_duty_cycle_while_feedback_out_of_range > 600)
     {
       max_duty_cycle_while_feedback_out_of_range = 600;
       jrk_sprintf(warnings,
-        "Warning: The max duty cycle while feedback out of range was too high "
+        "Warning: The max duty cycle while feedback out of range is too high "
         "so it will be changed to %u.\n", max_duty_cycle_while_feedback_out_of_range);
     }
     jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(settings, max_duty_cycle_while_feedback_out_of_range);
@@ -451,14 +451,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_acceleration_forward = 1;
       jrk_sprintf(warnings,
-        "Warning: The max acceleration forward was too low "
+        "Warning: The max acceleration forward is too low "
         "so it will be changed to %u.\n", max_acceleration_forward);
     }
     if (max_acceleration_forward > 600)
     {
       max_acceleration_forward = 600;
       jrk_sprintf(warnings,
-        "Warning: The max acceleration forward was too high "
+        "Warning: The max acceleration forward is too high "
         "so it will be changed to %u.\n", max_acceleration_forward);
     }
     jrk_settings_set_max_acceleration_forward(settings, max_acceleration_forward);
@@ -470,14 +470,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_acceleration_reverse = 1;
       jrk_sprintf(warnings,
-        "Warning: The max acceleration reverse was too low "
+        "Warning: The max acceleration reverse is too low "
         "so it will be changed to %u.\n", max_acceleration_reverse);
     }
     if (max_acceleration_reverse > 600)
     {
       max_acceleration_reverse = 600;
       jrk_sprintf(warnings,
-        "Warning: The max acceleration reverse was too high "
+        "Warning: The max acceleration reverse is too high "
         "so it will be changed to %u.\n", max_acceleration_reverse);
     }
     jrk_settings_set_max_acceleration_reverse(settings, max_acceleration_reverse);
@@ -489,14 +489,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_deceleration_forward = 1;
       jrk_sprintf(warnings,
-        "Warning: The max deceleration forward was too low "
+        "Warning: The max deceleration forward is too low "
         "so it will be changed to %u.\n", max_deceleration_forward);
     }
     if (max_deceleration_forward > 600)
     {
       max_deceleration_forward = 600;
       jrk_sprintf(warnings,
-        "Warning: The max deceleration forward was too high "
+        "Warning: The max deceleration forward is too high "
         "so it will be changed to %u.\n", max_deceleration_forward);
     }
     jrk_settings_set_max_deceleration_forward(settings, max_deceleration_forward);
@@ -508,14 +508,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_deceleration_reverse = 1;
       jrk_sprintf(warnings,
-        "Warning: The max deceleration reverse was too low "
+        "Warning: The max deceleration reverse is too low "
         "so it will be changed to %u.\n", max_deceleration_reverse);
     }
     if (max_deceleration_reverse > 600)
     {
       max_deceleration_reverse = 600;
       jrk_sprintf(warnings,
-        "Warning: The max deceleration reverse was too high "
+        "Warning: The max deceleration reverse is too high "
         "so it will be changed to %u.\n", max_deceleration_reverse);
     }
     jrk_settings_set_max_deceleration_reverse(settings, max_deceleration_reverse);
@@ -527,7 +527,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_duty_cycle_forward = 600;
       jrk_sprintf(warnings,
-        "Warning: The max duty cycle forward was too high "
+        "Warning: The max duty cycle forward is too high "
         "so it will be changed to %u.\n", max_duty_cycle_forward);
     }
     jrk_settings_set_max_duty_cycle_forward(settings, max_duty_cycle_forward);
@@ -539,7 +539,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       max_duty_cycle_reverse = 600;
       jrk_sprintf(warnings,
-        "Warning: The max duty cycle reverse was too high "
+        "Warning: The max duty cycle reverse is too high "
         "so it will be changed to %u.\n", max_duty_cycle_reverse);
     }
     jrk_settings_set_max_duty_cycle_reverse(settings, max_duty_cycle_reverse);
@@ -551,7 +551,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       encoded_hard_current_limit_forward = 95;
       jrk_sprintf(warnings,
-        "Warning: The encoded hard current limit forward was too high "
+        "Warning: The encoded hard current limit forward is too high "
         "so it will be changed to %u.\n", encoded_hard_current_limit_forward);
     }
     jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
@@ -563,7 +563,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       encoded_hard_current_limit_reverse = 95;
       jrk_sprintf(warnings,
-        "Warning: The encoded hard current limit reverse was too high "
+        "Warning: The encoded hard current limit reverse is too high "
         "so it will be changed to %u.\n", encoded_hard_current_limit_reverse);
     }
     jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);
@@ -600,14 +600,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       vin_calibration = -500;
       jrk_sprintf(warnings,
-        "Warning: The VIN calibration was too low "
+        "Warning: The VIN calibration is too low "
         "so it will be changed to %d.\n", vin_calibration);
     }
     if (vin_calibration > 500)
     {
       vin_calibration = 500;
       jrk_sprintf(warnings,
-        "Warning: The VIN calibration was too high "
+        "Warning: The VIN calibration is too high "
         "so it will be changed to %d.\n", vin_calibration);
     }
     jrk_settings_set_vin_calibration(settings, vin_calibration);
@@ -619,7 +619,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       fbt_method = JRK_FBT_METHOD_PULSE_COUNTING;
       jrk_sprintf(warnings,
-        "Warning: The fbt method was invalid "
+        "Warning: The fbt method is invalid "
         "so it will be changed to pulse counting.\n");
     }
     jrk_settings_set_fbt_method(settings, fbt_method);
@@ -631,7 +631,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       fbt_timing_clock = JRK_FBT_TIMING_CLOCK_1_5;
       jrk_sprintf(warnings,
-        "Warning: The fbt timing clock was invalid "
+        "Warning: The fbt timing clock is invalid "
         "so it will be changed to 1.5 MHz.\n");
     }
     jrk_settings_set_fbt_timing_clock(settings, fbt_timing_clock);
@@ -643,14 +643,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       fbt_timing_timeout = 1;
       jrk_sprintf(warnings,
-        "Warning: The fbt timing timeout was too low "
+        "Warning: The fbt timing timeout is too low "
         "so it will be changed to %u.\n", fbt_timing_timeout);
     }
     if (fbt_timing_timeout > 60000)
     {
       fbt_timing_timeout = 60000;
       jrk_sprintf(warnings,
-        "Warning: The fbt timing timeout was too high "
+        "Warning: The fbt timing timeout is too high "
         "so it will be changed to %u.\n", fbt_timing_timeout);
     }
     jrk_settings_set_fbt_timing_timeout(settings, fbt_timing_timeout);
@@ -662,14 +662,14 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       fbt_samples = 1;
       jrk_sprintf(warnings,
-        "Warning: The fbt samples was too low "
+        "Warning: The fbt samples is too low "
         "so it will be changed to %u.\n", fbt_samples);
     }
     if (fbt_samples > JRK_MAX_ALLOWED_FBT_SAMPLES)
     {
       fbt_samples = JRK_MAX_ALLOWED_FBT_SAMPLES;
       jrk_sprintf(warnings,
-        "Warning: The fbt samples was too high "
+        "Warning: The fbt samples is too high "
         "so it will be changed to %u.\n", fbt_samples);
     }
     jrk_settings_set_fbt_samples(settings, fbt_samples);
@@ -681,7 +681,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       fbt_divider_exponent = 15;
       jrk_sprintf(warnings,
-        "Warning: The fbt divider exponent was too high "
+        "Warning: The fbt divider exponent is too high "
         "so it will be changed to %u.\n", fbt_divider_exponent);
     }
     jrk_settings_set_fbt_divider_exponent(settings, fbt_divider_exponent);
@@ -720,7 +720,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       duration = JRK_MAX_ALLOWED_BRAKE_DURATION;
       jrk_sprintf(warnings,
-        "Warning: The brake duration forward was too high "
+        "Warning: The brake duration forward is too high "
         "so it will be changed to %u.\n", duration);
     }
 
@@ -738,7 +738,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       duration = JRK_MAX_ALLOWED_BRAKE_DURATION;
       jrk_sprintf(warnings,
-        "Warning: The brake duration reverse was too high "
+        "Warning: The brake duration reverse is too high "
         "so it will be changed to %u.\n", duration);
     }
 
@@ -763,7 +763,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       serial_device_number &= device_number_mask;
       jrk_sprintf(warnings,
-        "Warning: The serial device number was higher than %u "
+        "Warning: The serial device number is higher than %u "
         "so it will be changed to %u.\n", device_number_mask, serial_device_number);
     }
 
@@ -782,7 +782,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     {
       timeout = JRK_MAX_ALLOWED_SERIAL_TIMEOUT;
       jrk_sprintf(warnings,
-        "Warning: The serial timeout was too high "
+        "Warning: The serial timeout is too high "
         "so it will be changed to %u.\n", timeout);
     }
 
