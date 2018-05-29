@@ -13,14 +13,14 @@ variable is a raw measurement of the Jrk's input.  The target variable is
 the desired state of the system's output, and feeds into the PID feedback
 algorithm.
 
-- If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the Jrk gets it
+- If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the Jrk gets its
   input and target settings over its USB, serial, or I2C interfaces.  You
-  would send Set Target commands to the Jrk to set both the input and target
+  can send Set Target commands to the Jrk to set both the input and target
   variables.
 
 - If the input mode is "Analog voltage" (JRK_INPUT_MODE_ANALOG), the Jrk gets
   it input variable by reading the voltage on its SDA/AN pin.  A signal level
-  of 0 V corresponds to an input value of 0, and a signal elvel of 5 V
+  of 0 V corresponds to an input value of 0, and a signal level of 5 V
   corresponds to an input value of 4092.  The Jrk uses its input scaling
   feature to set the target variable.
 
@@ -35,7 +35,7 @@ EOF
     type: :uint16_t,
     range: 0..4095,
     comment: <<EOF
-If the raw input value is below this value, it causes an "Input disconnect"
+If the raw input value is below this value, it causes an input disconnect
 error.
 EOF
   },
@@ -54,8 +54,8 @@ EOF
     type: :uint16_t,
     range: 0..4095,
     comment: <<EOF
-This is one of the parameters of the input scaling feature, which is how the
-Jrk calculates its target value from its raw input.
+This is one of the input scaling parameters that determines how the Jrk
+calculates its target value from its raw input.
 
 By default, the input scaling:
 

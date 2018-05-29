@@ -244,14 +244,14 @@ uint32_t jrk_settings_get_product(const jrk_settings *);
 // the desired state of the system's output, and feeds into the PID feedback
 // algorithm.
 //
-// - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the Jrk gets it
+// - If the input mode is "Serial" (JRK_INPUT_MODE_SERIAL), the Jrk gets its
 //   input and target settings over its USB, serial, or I2C interfaces.  You
-//   would send Set Target commands to the Jrk to set both the input and target
+//   can send Set Target commands to the Jrk to set both the input and target
 //   variables.
 //
 // - If the input mode is "Analog voltage" (JRK_INPUT_MODE_ANALOG), the Jrk gets
 //   it input variable by reading the voltage on its SDA/AN pin.  A signal level
-//   of 0 V corresponds to an input value of 0, and a signal elvel of 5 V
+//   of 0 V corresponds to an input value of 0, and a signal level of 5 V
 //   corresponds to an input value of 4092.  The Jrk uses its input scaling
 //   feature to set the target variable.
 //
@@ -270,7 +270,7 @@ uint8_t jrk_settings_get_input_mode(const jrk_settings *);
 
 // Sets the input_error_minimum setting.
 //
-// If the raw input value is below this value, it causes an "Input disconnect"
+// If the raw input value is below this value, it causes an input disconnect
 // error.
 JRK_API
 void jrk_settings_set_input_error_minimum(jrk_settings *,
@@ -296,8 +296,8 @@ uint16_t jrk_settings_get_input_error_maximum(const jrk_settings *);
 
 // Sets the input_minimum setting.
 //
-// This is one of the parameters of the input scaling feature, which is how the
-// Jrk calculates its target value from its raw input.
+// This is one of the input scaling parameters that determines how the Jrk
+// calculates its target value from its raw input.
 //
 // By default, the input scaling:
 //
