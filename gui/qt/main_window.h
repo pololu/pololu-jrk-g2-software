@@ -112,6 +112,7 @@ public:
   void set_manual_target_enabled(bool enabled);
   void set_manual_target_range(uint16_t min, uint16_t max);
   void set_manual_target_inputs(uint16_t target);
+  uint16_t get_manual_target_numeric_input();
 
   // Controls whether the apply settings action/button is enabled or
   // disabled.
@@ -130,8 +131,8 @@ public:
   void set_input_enable_crc(bool enabled);
   void set_input_device_number(uint16_t value);
   void set_input_enable_device_number(bool enabled);
-  void set_input_serial_timeout(uint16_t value);
-  void set_input_compact_protocol(bool enabled);
+  void set_serial_timeout(uint32_t value);
+  void set_input_compact_protocol(bool enabled);  // TODO: fix this name and the others around here
   void set_input_error_minimum(uint16_t input_error_minimum);
   void set_input_error_maximum(uint16_t input_error_maximum);
   void set_input_minimum(uint16_t input_minimum);
@@ -555,9 +556,9 @@ private:
   QSpinBox *input_uart_fixed_baud_spinbox;;
   QCheckBox *input_enable_crc_checkbox;
   QCheckBox *input_device_number_checkbox;
-  QLabel *input_timeout_label;
+  QLabel *input_timeout_label;  // TODO: rename to serial_timeout_label
   QRadioButton *input_uart_fixed_baud_radio;
-  QDoubleSpinBox *input_timeout_spinbox;
+  QDoubleSpinBox *input_timeout_spinbox;  // TODO: rename to serial_timeout_spinbox
   QCheckBox *input_disable_compact_protocol_checkbox;
 
   // feedback tab
@@ -711,3 +712,16 @@ private:
   QString directory_hint;
 };
 
+// TODO: fix these names in the main_window class for settings that were renamed:
+/**
+-  void set_current_limit_code_forward(uint16_t);
+-  void set_current_limit_code_reverse(uint16_t);
++  void set_encoded_hard_current_limit_forward(uint16_t);
++  void set_encoded_hard_current_limit_reverse(uint16_t);
+-  void set_max_current_forward(uint16_t);
+-  void set_max_current_reverse(uint16_t);
++  void set_soft_current_limit_forward(uint16_t);
++  void set_soft_current_limit_reverse(uint16_t);
+-  void set_overcurrent_threshold(uint8_t);
++  void set_hard_overcurrent_threshold(uint8_t);
+**/

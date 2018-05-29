@@ -53,7 +53,7 @@ void graph_window::receive_widget(graph_widget *widget)
 // maximized while only painting controls in its upper left corner.
 void graph_window::raise_window()
 {
-  if (!isVisible())
+  if (!isVisible() || (windowState() & Qt::WindowMinimized))
   {
     showNormal();
   }

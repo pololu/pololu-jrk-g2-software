@@ -217,8 +217,8 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint8_t overcurrent_threshold = buf[JRK_SETTING_OVERCURRENT_THRESHOLD];
-    jrk_settings_set_overcurrent_threshold(settings, overcurrent_threshold);
+    uint8_t hard_overcurrent_threshold = buf[JRK_SETTING_HARD_OVERCURRENT_THRESHOLD];
+    jrk_settings_set_hard_overcurrent_threshold(settings, hard_overcurrent_threshold);
   }
 
   {
@@ -272,23 +272,23 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 
   {
-    uint16_t current_limit_code_forward = read_uint16_t(buf + JRK_SETTING_CURRENT_LIMIT_CODE_FORWARD);
-    jrk_settings_set_current_limit_code_forward(settings, current_limit_code_forward);
+    uint16_t encoded_hard_current_limit_forward = read_uint16_t(buf + JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_FORWARD);
+    jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
   }
 
   {
-    uint16_t current_limit_code_reverse = read_uint16_t(buf + JRK_SETTING_CURRENT_LIMIT_CODE_REVERSE);
-    jrk_settings_set_current_limit_code_reverse(settings, current_limit_code_reverse);
+    uint16_t encoded_hard_current_limit_reverse = read_uint16_t(buf + JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_REVERSE);
+    jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);
   }
 
   {
-    uint16_t max_current_forward = read_uint16_t(buf + JRK_SETTING_MAX_CURRENT_FORWARD);
-    jrk_settings_set_max_current_forward(settings, max_current_forward);
+    uint16_t soft_current_limit_forward = read_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_LIMIT_FORWARD);
+    jrk_settings_set_soft_current_limit_forward(settings, soft_current_limit_forward);
   }
 
   {
-    uint16_t max_current_reverse = read_uint16_t(buf + JRK_SETTING_MAX_CURRENT_REVERSE);
-    jrk_settings_set_max_current_reverse(settings, max_current_reverse);
+    uint16_t soft_current_limit_reverse = read_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_LIMIT_REVERSE);
+    jrk_settings_set_soft_current_limit_reverse(settings, soft_current_limit_reverse);
   }
 
   {
@@ -393,7 +393,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
   }
 }
 
-jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
+jrk_error * jrk_get_eeprom_settings(jrk_handle * handle, jrk_settings ** settings)
 {
   if (settings == NULL)
   {
@@ -445,7 +445,7 @@ jrk_error * jrk_get_settings(jrk_handle * handle, jrk_settings ** settings)
       {
         length = sizeof(buf) - index;
       }
-      error = jrk_get_setting_segment(handle, index, length, buf + index);
+      error = jrk_get_eeprom_setting_segment(handle, index, length, buf + index);
       index += length;
     }
   }

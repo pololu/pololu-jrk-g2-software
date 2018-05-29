@@ -848,16 +848,16 @@ namespace jrk
       return jrk_settings_get_current_samples_exponent(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_overcurrent_threshold().
-    void set_overcurrent_threshold(uint8_t value) noexcept
+    /// Wrapper for jrk_settings_set_hard_overcurrent_threshold().
+    void set_hard_overcurrent_threshold(uint8_t value) noexcept
     {
-      jrk_settings_set_overcurrent_threshold(pointer, value);
+      jrk_settings_set_hard_overcurrent_threshold(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_overcurrent_threshold().
-    uint8_t get_overcurrent_threshold() const noexcept
+    /// Wrapper for jrk_settings_get_hard_overcurrent_threshold().
+    uint8_t get_hard_overcurrent_threshold() const noexcept
     {
-      return jrk_settings_get_overcurrent_threshold(pointer);
+      return jrk_settings_get_hard_overcurrent_threshold(pointer);
     }
 
     /// Wrapper for jrk_settings_set_current_offset_calibration().
@@ -980,28 +980,28 @@ namespace jrk
       return jrk_settings_get_max_duty_cycle_reverse(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_current_limit_code_forward().
-    void set_current_limit_code_forward(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_encoded_hard_current_limit_forward().
+    void set_encoded_hard_current_limit_forward(uint16_t value) noexcept
     {
-      jrk_settings_set_current_limit_code_forward(pointer, value);
+      jrk_settings_set_encoded_hard_current_limit_forward(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_current_limit_code_forward().
-    uint16_t get_current_limit_code_forward() const noexcept
+    /// Wrapper for jrk_settings_get_encoded_hard_current_limit_forward().
+    uint16_t get_encoded_hard_current_limit_forward() const noexcept
     {
-      return jrk_settings_get_current_limit_code_forward(pointer);
+      return jrk_settings_get_encoded_hard_current_limit_forward(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_current_limit_code_reverse().
-    void set_current_limit_code_reverse(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_encoded_hard_current_limit_reverse().
+    void set_encoded_hard_current_limit_reverse(uint16_t value) noexcept
     {
-      jrk_settings_set_current_limit_code_reverse(pointer, value);
+      jrk_settings_set_encoded_hard_current_limit_reverse(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_current_limit_code_reverse().
-    uint16_t get_current_limit_code_reverse() const noexcept
+    /// Wrapper for jrk_settings_get_encoded_hard_current_limit_reverse().
+    uint16_t get_encoded_hard_current_limit_reverse() const noexcept
     {
-      return jrk_settings_get_current_limit_code_reverse(pointer);
+      return jrk_settings_get_encoded_hard_current_limit_reverse(pointer);
     }
 
     /// Wrapper for jrk_settings_set_brake_duration_forward().
@@ -1028,28 +1028,28 @@ namespace jrk
       return jrk_settings_get_brake_duration_reverse(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_max_current_forward().
-    void set_max_current_forward(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_soft_current_limit_forward().
+    void set_soft_current_limit_forward(uint16_t value) noexcept
     {
-      jrk_settings_set_max_current_forward(pointer, value);
+      jrk_settings_set_soft_current_limit_forward(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_max_current_forward().
-    uint16_t get_max_current_forward() const noexcept
+    /// Wrapper for jrk_settings_get_soft_current_limit_forward().
+    uint16_t get_soft_current_limit_forward() const noexcept
     {
-      return jrk_settings_get_max_current_forward(pointer);
+      return jrk_settings_get_soft_current_limit_forward(pointer);
     }
 
-    /// Wrapper for jrk_settings_set_max_current_reverse().
-    void set_max_current_reverse(uint16_t value) noexcept
+    /// Wrapper for jrk_settings_set_soft_current_limit_reverse().
+    void set_soft_current_limit_reverse(uint16_t value) noexcept
     {
-      jrk_settings_set_max_current_reverse(pointer, value);
+      jrk_settings_set_soft_current_limit_reverse(pointer, value);
     }
 
-    /// Wrapper for jrk_settings_get_max_current_reverse().
-    uint16_t get_max_current_reverse() const noexcept
+    /// Wrapper for jrk_settings_get_soft_current_limit_reverse().
+    uint16_t get_soft_current_limit_reverse() const noexcept
     {
-      return jrk_settings_get_max_current_reverse(pointer);
+      return jrk_settings_get_soft_current_limit_reverse(pointer);
     }
 
     /// Wrapper for jrk_settings_set_coast_when_off().
@@ -1362,10 +1362,10 @@ namespace jrk
       return jrk_variables_get_raw_current(pointer);
     }
 
-    /// Wrapper for jrk_variables_get_current_limit_code().
-    uint16_t get_current_limit_code() const noexcept
+    /// Wrapper for jrk_variables_get_encoded_hard_current_limit().
+    uint16_t get_encoded_hard_current_limit() const noexcept
     {
-      return jrk_variables_get_current_limit_code(pointer);
+      return jrk_variables_get_encoded_hard_current_limit(pointer);
     }
 
     /// Wrapper for jrk_variables_get_last_duty_cycle().
@@ -1580,18 +1580,18 @@ namespace jrk
           pointer, index, length, output, flags));
     }
 
-    /// Wrapper for jrk_get_settings().
-    settings get_settings()
+    /// Wrapper for jrk_get_eeprom_settings().
+    settings get_eeprom_settings()
     {
       jrk_settings * s;
-      throw_if_needed(jrk_get_settings(pointer, &s));
+      throw_if_needed(jrk_get_eeprom_settings(pointer, &s));
       return settings(s);
     }
 
-    /// Wrapper for jrk_set_settings().
-    void set_settings(const settings & settings)
+    /// Wrapper for jrk_set_eeprom_settings().
+    void set_eeprom_settings(const settings & settings)
     {
-      throw_if_needed(jrk_set_settings(pointer, settings.get_pointer()));
+      throw_if_needed(jrk_set_eeprom_settings(pointer, settings.get_pointer()));
     }
 
     /// Wrapper for jrk_get_ram_settings().
@@ -1652,33 +1652,25 @@ namespace jrk
     /// \endcond
   };
 
-  /// Wrapper for jrk_get_recommended_current_limit_codes().
-  inline const std::vector<uint16_t> get_recommended_current_limit_codes(
+  /// Wrapper for jrk_get_recommended_encoded_hard_current_limits().
+  inline const std::vector<uint16_t> get_recommended_encoded_hard_current_limits(
     uint32_t product)
   {
     size_t count;
-    const uint16_t * table = jrk_get_recommended_current_limit_codes(product, &count);
+    const uint16_t * table = jrk_get_recommended_encoded_hard_current_limits(product, &count);
     return std::vector<uint16_t>(table, table + count);
   }
 
-  /// Wrapper for jrk_current_limit_code_to_ma().
-  inline uint32_t current_limit_code_to_ma(const settings & settings, uint16_t code)
+  /// Wrapper for jrk_current_limit_decode().
+  inline uint32_t current_limit_decode(const settings & settings, uint16_t code)
   {
-    return jrk_current_limit_code_to_ma(settings.get_pointer(), code);
+    return jrk_current_limit_decode(settings.get_pointer(), code);
   }
 
   /// Wrapper for jrk_current_limit_ma_to_code().
-  inline uint16_t current_limit_ma_to_code(const settings & settings, uint32_t ma)
+  inline uint16_t current_limit_encode(const settings & settings, uint32_t ma)
   {
-    return jrk_current_limit_ma_to_code(settings.get_pointer(), ma);
-  }
-
-  /// Wrapper for jrk_calculate_measured_current_ma().
-  inline int32_t calculate_measured_current_ma(
-    const settings & settings, const variables & vars)
-  {
-    return jrk_calculate_measured_current_ma(
-      settings.get_pointer(), vars.get_pointer());
+    return jrk_current_limit_encode(settings.get_pointer(), ma);
   }
 
   /// Wrapper for jrk_calculate_raw_current_mv64().

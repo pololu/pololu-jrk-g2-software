@@ -143,7 +143,7 @@ def generate_settings_fixing_code(stream)
       stream.puts "  {"
       stream.puts "    #{name} = #{default};"
       stream.puts "    jrk_sprintf(warnings,"
-      stream.puts "      \"Warning: The #{english_name} was invalid \""
+      stream.puts "      \"Warning: The #{english_name} is invalid \""
       stream.puts "      \"so it will be changed to #{english_default}.\\n\");"
       stream.puts "  }"
     else
@@ -159,7 +159,7 @@ def generate_settings_fixing_code(stream)
         stream.puts "  {"
         stream.puts "    #{name} = #{min};"
         stream.puts "    jrk_sprintf(warnings,"
-        stream.puts "      \"Warning: The #{english_name} was too low \""
+        stream.puts "      \"Warning: The #{english_name} is too low \""
         stream.puts "      \"so it will be changed to %#{pf}.\\n\", #{name});"
         stream.puts "  }"
       end
@@ -169,7 +169,7 @@ def generate_settings_fixing_code(stream)
         stream.puts "  {"
         stream.puts "    #{name} = #{max};"
         stream.puts "    jrk_sprintf(warnings,"
-        stream.puts "      \"Warning: The #{english_name} was too high \""
+        stream.puts "      \"Warning: The #{english_name} is too high \""
         stream.puts "      \"so it will be changed to %#{pf}.\\n\", #{name});"
         stream.puts "  }"
       end

@@ -18,7 +18,7 @@ public:
     return complete;
   }
 
-  bool setComplete(bool value)
+  void setComplete(bool value)
   {
     complete = value;
     emit completeChanged();

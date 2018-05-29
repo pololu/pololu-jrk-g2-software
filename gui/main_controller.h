@@ -86,7 +86,7 @@ public:
   void handle_input_enable_crc_input(bool value);
   void handle_input_device_input(uint16_t value);
   void handle_input_device_number_input(bool value);
-  void handle_input_timeout_input(uint16_t value);
+  void handle_serial_timeout_input(uint32_t value);
   void handle_input_disable_compact_protocol_input(bool value);
   void handle_input_invert_input(bool input_invert);
   void handle_input_error_minimum_input(uint16_t input_error_minimum);
@@ -247,3 +247,18 @@ private:
 
   main_window * window;
 };
+
+
+// TODO: rename these main_controller functions to match renamed settings:
+/**
+-  void handle_current_limit_forward_input(uint16_t);
+-  void handle_current_limit_reverse_input(uint16_t);
+-  void handle_max_current_forward_input(uint16_t);
+-  void handle_max_current_reverse_input(uint16_t);
++  void handle_encoded_hard_current_limit_forward_input(uint16_t);
++  void handle_encoded_hard_current_limit_reverse_input(uint16_t);
++  void handle_soft_current_limit_forward_input(uint16_t);
++  void handle_soft_current_limit_reverse_input(uint16_t);
+-  void handle_overcurrent_threshold_input(uint8_t);
++  void handle_hard_overcurrent_threshold_input(uint8_t);
+**/

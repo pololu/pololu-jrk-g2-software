@@ -270,8 +270,8 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint8_t overcurrent_threshold = jrk_settings_get_overcurrent_threshold(settings);
-    jrk_sprintf(&str, "overcurrent_threshold: %u\n", overcurrent_threshold);
+    uint8_t hard_overcurrent_threshold = jrk_settings_get_hard_overcurrent_threshold(settings);
+    jrk_sprintf(&str, "hard_overcurrent_threshold: %u\n", hard_overcurrent_threshold);
   }
 
   {
@@ -326,13 +326,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t current_limit_code_forward = jrk_settings_get_current_limit_code_forward(settings);
-    jrk_sprintf(&str, "current_limit_code_forward: %u\n", current_limit_code_forward);
+    uint16_t encoded_hard_current_limit_forward = jrk_settings_get_encoded_hard_current_limit_forward(settings);
+    jrk_sprintf(&str, "encoded_hard_current_limit_forward: %u\n", encoded_hard_current_limit_forward);
   }
 
   {
-    uint16_t current_limit_code_reverse = jrk_settings_get_current_limit_code_reverse(settings);
-    jrk_sprintf(&str, "current_limit_code_reverse: %u\n", current_limit_code_reverse);
+    uint16_t encoded_hard_current_limit_reverse = jrk_settings_get_encoded_hard_current_limit_reverse(settings);
+    jrk_sprintf(&str, "encoded_hard_current_limit_reverse: %u\n", encoded_hard_current_limit_reverse);
   }
 
   {
@@ -346,13 +346,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   }
 
   {
-    uint16_t max_current_forward = jrk_settings_get_max_current_forward(settings);
-    jrk_sprintf(&str, "max_current_forward: %u\n", max_current_forward);
+    uint16_t soft_current_limit_forward = jrk_settings_get_soft_current_limit_forward(settings);
+    jrk_sprintf(&str, "soft_current_limit_forward: %u\n", soft_current_limit_forward);
   }
 
   {
-    uint16_t max_current_reverse = jrk_settings_get_max_current_reverse(settings);
-    jrk_sprintf(&str, "max_current_reverse: %u\n", max_current_reverse);
+    uint16_t soft_current_limit_reverse = jrk_settings_get_soft_current_limit_reverse(settings);
+    jrk_sprintf(&str, "soft_current_limit_reverse: %u\n", soft_current_limit_reverse);
   }
 
   {

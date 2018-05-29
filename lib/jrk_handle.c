@@ -167,13 +167,13 @@ const char * jrk_get_firmware_version_string(jrk_handle * handle)
   return new_string;
 }
 
-jrk_error * jrk_set_setting_byte(jrk_handle * handle,
+jrk_error * jrk_set_eeprom_setting_byte(jrk_handle * handle,
   uint8_t address, uint8_t byte)
 {
   assert(handle != NULL);
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0x40, JRK_CMD_SET_SETTING, byte, address, NULL, 0, NULL));
+    0x40, JRK_CMD_SET_EEPROM_SETTING, byte, address, NULL, 0, NULL));
 
   if (error != NULL)
   {
@@ -229,34 +229,6 @@ jrk_error * jrk_stop_motor(jrk_handle * handle)
   return error;
 }
 
-jrk_error * jrk_run_motor(jrk_handle * handle)
-{
-  if (handle == NULL)
-  {
-    return jrk_error_create("Handle is null.");
-  }
-
-  jrk_error * error = NULL;
-
-  // Get the target value and clear halting errors at the same time.
-  uint8_t buffer[2];
-  if (error == NULL)
-  {
-    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
-    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
-  }
-  uint16_t target = buffer[0] | (buffer[1] << 8);
-
-  // Send a "Set target" command with the same target value to clear the
-  // "Awaiting command" error bit.
-  if (error == NULL)
-  {
-    error = jrk_set_target(handle, target);
-  }
-
-  return error;
-}
-
 jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
 {
   if (error_flags != NULL)
@@ -284,6 +256,34 @@ jrk_error * jrk_clear_errors(jrk_handle * handle, uint16_t * error_flags)
   {
     error = jrk_error_add(error,
       "There was an error while clearing errors.");
+  }
+
+  return error;
+}
+
+jrk_error * jrk_run_motor(jrk_handle * handle)
+{
+  if (handle == NULL)
+  {
+    return jrk_error_create("Handle is null.");
+  }
+
+  jrk_error * error = NULL;
+
+  // Get the target value and clear halting errors at the same time.
+  uint8_t buffer[2];
+  if (error == NULL)
+  {
+    uint16_t flags = 1 << JRK_GET_VARIABLES_FLAG_CLEAR_ERROR_FLAGS_HALTING;
+    error = jrk_get_variable_segment(handle, JRK_VAR_TARGET, 2, buffer, flags);
+  }
+  uint16_t target = buffer[0] | (buffer[1] << 8);
+
+  // Send a "Set target" command with the same target value to clear the
+  // "Awaiting command" error bit.
+  if (error == NULL)
+  {
+    error = jrk_set_target(handle, target);
   }
 
   return error;
@@ -333,7 +333,7 @@ jrk_error * jrk_force_duty_cycle(jrk_handle * handle, int16_t duty_cycle)
   return error;
 }
 
-jrk_error * jrk_get_setting_segment(jrk_handle * handle,
+jrk_error * jrk_get_eeprom_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output)
 {
   if (handle == NULL)
@@ -360,12 +360,12 @@ jrk_error * jrk_get_setting_segment(jrk_handle * handle,
   if (length > JRK_MAX_USB_RESPONSE_SIZE)
   {
     return jrk_error_create(
-      "RAM setting length is too large.");
+      "Setting segment length is too large.");
   }
 
   size_t transferred;
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0xC0, JRK_CMD_GET_SETTINGS, 0, index, output, length, &transferred));
+    0xC0, JRK_CMD_GET_EEPROM_SETTINGS, 0, index, output, length, &transferred));
   if (error != NULL)
   {
     error = jrk_error_add(error, "There was an error reading settings.");
@@ -411,7 +411,7 @@ jrk_error * jrk_get_ram_setting_segment(jrk_handle * handle,
   if (length > JRK_MAX_USB_RESPONSE_SIZE)
   {
     return jrk_error_create(
-      "RAM setting length is too large.");
+      "RAM setting segment length is too large.");
   }
 
   size_t transferred;
@@ -546,7 +546,7 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle)
 
   if (error == NULL)
   {
-    error = jrk_set_setting_byte(handle, JRK_SETTING_NOT_INITIALIZED, 1);
+    error = jrk_set_eeprom_setting_byte(handle, JRK_SETTING_NOT_INITIALIZED, 1);
   }
 
   if (error == NULL)
@@ -564,7 +564,7 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle)
       usleep(10000);
 
       uint8_t not_initialized;
-      error = jrk_get_setting_segment(handle, JRK_SETTING_NOT_INITIALIZED,
+      error = jrk_get_eeprom_setting_segment(handle, JRK_SETTING_NOT_INITIALIZED,
         1, &not_initialized);
       if (error != NULL)
       {

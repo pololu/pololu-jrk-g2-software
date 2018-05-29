@@ -86,10 +86,10 @@ jrk_device_get_generic_interface(const jrk_device * device);
 
 // Internal jrk_handle functions.
 
-jrk_error * jrk_set_setting_byte(jrk_handle * handle,
+jrk_error * jrk_set_eeprom_setting_byte(jrk_handle * handle,
   uint8_t address, uint8_t byte);
 
-jrk_error * jrk_get_setting_segment(jrk_handle * handle,
+jrk_error * jrk_get_eeprom_setting_segment(jrk_handle * handle,
   size_t index, size_t length, uint8_t * output);
 
 

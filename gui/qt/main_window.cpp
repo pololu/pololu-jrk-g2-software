@@ -360,6 +360,11 @@ void main_window::set_manual_target_inputs(uint16_t target)
   suppress_events = false;
 }
 
+uint16_t main_window::get_manual_target_numeric_input()
+{
+  return manual_target_entry_value->value();
+}
+
 void main_window::set_apply_settings_enabled(bool enabled)
 {
   apply_settings_button->setEnabled(enabled);
@@ -456,9 +461,9 @@ void main_window::set_input_enable_device_number(bool enabled)
   set_check_box(input_device_number_checkbox, enabled);
 }
 
-void main_window::set_input_serial_timeout(uint16_t value)
+void main_window::set_serial_timeout(uint32_t value)
 {
-  set_double_spin_box(input_timeout_spinbox, value);
+  set_double_spin_box(input_timeout_spinbox, value / 1000.0);
 }
 
 void main_window::set_input_compact_protocol(bool enabled)
@@ -808,7 +813,7 @@ void main_window::set_current_limit_code_reverse(uint16_t current_limit)
 void main_window::get_recommended_current_limit_codes(uint32_t product)
 {
   const std::vector<uint16_t> code_table =
-    jrk::get_recommended_current_limit_codes(product);
+    jrk::get_recommended_encoded_hard_current_limits(product);
 
   QMap<int, int> mapping;
   for (uint16_t code : code_table)
@@ -904,7 +909,7 @@ void main_window::set_error_hard(uint16_t hard)
   for (error_row & row : error_rows)
   {
     bool is_hard = hard >> row.error_number & 1;
-    set_check_box(row.error_hard, is_hard);
+    set_check_box(row.error_hard, is_hard || row.always_hard);
   }
 }
 
@@ -1387,7 +1392,7 @@ void main_window::on_input_device_number_checkbox_stateChanged(int state)
 void main_window::on_input_timeout_spinbox_valueChanged(double value)
 {
   if (suppress_events) { return; }
-  controller->handle_input_timeout_input(value);
+  controller->handle_serial_timeout_input(qRound(value * 100) * 10);
 }
 
 void main_window::on_input_disable_compact_protocol_checkbox_stateChanged(int state)
@@ -1934,6 +1939,15 @@ void main_window::setup_style_sheet()
     stylesheet += "QPushButton { padding: 0.3em 1em; }\n";
   }
 
+  // By default, the fusion style makes the scroll bar look bad, having a border
+  // on the top but no borders on the bottom.  This line seems to make it use a
+  // totally different style which makes it look more like a normal Windows
+  // scrollbar, and thus better.
+  if (style_name == "fusion")
+  {
+    stylesheet += "QScrollBar#manual_target_scroll_bar { border: 0; }\n";
+  }
+
   setStyleSheet(stylesheet);
 }
 
@@ -2156,6 +2170,16 @@ QWidget * main_window::setup_variables_box()
   setup_read_only_text_field(layout, row++, value_size,
     &ttl_port_label, &ttl_port_value);
   ttl_port_label->setText(tr("TTL port:"));
+
+#ifdef __APPLE__
+  {
+    cmd_port_value->setText("/dev/cu.usbmodem01234567x");
+    int width = cmd_port_value->sizeHint().width();
+    cmd_port_value->setText("");
+    cmd_port_value->setMinimumWidth(width);
+    ttl_port_value->setMinimumWidth(width);
+  }
+#endif
 
   setup_read_only_text_field(layout, row++, value_size,
     &device_reset_label, &device_reset_value);
@@ -2405,7 +2429,7 @@ QWidget * main_window::setup_input_serial_groupbox()
   input_enable_crc_checkbox = new QCheckBox(tr("Enable CRC"));
   input_enable_crc_checkbox->setObjectName("input_enable_crc_checkbox");
 
-  input_device_label = new QLabel(tr("Device Number:"));
+  input_device_label = new QLabel(tr("Device number:"));
   input_device_label->setObjectName("input_device_label");
 
   input_device_spinbox = new QSpinBox();
@@ -2420,9 +2444,9 @@ QWidget * main_window::setup_input_serial_groupbox()
 
   input_timeout_spinbox = new QDoubleSpinBox();
   input_timeout_spinbox->setObjectName("input_timeout_spinbox");
-  input_timeout_spinbox->setSingleStep(JRK_SERIAL_TIMEOUT_UNITS);
+  input_timeout_spinbox->setSingleStep(0.01);
   input_timeout_spinbox->setDecimals(2);
-  input_timeout_spinbox->setRange(0, JRK_MAX_ALLOWED_SERIAL_TIMEOUT);
+  input_timeout_spinbox->setRange(0, 655.35);
 
   input_disable_compact_protocol_checkbox = new QCheckBox(tr("Disable compact protocol"));
   input_disable_compact_protocol_checkbox->setObjectName("input_disable_compact_protocol_checkbox");
@@ -2876,6 +2900,7 @@ QWidget * main_window::setup_pid_tab()
 
   feedback_dead_zone_spinbox = new QSpinBox();
   feedback_dead_zone_spinbox->setObjectName("feedback_dead_zone_spinbox");
+  feedback_dead_zone_spinbox->setRange(0, 255);
 
   QHBoxLayout * coefficient_layout = new QHBoxLayout();
   coefficient_layout->addWidget(pid_proportional_control);
@@ -2935,7 +2960,7 @@ QWidget *main_window::setup_motor_tab()
   detect_motor_button = new QPushButton(tr("&Learn..."));
   detect_motor_button->setObjectName("detect_motor_button");
   connect(detect_motor_button, &QPushButton::clicked,
-    this, &on_feedback_learn_button_clicked);
+    this, &main_window::on_feedback_learn_button_clicked);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
@@ -2979,11 +3004,11 @@ QWidget *main_window::setup_motor_tab()
 
   max_deceleration_forward_spinbox = new QSpinBox();
   max_deceleration_forward_spinbox->setObjectName("max_deceleration_forward_spinbox");
-  max_deceleration_forward_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  max_deceleration_forward_spinbox->setRange(1, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
   max_deceleration_reverse_spinbox = new QSpinBox();
   max_deceleration_reverse_spinbox->setObjectName("max_deceleration_reverse_spinbox");
-  max_deceleration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_DUTY_CYCLE);
+  max_deceleration_reverse_spinbox->setRange(1, JRK_MAX_ALLOWED_DUTY_CYCLE);
 
   max_deceleration_means_label = new QLabel(tr("(600 means no limit)"));
 
@@ -3000,7 +3025,8 @@ QWidget *main_window::setup_motor_tab()
   brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  current_limit_label = new QLabel(tr("Current limit (A):"));
+  // TODO: change the variable names to hard_current_limit too
+  current_limit_label = new QLabel(tr("Hard current limit (A):"));
   current_limit_label->setObjectName("current_limit_label");
 
   current_limit_forward_spinbox = new nice_spin_box();
@@ -3011,7 +3037,8 @@ QWidget *main_window::setup_motor_tab()
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
   current_limit_reverse_spinbox->set_decimals(2);
 
-  max_current_label = new QLabel(tr("Max current (A):"));
+  // TODO: change the variable names to soft_current_limit too
+  max_current_label = new QLabel(tr("Soft current limit (A):"));
   max_current_label->setObjectName("max_current_label");
 
   max_current_forward_spinbox = new nice_spin_box();
@@ -3047,7 +3074,7 @@ QWidget *main_window::setup_motor_tab()
   current_samples_combobox = setup_exponent_combobox(10);
   current_samples_combobox->setObjectName("current_samples_combobox");
 
-  overcurrent_threshold_label = new QLabel(tr("Overcurrent threshold:"));
+  overcurrent_threshold_label = new QLabel(tr("Hard overcurrent threshold:"));
   overcurrent_threshold_label->setObjectName("overcurrent_threshold_label");
 
   overcurrent_threshold_spinbox = new QSpinBox();
@@ -3231,14 +3258,14 @@ QWidget *main_window::setup_errors_tab()
   setup_error_row(JRK_ERROR_INPUT_INVALID, true, false, false);
   setup_error_row(JRK_ERROR_INPUT_DISCONNECT, false, false, false);
   setup_error_row(JRK_ERROR_FEEDBACK_DISCONNECT, false, false, false);
-  setup_error_row(JRK_ERROR_MAX_CURRENT_EXCEEDED, false, false, false);
+  setup_error_row(JRK_ERROR_SOFT_OVERCURRENT, false, false, false);
   setup_error_row(JRK_ERROR_SERIAL_SIGNAL, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_OVERRUN, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_BUFFER_FULL, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_CRC, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_PROTOCOL, false, true, false);
   setup_error_row(JRK_ERROR_SERIAL_TIMEOUT, false, true, false);
-  setup_error_row(JRK_ERROR_OVERCURRENT, false, false, false);
+  setup_error_row(JRK_ERROR_HARD_OVERCURRENT, false, false, false);
 
   int last_row = layout->rowCount();
   layout->addWidget(errors_clear_errors, last_row, 6, 1, 1, Qt::AlignCenter);
@@ -3265,6 +3292,7 @@ void main_window::setup_error_row(int error_number,
   row.error_number = error_number;
   row.always_enabled = always_enabled;
   row.always_latched = always_latched;
+  row.always_hard = always_hard;
 
   uint16_t error_mask = 1 << error_number;
 
@@ -3305,16 +3333,19 @@ void main_window::setup_error_row(int error_number,
   row.error_enable_group->addButton(row.enabled_radio, 1);
   row.error_enable_group->addButton(row.latched_radio, 2);
 
-  connect(row.error_enable_group, QOverload<int>::of(&QButtonGroup::buttonClicked),
+  connect(row.error_enable_group,
+    static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     [=] (int id) { error_enable_group_buttonToggled(id, row.error_number); });
 
-  row.error_hard = new QCheckBox(tr("Hard"));
+  row.error_hard = new QCheckBox();
   row.error_hard->setObjectName("error_hard");
+  if (always_hard)
+  {
+    row.error_hard->setEnabled(false);
+  }
 
   connect(row.error_hard, &QCheckBox::stateChanged,
     [=] (int state) { error_hard_stateChanged(state, row.error_number); });
-
-  QLabel * always_hard_label = new QLabel(tr("Yes"));
 
   row.stopping_value = new QLabel(tr("No"));
   row.stopping_value->setObjectName("stopping_value");
@@ -3333,15 +3364,7 @@ void main_window::setup_error_row(int error_number,
   errors_page_layout->addWidget(row.disabled_radio, r + 1, 2);
   errors_page_layout->addWidget(row.enabled_radio, r + 1, 3);
   errors_page_layout->addWidget(row.latched_radio, r + 1, 4);
-
-  if (always_hard)
-  {
-    errors_page_layout->addWidget(always_hard_label, r + 1, 5, Qt::AlignCenter);
-  }
-  else
-  {
-    errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
-  }
+  errors_page_layout->addWidget(row.error_hard, r + 1, 5, Qt::AlignCenter);
 
   errors_page_layout->addWidget(row.stopping_value, r + 1, 6);
   errors_page_layout->addWidget(row.count_value, r + 1, 7);
