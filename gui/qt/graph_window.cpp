@@ -151,6 +151,11 @@ void graph_window::load_settings()
   {
     QStringList settings = all_plots_settings[i].split(",");
 
+    if (settings[3].toDouble() < 0.1)
+    {
+      settings[3] = "0.1";
+    }
+
     grabbed_widget->all_plots[i]->display->setChecked(settings[1].toInt());
     double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());

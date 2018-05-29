@@ -38,7 +38,6 @@ public:
     QCPItemText * axis_position_label;
     QCPItemText * axis_scale_label;
     QList<QCPItemText *> axis_top_and_bottom;
-    QLineEdit * scale_edit;
   };
 
   QList<plot *> all_plots;
@@ -83,8 +82,6 @@ private:
   QPushButton *show_all_none;
   QPushButton *reset_all_button;
 
-  QDoubleValidator * scale_validator;
-
   QFont font;
   QFont font2;
 
@@ -95,6 +92,8 @@ private:
 
   int viewport_width = 0;
 
+  QCPItemText * axis_arrow(plot x, double degrees);
+
 private slots:
   void change_ranges();
   void on_pause_run_button_clicked();
@@ -102,5 +101,4 @@ private slots:
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
   void mouse_press(QMouseEvent*);
-  void fix_scale();
 };
