@@ -25,7 +25,7 @@ END
     name: 'feedback',
     type: :uint16_t,
     comment: <<END
-The feedback variable is a raw, unscaled feedback value, representing a
+The feedback variable is a raw, unscaled feedback value representing a
 measurement taken by the Jrk of the output of the system.  In analog mode,
 the feedback is a measurement of the voltage on the FBA pin, where 0 is 0 V
 and 4092 is a voltage equal to the Jrk's 5V pin (approximately 4.8 V).  In
@@ -56,7 +56,6 @@ END
     name: 'duty_cycle_target',
     type: :int16_t,
     comment: <<END
-
 In general, this is the duty cycle that the jrk is trying to achieve.  A
 value of -600 or less means full speed reverse, while a value of 600 or more
 means full speed forward.  A value of 0 means stopped (braking or coasting).

@@ -1525,7 +1525,7 @@ uint16_t jrk_variables_get_target(const jrk_variables *);
 
 // Gets the feedback variable.
 //
-// The feedback variable is a raw, unscaled feedback value, representing a
+// The feedback variable is a raw, unscaled feedback value representing a
 // measurement taken by the Jrk of the output of the system.  In analog mode,
 // the feedback is a measurement of the voltage on the FBA pin, where 0 is 0 V
 // and 4092 is a voltage equal to the Jrk's 5V pin (approximately 4.8 V).  In
@@ -1552,7 +1552,6 @@ JRK_API
 int16_t jrk_variables_get_integral(const jrk_variables *);
 
 // Gets the duty_cycle_target variable.
-//
 //
 // In general, this is the duty cycle that the jrk is trying to achieve.  A
 // value of -600 or less means full speed reverse, while a value of 600 or more
