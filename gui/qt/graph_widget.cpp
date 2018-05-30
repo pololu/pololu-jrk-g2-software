@@ -610,12 +610,12 @@ void graph_widget::show_all_none_clicked()
 // Resets all position and scale values to default.
 void graph_widget::on_reset_all_button_clicked()
 {
-  QMessageBox mbox(QMessageBox::Question, "",
+  QMessageBox mbox(QMessageBox::Question, "Pololu Jrk G2 Configuration Utility",
     QString::fromStdString("Reset all positions and scales?"),
-    QMessageBox::Ok | QMessageBox::Cancel);
-  mbox.exec();
+    QMessageBox::Ok | QMessageBox::Cancel, parentWidget());
 
-  if (QMessageBox::Ok)
+
+  if (mbox.exec() == QMessageBox::Ok)
   {
     for (auto plot : all_plots)
     {
