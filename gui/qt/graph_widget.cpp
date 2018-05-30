@@ -6,8 +6,8 @@ graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-  font.setFamily(family);
-  font2.setFamily(family);
+  y_label_font.setFamily(family);
+  x_label_font.setFamily(family);
 
   setup_ui();
 
@@ -211,10 +211,10 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
   plot.scale->setValue(scale/5.0);
-  plot.scale->setFixedWidth(plot.scale->sizeHint().width());
+  plot.scale->setMinimumWidth(plot.scale->minimumSizeHint().width());
 
   plot.position = new dynamic_decimal_spinbox();
-  plot.position->setMinimumWidth(plot.position->sizeHint().width());
+  plot.position->setMinimumWidth(plot.position->minimumSizeHint().width());
 
   plot.position->setAccelerated(true);
   plot.position->setRange(-1000000, 1000000);
@@ -238,12 +238,12 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setRange(-scale, scale);
   plot.axis->setVisible(false);
 
-  font.setPointSize(25);
+  y_label_font.setPointSize(25);
 
   plot.axis_label = new QCPItemText(custom_plot);
   plot.axis_label->setClipToAxisRect(false);
   plot.axis_label->setPositionAlignment(Qt::AlignRight | Qt::AlignVCenter);
-  plot.axis_label->setFont(font);
+  plot.axis_label->setFont(y_label_font);
   plot.axis_label->setColor(default_color);
   plot.axis_label->setText("\u27a4");
   plot.axis_label->setPadding(QMargins(7, 7, 7, 7));
@@ -270,7 +270,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_scale_label->setTextAlignment(Qt::AlignCenter);
   plot.axis_scale_label->setVisible(false);
 
-  font2.setPointSize(20);
+  x_label_font.setPointSize(20);
 
   plot.axis_top_and_bottom.append(axis_arrow(plot, 270));
   plot.axis_top_and_bottom.append(axis_arrow(plot, 90));
@@ -378,16 +378,16 @@ void graph_widget::set_graph_interaction_axis(plot plot)
 {
   plot.graph->setPen(QPen(plot.graph->pen().color(), 2));
 
-  font.setPointSize(30);
-  font2.setPointSize(25);
+  y_label_font.setPointSize(30);
+  x_label_font.setPointSize(25);
 
-  plot.axis_label->setFont(font);
+  plot.axis_label->setFont(y_label_font);
 
   plot.axis_position_label->setVisible(true);
   plot.axis_scale_label->setVisible(true);
 
   for (auto label : plot.axis_top_and_bottom)
-    label->setFont(font2);
+    label->setFont(x_label_font);
 
   custom_plot->axisRect()->setRangeDragAxes(0, plot.axis);
   custom_plot->axisRect()->setRangeZoomAxes(0, plot.axis);
@@ -403,16 +403,16 @@ void graph_widget::reset_graph_interaction_axes()
   {
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
-    font.setPointSize(25);
-    font2.setPointSize(20);
+    y_label_font.setPointSize(25);
+    x_label_font.setPointSize(20);
 
-    plot->axis_label->setFont(font);
+    plot->axis_label->setFont(y_label_font);
 
     plot->axis_position_label->setVisible(false);
     plot->axis_scale_label->setVisible(false);
 
     for (auto label : plot->axis_top_and_bottom)
-      label->setFont(font2);
+      label->setFont(x_label_font);
   }
 }
 
@@ -537,7 +537,7 @@ QCPItemText * graph_widget::axis_arrow(plot plot, double degrees)
   QCPItemText * label_instance  = new QCPItemText(custom_plot);
   label_instance->setClipToAxisRect(false);
   label_instance->setPositionAlignment(Qt::AlignCenter);
-  label_instance->setFont(font2);
+  label_instance->setFont(x_label_font);
   label_instance->setColor(plot.default_color);
   label_instance->setText("\u27a4");
   label_instance->setRotation(degrees);
@@ -725,6 +725,15 @@ void graph_widget::mouse_press(QMouseEvent * event)
   }
 }
 
+QSize dynamic_decimal_spinbox::minimumSizeHint() const
+{
+  const QFontMetrics FontMetrics = fontMetrics();
+  const int Width = FontMetrics.width( "00000000000000" );
+  const int Height = FontMetrics.height();
+  return QSize( Width, Height );
+}
+
+
 void dynamic_decimal_spinbox::stepBy(int step_value)
 {
   double svalue = (double)step_value;
@@ -758,6 +767,7 @@ void dynamic_decimal_spinbox::stepBy(int step_value)
   }
 
   setValue(value() + svalue);
+  selectAll();
 }
 
 // Necessary for use with stepBy function.
@@ -770,7 +780,7 @@ QString dynamic_decimal_spinbox::textFromValue (double value) const
 {
   if (value >= 10000 || value == 0)
   {
-    return QString::number(value);
+    return QString::number(value, 'f', 0);
   }
   else if (qFabs(value) < 0.1)
   {

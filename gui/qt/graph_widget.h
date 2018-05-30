@@ -15,6 +15,7 @@
 #include <QString>
 #include <QLineEdit>
 #include <QObject>
+#include <QScreen>
 
 class dynamic_decimal_spinbox;
 
@@ -79,13 +80,14 @@ private:
   void set_axis_text(plot x);
   void set_range(plot x);
 
+  QCPItemText * axis_arrow(plot x, double degrees);
   QPushButton *pause_run_button;
   QSpinBox *domain;
   QPushButton *show_all_none;
   QPushButton *reset_all_button;
 
-  QFont font;
-  QFont font2;
+  QFont y_label_font;
+  QFont x_label_font;
 
   uint32_t key; // used to store local copy of time value
 
@@ -94,7 +96,6 @@ private:
 
   int viewport_width = 0;
 
-  QCPItemText * axis_arrow(plot x, double degrees);
 
 private slots:
   void change_ranges();
@@ -112,6 +113,8 @@ class dynamic_decimal_spinbox : public QDoubleSpinBox
 public:
   explicit dynamic_decimal_spinbox(QWidget * parent = 0) :
     QDoubleSpinBox(parent) {}
+
+  QSize minimumSizeHint() const;
 
 protected:
   virtual void stepBy(int step_value);
