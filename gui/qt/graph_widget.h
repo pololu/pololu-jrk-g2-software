@@ -16,6 +16,8 @@
 #include <QLineEdit>
 #include <QObject>
 
+class dynamic_decimal_spinbox;
+
 class graph_widget : public QWidget
 {
   Q_OBJECT
@@ -25,8 +27,8 @@ public:
 
   struct plot
   {
-    QDoubleSpinBox *scale;
-    QDoubleSpinBox * position;
+    dynamic_decimal_spinbox *scale;
+    dynamic_decimal_spinbox * position;
     QCheckBox *display;
     QString default_color;
     QString dark_color;
@@ -101,4 +103,19 @@ private slots:
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
   void mouse_press(QMouseEvent*);
+};
+
+class dynamic_decimal_spinbox : public QDoubleSpinBox
+{
+  Q_OBJECT
+
+public:
+  explicit dynamic_decimal_spinbox(QWidget * parent = 0) :
+    QDoubleSpinBox(parent) {}
+
+protected:
+  virtual void stepBy(int step_value);
+  virtual StepEnabled stepEnabled();
+  QString textFromValue ( double value ) const;
+  double valueFromText ( const QString & text ) const;
 };

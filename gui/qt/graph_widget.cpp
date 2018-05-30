@@ -1,7 +1,6 @@
 #include "graph_widget.h"
 
 #include <QMessageBox>
-#include <iostream>
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -208,17 +207,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.default_color = default_color;
   plot.dark_color = dark_color;
 
-  plot.scale = new QDoubleSpinBox();
-  plot.scale->setSingleStep(.1);
+  plot.scale = new dynamic_decimal_spinbox();
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
   plot.scale->setValue(scale/5.0);
   plot.scale->setFixedWidth(plot.scale->sizeHint().width());
-  plot.scale->setDecimals(1);
 
-  plot.position = new QDoubleSpinBox();
-  plot.position->setDecimals(1);
-  plot.position->setSingleStep(0.1);
+  plot.position = new dynamic_decimal_spinbox();
   plot.position->setMinimumWidth(plot.position->sizeHint().width());
 
   plot.position->setAccelerated(true);
@@ -251,7 +246,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_label->setFont(font);
   plot.axis_label->setColor(default_color);
   plot.axis_label->setText("\u27a4");
-  plot.axis_label->setPadding(QMargins(5, 5, 5, 5));
+  plot.axis_label->setPadding(QMargins(7, 7, 7, 7));
   plot.axis_label->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_label->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_label->position->setAxisRect(custom_plot->axisRect());
@@ -308,24 +303,18 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double position_value = -(newRange.upper + newRange.lower)/2.0;
-    double scale_value = (-newRange.lower + newRange.upper)/10;
+    double new_lower = QString::number(newRange.lower, 'f').toDouble();
+    double new_upper = QString::number(newRange.upper, 'f').toDouble();
+    double old_lower = QString::number(oldRange.lower, 'f').toDouble();
+    double old_upper = QString::number(oldRange.upper, 'f').toDouble();
 
-    if (scale_value < 0.1)
-    {
-      plot.scale->setDecimals(2);
-      plot.scale->setSingleStep(0.01);
-    }
-    else
-    {
-      plot.scale->setDecimals(1);
-      plot.scale->setSingleStep(0.1);
-    }
+    double position_value = -(new_upper + new_lower)/2.0;
+    double scale_value = (-new_lower + new_upper)/10;
 
     if (scale_value < plot.scale->minimum() || scale_value > plot.scale->maximum()
       || position_value < plot.position->minimum() || position_value > plot.position->maximum())
     {
-      plot.axis->setRange(oldRange);
+      plot.axis->setRange(old_lower, old_upper);
     }
 
     {
@@ -350,17 +339,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.scale, static_cast<void (QAbstractSpinBox::*)()>
     (&QAbstractSpinBox::editingFinished), [=]
   {
-    if (plot.scale->value() < 0.1)
-    {
-      plot.scale->setDecimals(2);
-      plot.scale->setSingleStep(0.01);
-    }
-    else
-    {
-      plot.scale->setDecimals(1);
-      plot.scale->setSingleStep(0.1);
-    }
-
     if (plot.scale->hasFocus())
     {
       plot.scale->selectAll();
@@ -440,8 +418,8 @@ void graph_widget::reset_graph_interaction_axes()
 
 void graph_widget::set_axis_text(plot plot)
 {
-  plot.axis_position_label->setText("Position: \n" + QString::number(plot.position->value(), 'f', 1));
-  plot.axis_scale_label->setText("Scale: \n" + QString::number(plot.scale->value(), 'f', 1));
+  plot.axis_position_label->setText("Position: \n" + plot.position->cleanText());
+  plot.axis_scale_label->setText("Scale: \n" + plot.scale->cleanText());
 
   if (plot.axis->range().lower >= 0)
   {
@@ -745,4 +723,64 @@ void graph_widget::mouse_press(QMouseEvent * event)
   {
     set_graph_interaction_axis(*temp_plot);
   }
+}
+
+void dynamic_decimal_spinbox::stepBy(int step_value)
+{
+  double svalue = (double)step_value;
+
+  if (qFabs(value()) >= 10000)
+  {
+    svalue = svalue;
+  }
+  else if (qFabs(value()) >= 0.1)
+  {
+    svalue *= 0.1;
+  }
+  else if (qFabs(value()) < 0.1)
+  {
+    svalue *= 0.01;
+  }
+
+  double temp_value = value() + svalue;
+
+  if (qFabs(temp_value) >= 10000)
+  {
+    svalue = svalue;
+  }
+  else if (qFabs(temp_value) >= 0.1)
+  {
+    svalue = (double)step_value * 0.1;
+  }
+  else if (qFabs(temp_value) < 0.1)
+  {
+    svalue = (double)step_value * 0.01;
+  }
+
+  setValue(value() + svalue);
+}
+
+// Necessary for use with stepBy function.
+QDoubleSpinBox::StepEnabled dynamic_decimal_spinbox::stepEnabled()
+{
+  return StepUpEnabled | StepDownEnabled;
+}
+
+QString dynamic_decimal_spinbox::textFromValue (double value) const
+{
+  if (value >= 10000 || value == 0)
+  {
+    return QString::number(value);
+  }
+  else if (qFabs(value) < 0.1)
+  {
+    return QString::number(value, 'f', 2);
+  }
+  else
+    return QString::number(value, 'f', 1);
+}
+
+double dynamic_decimal_spinbox::valueFromText (const QString & text) const
+{
+  return text.toDouble();
 }
