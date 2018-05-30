@@ -148,14 +148,13 @@ EOF
     type: :bool,
     address: 'JRK_SETTING_OPTIONS_BYTE2',
     bit_address: 'JRK_OPTIONS_BYTE2_INPUT_DETECT_DISCONNECT',
-    comment:
-      "If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the Jrk to\n" \
-      "drive its designated potentiometer power pins (SCL and/or AUX) low once per\n" \
-      "PID period and make sure that the input potentiometer reading on the SDA/AN\n" \
-      "pin also goes low.  If it does not go low, the Jrk signals an input\n" \
-      "disconnect error.\n\n" \
-      "If you enable this setting, we recommend powering your potentiometer from\n" \
-      "GND and SCL."
+    comment: <<END
+If the input mode is JRK_INPUT_MODE_ANALOG, this setting causes the Jrk to
+drive its input potentiometer power pin (SCL) low once per PID period after
+measuring SDA/AN.  If the voltage on SDA/AN does not drop by at least a
+factor of two while SCL is low, then the Jrk will report an
+"Input disconnect" error (if that error is enabled).
+END
   },
   {
     name: 'input_analog_samples_exponent',
@@ -169,19 +168,19 @@ EOF
   {
     name: 'feedback_mode',
     type: :enum,
-    default: 'JRK_FEEDBACK_MODE_ANALOG',
-    english_default: 'analog',
+    default: 'JRK_FEEDBACK_MODE_NONE',
+    english_default: 'none',
     max: 'JRK_FEEDBACK_MODE_FREQUENCY',
     comment: <<EOF
 The feedback mode setting specifies whether the Jrk is using feedback from
-the output of the system, and if so defines what interface is used to
-measure that feedback.
+the output of the system, and if so defines what type of feedback to use.
 
 - If the feedback mode is "None" (JRK_FEEDBACK_MODE_NONE), feedback and PID
-  calculations are disabled.  The duty cycle target variable is always equal
-  to the target variable minus 2048, instead of being the result of a PID
-  calculation.  This means that a target of 2648 corresponds to driving the
-  motor full speed forward, 2048 is brake, and 1448 is full-speed reverse.
+  calculations are disabled, and the Jrk will do open-loop control.
+  The duty cycle target variable is always equal to the target variable
+  minus 2048, instead of being the result of a PID calculation.  This means
+  that a target of 2648 corresponds to driving the motor full speed forward,
+  2048 is stopped, and 1448 is full-speed reverse.
 
 - If the feedback mode is "Analog" (JRK_FEEDBACK_MODE_ANALOG), the Jrk gets
   its feedback by measuring the voltage on the FBA pin.  A level of 0 V
@@ -190,12 +189,9 @@ measure that feedback.
   feedback variable, and the PID algorithm uses the scaled feedback and the
   target to compute the duty cycle target.
 
-- If the feedback mode is "Frequency (digital)"
-  (JRK_FEEDBACK_MODE_FREQUENCY), the Jrk gets it feedback by counting rising
-  edges on its FBT pin.  When the target is greater than 2048, the feedback
-  value is 2048 plus the number of rising edges detected during the PID
-  period.  Otherwise, the the feedback is 2048 minus the the number of rising
-  edges detected during the PID period.
+- If the feedback mode is "Frequency (speed control)"
+  (JRK_FEEDBACK_MODE_FREQUENCY), the Jrk gets it feedback by measuring the
+  frequency of a digital signal on the FBT pin.  See the fbt_method setting.
 EOF
   },
   {
@@ -213,7 +209,7 @@ EOF
     range: 0..4095,
     default: 4095,
     comment: <<EOF
-If the raw feedback value is below this value, it causes a
+If the raw feedback value exceeds this value, it causes a
 "Feedback disconnect" error.
 EOF
   },
@@ -252,14 +248,13 @@ EOF
     type: :bool,
     address: 'JRK_SETTING_OPTIONS_BYTE2',
     bit_address: 'JRK_OPTIONS_BYTE2_FEEDBACK_DETECT_DISCONNECT',
-    comment:
-      "If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the Jrk\n" \
-      "to drive its designated potentiometer power pins (SCL and/or AUX) low once\n" \
-      "per PID period and make sure that the feedback potentiometer reading on FBA\n" \
-      "also goes low.  If it does not go low, the Jrk signals a feedback\n" \
-      "disconnect error.\n\n" \
-      "If you enable this setting, we recommend powering your potentiometer from\n" \
-      "GND and AUX."
+    comment: <<END
+If the feedback mode is JRK_FEEDBACK_MODE_ANALOG, this setting causes the
+Jrk to drive its feedback potentiometer power pin (AUX) low once per PID
+period after measuring FBA.  If the voltage on the FBA pin does not drop
+by at least a factor of two while AUX is low, then the Jrk will report a
+"Feedback disconnect" error (if that error is enabled).
+END
   },
   {
     name: 'feedback_dead_zone',
@@ -314,16 +309,17 @@ TTL Port), and its serial command processor.
 - If the serial mode is "USB dual port" (JRK_SERIAL_MODE_USB_DUAL_PORT), the
   command port can be used to send commands to the Jrk and receive responses
   from it, while the TTL port can be used to send and receives bytes on the
-  TX and RX lines.  The baud rate you set by the USB host on the TTL port
+  TX and RX lines.  The baud rate set by the USB host on the TTL port
   determines the baud rate used on the TX and RX lines.
 
 - If the serial mode is "USB chained" (JRK_SERIAL_MODE_USB_CHAINED), the
-  comamnd port can be used to both transmit bytes on the TX line and send
-  commands to the Jrk.  The Jrk's responses to those commands will be sent to
-  the command port but not the TX line.  If the input mode is serial, bytes
-  received on the RX line will be sent to the command put but will not be
-  interpreted as command bytes by the Jrk.  The baud rate set by the USB host
-  on the command port determines the baud rate used on the TX and RX lines.
+  command port can be used to both transmit bytes on the TX line and send
+  commands to the Jrk.  The Jrk's responses to those commands will be sent
+  to the command port but not the TX line.  If the RX line is enabled as a
+  serial line, bytes received on the RX line will be sent to the command
+  port but will not be interpreted as command bytes by the Jrk.  The baud
+  rate set by the USB host on the command port determines the baud rate
+  used on the TX and RX lines.
 
 - If the serial mode is "UART" (JRK_SERIAL_MODE_UART), the TX and RX lines
   can be used to send commands to the Jrk and receive responses from it.  Any
@@ -556,7 +552,7 @@ EOF
     min: 1,
     comment: <<EOF
 This is the number of consecutive PID periods where the the hardware current
-chopping must occur before the Jrk triggers a "Max. current exceeded\" error.
+chopping must occur before the Jrk triggers a "Hard overcurrent\" error.
 The default of 1 means that any current chopping is an error.  You can set it
 to a higher value if you expect some current chopping to happen (e.g. when
 starting up) but you still want to it to be an error when your motor leads
@@ -712,7 +708,7 @@ EOF
   {
     name: 'encoded_hard_current_limit_forward',
     type: :uint16_t,
-    default: 26,
+    # the default is actually different for each device
     max: 95,
     comment: <<EOF
 Sets the current limit to be used when driving forward.
@@ -731,7 +727,6 @@ EOF
   {
     name: 'encoded_hard_current_limit_reverse',
     type: :uint16_t,
-    default: 26,
     max: 95,
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
