@@ -24,13 +24,13 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     reset_graph_interaction_axes();
 
-    custom_plot->axisRect()->setMargins(QMargins(40, 40, 40, 40));
+    custom_plot->axisRect()->setMargins(QMargins(50, 50, 50, 50));
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click to open graph window");
   }
   else
   {
-    custom_plot->axisRect()->setMargins(QMargins(55, 40, 40, 40));
+    custom_plot->axisRect()->setMargins(QMargins(55, 50, 50, 50));
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
   }
@@ -238,7 +238,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis->setRange(-scale, scale);
   plot.axis->setVisible(false);
 
-  y_label_font.setPointSize(25);
+  y_label_font.setPixelSize(35);
 
   plot.axis_label = new QCPItemText(custom_plot);
   plot.axis_label->setClipToAxisRect(false);
@@ -246,7 +246,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_label->setFont(y_label_font);
   plot.axis_label->setColor(default_color);
   plot.axis_label->setText("\u27a4");
-  plot.axis_label->setPadding(QMargins(7, 7, 7, 7));
+  plot.axis_label->setPadding(QMargins(10, 10, 10, 10));
   plot.axis_label->position->setTypeX(QCPItemPosition::ptAxisRectRatio);
   plot.axis_label->position->setTypeY(QCPItemPosition::ptPlotCoords);
   plot.axis_label->position->setAxisRect(custom_plot->axisRect());
@@ -254,7 +254,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_label->position->setCoords(0, 0);
 
   QFont axis_label_text;
-  axis_label_text.setPointSize(8);
+  axis_label_text.setPixelSize(11);
 
   plot.axis_position_label = new QCPItemText(custom_plot);
   plot.axis_position_label->setClipToAxisRect(false);
@@ -270,7 +270,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.axis_scale_label->setTextAlignment(Qt::AlignCenter);
   plot.axis_scale_label->setVisible(false);
 
-  x_label_font.setPointSize(20);
+  x_label_font.setPixelSize(30);
 
   plot.axis_top_and_bottom.append(axis_arrow(plot, 270));
   plot.axis_top_and_bottom.append(axis_arrow(plot, 90));
@@ -378,8 +378,8 @@ void graph_widget::set_graph_interaction_axis(plot plot)
 {
   plot.graph->setPen(QPen(plot.graph->pen().color(), 2));
 
-  y_label_font.setPointSize(30);
-  x_label_font.setPointSize(25);
+  y_label_font.setPixelSize(40);
+  x_label_font.setPixelSize(35);
 
   plot.axis_label->setFont(y_label_font);
 
@@ -403,8 +403,8 @@ void graph_widget::reset_graph_interaction_axes()
   {
     plot->graph->setPen(QPen(plot->graph->pen().color(), 1));
 
-    y_label_font.setPointSize(25);
-    x_label_font.setPointSize(20);
+    y_label_font.setPixelSize(35);
+    x_label_font.setPixelSize(30);
 
     plot->axis_label->setFont(y_label_font);
 
@@ -418,13 +418,14 @@ void graph_widget::reset_graph_interaction_axes()
 
 void graph_widget::set_axis_text(plot plot)
 {
-  plot.axis_position_label->setText("Position: \n" + plot.position->cleanText());
-  plot.axis_scale_label->setText("Scale: \n" + plot.scale->cleanText());
+  plot.axis_position_label->setText("Position:\n" + plot.position->cleanText());
+  plot.axis_scale_label->setText("Scale:\n" + plot.scale->cleanText());
 
   if (plot.axis->range().lower >= 0)
   {
     plot.axis_label->setRotation(90);
     plot.axis_label->setPositionAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    plot.axis_label->setPadding(QMargins(6, 6, 6, 6));
     plot.axis_label->position->setCoords(0, plot.axis->range().lower);
 
     plot.axis_scale_label->setPositionAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -436,6 +437,7 @@ void graph_widget::set_axis_text(plot plot)
   {
     plot.axis_label->setRotation(270);
     plot.axis_label->setPositionAlignment(Qt::AlignBottom | Qt::AlignHCenter);
+    plot.axis_label->setPadding(QMargins(6, 6, 6, 6));
     plot.axis_label->position->setCoords(0, plot.axis->range().upper);
 
     plot.axis_scale_label->setPositionAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -447,6 +449,7 @@ void graph_widget::set_axis_text(plot plot)
   {
     plot.axis_label->setRotation(0);
     plot.axis_label->setPositionAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    plot.axis_label->setPadding(QMargins(10, 10, 10, 10));
     plot.axis_label->position->setCoords(0, 0);
 
     plot.axis_scale_label->setPositionAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -728,7 +731,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
 QSize dynamic_decimal_spinbox::minimumSizeHint() const
 {
   const QFontMetrics FontMetrics = fontMetrics();
-  const int Width = FontMetrics.width( "00000000000000" );
+  const int Width = FontMetrics.width("00000000000000");
   const int Height = FontMetrics.height();
   return QSize( Width, Height );
 }
