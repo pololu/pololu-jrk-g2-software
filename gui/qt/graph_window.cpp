@@ -2,8 +2,6 @@
 #include "main_window.h"
 #include "graph_widget.h"
 
-#include <iostream>
-
 graph_window::graph_window(QWidget *parent)
 {
   setup_ui();
@@ -70,7 +68,7 @@ void graph_window::receive_widget(graph_widget *widget)
 
   grabbed_widget->set_preview_mode(false);
 
-  grabbed_widget->plot_visible_layout->setParent(0);
+  grabbed_widget->setParent(0);
 
   central_layout->addWidget(grabbed_widget->custom_plot,
     1, 0, 2, 2);
@@ -172,6 +170,8 @@ void graph_window::switch_to_dark()
       "background-color: white;");
     plot->graph->setPen(QPen(plot->dark_color));
     plot->axis_label->setColor(plot->dark_color);
+    plot->axis_position_label->setColor(plot->dark_color);
+    plot->axis_scale_label->setColor(plot->dark_color);
     for (auto label : plot->axis_top_and_bottom)
       label->setColor(plot->dark_color);
   }
@@ -179,7 +179,7 @@ void graph_window::switch_to_dark()
   QLinearGradient axis_rect_gradient;
   axis_rect_gradient.setStart(0, 0);
   axis_rect_gradient.setFinalStop(0, 350);
-  axis_rect_gradient.setColorAt(0, QColor(30, 30, 30));
+  axis_rect_gradient.setColorAt(0, QColor(40, 40, 40));
   axis_rect_gradient.setColorAt(1, QColor(10, 10, 10));
   grabbed_widget->custom_plot->axisRect()->setBackground(axis_rect_gradient);
   grabbed_widget->custom_plot->setBackground(QColor(170, 170, 170));
@@ -206,6 +206,8 @@ void graph_window::switch_to_default()
       "background-color: white;");
     plot->graph->setPen(QPen(plot->default_color));
     plot->axis_label->setColor(plot->default_color);
+    plot->axis_position_label->setColor(plot->default_color);
+    plot->axis_scale_label->setColor(plot->default_color);
     for (auto label : plot->axis_top_and_bottom)
       label->setColor(plot->default_color);
   }
