@@ -102,6 +102,9 @@ void graph_widget::setup_ui()
   connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
     this, SLOT(mouse_press(QMouseEvent*)));
 
+  connect(custom_plot, SIGNAL(mouseRelease(QMouseEvent*)),
+    this, SLOT(mouse_release(QMouseEvent*)));
+
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
   domain->setRange(1, 90);
@@ -303,18 +306,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double new_lower = QString::number(newRange.lower, 'f').toDouble();
-    double new_upper = QString::number(newRange.upper, 'f').toDouble();
-    double old_lower = QString::number(oldRange.lower, 'f').toDouble();
-    double old_upper = QString::number(oldRange.upper, 'f').toDouble();
-
-    double position_value = -(new_upper + new_lower)/2.0;
-    double scale_value = (-new_lower + new_upper)/10;
+    double position_value = -(newRange.upper + newRange.lower)/2.0;
+    double scale_value = (-newRange.lower + newRange.upper)/10.0;
 
     if (scale_value < plot.scale->minimum() || scale_value > plot.scale->maximum()
       || position_value < plot.position->minimum() || position_value > plot.position->maximum())
     {
-      plot.axis->setRange(old_lower, old_upper);
+      plot.axis->setRange(oldRange.lower, oldRange.upper);
     }
 
     {
@@ -390,7 +388,6 @@ void graph_widget::set_graph_interaction_axis(plot plot)
     label->setFont(x_label_font);
 
   custom_plot->axisRect()->setRangeDragAxes(0, plot.axis);
-  custom_plot->axisRect()->setRangeZoomAxes(0, plot.axis);
 }
 
 // Clears selected axes from range drag and zoom.
@@ -634,7 +631,6 @@ void graph_widget::on_reset_all_button_clicked()
 // This is a reimplementation of the QWidget::mousePressEvent slot.
 // Due to the graph containing multiple scrolling plots, QCPAbstactPlottable::selectTest
 // is used to determine the plot being selected.
-
 void graph_widget::mouse_press(QMouseEvent * event)
 {
   if (in_preview)
@@ -658,7 +654,6 @@ void graph_widget::mouse_press(QMouseEvent * event)
       if (plot->display->isChecked())
       {
         double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
-
         if (qFabs(select_test_value) <= qFabs(temp_axis_value))
         {
           temp_plot = plot;
@@ -729,6 +724,13 @@ void graph_widget::mouse_press(QMouseEvent * event)
   }
 }
 
+void graph_widget::mouse_release(QMouseEvent * event)
+{
+  Q_UNUSED(event);
+  custom_plot->axisRect()->setRangeZoomAxes(
+    custom_plot->axisRect()->rangeDragAxes(Qt::Vertical));
+}
+
 QSize dynamic_decimal_spinbox::minimumSizeHint() const
 {
   const QFontMetrics FontMetrics = fontMetrics();
@@ -737,40 +739,11 @@ QSize dynamic_decimal_spinbox::minimumSizeHint() const
   return QSize( Width, Height );
 }
 
-
 void dynamic_decimal_spinbox::stepBy(int step_value)
 {
-  double svalue = (double)step_value;
+  double single_step = calculate_decimal_step(step_value);
 
-  if (qFabs(value()) >= 10000)
-  {
-    svalue = svalue;
-  }
-  else if (qFabs(value()) >= 0.1)
-  {
-    svalue *= 0.1;
-  }
-  else if (qFabs(value()) < 0.1)
-  {
-    svalue *= 0.01;
-  }
-
-  double temp_value = value() + svalue;
-
-  if (qFabs(temp_value) >= 10000)
-  {
-    svalue = svalue;
-  }
-  else if (qFabs(temp_value) >= 0.1)
-  {
-    svalue = (double)step_value * 0.1;
-  }
-  else if (qFabs(temp_value) < 0.1)
-  {
-    svalue = (double)step_value * 0.01;
-  }
-
-  setValue(value() + svalue);
+  setValue(value() + (single_step * step_value));
   selectAll();
 }
 
@@ -782,7 +755,7 @@ QDoubleSpinBox::StepEnabled dynamic_decimal_spinbox::stepEnabled()
 
 QString dynamic_decimal_spinbox::textFromValue (double value) const
 {
-  if (value >= 10000 || value == 0)
+  if (qFabs(value) >= 10000 || value == 0)
   {
     return QString::number(value, 'f', 0);
   }
@@ -797,4 +770,34 @@ QString dynamic_decimal_spinbox::textFromValue (double value) const
 double dynamic_decimal_spinbox::valueFromText (const QString & text) const
 {
   return text.toDouble();
+}
+
+// Modification of the calculateAdaptiveDecimalStep() function in
+// QDoubleSpinBoxPrivate used to change the step value of the
+// dynamic_decimal_spinbox based on the value displayed. This was done in order
+// to change the steps based on the decimals of the spinbox value only instead of
+// the decimal precision and the log10 of the integer combined.
+double dynamic_decimal_spinbox::calculate_decimal_step(int steps) {   QStringList
+decimals = cleanText().split('.');   int decimal_count = 0;
+
+  if (decimals.size() == 2)
+  {
+    decimal_count = decimals[1].count();
+  }
+
+  if (value() == 0 || (value() == 0.1 && steps < 0)
+    || (value() == -0.1 && steps > 0))
+  {
+    decimal_count = 2;
+  }
+
+  if ((value() == 10000 && steps < 0)
+    || (value() == -10000 && steps > 0))
+  {
+    decimal_count = 1;
+  }
+
+  double minimum_step = std::pow(10, -decimal_count);
+
+  return minimum_step;
 }

@@ -92,10 +92,8 @@ private:
   uint32_t key; // used to store local copy of time value
 
   int row = 1;
-  bool in_preview = false;
-
-  int viewport_width = 0;
-
+  bool in_preview = false; // used to store local copy of preview_mode
+  int viewport_width = 0; // used to determine location of mouse press event.
 
 private slots:
   void change_ranges();
@@ -104,11 +102,13 @@ private slots:
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
   void mouse_press(QMouseEvent*);
+  void mouse_release(QMouseEvent*);
 };
 
-class dynamic_decimal_spinbox : public QDoubleSpinBox
-{
-  Q_OBJECT
+// This subclass of QDoubleSpinBox is used to add more control to both the
+// value displayed in the QDoubleSpinBox and the steps caused by "arrow up",
+// "arrow down", "page up", and "page down" keys.
+class dynamic_decimal_spinbox : public QDoubleSpinBox {   Q_OBJECT
 
 public:
   explicit dynamic_decimal_spinbox(QWidget * parent = 0) :
@@ -121,4 +121,7 @@ protected:
   virtual StepEnabled stepEnabled();
   QString textFromValue ( double value ) const;
   double valueFromText ( const QString & text ) const;
+
+private:
+  double calculate_decimal_step(int steps);
 };
