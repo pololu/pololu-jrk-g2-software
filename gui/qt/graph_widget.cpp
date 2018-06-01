@@ -743,8 +743,10 @@ double dynamic_decimal_spinbox::valueFromText (const QString & text) const
 // dynamic_decimal_spinbox based on the value displayed. This was done in order
 // to change the steps based on the decimals of the spinbox value only instead of
 // the decimal precision and the log10 of the integer combined.
-double dynamic_decimal_spinbox::calculate_decimal_step(int steps) {   QStringList
-decimals = cleanText().split('.');   int decimal_count = 0;
+double dynamic_decimal_spinbox::calculate_decimal_step(int steps)
+{
+  QStringList decimals = cleanText().split('.');
+  int decimal_count = 0;
 
   if (decimals.size() == 2)
   {
