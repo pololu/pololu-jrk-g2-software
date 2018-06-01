@@ -102,7 +102,6 @@ private slots:
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
   void mouse_press(QMouseEvent*);
-  void mouse_release(QMouseEvent*);
 };
 
 // This subclass of QDoubleSpinBox is used to add more control to both the

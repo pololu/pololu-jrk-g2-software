@@ -102,9 +102,6 @@ void graph_widget::setup_ui()
   connect(custom_plot, SIGNAL(mousePress(QMouseEvent*)),
     this, SLOT(mouse_press(QMouseEvent*)));
 
-  connect(custom_plot, SIGNAL(mouseRelease(QMouseEvent*)),
-    this, SLOT(mouse_release(QMouseEvent*)));
-
   domain = new QSpinBox();
   domain->setValue(10); // initialized the graph to show 10 seconds of data
   domain->setRange(1, 90);
@@ -306,13 +303,18 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double position_value = -(newRange.upper + newRange.lower)/2.0;
-    double scale_value = (-newRange.lower + newRange.upper)/10.0;
+    double new_lower = QString::number(newRange.lower, 'f').toDouble();
+    double new_upper = QString::number(newRange.upper, 'f').toDouble();
+    double old_lower = QString::number(oldRange.lower, 'f').toDouble();
+    double old_upper = QString::number(oldRange.upper, 'f').toDouble();
+
+    double position_value = -(new_upper + new_lower)/2.0;
+    double scale_value = (-new_lower + new_upper)/10;
 
     if (scale_value < plot.scale->minimum() || scale_value > plot.scale->maximum()
       || position_value < plot.position->minimum() || position_value > plot.position->maximum())
     {
-      plot.axis->setRange(oldRange.lower, oldRange.upper);
+      plot.axis->setRange(old_lower, old_upper);
     }
 
     {
@@ -332,6 +334,15 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     (&QDoubleSpinBox::valueChanged), [=](const QString& value)
   {
     set_range(plot);
+  });
+
+  connect(plot.scale, static_cast<void (QAbstractSpinBox::*)()>
+    (&QAbstractSpinBox::editingFinished), [=]
+  {
+    if (plot.scale->hasFocus())
+    {
+      plot.scale->selectAll();
+    }
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString&)>
@@ -379,6 +390,7 @@ void graph_widget::set_graph_interaction_axis(plot plot)
     label->setFont(x_label_font);
 
   custom_plot->axisRect()->setRangeDragAxes(0, plot.axis);
+  custom_plot->axisRect()->setRangeZoomAxes(0, plot.axis);
 }
 
 // Clears selected axes from range drag and zoom.
@@ -470,16 +482,14 @@ void graph_widget::set_axis_text(plot plot)
 
   temp_width = qBound(1, temp_width/350, 3);
 
-  bool checked = plot.display->isChecked();
+  plot.axis_top_and_bottom[0]->setVisible(out_top);
+  plot.axis_top_and_bottom[1]->setVisible(out_bottom);
 
-  plot.axis_top_and_bottom[0]->setVisible(checked && out_top);
-  plot.axis_top_and_bottom[1]->setVisible(checked && out_bottom);
+  plot.axis_top_and_bottom[2]->setVisible(out_top && (temp_width > 1));
+  plot.axis_top_and_bottom[3]->setVisible(out_bottom && (temp_width > 1));
 
-  plot.axis_top_and_bottom[2]->setVisible(checked && out_top && (temp_width > 1));
-  plot.axis_top_and_bottom[3]->setVisible(checked && out_bottom && (temp_width > 1));
-
-  plot.axis_top_and_bottom[4]->setVisible(checked && out_top && (temp_width > 2));
-  plot.axis_top_and_bottom[5]->setVisible(checked && out_bottom && (temp_width > 2));
+  plot.axis_top_and_bottom[4]->setVisible(out_top && (temp_width > 2));
+  plot.axis_top_and_bottom[5]->setVisible(out_bottom && (temp_width > 2));
 
   switch (temp_width)
   {
@@ -561,12 +571,20 @@ void graph_widget::set_line_visible()
 {
   for (auto plot : all_plots)
   {
+    if (plot->display->isChecked())
+    {
+      plot->graph->setSelectable(QCP::stWhole);
+    }
+    else
+    {
+      plot->graph->setSelectable(QCP::stNone);
+    }
+
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis_label->setVisible(plot->display->isChecked());
     set_axis_text(*plot);
   }
 
-  reset_graph_interaction_axes();
   custom_plot->replot();
 }
 
@@ -616,6 +634,7 @@ void graph_widget::on_reset_all_button_clicked()
 // This is a reimplementation of the QWidget::mousePressEvent slot.
 // Due to the graph containing multiple scrolling plots, QCPAbstactPlottable::selectTest
 // is used to determine the plot being selected.
+
 void graph_widget::mouse_press(QMouseEvent * event)
 {
   if (in_preview)
@@ -629,81 +648,46 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   int temp_view_height = custom_plot->viewport().height();
 
-  if (event->localPos().x() < custom_plot->axisRect()->left())
-  {
-    double temp_axis_value = (double)temp_view_height * 0.02; // Selection tolerance for mouse press.
+  double temp_axis_value = 5.0; // Selection tolerance for mouse press.
+  double temp_value = 5.0;
 
-    for (auto plot : all_plots)
+  for (auto plot : all_plots)
+  {
+    if (plot->display->isChecked())
     {
-      // Ignores plots which are not visible.
-      if (plot->display->isChecked())
+      if (event->localPos().x() < custom_plot->axisRect()->left())
       {
         double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
-        if (qFabs(select_test_value) <= qFabs(temp_axis_value))
-        {
-          temp_plot = plot;
-        }
-      }
-    }
-  }
-  else if (event->localPos().y() <= custom_plot->axisRect()->top())
-  {
-    double temp_axis_value = (double)temp_view_height * 2.0; // Selection tolerance for mouse press.
-
-    for (auto plot : all_plots)
-    {
-      // Ignores plots which are not visible.
-      if (plot->display->isChecked() && plot->axis_top_and_bottom[0]->visible())
-      {
-        double select_test_value = plot->axis_top_and_bottom[0]->selectTest(event->localPos(), false);
 
         if (qFabs(select_test_value) <= qFabs(temp_axis_value))
         {
           temp_plot = plot;
         }
       }
-    }
-  }
-  else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
-  {
-    double temp_axis_value = (double)temp_view_height * 2.0; // Selection tolerance for mouse press.
-
-    for (auto plot : all_plots)
-    {
-      // Ignores plots which are not visible.
-      if (plot->display->isChecked() && plot->axis_top_and_bottom[1]->visible())
+      else if (event->localPos().y() <= custom_plot->axisRect()->top())
       {
-        double select_test_value = plot->axis_top_and_bottom[1]->selectTest(event->localPos(), false);
+        if (plot->axis_top_and_bottom[0]->visible())
+        {
+          temp_plot = plot;
+        }
 
-        if (qFabs(select_test_value) <= qFabs(temp_axis_value))
+      }
+      else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
+      {
+        if (plot->axis_top_and_bottom[1]->visible())
         {
           temp_plot = plot;
         }
       }
-    }
-  }
-  else
-  {
-    double temp_value = 5;
-
-    while (temp_plot == Q_NULLPTR && temp_value != 20)
-    {
-      for (auto plot : all_plots)
+      else
       {
-        // Ignores plots which are not visible.
-        if (plot->display->isChecked())
-        {
-          double select_test_value = plot->graph->selectTest(event->localPos(), true);
+        double select_test_value = plot->graph->selectTest(event->localPos(), false);
 
-          if (select_test_value != -1 &&
-            select_test_value <= temp_value)
-          {
-            temp_plot = plot;
-          }
+        if (qFabs(select_test_value) <= qFabs(temp_value))
+        {
+          temp_plot = plot;
         }
       }
-
-      temp_value += 5;
     }
   }
 
@@ -711,13 +695,6 @@ void graph_widget::mouse_press(QMouseEvent * event)
   {
     set_graph_interaction_axis(*temp_plot);
   }
-}
-
-void graph_widget::mouse_release(QMouseEvent * event)
-{
-  Q_UNUSED(event);
-  custom_plot->axisRect()->setRangeZoomAxes(
-    custom_plot->axisRect()->rangeDragAxes(Qt::Vertical));
 }
 
 QSize dynamic_decimal_spinbox::minimumSizeHint() const
