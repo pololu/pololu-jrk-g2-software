@@ -334,15 +334,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     set_range(plot);
   });
 
-  connect(plot.scale, static_cast<void (QAbstractSpinBox::*)()>
-    (&QAbstractSpinBox::editingFinished), [=]
-  {
-    if (plot.scale->hasFocus())
-    {
-      plot.scale->selectAll();
-    }
-  });
-
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString&)>
     (&QDoubleSpinBox::valueChanged), [=](const QString& value)
   {
@@ -479,14 +470,16 @@ void graph_widget::set_axis_text(plot plot)
 
   temp_width = qBound(1, temp_width/350, 3);
 
-  plot.axis_top_and_bottom[0]->setVisible(out_top);
-  plot.axis_top_and_bottom[1]->setVisible(out_bottom);
+  bool checked = plot.display->isChecked();
 
-  plot.axis_top_and_bottom[2]->setVisible(out_top && (temp_width > 1));
-  plot.axis_top_and_bottom[3]->setVisible(out_bottom && (temp_width > 1));
+  plot.axis_top_and_bottom[0]->setVisible(checked && out_top);
+  plot.axis_top_and_bottom[1]->setVisible(checked && out_bottom);
 
-  plot.axis_top_and_bottom[4]->setVisible(out_top && (temp_width > 2));
-  plot.axis_top_and_bottom[5]->setVisible(out_bottom && (temp_width > 2));
+  plot.axis_top_and_bottom[2]->setVisible(checked && out_top && (temp_width > 1));
+  plot.axis_top_and_bottom[3]->setVisible(checked && out_bottom && (temp_width > 1));
+
+  plot.axis_top_and_bottom[4]->setVisible(checked && out_top && (temp_width > 2));
+  plot.axis_top_and_bottom[5]->setVisible(checked && out_bottom && (temp_width > 2));
 
   switch (temp_width)
   {
@@ -568,20 +561,12 @@ void graph_widget::set_line_visible()
 {
   for (auto plot : all_plots)
   {
-    if (plot->display->isChecked())
-    {
-      plot->graph->setSelectable(QCP::stWhole);
-    }
-    else
-    {
-      plot->graph->setSelectable(QCP::stNone);
-    }
-
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis_label->setVisible(plot->display->isChecked());
     set_axis_text(*plot);
   }
 
+  reset_graph_interaction_axes();
   custom_plot->replot();
 }
 
@@ -705,12 +690,16 @@ void graph_widget::mouse_press(QMouseEvent * event)
     {
       for (auto plot : all_plots)
       {
-        double select_test_value = plot->graph->selectTest(event->localPos(), true);
-
-        if (select_test_value != -1 &&
-          select_test_value <= temp_value)
+        // Ignores plots which are not visible.
+        if (plot->display->isChecked())
         {
-          temp_plot = plot;
+          double select_test_value = plot->graph->selectTest(event->localPos(), true);
+
+          if (select_test_value != -1 &&
+            select_test_value <= temp_value)
+          {
+            temp_plot = plot;
+          }
         }
       }
 
