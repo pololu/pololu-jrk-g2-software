@@ -30,8 +30,6 @@ private:
   QAction * dark_theme_action;
   QAction * default_theme_action;
 
-  bool dark_theme = false;
-
   void setup_ui();
   void closeEvent(QCloseEvent *);
 

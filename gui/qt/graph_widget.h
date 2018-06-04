@@ -16,6 +16,7 @@
 #include <QLineEdit>
 #include <QObject>
 #include <QScreen>
+#include <QColorDialog>
 
 class dynamic_decimal_spinbox;
 
@@ -61,13 +62,18 @@ public:
   QGridLayout * plot_visible_layout;
 
   bool graph_paused = false;
+  bool dark_theme = false;
 
   void set_preview_mode(bool preview_mode);
   void set_paused(bool paused);
   void clear_graphs();
   void plot_data(uint32_t time);
 
+protected:
+  bool eventFilter(QObject * o, QEvent * e);
+
 private:
+  void set_plot_color(plot * x);
   void setup_ui();
 
   // Used to add new plot
@@ -94,6 +100,8 @@ private:
   int row = 1;
   bool in_preview = false; // used to store local copy of preview_mode
   int viewport_width = 0; // used to determine location of mouse press event.
+
+  // QColorDialog * color_dialog;
 
 private slots:
   void change_ranges();

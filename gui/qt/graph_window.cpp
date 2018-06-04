@@ -193,7 +193,7 @@ void graph_window::switch_to_dark()
   options_menu->removeAction(dark_theme_action);
   options_menu->addAction(default_theme_action);
 
-  dark_theme = true;
+  grabbed_widget->dark_theme = true;
 
   grabbed_widget->custom_plot->replot();
 }
@@ -224,7 +224,7 @@ void graph_window::switch_to_default()
   options_menu->removeAction(default_theme_action);
   options_menu->addAction(dark_theme_action);
 
-  dark_theme = false;
+  grabbed_widget->dark_theme = false;
 
   grabbed_widget->custom_plot->replot();
 }

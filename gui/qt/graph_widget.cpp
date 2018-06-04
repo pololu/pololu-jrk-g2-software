@@ -2,7 +2,7 @@
 
 #include <QMessageBox>
 
-#include <iostream>
+#include <iostream> //tmphax
 
 graph_widget::graph_widget(QWidget * parent)
 {
@@ -87,6 +87,93 @@ void graph_widget::plot_data(uint32_t time)
     return;
 
   remove_data_to_scroll(time);
+}
+
+bool graph_widget::eventFilter(QObject * o, QEvent * e)
+{
+  for (auto plot : all_plots)
+  {
+    if (o == plot->display)
+    {
+      QMouseEvent * event = static_cast<QMouseEvent*>(e);
+      if (e->type()==QEvent::MouseButtonPress &&
+        event->button()==Qt::RightButton)
+      {
+        plot->display->setCheckState(Qt::Checked);
+        set_plot_color(plot);
+        return true;
+      }
+      return false;
+    }
+  }
+
+  return graph_widget::eventFilter(o, e);
+}
+
+void graph_widget::set_plot_color(plot * plot)
+{
+  QColorDialog * color_dialog = new QColorDialog(plot->graph->pen().color());
+  color_dialog->setWindowFlags(Qt::Popup);
+  color_dialog->move(QCursor::pos());
+  color_dialog->open();
+
+  connect(color_dialog, static_cast<void (QColorDialog::*)(const QColor&)>
+    (&QColorDialog::currentColorChanged), [=](const QColor& color)
+  {
+    QString selected_color = color.name(QColor::HexArgb);
+
+    plot->display->setStyleSheet("QCheckBox{border: 2px solid "+ selected_color + ";"
+      "padding: 2px;"
+      "background-color: white;}");
+    plot->graph->setPen(QPen(selected_color));
+    plot->axis_label->setColor(selected_color);
+    plot->axis_position_label->setColor(selected_color);
+    plot->axis_scale_label->setColor(selected_color);
+    for (auto label : plot->axis_top_and_bottom)
+      label->setColor(selected_color);
+
+  });
+
+  connect(color_dialog, static_cast<void (QColorDialog::*)(const QColor&)>
+    (&QColorDialog::colorSelected), [=](const QColor& color)
+  {
+    QString selected_color = color.name(QColor::HexArgb);
+
+    if (!dark_theme)
+    {
+      plot->default_color = selected_color;
+    }
+    else
+      plot->dark_color = selected_color;
+  });
+
+  connect(color_dialog, static_cast<void (QDialog::*)()>(&QDialog::rejected), [=]
+  {
+    if (!dark_theme)
+    {
+      plot->display->setStyleSheet("QCheckBox{border: 2px solid "+ plot->default_color + ";"
+      "padding: 2px;"
+      "background-color: white;}");
+      plot->graph->setPen(QPen(plot->default_color));
+      plot->axis_label->setColor(plot->default_color);
+      plot->axis_position_label->setColor(plot->default_color);
+      plot->axis_scale_label->setColor(plot->default_color);
+      for (auto label : plot->axis_top_and_bottom)
+        label->setColor(plot->default_color);
+    }
+    else
+    {
+      plot->display->setStyleSheet("QCheckBox{border: 2px solid "+ plot->dark_color + ";"
+      "padding: 2px;"
+      "background-color: white;}");
+      plot->graph->setPen(QPen(plot->dark_color));
+      plot->axis_label->setColor(plot->dark_color);
+      plot->axis_position_label->setColor(plot->dark_color);
+      plot->axis_scale_label->setColor(plot->dark_color);
+      for (auto label : plot->axis_top_and_bottom)
+        label->setColor(plot->dark_color);
+    }
+  });
 }
 
 void graph_widget::setup_ui()
@@ -225,11 +312,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
 
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
-  plot.display->setStyleSheet("border: 2px solid "+ plot.default_color + ";"
+  plot.display->setToolTip("Right-click to change plot color");
+  plot.display->setStyleSheet("QCheckBox{border: 2px solid "+ plot.default_color + ";"
     "padding: 2px;"
-    "background-color: white;");
+    "background-color: white;}");
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
+  plot.display->installEventFilter(this);
 
   plot.reset_button = new QPushButton();
   plot.reset_button->setIcon(QIcon(":reset_icon"));
