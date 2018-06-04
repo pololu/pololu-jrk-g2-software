@@ -2,6 +2,8 @@
 
 #include <QMessageBox>
 
+#include <iostream>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
@@ -725,7 +727,7 @@ QString dynamic_decimal_spinbox::textFromValue (double value) const
   {
     return QString::number(value, 'f', 2);
   }
-  else
+  else if (qFabs(value) < 10000)
     return QString::number(value, 'f', 1);
 }
 
@@ -741,7 +743,8 @@ double dynamic_decimal_spinbox::valueFromText (const QString & text) const
 // the decimal precision and the log10 of the integer combined.
 double dynamic_decimal_spinbox::calculate_decimal_step(int steps)
 {
-  QStringList decimals = cleanText().split('.');
+  double value = cleanText().toDouble();
+  QStringList decimals = textFromValue(value).split('.');
   int decimal_count = 0;
 
   if (decimals.size() == 2)
@@ -749,14 +752,14 @@ double dynamic_decimal_spinbox::calculate_decimal_step(int steps)
     decimal_count = decimals[1].count();
   }
 
-  if (value() == 0 || (value() == 0.1 && steps < 0)
-    || (value() == -0.1 && steps > 0))
+  if (value == 0 || (value == 0.1 && steps < 0)
+    || (value == -0.1 && steps > 0))
   {
     decimal_count = 2;
   }
 
-  if ((value() == 10000 && steps < 0)
-    || (value() == -10000 && steps > 0))
+  if ((value == 10000 && steps < 0)
+    || (value == -10000 && steps > 0))
   {
     decimal_count = 1;
   }
