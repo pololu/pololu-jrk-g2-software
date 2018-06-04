@@ -2120,7 +2120,7 @@ QWidget * main_window::setup_status_tab()
 
 QWidget * main_window::setup_graph()
 {
-  graph = new graph_widget();
+  graph = new graph_widget(this);
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
 

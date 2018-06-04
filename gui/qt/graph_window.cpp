@@ -57,6 +57,7 @@ void graph_window::setup_ui()
 void graph_window::closeEvent(QCloseEvent *event)
 {
   central_layout->removeWidget(grabbed_widget);
+  grabbed_widget->setParent(parentWidget());
   emit pass_widget();
 
   QWidget::closeEvent(event);
