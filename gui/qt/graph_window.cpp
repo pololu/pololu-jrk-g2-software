@@ -57,7 +57,7 @@ void graph_window::setup_ui()
 void graph_window::closeEvent(QCloseEvent *event)
 {
   central_layout->removeWidget(grabbed_widget);
-  grabbed_widget->setParent(parentWidget());
+
   emit pass_widget();
 
   QWidget::closeEvent(event);
@@ -69,7 +69,7 @@ void graph_window::receive_widget(graph_widget *widget)
 
   grabbed_widget->set_preview_mode(false);
 
-  grabbed_widget->setParent(0);
+  grabbed_widget->plot_visible_layout->setParent(0);
 
   central_layout->addWidget(grabbed_widget->custom_plot,
     1, 0, 2, 2);
