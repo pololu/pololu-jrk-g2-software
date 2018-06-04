@@ -303,13 +303,18 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double position_value = -(newRange.upper + newRange.lower)/2.0;
-    double scale_value = (-newRange.lower + newRange.upper)/10;
+    double new_lower = QString::number(newRange.lower, 'f').toDouble();
+    double new_upper = QString::number(newRange.upper, 'f').toDouble();
+    double old_lower = QString::number(oldRange.lower, 'f').toDouble();
+    double old_upper = QString::number(oldRange.upper, 'f').toDouble();
+
+    double position_value = -(new_upper + new_lower)/2.0;
+    double scale_value = (-new_lower + new_upper)/10;
 
     if (scale_value < plot.scale->minimum() || scale_value > plot.scale->maximum()
       || position_value < plot.position->minimum() || position_value > plot.position->maximum())
     {
-      plot.axis->setRange(oldRange.lower, oldRange.upper);
+      plot.axis->setRange(old_lower, old_upper);
     }
 
     {
@@ -477,14 +482,16 @@ void graph_widget::set_axis_text(plot plot)
 
   temp_width = qBound(1, temp_width/350, 3);
 
-  plot.axis_top_and_bottom[0]->setVisible(out_top);
-  plot.axis_top_and_bottom[1]->setVisible(out_bottom);
+  bool plot_visible = plot.display->isChecked();
 
-  plot.axis_top_and_bottom[2]->setVisible(out_top && (temp_width > 1));
-  plot.axis_top_and_bottom[3]->setVisible(out_bottom && (temp_width > 1));
+  plot.axis_top_and_bottom[0]->setVisible(plot_visible && out_top);
+  plot.axis_top_and_bottom[1]->setVisible(plot_visible && out_bottom);
 
-  plot.axis_top_and_bottom[4]->setVisible(out_top && (temp_width > 2));
-  plot.axis_top_and_bottom[5]->setVisible(out_bottom && (temp_width > 2));
+  plot.axis_top_and_bottom[2]->setVisible(plot_visible && out_top && (temp_width > 1));
+  plot.axis_top_and_bottom[3]->setVisible(plot_visible && out_bottom && (temp_width > 1));
+
+  plot.axis_top_and_bottom[4]->setVisible(plot_visible && out_top && (temp_width > 2));
+  plot.axis_top_and_bottom[5]->setVisible(plot_visible && out_bottom && (temp_width > 2));
 
   switch (temp_width)
   {
@@ -564,17 +571,10 @@ void graph_widget::on_pause_run_button_clicked()
 
 void graph_widget::set_line_visible()
 {
+  reset_graph_interaction_axes();
+
   for (auto plot : all_plots)
   {
-    if (plot->display->isChecked())
-    {
-      plot->graph->setSelectable(QCP::stWhole);
-    }
-    else
-    {
-      plot->graph->setSelectable(QCP::stNone);
-    }
-
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis_label->setVisible(plot->display->isChecked());
     set_axis_text(*plot);
@@ -643,8 +643,8 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   int temp_view_height = custom_plot->viewport().height();
 
-  double temp_axis_value = 5.0; // Selection tolerance for mouse press.
-  double temp_value = 5.0;
+  double temp_axis_value = (double)temp_view_height * 0.02; // Selection tolerance for mouse press.
+  double temp_plot_value = 5.0;
 
   for (auto plot : all_plots)
   {
@@ -678,7 +678,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
       {
         double select_test_value = plot->graph->selectTest(event->localPos(), false);
 
-        if (qFabs(select_test_value) <= qFabs(temp_value))
+        if (qFabs(select_test_value) <= qFabs(temp_plot_value))
         {
           temp_plot = plot;
         }
@@ -694,10 +694,10 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
 QSize dynamic_decimal_spinbox::minimumSizeHint() const
 {
-  const QFontMetrics FontMetrics = fontMetrics();
-  const int Width = FontMetrics.width("00000000000000");
-  const int Height = FontMetrics.height();
-  return QSize( Width, Height );
+  const QFontMetrics fm = fontMetrics();
+  const int width = fm.width("00000000000000");
+  const int height = fm.height();
+  return QSize(width, height);
 }
 
 void dynamic_decimal_spinbox::stepBy(int step_value)
