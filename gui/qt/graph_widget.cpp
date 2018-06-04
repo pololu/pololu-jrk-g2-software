@@ -303,18 +303,13 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double new_lower = QString::number(newRange.lower, 'f').toDouble();
-    double new_upper = QString::number(newRange.upper, 'f').toDouble();
-    double old_lower = QString::number(oldRange.lower, 'f').toDouble();
-    double old_upper = QString::number(oldRange.upper, 'f').toDouble();
-
-    double position_value = -(new_upper + new_lower)/2.0;
-    double scale_value = (-new_lower + new_upper)/10;
+    double position_value = -(newRange.upper + newRange.lower)/2.0;
+    double scale_value = (-newRange.lower + newRange.upper)/10;
 
     if (scale_value < plot.scale->minimum() || scale_value > plot.scale->maximum()
       || position_value < plot.position->minimum() || position_value > plot.position->maximum())
     {
-      plot.axis->setRange(old_lower, old_upper);
+      plot.axis->setRange(oldRange.lower, oldRange.upper);
     }
 
     {
