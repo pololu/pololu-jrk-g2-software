@@ -609,7 +609,8 @@ void graph_widget::on_reset_all_button_clicked()
     QString::fromStdString("Reset all positions and scales?"),
     QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
 
-  mbox.setWindowFlags(Qt::SplashScreen);
+  mbox.setWindowFlags(Qt::Popup);
+  mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
 
   if (mbox.exec() == QMessageBox::Ok)
   {
