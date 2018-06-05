@@ -2,6 +2,8 @@
 
 #include <QMessageBox>
 
+#include <iostream>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
@@ -784,6 +786,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
     return;
   }
 
+
   reset_graph_interaction_axes();
 
   plot * temp_plot = Q_NULLPTR;
@@ -835,7 +838,12 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   if (temp_plot != Q_NULLPTR)
   {
-    set_graph_interaction_axis(*temp_plot);
+    if (event->button() == Qt::RightButton)
+    {
+      eventFilter(temp_plot->display, event);
+    }
+    else
+      set_graph_interaction_axis(*temp_plot);
   }
 }
 
