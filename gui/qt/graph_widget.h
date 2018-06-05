@@ -73,6 +73,8 @@ public:
   void clear_graphs();
   void plot_data(uint32_t time);
 
+  void change_plot_colors(plot * plot, const QString&);
+
 protected:
   bool eventFilter(QObject * o, QEvent * e);
 

@@ -179,15 +179,7 @@ void graph_window::switch_to_dark()
 {
   for (auto plot : grabbed_widget->all_plots)
   {
-    plot->display->setStyleSheet("border: 2px solid "+ plot->dark_color + ";"
-      "padding: 2px;"
-      "background-color: white;");
-    plot->graph->setPen(QPen(plot->dark_color));
-    plot->axis_label->setColor(plot->dark_color);
-    plot->axis_position_label->setColor(plot->dark_color);
-    plot->axis_scale_label->setColor(plot->dark_color);
-    for (auto label : plot->axis_top_and_bottom)
-      label->setColor(plot->dark_color);
+    grabbed_widget->change_plot_colors(plot, plot->dark_color);
   }
 
   QLinearGradient axis_rect_gradient;
@@ -215,15 +207,7 @@ void graph_window::switch_to_default()
 {
   for (auto plot : grabbed_widget->all_plots)
   {
-    plot->display->setStyleSheet("border: 2px solid "+ plot->default_color + ";"
-      "padding: 2px;"
-      "background-color: white;");
-    plot->graph->setPen(QPen(plot->default_color));
-    plot->axis_label->setColor(plot->default_color);
-    plot->axis_position_label->setColor(plot->default_color);
-    plot->axis_scale_label->setColor(plot->default_color);
-    for (auto label : plot->axis_top_and_bottom)
-      label->setColor(plot->default_color);
+    grabbed_widget->change_plot_colors(plot, plot->default_color);
   }
 
   grabbed_widget->custom_plot->axisRect()->setBackground(QColor(Qt::white));
