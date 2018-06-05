@@ -35,6 +35,7 @@ void graph_window::setup_ui()
 
   options_menu->addAction(save_settings_action);
   options_menu->addAction(load_settings_action);
+  options_menu->addSeparator();
   options_menu->addAction(dark_theme_action);
 
   connect(save_settings_action, &QAction::triggered, this,
@@ -189,11 +190,13 @@ void graph_window::switch_to_dark()
   axis_rect_gradient.setColorAt(1, QColor(10, 10, 10));
   grabbed_widget->custom_plot->axisRect()->setBackground(axis_rect_gradient);
   grabbed_widget->custom_plot->setBackground(QColor(170, 170, 170));
-  grabbed_widget->custom_plot->xAxis->grid()->setPen(QPen(QColor(200, 200, 200, 140), 0, Qt::SolidLine));
-  grabbed_widget->custom_plot->yAxis->grid()->setPen(QPen(QColor(200, 200, 200, 140), 0, Qt::SolidLine));
-  grabbed_widget->custom_plot->xAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
-  grabbed_widget->custom_plot->yAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
-  grabbed_widget->custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(200, 200, 200, 140), 0, Qt::SolidLine));
+  grabbed_widget->custom_plot->xAxis->grid()->pen().setColor(QColor(200, 200, 200, 140));
+  grabbed_widget->custom_plot->yAxis->grid()->pen().setColor(QColor(200, 200, 200, 140));
+  grabbed_widget->custom_plot->xAxis->setBasePen(
+    QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  grabbed_widget->custom_plot->yAxis->setBasePen(
+    QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  grabbed_widget->custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(200, 200, 200, 140));
 
   options_menu->removeAction(dark_theme_action);
   options_menu->addAction(default_theme_action);
@@ -212,11 +215,13 @@ void graph_window::switch_to_default()
 
   grabbed_widget->custom_plot->axisRect()->setBackground(QColor(Qt::white));
   grabbed_widget->custom_plot->setBackground(QColor(Qt::white));
-  grabbed_widget->custom_plot->xAxis->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
-  grabbed_widget->custom_plot->yAxis->grid()->setPen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
-  grabbed_widget->custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
-  grabbed_widget->custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
-  grabbed_widget->custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(100, 100, 100, 140), 0, Qt::SolidLine));
+  grabbed_widget->custom_plot->xAxis->grid()->pen().setColor(QColor(100, 100, 100, 140));
+  grabbed_widget->custom_plot->yAxis->grid()->pen().setColor(QColor(100, 100, 100, 140));
+  grabbed_widget->custom_plot->xAxis->setBasePen(
+    QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  grabbed_widget->custom_plot->yAxis->setBasePen(
+    QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  grabbed_widget->custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(100, 100, 100, 140));
 
   options_menu->removeAction(default_theme_action);
   options_menu->addAction(dark_theme_action);

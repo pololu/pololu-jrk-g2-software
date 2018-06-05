@@ -98,6 +98,8 @@ void graph_widget::change_plot_colors(plot * plot, const QString& color)
   plot->axis_scale_label->setColor(color);
   for (auto label : plot->axis_top_and_bottom)
     label->setColor(color);
+
+  custom_plot->replot();
 }
 
 bool graph_widget::eventFilter(QObject * o, QEvent * e)
@@ -115,13 +117,18 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
         QMenu * color_change_menu = new QMenu();
 
         QAction * change_action = new QAction(this);
-        change_action->setText("Change color");
+        change_action->setText("Change plot color");
 
         QAction * reset_action = new QAction(this);
-        reset_action->setText("Reset color");
+        reset_action->setText("Reset plot color");
+
+        QAction * reset_all_action = new QAction(this);
+        reset_all_action->setText("Reset all colors");
 
         color_change_menu->addAction(change_action);
         color_change_menu->addAction(reset_action);
+        color_change_menu->addSeparator();
+        color_change_menu->addAction(reset_all_action);
 
         connect(change_action, &QAction::triggered, [=]()
         {
@@ -137,6 +144,34 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
           else
           {
             change_plot_colors(plot, plot->original_default_color);
+          }
+        });
+
+        connect(reset_all_action, &QAction::triggered, [=]()
+        {
+          QMessageBox mbox(QMessageBox::Question, "",
+          QString::fromStdString("Reset all colors to default?"),
+          QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
+
+          mbox.setWindowFlags(Qt::Popup);
+          mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
+
+          if (mbox.exec() == QMessageBox::Ok)
+          {
+            for (auto plot : all_plots)
+            {
+              plot->default_color = plot->original_default_color;
+              plot->dark_color = plot->original_dark_color;
+
+              if (dark_theme)
+              {
+                change_plot_colors(plot, plot->dark_color);
+              }
+              else
+              {
+                change_plot_colors(plot, plot->default_color);
+              }
+            }
           }
         });
 
@@ -281,12 +316,14 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->setTicker(y_axis_ticker);
   custom_plot->yAxis->setTickLengthOut(1);
 
-  custom_plot->xAxis->grid()->setPen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
-  custom_plot->xAxis2->grid()->setPen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
+  QPen grid_pen(QColor(100, 100, 100, 140), 0, Qt::SolidLine);
+  QPen sub_grid_pen(QColor(120, 120, 120, 110), 0, Qt::DashDotDotLine);
 
-  custom_plot->yAxis->grid()->setPen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
-  custom_plot->yAxis->grid()->setSubGridPen(QPen(QColor(120, 120, 120, 110), 0, Qt::DashDotDotLine));
-  custom_plot->yAxis->grid()->setZeroLinePen(QPen(QColor(20, 20, 20, 140), 0, Qt::SolidLine));
+  custom_plot->xAxis->grid()->setPen(grid_pen);
+  custom_plot->xAxis2->grid()->setPen(grid_pen);
+  custom_plot->yAxis->grid()->setPen(grid_pen);
+  custom_plot->yAxis->grid()->setZeroLinePen(grid_pen);
+  custom_plot->yAxis->grid()->setSubGridPen(sub_grid_pen);
   custom_plot->yAxis->grid()->setSubGridVisible(true);
   custom_plot->yAxis->setSelectableParts(QCPAxis::spNone);
 
