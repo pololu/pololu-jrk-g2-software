@@ -17,6 +17,8 @@
 #include <QObject>
 #include <QScreen>
 #include <QColorDialog>
+#include <QAction>
+#include <QMenu>
 
 class dynamic_decimal_spinbox;
 
@@ -34,6 +36,8 @@ public:
     QCheckBox *display;
     QString default_color;
     QString dark_color;
+    QString original_default_color;
+    QString original_dark_color;
     QCPAxis *axis;
     QCPGraph *graph;
     int32_t plot_value = 0;
@@ -100,8 +104,6 @@ private:
   int row = 1;
   bool in_preview = false; // used to store local copy of preview_mode
   int viewport_width = 0; // used to determine location of mouse press event.
-
-  // QColorDialog * color_dialog;
 
 private slots:
   void change_ranges();

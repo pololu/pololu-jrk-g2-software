@@ -114,6 +114,7 @@ void graph_widget::set_plot_color(plot * plot)
 {
   QColorDialog * color_dialog = new QColorDialog(plot->graph->pen().color());
   color_dialog->setWindowFlags(Qt::Popup);
+  color_dialog->setOption(QColorDialog::DontUseNativeDialog);
   color_dialog->move(QCursor::pos());
   color_dialog->open();
 
@@ -141,10 +142,14 @@ void graph_widget::set_plot_color(plot * plot)
 
     if (!dark_theme)
     {
+      plot->original_default_color = plot->default_color;
       plot->default_color = selected_color;
     }
     else
+    {
+      plot->original_dark_color = plot->dark_color;
       plot->dark_color = selected_color;
+    }
   });
 
   connect(color_dialog, static_cast<void (QDialog::*)()>(&QDialog::rejected), [=]
