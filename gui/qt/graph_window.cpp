@@ -121,8 +121,8 @@ void graph_window::save_settings()
     for(auto plot : grabbed_widget->all_plots)
     {
       out << plot->display->text() << "," << plot->display->isChecked() << "," <<
-        plot->position->cleanText() <<
-        "," << plot->scale->cleanText() << '\n';
+        plot->position->cleanText() << "," << plot->scale->cleanText() << ","
+        << plot->default_color << "," << plot->dark_color << '\n';
     }
   } else {
     return;
@@ -159,6 +159,14 @@ void graph_window::load_settings()
     double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     grabbed_widget->all_plots[i]->axis->setRange(lower_range, upper_range);
+    grabbed_widget->all_plots[i]->default_color = settings[4];
+    grabbed_widget->all_plots[i]->dark_color = settings[5];
+    if (grabbed_widget->dark_theme)
+    {
+      switch_to_dark();
+    }
+    else
+      switch_to_default();
   }
 }
 

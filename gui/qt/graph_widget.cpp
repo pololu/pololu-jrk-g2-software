@@ -2,8 +2,6 @@
 
 #include <QMessageBox>
 
-#include <iostream> //tmphax
-
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
@@ -100,7 +98,55 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
         event->button()==Qt::RightButton)
       {
         plot->display->setCheckState(Qt::Checked);
-        set_plot_color(plot);
+        // set_plot_color(plot);
+
+        QMenu * context_menu = new QMenu();
+
+        QAction * change_action = new QAction(this);
+        change_action->setText("Change color");
+
+        QAction * reset_action = new QAction(this);
+        reset_action->setText("Reset color");
+
+        context_menu->addAction(change_action);
+        context_menu->addAction(reset_action);
+
+        connect(change_action, &QAction::triggered, [=]()
+        {
+          set_plot_color(plot);
+        });
+
+        connect(reset_action, &QAction::triggered, [=]()
+        {
+          if (!dark_theme)
+          {
+            plot->display->setStyleSheet("QCheckBox{border: 2px solid "+ plot->original_default_color + ";"
+              "padding: 2px;"
+              "background-color: white;}");
+            plot->graph->setPen(QPen(plot->original_default_color));
+            plot->axis_label->setColor(plot->original_default_color);
+            plot->axis_position_label->setColor(plot->original_default_color);
+            plot->axis_scale_label->setColor(plot->original_default_color);
+            for (auto label : plot->axis_top_and_bottom)
+              label->setColor(plot->original_default_color);
+          }
+          else if (dark_theme)
+          {
+            plot->display->setStyleSheet("QCheckBox{border: 2px solid "+ plot->original_dark_color + ";"
+              "padding: 2px;"
+              "background-color: white;}");
+            plot->graph->setPen(QPen(plot->original_dark_color));
+            plot->axis_label->setColor(plot->original_dark_color);
+            plot->axis_position_label->setColor(plot->original_dark_color);
+            plot->axis_scale_label->setColor(plot->original_dark_color);
+            for (auto label : plot->axis_top_and_bottom)
+              label->setColor(plot->original_dark_color);
+          }
+          else
+            return;
+        });
+
+        context_menu->exec(QCursor::pos());
         return true;
       }
       return false;
@@ -142,12 +188,10 @@ void graph_widget::set_plot_color(plot * plot)
 
     if (!dark_theme)
     {
-      plot->original_default_color = plot->default_color;
       plot->default_color = selected_color;
     }
     else
     {
-      plot->original_dark_color = plot->dark_color;
       plot->dark_color = selected_color;
     }
   });
@@ -298,8 +342,8 @@ void graph_widget::setup_ui()
 void graph_widget::setup_plot(plot& plot, QString display_text, QString default_color,
   QString dark_color, double scale, bool default_visible)
 {
-  plot.default_color = default_color;
-  plot.dark_color = dark_color;
+  plot.original_default_color = plot.default_color = default_color;
+  plot.original_dark_color = plot.dark_color = dark_color;
 
   plot.scale = new dynamic_decimal_spinbox();
   plot.scale->setAccelerated(true);
