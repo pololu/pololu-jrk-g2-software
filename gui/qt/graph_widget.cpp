@@ -2,8 +2,6 @@
 
 #include <QMessageBox>
 
-#include <iostream>
-
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");

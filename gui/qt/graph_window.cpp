@@ -164,7 +164,7 @@ void graph_window::load_settings()
     if (settings.count() == 6)
     {
       grabbed_widget->all_plots[i]->default_color = settings[4];
-      grabbed_widget->all_plots[i]->default_color = settings[5];
+      grabbed_widget->all_plots[i]->dark_color = settings[5];
     }
 
     if (grabbed_widget->dark_theme)
