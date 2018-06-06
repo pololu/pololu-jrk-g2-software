@@ -19,6 +19,7 @@
 #include <QColorDialog>
 #include <QAction>
 #include <QMenu>
+#include <QMessageBox>
 
 class dynamic_decimal_spinbox;
 

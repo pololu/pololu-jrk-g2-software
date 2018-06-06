@@ -1,7 +1,5 @@
 #include "graph_widget.h"
 
-#include <QMessageBox>
-
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
@@ -449,18 +447,16 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double new_lower = QString::number(newRange.lower, 'f').toDouble();
-    double new_upper = QString::number(newRange.upper, 'f').toDouble();
-    double old_lower = QString::number(oldRange.lower, 'f').toDouble();
-    double old_upper = QString::number(oldRange.upper, 'f').toDouble();
+    double position_value = -(newRange.upper + newRange.lower)/2.0;
+    double scale_value = (-newRange.lower + newRange.upper)/10.0;
 
-    double position_value = -(new_upper + new_lower)/2.0;
-    double scale_value = (-new_lower + new_upper)/10;
-
-    if (scale_value < plot.scale->minimum() || scale_value > plot.scale->maximum()
-      || position_value < plot.position->minimum() || position_value > plot.position->maximum())
+    if (scale_value < plot.scale->minimum()
+      || scale_value > plot.scale->maximum()
+      || position_value < plot.position->minimum()
+      || position_value > plot.position->maximum())
     {
-      plot.axis->setRange(old_lower, old_upper);
+      QSignalBlocker blocker(plot.axis);
+      plot.axis->setRange(oldRange.lower, oldRange.upper);
     }
 
     {
@@ -480,15 +476,6 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
     (&QDoubleSpinBox::valueChanged), [=](const QString& value)
   {
     set_range(plot);
-  });
-
-  connect(plot.scale, static_cast<void (QAbstractSpinBox::*)()>
-    (&QAbstractSpinBox::editingFinished), [=]
-  {
-    if (plot.scale->hasFocus())
-    {
-      plot.scale->selectAll();
-    }
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString&)>
@@ -878,7 +865,9 @@ QString dynamic_decimal_spinbox::textFromValue (double value) const
     return QString::number(value, 'f', 2);
   }
   else if (qFabs(value) < 10000)
+  {
     return QString::number(value, 'f', 1);
+  }
 }
 
 double dynamic_decimal_spinbox::valueFromText (const QString & text) const
