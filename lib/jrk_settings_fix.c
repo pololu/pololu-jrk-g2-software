@@ -152,10 +152,10 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     uint8_t feedback_mode = jrk_settings_get_feedback_mode(settings);
     if (feedback_mode > JRK_FEEDBACK_MODE_FREQUENCY)
     {
-      feedback_mode = JRK_FEEDBACK_MODE_ANALOG;
+      feedback_mode = JRK_FEEDBACK_MODE_NONE;
       jrk_sprintf(warnings,
         "Warning: The feedback mode is invalid "
-        "so it will be changed to analog.\n");
+        "so it will be changed to none.\n");
     }
     jrk_settings_set_feedback_mode(settings, feedback_mode);
   }

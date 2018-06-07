@@ -111,7 +111,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_output_neutral(settings, 2048);
   jrk_settings_set_output_maximum(settings, 4095);
   jrk_settings_set_input_analog_samples_exponent(settings, 7);
-  jrk_settings_set_feedback_mode(settings, JRK_FEEDBACK_MODE_ANALOG);
+  jrk_settings_set_feedback_mode(settings, JRK_FEEDBACK_MODE_NONE);
   jrk_settings_set_feedback_error_maximum(settings, 4095);
   jrk_settings_set_feedback_maximum(settings, 4095);
   jrk_settings_set_feedback_analog_samples_exponent(settings, 7);
@@ -127,14 +127,23 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_max_deceleration_reverse(settings, 600);
   jrk_settings_set_max_duty_cycle_forward(settings, 600);
   jrk_settings_set_max_duty_cycle_reverse(settings, 600);
-  jrk_settings_set_encoded_hard_current_limit_forward(settings, 26);
-  jrk_settings_set_encoded_hard_current_limit_reverse(settings, 26);
   jrk_settings_set_fbt_method(settings, JRK_FBT_METHOD_PULSE_COUNTING);
   jrk_settings_set_fbt_timing_clock(settings, JRK_FBT_TIMING_CLOCK_1_5);
   jrk_settings_set_fbt_timing_timeout(settings, 100);
   jrk_settings_set_fbt_samples(settings, 1);
 
   // End of auto-generated settings defaults.
+
+  uint16_t limit = 0;
+  switch (product)
+  {
+  case JRK_PRODUCT_UMC04A_30V: limit = 87; break;
+  case JRK_PRODUCT_UMC04A_40V: limit = 63; break;
+  case JRK_PRODUCT_UMC05A_30V: limit = 86; break;
+  case JRK_PRODUCT_UMC05A_40V: limit = 62; break;
+  }
+  jrk_settings_set_encoded_hard_current_limit_forward(settings, limit);
+  jrk_settings_set_encoded_hard_current_limit_reverse(settings, limit);
 }
 
 jrk_error * jrk_settings_create(jrk_settings ** settings)
