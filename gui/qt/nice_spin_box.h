@@ -36,6 +36,7 @@ private slots:
 
 private:
   QString text_from_ma(int milliamps) const;
+  int canonical_key_for_text(const QString & text) const;
   int step_up(int code) const;
   int step_down(int code) const;
 

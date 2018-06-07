@@ -1,4 +1,5 @@
 #include "nice_spin_box.h"
+#include <assert.h>
 
 nice_spin_box::nice_spin_box(QWidget* parent) : QSpinBox(parent)
 {
@@ -27,19 +28,40 @@ QString nice_spin_box::text_from_ma(int milliamps) const
   return QString::number(milliamps / 1000.0, 'f', decimals);
 }
 
-#define LOWER (!found_key || i.value() < best_value || \
-  (i.value() == best_value && i.key() < best_key))
+// Finds a key that corresponds to the specified text.  If there are multiple
+// keys, returns the canonical one: the one with the lowest milliamp value,
+// or the one with the lowest key value if there is a tie.
+int nice_spin_box::canonical_key_for_text(const QString & text) const
+{
+  bool found_key = false;
+  int best_key = 0;
+  int best_value = 0;
+  for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
+  {
+    if (text == text_from_ma(i.value()) &&
+      (!found_key || i.value() < best_value ||
+      (i.value() == best_value && i.key() < best_key)))
+    {
+      found_key = true;
+      best_key = i.key();
+      best_value = i.value();
+    }
+  }
+  assert(found_key);
+  return best_key;
+}
 
-// Tries to select a key that:
+// First, tries to select a key that:
 // a) has a milliamp value greater than the specified key's
 // b) has a text different from the specified key's
 // while optimizing for:
-// c) the lowest possible milliamp value
-// d) the lowest possible key (to break ties)
+// c) lowest possible milliamp value
 //
 // If it cannot find something satisfying a && b, it means we are near the top
-// of the mapping, so instead it selects the key corresponding to the text
-// of the maximum value, while optimizing for the same things.
+// of the mapping, so instead it selects the key specified as an argument.
+//
+// Finally, it passes the key through canonical_key_for_text to make sure there
+// is no surprising hidden state.
 int nice_spin_box::step_up(int key) const
 {
   if (mapping.empty()) { return key + 1; }
@@ -49,38 +71,46 @@ int nice_spin_box::step_up(int key) const
 
   bool found_key = false;
   int best_key = 0;
-  int best_value = 0;
-  int max_value = std::numeric_limits<int>::min();
+  int best_value = std::numeric_limits<int>::max();
   for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
   {
-    if (i.value() > value && value_text != text_from_ma(i.value()) && LOWER)
-    {
-      found_key = true;
-      best_key = i.key();
-      best_value = i.value();
-    }
-
-    if (i.value() > max_value) { max_value = i.value(); }
-  }
-  if (found_key) { return best_key; }
-
-  QString max_value_text = text_from_ma(max_value);
-  for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
-  {
-    if (text_from_ma(i.value()) == max_value_text && LOWER)
+    if (i.value() > value && i.value() < best_value &&
+      value_text != text_from_ma(i.value()))
     {
       found_key = true;
       best_key = i.key();
       best_value = i.value();
     }
   }
-  return best_key;
+  if (!found_key) { best_value = value; }
+
+  return canonical_key_for_text(text_from_ma(best_value));
 }
 
-
+// Equivalent to step_up but steps down.
 int nice_spin_box::step_down(int key) const
 {
-  return key; // TODO
+  if (mapping.empty()) { return key - 1; }
+
+  int value = mapping.value(key, 0);
+  QString value_text = textFromValue(key);
+
+  bool found_key = false;
+  int best_key = 0;
+  int best_value = std::numeric_limits<int>::min();
+  for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
+  {
+    if (i.value() < value && i.value() > best_value &&
+      value_text != text_from_ma(i.value()))
+    {
+      found_key = true;
+      best_key = i.key();
+      best_value = i.value();
+    }
+  }
+  if (!found_key) { best_value = value; }
+
+  return canonical_key_for_text(text_from_ma(best_value));
 }
 
 void nice_spin_box::stepBy(int step_value)
@@ -114,10 +144,10 @@ int nice_spin_box::valueFromText(const QString & text) const
 {
   QString copy = text.toUpper();
 
-  bool value_in_milli = copy.contains("M");
+  bool value_in_ma = copy.contains("M");
   double entered_value = copy.remove(QRegExp("[^(0-9|.)]")).toDouble();
 
-  if (value_in_milli)
+  if (value_in_ma)
   {
     entered_value *= 1000;
   }
@@ -133,10 +163,6 @@ int nice_spin_box::valueFromText(const QString & text) const
   {
     int temp_value = value;
 
-    // Used to compare the entered_value to the hundredth times 1000 to an int entered_value
-    // ex.  does (4.92 * 1000) == 4923 (would be false without calculation below)
-    // with formula below becomes does [(4.92 * 1000) == (4923 - (4923 % 10))]
-    // = [(4920) == (4923 - 3)] = [4920 == 4920] (returns true)
     temp_value = temp_value - (temp_value % 10);
 
     if (entered_value >= temp_value)
