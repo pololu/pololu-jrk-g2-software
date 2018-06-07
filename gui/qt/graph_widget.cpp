@@ -744,10 +744,7 @@ void graph_widget::set_range(plot plot)
 
   set_graph_interaction_axis(plot);
 
-  if (graph_paused)
-  {
-    custom_plot->replot();
-  }
+  custom_plot->replot();
 }
 
 QCPItemText * graph_widget::axis_arrow(plot plot, double degrees)
