@@ -11,27 +11,35 @@ class nice_spin_box : public QSpinBox
 {
   Q_OBJECT
 
-public:
-  // The "display_in_milli" variable is so the user can set the QSpinBox to
-  // display milli-units and use it with the same functionality.
-  nice_spin_box(bool display_in_milli = false, QWidget* parent = Q_NULLPTR);
+  QMap<int, int> mapping;
 
+  // TODO: do we really need this?
+  int code = -1;
+
+  int decimals = 0;
+
+public:
+  nice_spin_box(QWidget * parent = NULL);
+
+  // Sets the mapping from encoded current limits which get returned by value(),
+  // to actual current limits (in milliamps) which are displayed to the user.
+  // If you pass an empty map or don't call this function at all, then value()
+  // uses milliamps, and and you should call setRange to set the allowed range.
   void set_mapping(const QMap<int, int> &);
-  void set_decimals(int m_decimals = 0) { decimals = m_decimals; }
+
+  // Sets the number of digits to show after the decimal point.
+  // Must be between 0 and 3.
+  void set_decimals(int decimals) { this->decimals = decimals; }
 
 private slots:
   void set_code_from_value(int value);
 
 private:
-  // "mapping" is used within the class to determine the display value
-  // based on the value set in the QSpinBox.
-  QMap<int, int> mapping;
-  int code = -1;
-  bool display_in_milli;
-  int decimals = 0;
+  QString text_from_ma(int milliamps) const;
+  int step_up(int code) const;
+  int step_down(int code) const;
 
 protected:
-  // Reimplemented QSpinBox functions
   virtual void stepBy(int step_value);
   virtual StepEnabled stepEnabled();
   int valueFromText(const QString& text) const;

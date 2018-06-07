@@ -1,9 +1,6 @@
 #include "nice_spin_box.h"
 
-#include <iostream>
-
-nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
-  : display_in_milli(display_in_milli), QSpinBox(parent)
+nice_spin_box::nice_spin_box(QWidget* parent) : QSpinBox(parent)
 {
   connect(this, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
     this, &nice_spin_box::set_code_from_value);
@@ -14,47 +11,93 @@ void nice_spin_box::set_code_from_value(int value)
   code = value;
 }
 
-void nice_spin_box::set_mapping(const QMap<int, int> & map)
+void nice_spin_box::set_mapping(const QMap<int, int> & new_mapping)
 {
-  if (map != mapping)
+  if (mapping == new_mapping) { return; }
+  mapping = new_mapping;
+  if (!mapping.empty())
   {
-    mapping = map;
     setRange(mapping.firstKey(), mapping.lastKey());
-    setValue(code);
   }
+  setValue(code);
+}
+
+QString nice_spin_box::text_from_ma(int milliamps) const
+{
+  return QString::number(milliamps / 1000.0, 'f', decimals);
+}
+
+#define LOWER (!found_key || i.value() < best_value || \
+  (i.value() == best_value && i.key() < best_key))
+
+// Tries to select a key that:
+// a) has a milliamp value greater than the specified key's
+// b) has a text different from the specified key's
+// while optimizing for:
+// c) the lowest possible milliamp value
+// d) the lowest possible key (to break ties)
+//
+// If it cannot find something satisfying a && b, it means we are near the top
+// of the mapping, so instead it selects the key corresponding to the text
+// of the maximum value, while optimizing for the same things.
+int nice_spin_box::step_up(int key) const
+{
+  if (mapping.empty()) { return key + 1; }
+
+  int value = mapping.value(key, 0);
+  QString value_text = textFromValue(key);
+
+  bool found_key = false;
+  int best_key = 0;
+  int best_value = 0;
+  int max_value = std::numeric_limits<int>::min();
+  for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
+  {
+    if (i.value() > value && value_text != text_from_ma(i.value()) && LOWER)
+    {
+      found_key = true;
+      best_key = i.key();
+      best_value = i.value();
+    }
+
+    if (i.value() > max_value) { max_value = i.value(); }
+  }
+  if (found_key) { return best_key; }
+
+  QString max_value_text = text_from_ma(max_value);
+  for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
+  {
+    if (text_from_ma(i.value()) == max_value_text && LOWER)
+    {
+      found_key = true;
+      best_key = i.key();
+      best_value = i.value();
+    }
+  }
+  return best_key;
+}
+
+
+int nice_spin_box::step_down(int key) const
+{
+  return key; // TODO
 }
 
 void nice_spin_box::stepBy(int step_value)
 {
-  // TODO: fix all the code in this function
-
-  if (mapping.empty())
-  {
-    code = value();
-    code += step_value;
-    return;
-  }
-
   code = value();
 
-  code += step_value;
-
-  while (!mapping.contains(code))
+  while (step_value > 0)
   {
-    code += step_value;
+    code = step_up(code);
+    step_value--;
   }
 
-  while ((mapping.value(code) == mapping.value(value())))
+  while (step_value < 0)
   {
-    code += step_value;
+    code = step_down(code);
+    step_value++;
   }
-
-  if (mapping.value(code) - (mapping.value(code) % 10) == 0)
-  {
-    code += step_value;
-  }
-
-  code = mapping.keys(mapping.value(code)).first();
 
   setValue(code);
   selectAll();
@@ -72,11 +115,9 @@ int nice_spin_box::valueFromText(const QString & text) const
   QString copy = text.toUpper();
 
   bool value_in_milli = copy.contains("M");
-  bool value_in_units = (copy.contains("A") && !copy.contains("M"));
   double entered_value = copy.remove(QRegExp("[^(0-9|.)]")).toDouble();
 
-  if ((!value_in_milli && !display_in_milli)
-    || (value_in_units && display_in_milli))
+  if (value_in_milli)
   {
     entered_value *= 1000;
   }
@@ -107,29 +148,13 @@ int nice_spin_box::valueFromText(const QString & text) const
 }
 
 // Determines how values are displayed to the user.
-QString nice_spin_box::textFromValue(int val) const
+QString nice_spin_box::textFromValue(int value) const
 {
   if (mapping.empty())
   {
-    if (display_in_milli)
-    {
-      return QString::number(val);
-    }
-    else
-    {
-      return QString::number(val/1000.0, 'f', decimals);
-    }
+    return text_from_ma(value);
   }
-
-  if (display_in_milli)
-  {
-    return QString::number(mapping.value(val));
-  }
-  else
-  {
-    int temp_val = mapping.value(val);
-    return QString::number(mapping.value(val)/1000.0, 'f', decimals);
-  }
+  return text_from_ma(mapping.value(value));
 }
 
 // Allow the user to input letters as well as digits, but restrict the number
