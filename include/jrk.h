@@ -1603,7 +1603,7 @@ bool jrk_variables_get_pid_period_exceeded(const jrk_variables *);
 // Gets the pid_period_count variable.
 //
 // This is the number of PID periods that have elapsed.  It resets to 0 after
-// reaching 65535.  The duration of the PID period can be configured.
+// reaching 65535.
 JRK_API
 uint16_t jrk_variables_get_pid_period_count(const jrk_variables *);
 
@@ -1628,7 +1628,8 @@ uint16_t jrk_variables_get_error_flags_occurred(const jrk_variables *);
 
 // Gets the vin_voltage variable.
 //
-// This is a measurement of the VIN voltage, in millivolts.
+// This is the measurement of the voltage supplied to the Jrk's VIN pin,
+// in millivolts.
 JRK_API
 uint16_t jrk_variables_get_vin_voltage(const jrk_variables *);
 
@@ -1998,13 +1999,6 @@ jrk_error * jrk_force_duty_cycle(jrk_handle *, int16_t duty_cycle);
 ///   as a side effect.
 /// - `(1 << JRK_GET_VARIABLES_FLAG_CLEAR_CURRENT_CHOPPING_OCCURRENCE_COUNT)`:
 ///   Clears the "Current chopping occurrence count" variable as a side effect.
-///
-/// The clear_errors_halting option should be true if you want to clear the
-/// error bits in the device's "Error flags halting" variable (except for the
-/// Awaiting Command error bit).
-///
-/// The clear_errors_occurred option should be true if you want to clear the
-/// bits in the device's "Error flags occurred" variable as a side effect.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_get_variables(jrk_handle *, jrk_variables ** variables,
   uint16_t flags);
@@ -2091,11 +2085,11 @@ jrk_error * jrk_get_ram_settings(jrk_handle *, jrk_settings **);
 /// RAM in this way, so you will have to use jrk_set_eeprom_settings() and
 /// jrk_reinitialize() to change them.
 ///
-/// Note that this command works by RAM *all* of the jrk's RAM
-/// settings, so it needs knowledge of what those settings are.  If you are
+/// Note that this command overrides *all* of the jrk's RAM settings, so it
+/// needs knowledge of what those settings are.  If you are
 /// writing your own USB code, you can do something simpler by just overwriting
-/// the settings that you know and care about.  See the internal library
-/// function jrk_set_ram_setting_segment, which takes an arbitrary index
+/// the settings that you know and care about.  See the
+/// function jrk_set_ram_setting_segment() which takes an arbitrary index
 /// and length.
 ///
 /// For a lower-level version of this, see

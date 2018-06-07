@@ -110,7 +110,7 @@ END
     type: :uint16_t,
     comment: <<END
 This is the number of PID periods that have elapsed.  It resets to 0 after
-reaching 65535.  The duration of the PID period can be configured.
+reaching 65535.
 END
   },
   {
@@ -138,7 +138,8 @@ END
     name: 'vin_voltage',
     type: :uint16_t,
     comment: <<END
-This is a measurement of the VIN voltage, in millivolts.
+This is the measurement of the voltage supplied to the Jrk's VIN pin,
+in millivolts.
 END
   },
   {
