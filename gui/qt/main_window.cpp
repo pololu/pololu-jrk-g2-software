@@ -2783,7 +2783,6 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_timing_clock_label = new QLabel();
   fbt_timing_clock_label->setObjectName("fbt_timing_clock_label");
   fbt_timing_clock_label->setText("Pulse timing clock:");
-  fbt_timing_clock_label->setEnabled(false);  // tmphax
 
   fbt_timing_clock_combobox = new QComboBox();
   fbt_timing_clock_combobox->setObjectName("fbt_timing_clock_combobox");
