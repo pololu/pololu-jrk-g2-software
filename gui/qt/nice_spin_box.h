@@ -16,7 +16,7 @@ public:
   // display milli-units and use it with the same functionality.
   nice_spin_box(bool display_in_milli = false, QWidget* parent = Q_NULLPTR);
 
-  void set_mapping(QMap<int, int>&);
+  void set_mapping(const QMap<int, int> &);
   void set_decimals(int m_decimals = 0) { decimals = m_decimals; }
 
 private slots:

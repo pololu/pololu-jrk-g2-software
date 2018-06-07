@@ -9,75 +9,65 @@ nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
     this, &nice_spin_box::set_code_from_value);
 }
 
-
 void nice_spin_box::set_code_from_value(int value)
 {
-  int temp_code = valueFromText(cleanText());
-
   code = value;
 }
 
-// The main_window uses this public function to send the updated map to the
-// nice_spin_box and set the range of the QSpinBox.
-void nice_spin_box::set_mapping(QMap<int, int>& sent_map)
+void nice_spin_box::set_mapping(const QMap<int, int> & map)
 {
-  if (!sent_map.empty() && (sent_map != mapping))
+  if (map != mapping)
   {
-    mapping = sent_map;
-
-    setValue(code);
-
-    // The "key" values can be within any range so the range of the
-    // spin box must dynamic based on the key values mapped to the control.
+    mapping = map;
     setRange(mapping.firstKey(), mapping.lastKey());
+    setValue(code);
   }
 }
 
-// Reimplemented from QSpinBox to use the iterator for steps since the values
-// are not separated in a set step.
 void nice_spin_box::stepBy(int step_value)
 {
+  // TODO: fix all the code in this function
+
   if (mapping.empty())
   {
     code = value();
     code += step_value;
+    return;
   }
-  else
+
+  code = value();
+
+  code += step_value;
+
+  while (!mapping.contains(code))
   {
-    code = value();
-
     code += step_value;
-
-    while (!mapping.contains(code))
-      code += step_value;
-
-    while ((mapping.value(code) == mapping.value(value())))
-    {
-      code += step_value;
-    }
-
-    if (mapping.value(code) - (mapping.value(code) % 10) == 0)
-    {
-      code += step_value;
-    }
-
-    code = mapping.keys(mapping.value(code)).first();
-
   }
+
+  while ((mapping.value(code) == mapping.value(value())))
+  {
+    code += step_value;
+  }
+
+  if (mapping.value(code) - (mapping.value(code) % 10) == 0)
+  {
+    code += step_value;
+  }
+
+  code = mapping.keys(mapping.value(code)).first();
 
   setValue(code);
   selectAll();
 }
 
-// Necessary for use with stepBy function.
+// Necessary for use with stepBy function.  TODO: why?
 QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
 {
   return StepUpEnabled | StepDownEnabled;
 }
 
-// Evaluates text entered into the nice_spin_box and returns a value without
-// a suffix which can be used in other functions and comparisons.
-int nice_spin_box::valueFromText(const QString& text) const
+// Converts user input into a value (a key in the mapping).
+int nice_spin_box::valueFromText(const QString & text) const
 {
   QString copy = text.toUpper();
 
@@ -91,69 +81,70 @@ int nice_spin_box::valueFromText(const QString& text) const
     entered_value *= 1000;
   }
 
-
-  if (!mapping.empty())
+  if (mapping.empty())
   {
-    double return_value = 0;
-
-    for (auto value : mapping.values())
-    {
-      int temp_value = value;
-
-      // Used to compare the entered_value to the hundredth times 1000 to an int entered_value
-      // ex.  does (4.92 * 1000) == 4923 (would be false without calculation below)
-      // with formula below becomes does [(4.92 * 1000) == (4923 - (4923 % 10))]
-      // = [(4920) == (4923 - 3)] = [4920 == 4920] (returns true)
-      temp_value = temp_value - (temp_value % 10);
-
-      if (entered_value >= temp_value)
-      {
-        return_value = mapping.key(value);
-      }
-    }
-    return return_value;
-  }
-  else
     return entered_value;
+  }
+
+  double return_value = 0;
+
+  for (auto value : mapping.values())
+  {
+    int temp_value = value;
+
+    // Used to compare the entered_value to the hundredth times 1000 to an int entered_value
+    // ex.  does (4.92 * 1000) == 4923 (would be false without calculation below)
+    // with formula below becomes does [(4.92 * 1000) == (4923 - (4923 % 10))]
+    // = [(4920) == (4923 - 3)] = [4920 == 4920] (returns true)
+    temp_value = temp_value - (temp_value % 10);
+
+    if (entered_value >= temp_value)
+    {
+      return_value = mapping.key(value);
+    }
+  }
+  return return_value;
 }
 
-// Creates the string which is set in the nice_spin_box.
+// Determines how values are displayed to the user.
 QString nice_spin_box::textFromValue(int val) const
 {
-  if (!mapping.empty())
-  {
-    if (display_in_milli)
-    {
-      return QString::number(mapping.value(val));
-    }
-    else
-    {
-      int temp_val = mapping.value(val);
-      return QString::number(mapping.value(val)/1000.0, 'f', decimals);
-    }
-  }
-  else
+  if (mapping.empty())
   {
     if (display_in_milli)
     {
       return QString::number(val);
     }
     else
+    {
       return QString::number(val/1000.0, 'f', decimals);
+    }
+  }
+
+  if (display_in_milli)
+  {
+    return QString::number(mapping.value(val));
+  }
+  else
+  {
+    int temp_val = mapping.value(val);
+    return QString::number(mapping.value(val)/1000.0, 'f', decimals);
   }
 }
 
-// Changes the validator which is native to QDoubleSpinBox. This validator
-// allows user to input letters as well as digits, but restricts the number
+// Allow the user to input letters as well as digits, but restrict the number
 // of digits which can be entered and the allowed letters.
-QValidator::State nice_spin_box::validate(QString& input, int& pos) const
+QValidator::State nice_spin_box::validate(QString & input, int & pos) const
 {
+  // TODO: use QRegularExpression instead; it is recommended by the docs here:
+  // http://doc.qt.io/qt-5/qregexp.html
+  // TODO: try to use a case-insensitive regular expression
   QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,3})?(\\s*)(([m|M][a|A]?)|[a|A])?");
 
   if (input.isEmpty())
-    {
-      return QValidator::Intermediate;
-    }
+  {
+    return QValidator::Intermediate;
+  }
 
   if (r.exactMatch(input))
   {
