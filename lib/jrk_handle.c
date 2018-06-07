@@ -218,7 +218,7 @@ jrk_error * jrk_stop_motor(jrk_handle * handle)
   }
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
-    0x40, JRK_CMD_MOTOR_OFF_USB, 0, 0, NULL, 0, NULL));
+    0x40, JRK_CMD_STOP_MOTOR_USB, 0, 0, NULL, 0, NULL));
 
   if (error != NULL)
   {
