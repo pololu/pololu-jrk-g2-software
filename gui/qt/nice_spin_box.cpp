@@ -133,44 +133,33 @@ void nice_spin_box::stepBy(int step_value)
   selectAll();
 }
 
-// Necessary for use with stepBy function.  TODO: why?
-QDoubleSpinBox::StepEnabled nice_spin_box::stepEnabled()
-{
-  return StepUpEnabled | StepDownEnabled;
-}
-
-// Converts user input into a value (a key in the mapping).
+// Converts user input into a value (nice_spin_box::value()).
 int nice_spin_box::valueFromText(const QString & text) const
 {
   QString copy = text.toUpper();
 
-  bool value_in_ma = copy.contains("M");
-  double entered_value = copy.remove(QRegExp("[^(0-9|.)]")).toDouble();
-
-  if (value_in_ma)
-  {
-    entered_value *= 1000;
-  }
+  bool entered_ma = copy.contains("M");
+  copy.remove(QRegularExpression("[^0-9.]"));
+  double entered_double = copy.toDouble();
+  if (!entered_ma) { entered_double *= 1000; }
+  int entered_value = entered_double;
 
   if (mapping.empty())
   {
     return entered_value;
   }
 
-  double return_value = 0;
-
-  for (auto value : mapping.values())
+  int best_key = 0;
+  int best_value = std::numeric_limits<int>::min();
+  for (auto i = mapping.constBegin(); i != mapping.constEnd(); ++i)
   {
-    int temp_value = value;
-
-    temp_value = temp_value - (temp_value % 10);
-
-    if (entered_value >= temp_value)
+    if (i.value() <= entered_value && i.value() > best_value)
     {
-      return_value = mapping.key(value);
+      best_key = i.key();
+      best_value = i.value();
     }
   }
-  return return_value;
+  return canonical_key_for_text(text_from_ma(best_value));
 }
 
 // Determines how values are displayed to the user.
@@ -187,17 +176,15 @@ QString nice_spin_box::textFromValue(int value) const
 // of digits which can be entered and the allowed letters.
 QValidator::State nice_spin_box::validate(QString & input, int & pos) const
 {
-  // TODO: use QRegularExpression instead; it is recommended by the docs here:
-  // http://doc.qt.io/qt-5/qregexp.html
-  // TODO: try to use a case-insensitive regular expression
-  QRegExp r = QRegExp("(\\d{0,6})(\\.\\d{0,3})?(\\s*)(([m|M][a|A]?)|[a|A])?");
+  QRegularExpression r("\\A\\d{0,6}(\\.\\d{0,3})?\\s*m?A?\\Z",
+    QRegularExpression::CaseInsensitiveOption);
 
   if (input.isEmpty())
   {
     return QValidator::Intermediate;
   }
 
-  if (r.exactMatch(input))
+  if (r.match(input).hasMatch())
   {
     return QValidator::Acceptable;
   }

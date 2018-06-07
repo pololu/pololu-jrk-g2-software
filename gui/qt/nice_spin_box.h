@@ -13,7 +13,8 @@ class nice_spin_box : public QSpinBox
 
   QMap<int, int> mapping;
 
-  // TODO: do we really need this?
+  // Note: This member probably isn't necessary, it's usually just equal to
+  // value().
   int code = -1;
 
   int decimals = 0;
@@ -28,7 +29,6 @@ public:
   void set_mapping(const QMap<int, int> &);
 
   // Sets the number of digits to show after the decimal point.
-  // Must be between 0 and 3.
   void set_decimals(int decimals) { this->decimals = decimals; }
 
 private slots:
@@ -42,9 +42,8 @@ private:
 
 protected:
   virtual void stepBy(int step_value);
-  virtual StepEnabled stepEnabled();
-  int valueFromText(const QString& text) const;
+  int valueFromText(const QString & text) const;
   QString textFromValue(int val) const;
-  QValidator::State validate(QString& input, int& pos) const;
+  QValidator::State validate(QString & input, int & pos) const;
 };
 
