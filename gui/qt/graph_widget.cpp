@@ -1013,7 +1013,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
           temp_plot = plot;
         }
       }
-      else
+      else if (!plot->graph->data()->isEmpty())
       {
         double select_test_value = plot->graph->selectTest(event->localPos(), false);
 
