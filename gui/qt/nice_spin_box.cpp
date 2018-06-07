@@ -5,16 +5,6 @@
 nice_spin_box::nice_spin_box(bool display_in_milli, QWidget* parent)
   : display_in_milli(display_in_milli), QSpinBox(parent)
 {
-  // Since the range of the nice_spin_box can be changed based on the mapped
-  // values, the minimum size is based on the default size of a QSpinBox
-  // with the range 0-99. This is used to set the minimum size of the
-  // nice_spin_box to fit entered values.
-  {
-    QAbstractSpinBox temp_box;
-    temp_box.setSpecialValueText("0000000");
-    this->setMinimumSize(temp_box.sizeHint());
-  }
-
   connect(this, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
     this, &nice_spin_box::set_code_from_value);
 }

@@ -3029,13 +3029,22 @@ QWidget *main_window::setup_motor_tab()
   current_limit_label = new QLabel(tr("Hard current limit (A):"));
   current_limit_label->setObjectName("current_limit_label");
 
+  size_t minimum_current_box_width;
+  {
+    QSpinBox tmp_box;
+    tmp_box.setSpecialValueText("999.99 A");
+    minimum_current_box_width = tmp_box.sizeHint().width();
+  }
+
   current_limit_forward_spinbox = new nice_spin_box();
   current_limit_forward_spinbox->setObjectName("current_limit_forward_spinbox");
   current_limit_forward_spinbox->set_decimals(2);
+  current_limit_forward_spinbox->setMinimumWidth(minimum_current_box_width);
 
   current_limit_reverse_spinbox = new nice_spin_box();
   current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
   current_limit_reverse_spinbox->set_decimals(2);
+  current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
 
   // TODO: change the variable names to soft_current_limit too
   max_current_label = new QLabel(tr("Soft current limit (A):"));
@@ -3045,11 +3054,13 @@ QWidget *main_window::setup_motor_tab()
   max_current_forward_spinbox->setObjectName("max_current_forward_spinbox");
   max_current_forward_spinbox->set_decimals(3);
   max_current_forward_spinbox->setRange(0, 65535);
+  max_current_forward_spinbox->setMinimumWidth(minimum_current_box_width);
 
   max_current_reverse_spinbox = new nice_spin_box();
   max_current_reverse_spinbox->setObjectName("max_current_reverse_spinbox");
   max_current_reverse_spinbox->set_decimals(3);
   max_current_reverse_spinbox->setRange(0, 65535);
+  max_current_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
 
   max_current_means_label = new QLabel(tr("(0 means no limit)"));
   max_current_means_label->setObjectName("max_current_means_label");
