@@ -9,8 +9,8 @@ graph_widget::graph_widget(QWidget * parent)
 
   setup_ui();
 
-  connect(domain, SIGNAL(valueChanged(int)),
-    this, SLOT(change_ranges()));
+  connect(domain, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+    this, graph_widget::change_ranges);
 }
 
 // Changes options for the custom_plot when in preview mode.
@@ -87,7 +87,7 @@ void graph_widget::plot_data(uint32_t time)
 
 void graph_widget::change_plot_colors(plot * plot, const QString& color)
 {
-  plot->display->setStyleSheet("QCheckBox{border: 2px solid "+ color + ";"
+  plot->display->setStyleSheet("QCheckBox{border: 2px ridge "+ color + ";"
     "padding: 2px;"
     "background-color: white;}");
   plot->graph->setPen(QPen(color));
@@ -110,70 +110,7 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
       if (e->type()==QEvent::MouseButtonPress &&
         event->button()==Qt::RightButton)
       {
-        plot->display->setCheckState(Qt::Checked);
-
-        QMenu * color_change_menu = new QMenu();
-
-        QAction * change_action = new QAction(this);
-        change_action->setText("Change plot color");
-
-        QAction * reset_action = new QAction(this);
-        reset_action->setText("Reset plot color");
-
-        QAction * reset_all_action = new QAction(this);
-        reset_all_action->setText("Reset all colors");
-
-        color_change_menu->addAction(change_action);
-        color_change_menu->addAction(reset_action);
-        color_change_menu->addSeparator();
-        color_change_menu->addAction(reset_all_action);
-
-        connect(change_action, &QAction::triggered, [=]()
-        {
-          set_plot_color(plot);
-        });
-
-        connect(reset_action, &QAction::triggered, [=]()
-        {
-          if (dark_theme)
-          {
-            change_plot_colors(plot, plot->original_dark_color);
-          }
-          else
-          {
-            change_plot_colors(plot, plot->original_default_color);
-          }
-        });
-
-        connect(reset_all_action, &QAction::triggered, [=]()
-        {
-          QMessageBox mbox(QMessageBox::Question, "",
-          QString::fromStdString("Reset all colors to default?"),
-          QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
-
-          mbox.setWindowFlags(Qt::Popup);
-          mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
-
-          if (mbox.exec() == QMessageBox::Ok)
-          {
-            for (auto plot : all_plots)
-            {
-              plot->default_color = plot->original_default_color;
-              plot->dark_color = plot->original_dark_color;
-
-              if (dark_theme)
-              {
-                change_plot_colors(plot, plot->dark_color);
-              }
-              else
-              {
-                change_plot_colors(plot, plot->default_color);
-              }
-            }
-          }
-        });
-
-        color_change_menu->exec(QCursor::pos());
+        show_color_change_menu(plot, false);
         return true;
       }
       return false;
@@ -181,6 +118,102 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
   }
 
   return graph_widget::eventFilter(o, e);
+}
+
+void graph_widget::show_color_change_menu(plot * plot, bool with_title)
+{
+  plot->display->setCheckState(Qt::Checked);
+
+  QMenu * color_change_menu = new QMenu();
+
+  QLabel* label = new QLabel(plot->display->text());
+  label->setContentsMargins(10, 5, 0, 5);
+
+  QWidgetAction* menu_title = new QWidgetAction(color_change_menu);
+  menu_title->setDefaultWidget(label);
+
+  QAction * change_action = new QAction(this);
+  change_action->setText("Change color");
+
+  QAction * reset_action = new QAction(this);
+  reset_action->setText("Reset color");
+  reset_action->setEnabled((dark_theme && plot->dark_changed)
+    || (!dark_theme && plot->default_changed));
+
+  bool some_plot_color_changed = false;
+
+  for (auto plot : all_plots)
+  {
+    some_plot_color_changed = (some_plot_color_changed
+      || plot->default_changed
+      || plot->dark_changed);
+  }
+
+  QAction * reset_all_action = new QAction(this);
+  reset_all_action->setText("Reset all colors");
+  reset_all_action->setEnabled(some_plot_color_changed);
+
+  if (with_title)
+  {
+    color_change_menu->addAction(menu_title);
+    color_change_menu->addSeparator();
+  }
+
+  color_change_menu->addAction(change_action);
+  color_change_menu->addAction(reset_action);
+  color_change_menu->addSeparator();
+  color_change_menu->addAction(reset_all_action);
+
+  connect(change_action, &QAction::triggered, [=]()
+  {
+    set_plot_color(plot);
+  });
+
+  connect(reset_action, &QAction::triggered, [=]()
+  {
+    if (dark_theme)
+    {
+      plot->dark_changed = false;
+      change_plot_colors(plot, plot->original_dark_color);
+    }
+    else
+    {
+      plot->default_changed = false;
+      change_plot_colors(plot, plot->original_default_color);
+    }
+  });
+
+  connect(reset_all_action, &QAction::triggered, [=]()
+  {
+    QMessageBox mbox(QMessageBox::Question, "",
+    QString::fromStdString("Reset all colors to default?"),
+    QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
+
+    mbox.setWindowFlags(Qt::Popup);
+    mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
+
+    if (mbox.exec() == QMessageBox::Ok)
+    {
+      for (auto plot : all_plots)
+      {
+        plot->default_color = plot->original_default_color;
+        plot->dark_color = plot->original_dark_color;
+
+        if (dark_theme)
+        {
+          plot->dark_changed = false;
+          change_plot_colors(plot, plot->dark_color);
+        }
+        else
+        {
+          plot->default_changed = false;
+          change_plot_colors(plot, plot->default_color);
+        }
+      }
+    }
+  });
+
+  color_change_menu->popup(QCursor::pos());
 }
 
 void graph_widget::set_plot_color(plot * plot)
@@ -206,10 +239,12 @@ void graph_widget::set_plot_color(plot * plot)
 
     if (!dark_theme)
     {
+      plot->default_changed = true;
       plot->default_color = selected_color;
     }
     else
     {
+      plot->dark_changed = true;
       plot->dark_color = selected_color;
     }
   });
@@ -273,7 +308,7 @@ void graph_widget::setup_ui()
 
   setup_plot(target, "Target", "#0000ff", "#ff6037", 4095, true);
 
-  setup_plot(feedback, "Feedback", "#ff8296", "#ffcc33", 4095);
+  setup_plot(feedback, "Feedback", "#ff0077", "#ffcc33", 4095);
 
   setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", "#ccff00", 4095, true);
 
@@ -289,7 +324,7 @@ void graph_widget::setup_ui()
 
   setup_plot(current, "Current (mA)", "#b8860b", "#66ff66", 100000);
 
-  setup_plot(current_chopping, "Current chopping", "#ff00ff", "#50bfe6", 1);
+  setup_plot(current_chopping, "Current chopping", "#e900ff", "#50bfe6", 1);
 
   QFrame * division_frame = new QFrame();
   division_frame->setFrameShadow(QFrame::Plain);
@@ -343,6 +378,46 @@ void graph_widget::setup_ui()
   QMetaObject::connectSlotsByName(this);
 }
 
+QMenuBar * graph_widget::setup_menu_bar()
+{
+  menu_bar = new QMenuBar();
+
+  options_menu = menu_bar->addMenu(tr("Options"));
+
+  save_settings_action = new QAction(this);
+  save_settings_action->setText("Save settings");
+  save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
+
+  load_settings_action = new QAction(this);
+  load_settings_action->setText("Load settings");
+  load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
+
+  dark_theme_action = new QAction(this);
+  dark_theme_action->setText(tr("&Use dark theme"));
+
+  default_theme_action = new QAction(this);
+  default_theme_action->setText(tr("&Use default theme"));
+
+  options_menu->addAction(save_settings_action);
+  options_menu->addAction(load_settings_action);
+  options_menu->addSeparator();
+  options_menu->addAction(dark_theme_action);
+
+  connect(save_settings_action, &QAction::triggered, this,
+    &graph_widget::save_settings);
+
+  connect(load_settings_action, &QAction::triggered, this,
+    &graph_widget::load_settings);
+
+  connect(dark_theme_action, &QAction::triggered, this,
+    &graph_widget::switch_to_dark);
+
+  connect(default_theme_action, &QAction::triggered, this,
+      &graph_widget::switch_to_default);
+
+  return menu_bar;
+}
+
 void graph_widget::setup_plot(plot& plot, QString display_text, QString default_color,
   QString dark_color, double scale, bool default_visible)
 {
@@ -366,9 +441,9 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
   plot.display->setToolTip("Right-click to change plot color");
-  plot.display->setStyleSheet("QCheckBox{border: 2px solid "+ plot.default_color + ";"
+  plot.display->setStyleSheet("QCheckBox{border: 2px ridge "+ plot.default_color + ";"
     "padding: 2px;"
-    "background-color: white;}");
+    "background: white;}");
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
   plot.display->installEventFilter(this);
@@ -688,11 +763,141 @@ QCPItemText * graph_widget::axis_arrow(plot plot, double degrees)
   return label_instance;
 }
 
-void graph_widget::change_ranges()
+void graph_widget::save_settings()
 {
-  custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
+  QString filename = QFileDialog::getSaveFileName((QWidget* )0,
+    "Save graph settings", QString(), "*.txt", Q_NULLPTR);
 
-  custom_plot->xAxis2->setRange(key, domain->value() * 1000, Qt::AlignRight);
+  if (filename.isEmpty())
+  {
+    return;
+  }
+
+  if (QFileInfo(filename).suffix().isEmpty())
+  {
+    filename.append(".txt");
+  }
+
+  QFile file_out(filename);
+  if (file_out.open(QFile::WriteOnly | QFile::Text)) {
+    QTextStream out(&file_out);
+    for(auto plot : all_plots)
+    {
+      out << plot->display->text() << "," << plot->display->isChecked() << "," <<
+        plot->position->cleanText() << "," << plot->scale->cleanText() << ","
+        << plot->default_color << "," << plot->dark_color << '\n';
+    }
+  } else {
+    return;
+  }
+  file_out.close();
+}
+
+void graph_widget::load_settings()
+{
+  QStringList all_plots_settings;
+
+  QString filename = QFileDialog::getOpenFileName((QWidget* )0,
+    "Load graph settings", QString(), "*.txt");
+
+  QFile file_in(filename);
+  if (file_in.open(QFile::ReadOnly | QFile::Text)) {
+    QTextStream stream_in(&file_in);
+    while (!stream_in.atEnd())
+      all_plots_settings += stream_in.readLine();
+  } else {
+    return;
+  }
+
+  for (int i = 0; i < all_plots_settings.size(); i++)
+  {
+    QStringList settings = all_plots_settings[i].split(",");
+
+    if (settings[3].toDouble() < 0.1)
+    {
+      settings[3] = "0.1";
+    }
+
+    all_plots[i]->display->setChecked(settings[1].toInt());
+    double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
+    double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
+    all_plots[i]->axis->setRange(lower_range, upper_range);
+
+    if (settings.count() == 6)
+    {
+      all_plots[i]->default_color = settings[4];
+      all_plots[i]->dark_color = settings[5];
+    }
+
+    if (dark_theme)
+    {
+      switch_to_dark();
+    }
+    else
+      switch_to_default();
+  }
+}
+
+void graph_widget::switch_to_dark()
+{
+  for (auto plot : all_plots)
+  {
+    change_plot_colors(plot, plot->dark_color);
+  }
+
+  QLinearGradient axis_rect_gradient;
+  axis_rect_gradient.setStart(0, 0);
+  axis_rect_gradient.setFinalStop(0, 350);
+  axis_rect_gradient.setColorAt(0, QColor(40, 40, 40));
+  axis_rect_gradient.setColorAt(1, QColor(10, 10, 10));
+  custom_plot->axisRect()->setBackground(axis_rect_gradient);
+  custom_plot->setBackground(QColor(170, 170, 170));
+  custom_plot->xAxis->grid()->pen().setColor(QColor(225, 225, 225));
+  custom_plot->yAxis->grid()->pen().setColor(QColor(225, 225, 225));
+  custom_plot->xAxis->setBasePen(
+    QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->yAxis->setBasePen(
+    QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(225, 225, 225));
+
+  options_menu->removeAction(dark_theme_action);
+  options_menu->addAction(default_theme_action);
+
+  dark_theme = true;
+
+  custom_plot->replot();
+}
+
+void graph_widget::switch_to_default()
+{
+  for (auto plot : all_plots)
+  {
+    change_plot_colors(plot, plot->default_color);
+  }
+
+  custom_plot->axisRect()->setBackground(QColor(Qt::white));
+  custom_plot->setBackground(QColor(Qt::white));
+  custom_plot->xAxis->grid()->pen().setColor(QColor(100, 100, 100));
+  custom_plot->yAxis->grid()->pen().setColor(QColor(100, 100, 100));
+  custom_plot->xAxis->setBasePen(
+    QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->yAxis->setBasePen(
+    QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(100, 100, 100));
+
+  options_menu->removeAction(default_theme_action);
+  options_menu->addAction(dark_theme_action);
+
+  dark_theme = false;
+
+  custom_plot->replot();
+}
+
+void graph_widget::change_ranges(int value)
+{
+  custom_plot->xAxis->setRange(-value * 1000, 0);
+
+  custom_plot->xAxis2->setRange(key, value * 1000, Qt::AlignRight);
 
   custom_plot->replot();
 }
@@ -771,7 +976,6 @@ void graph_widget::mouse_press(QMouseEvent * event)
     return;
   }
 
-
   reset_graph_interaction_axes();
 
   plot * temp_plot = Q_NULLPTR;
@@ -825,7 +1029,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
   {
     if (event->button() == Qt::RightButton)
     {
-      eventFilter(temp_plot->display, event);
+      show_color_change_menu(temp_plot, true);
     }
     else
       set_graph_interaction_axis(*temp_plot);

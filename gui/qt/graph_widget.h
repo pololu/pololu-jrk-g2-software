@@ -20,6 +20,13 @@
 #include <QAction>
 #include <QMenu>
 #include <QMessageBox>
+#include <QWidgetAction>
+#include <QtPrintSupport/QPrinter>
+#include <QPainter>
+#include <QFileDialog>
+#include <QStyle>
+#include <QMenuBar>
+#include <QPixmap>
 
 class dynamic_decimal_spinbox;
 
@@ -39,6 +46,8 @@ public:
     QString dark_color;
     QString original_default_color;
     QString original_dark_color;
+    bool default_changed = false;
+    bool dark_changed = false;
     QCPAxis *axis;
     QCPGraph *graph;
     int32_t plot_value = 0;
@@ -65,9 +74,8 @@ public:
 
   QCustomPlot * custom_plot;
   QGridLayout * plot_visible_layout;
+  QMenuBar * setup_menu_bar();
 
-  bool graph_paused = false;
-  bool dark_theme = false;
 
   void set_preview_mode(bool preview_mode);
   void set_paused(bool paused);
@@ -80,24 +88,33 @@ protected:
   bool eventFilter(QObject * o, QEvent * e);
 
 private:
+  void show_color_change_menu(plot * x, bool with_title);
   void set_plot_color(plot * x);
   void setup_ui();
+
+  QMenuBar * menu_bar;
+  QMenu * options_menu;
+  QAction * save_settings_action;
+  QAction * load_settings_action;
+  QAction * dark_theme_action;
+  QAction * default_theme_action;
 
   // Used to add new plot
   void setup_plot(plot& x, QString display_text, QString default_color,
     QString dark_color, double scale, bool default_visible = false);
-
-  void remove_data_to_scroll(uint32_t time);
-  void set_graph_interaction_axis(plot x);
-  void reset_graph_interaction_axes();
-  void set_axis_text(plot x);
-  void set_range(plot x);
 
   QCPItemText * axis_arrow(plot x, double degrees);
   QPushButton *pause_run_button;
   QSpinBox *domain;
   QPushButton *show_all_none;
   QPushButton *reset_all_button;
+
+  void remove_data_to_scroll(uint32_t time);
+  void set_graph_interaction_axis(plot x);
+  void reset_graph_interaction_axes();
+  void set_axis_text(plot x);
+  void set_range(plot x);
+  void set_plot_grid_colors(int value);
 
   QFont y_label_font;
   QFont x_label_font;
@@ -106,10 +123,18 @@ private:
 
   int row = 1;
   bool in_preview = false; // used to store local copy of preview_mode
+  bool graph_paused = false;
+  bool dark_theme = false;
   int viewport_width = 0; // used to determine location of mouse press event.
 
+public slots:
+  void save_settings();
+  void load_settings();
+
 private slots:
-  void change_ranges();
+  void switch_to_dark();
+  void switch_to_default();
+  void change_ranges(int value);
   void on_pause_run_button_clicked();
   void set_line_visible();
   void show_all_none_clicked();
