@@ -10,7 +10,7 @@ graph_widget::graph_widget(QWidget * parent)
   setup_ui();
 
   connect(domain, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, graph_widget::change_ranges);
+    this, &graph_widget::change_ranges);
 }
 
 // Changes options for the custom_plot when in preview mode.
