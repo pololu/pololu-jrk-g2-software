@@ -1,5 +1,11 @@
 #include "graph_widget.h"
 
+#include <QColorDialog>
+#include <QFileDialog>
+#include <QFontDatabase>
+#include <QMessageBox>
+#include <QWidgetAction>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");

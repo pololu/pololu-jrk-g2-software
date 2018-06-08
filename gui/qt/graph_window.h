@@ -3,7 +3,6 @@
 #include "graph_widget.h"
 
 #include <QWidget>
-#include <QApplication>
 
 class QGridLayout;
 

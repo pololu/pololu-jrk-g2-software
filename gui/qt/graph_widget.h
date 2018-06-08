@@ -4,29 +4,13 @@
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QWidget>
-#include <QHBoxLayout>
 #include <QGridLayout>
-#include <QApplication>
-#include <QFontDatabase>
-#include <QString>
-#include <QLineEdit>
-#include <QObject>
-#include <QScreen>
-#include <QColorDialog>
-#include <QAction>
+#include <QLabel>
 #include <QMenu>
-#include <QMessageBox>
-#include <QWidgetAction>
-#include <QtPrintSupport/QPrinter>
-#include <QPainter>
-#include <QFileDialog>
-#include <QStyle>
 #include <QMenuBar>
-#include <QPixmap>
+#include <QPushButton>
+#include <QString>
+#include <QWidget>
 
 class dynamic_decimal_spinbox;
 
