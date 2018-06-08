@@ -2,7 +2,7 @@
 #include "main_window.h"
 #include "graph_widget.h"
 
-graph_window::graph_window(QWidget *parent)
+graph_window::graph_window(QWidget * parent)
 {
   setup_ui();
 }
@@ -18,7 +18,7 @@ void graph_window::setup_ui()
   setLayout(central_layout);
 }
 
-void graph_window::closeEvent(QCloseEvent *event)
+void graph_window::closeEvent(QCloseEvent * event)
 {
   central_layout->removeWidget(grabbed_widget);
 
@@ -27,13 +27,18 @@ void graph_window::closeEvent(QCloseEvent *event)
   QWidget::closeEvent(event);
 }
 
-void graph_window::receive_widget(graph_widget *widget)
+void graph_window::receive_widget(graph_widget * widget)
 {
   grabbed_widget = widget;
 
   grabbed_widget->set_preview_mode(false);
 
   grabbed_widget->plot_visible_layout->setParent(0);
+
+  // Note: central_layout is really just two things side-by-side, so its
+  // row and column assignments should be simplified, but when we try to
+  // simplify it, dragging of graphs using the arrows on the left side
+  // seems to break.
 
   central_layout->addWidget(grabbed_widget->custom_plot,
     1, 0, 2, 2);
