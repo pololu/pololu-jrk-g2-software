@@ -62,6 +62,9 @@ public slots:
   void forward_button_pressed();
   void drive_button_released();
 
+  void final_motor_invert_checkbox_toggled(bool checked);
+  void final_invert_checkbox_toggled(bool checked);
+
 private:
   bool handle_next_on_intro_page();
   bool handle_back_on_learn_page();

@@ -12,6 +12,7 @@ int main(int argc, char ** argv)
   // AA_EnableHighDpiScaling was added in Qt 5.6.
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
 
 #ifdef _WIN32

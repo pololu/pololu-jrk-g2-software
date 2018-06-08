@@ -24,6 +24,8 @@ if (POLOLU_BUILD)
   endif ()
 endif ()
 
+qt5_add_resources(RESOURCES_QRC qt/resources.qrc)
+
 add_executable (gui
   main.cpp
   main_controller.cpp
@@ -39,6 +41,7 @@ add_executable (gui
   qt/nice_spin_box.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/gui_info.rc
   ${ICON_QRC}
+  ${RESOURCES_QRC}
   ${ICON_FILE}
 )
 
