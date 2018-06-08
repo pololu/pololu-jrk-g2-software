@@ -1011,8 +1011,9 @@ bool main_controller::check_settings_applied_before_wizard()
 {
   if (settings_modified)
   {
-    if (!window->apply_and_continue("This wizard cannot be used right now because "
-      "the settings you changed have not been applied to the device.\n\n"
+    if (!window->apply_and_continue(
+      "This wizard cannot be used right now because the settings you changed "
+      "have not been applied to the device.\n\n"
       "Please click \"Apply settings\" to apply your changes to the device or "
       "select \"Reload settings from device\" in the Device menu to discard "
       "your changes, then try again."))
@@ -1021,8 +1022,7 @@ bool main_controller::check_settings_applied_before_wizard()
     }
     else
     {
-      apply_settings();
-      return true;
+      return apply_settings();
     }
   }
 
@@ -1558,9 +1558,9 @@ void main_controller::handle_upload_complete()
   disconnected_by_user = false;
 }
 
-void main_controller::apply_settings()
+bool main_controller::apply_settings()
 {
-  if (!connected()) { return; }
+  if (!connected()) { return false; }
 
   try
   {
@@ -1581,8 +1581,10 @@ void main_controller::apply_settings()
   catch (const std::exception & e)
   {
     show_exception(e);
+    return false;
   }
   handle_settings_changed();
+  return true;
 }
 
 void main_controller::stop_motor()

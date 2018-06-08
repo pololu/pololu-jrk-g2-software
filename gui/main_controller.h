@@ -65,7 +65,8 @@ private:
 
 public:
   // This is called when the user wants to apply the settings.
-  void apply_settings();
+  // Returns true on success.
+  bool apply_settings();
 
   void stop_motor();
   void run_motor();
