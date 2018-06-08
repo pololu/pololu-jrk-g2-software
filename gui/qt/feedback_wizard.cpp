@@ -15,15 +15,6 @@
 #include <algorithm>
 #include <cassert>
 
-// TODO: Learn raw feedback polarity based on first time they drive the buttons
-// Based on that, flip the raw value on step 2.  Step 2 has raw feedback value
-// and radio buttons for inverting it or not.  Default is based on last
-// behavior in step 1. ?
-// Say drive forward should correspond to number going up, if not, switch feedback
-// polarity.  Step 2 is learn feedback polarity.  Step 3 is maximum.  Step 4 is minimum.
-
-// TODO: Custom button for "Back"
-
 void run_feedback_wizard(main_window * window)
 {
   main_controller * controller = window->controller;
@@ -60,8 +51,6 @@ void run_feedback_wizard(main_window * window)
 
   if (result != QDialog::Accepted) { return; }
 
-  // TODO: really should validate these setting and apply them before leaving
-  // the wizard
   controller->handle_motor_invert_input(wizard.result.motor_invert);
   controller->handle_feedback_invert_input(wizard.result.invert);
   controller->handle_feedback_error_minimum_input(wizard.result.error_minimum);
@@ -341,7 +330,7 @@ void feedback_wizard::drive_button_released()
 
 void feedback_wizard::final_motor_invert_checkbox_toggled(bool checked)
 {
-  if (!::confirm("This will override your previously chosen motor direction.\n"
+  if (!confirm("This will override your previously chosen motor direction.\n"
     "Are you sure your want to continue?", this))
   {
     QSignalBlocker blocker(final_motor_invert_checkbox);
@@ -351,7 +340,7 @@ void feedback_wizard::final_motor_invert_checkbox_toggled(bool checked)
 
 void feedback_wizard::final_invert_checkbox_toggled(bool checked)
 {
-  if (!::confirm("This will override your previously chosen feedback direction.\n"
+  if (!confirm("This will override your previously chosen feedback direction.\n"
     "Are you sure your want to continue?", this))
   {
     QSignalBlocker blocker(final_invert_checkbox);
