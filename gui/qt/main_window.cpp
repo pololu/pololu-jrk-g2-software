@@ -2647,6 +2647,7 @@ QWidget * main_window::setup_feedback_tab()
   layout->addWidget(setup_feedback_analog_groupbox(), 2, 0);
   layout->addWidget(setup_feedback_fbt_groupbox(), 1, 1);
   layout->setRowStretch(3, 1);
+  layout->setColumnStretch(2, 1);
 
   feedback_page_widget->setLayout(layout);
   return feedback_page_widget;
