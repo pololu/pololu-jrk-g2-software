@@ -21,6 +21,7 @@ add_license('pololu-jrk-g2-software', 'LICENSE.txt')
 add_license('tinyxml2', 'LICENSE_tinyxml2.txt')
 add_license('libyaml', 'LICENSE_libyaml.txt')
 add_license('qcustomplot', 'LICENSE_qcustomplot.txt')
+add_license('dejavu', 'LICENSE_dejavu.txt')
 
 $license_names.concat ENV.fetch('license_names').split(' ')
 $license_bodies.concat ENV.fetch('licenses').split(' ').map { |f| File.read(f) }
