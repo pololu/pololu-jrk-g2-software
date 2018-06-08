@@ -453,6 +453,10 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
+  // This line is weird but without it, dragging of graphs using the arrows on
+  // the left side stops working.  (TODO: figure out why)
+  plot.reset_button->setIcon(QIcon(":invalid"));
+
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
   plot.axis->setRange(-scale, scale);
   plot.axis->setVisible(false);
