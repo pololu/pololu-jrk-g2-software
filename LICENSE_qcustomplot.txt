@@ -1,3 +1,6 @@
+This is the license for gui/qt/qcustomplot*
+---
+
 /***************************************************************************
 **                                                                        **
 **  QCustomPlot, an easy to use, modern plotting widget for Qt            **
