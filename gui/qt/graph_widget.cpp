@@ -449,7 +449,7 @@ void graph_widget::setup_plot(plot& plot, QString display_text, QString default_
   plot.display->installEventFilter(this);
 
   plot.reset_button = new QPushButton();
-  plot.reset_button->setIcon(QIcon(":reset_icon"));
+  plot.reset_button->setText(tr("Reset"));
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
