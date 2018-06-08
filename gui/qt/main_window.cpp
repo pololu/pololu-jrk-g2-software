@@ -1287,6 +1287,7 @@ void main_window::on_manual_target_return_key_shortcut_activated()
     suppress_events = true;
     manual_target_entry_value->interpretText();
     manual_target_entry_value->selectAll();
+    manual_target_scroll_bar->setValue(manual_target_entry_value->value());
     suppress_events = false;
     on_set_target_button_clicked();
   }
