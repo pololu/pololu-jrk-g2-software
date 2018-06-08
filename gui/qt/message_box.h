@@ -33,7 +33,7 @@ namespace
     QMessageBox mbox(QMessageBox::Information, parent->windowTitle(),
       QString::fromStdString(question), QMessageBox::Apply | QMessageBox::Cancel, parent);
 
-    mbox.setButtonText(QMessageBox::Apply, "Apply Settings");
+    mbox.setButtonText(QMessageBox::Apply, "Apply settings");
 
     int button = mbox.exec();
 
