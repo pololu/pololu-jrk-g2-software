@@ -39,7 +39,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
     custom_plot->setToolTip("");
   }
 
-  for(auto plot : all_plots)
+  for (auto plot : all_plots)
   {
     if (plot->display->isChecked())
     {
@@ -85,8 +85,7 @@ void graph_widget::plot_data(uint32_t time)
 
   viewport_width = custom_plot->viewport().width();
 
-  if (graph_paused)
-    return;
+  if (graph_paused) { return; }
 
   remove_data_to_scroll(time);
 }
@@ -101,7 +100,9 @@ void graph_widget::change_plot_colors(plot * plot, const QString& color)
   plot->axis_position_label->setColor(color);
   plot->axis_scale_label->setColor(color);
   for (auto label : plot->axis_top_and_bottom)
+  {
     label->setColor(color);
+  }
 
   custom_plot->replot();
 }
@@ -123,7 +124,7 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
     }
   }
 
-  return graph_widget::eventFilter(o, e);
+  return graph_widget::eventFilter(o, e);  // TODO: this is an infinite loop?
 }
 
 void graph_widget::show_color_change_menu(plot * plot, bool with_title)
@@ -380,7 +381,6 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoomAxes(0, 0);
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 
-
   QMetaObject::connectSlotsByName(this);
 }
 
@@ -419,7 +419,7 @@ QMenuBar * graph_widget::setup_menu_bar()
     &graph_widget::switch_to_dark);
 
   connect(default_theme_action, &QAction::triggered, this,
-      &graph_widget::switch_to_default);
+    &graph_widget::switch_to_default);
 
   return menu_bar;
 }
@@ -605,7 +605,9 @@ void graph_widget::set_graph_interaction_axis(plot plot)
   plot.axis_scale_label->setVisible(true);
 
   for (auto label : plot.axis_top_and_bottom)
+  {
     label->setFont(x_label_font);
+  }
 
   custom_plot->axisRect()->setRangeDragAxes(0, plot.axis);
   custom_plot->axisRect()->setRangeZoomAxes(0, plot.axis);
@@ -630,7 +632,9 @@ void graph_widget::reset_graph_interaction_axes()
     plot->axis_scale_label->setVisible(false);
 
     for (auto label : plot->axis_top_and_bottom)
+    {
       label->setFont(x_label_font);
+    }
   }
 }
 
@@ -713,26 +717,24 @@ void graph_widget::set_axis_text(plot plot)
 
   switch (temp_width)
   {
-    case 1:
-      plot.axis_top_and_bottom[0]->position->setCoords(0.50, plot.axis->range().upper);
-      plot.axis_top_and_bottom[1]->position->setCoords(0.50, plot.axis->range().lower);
-      break;
-    case 2:
-      plot.axis_top_and_bottom[0]->position->setCoords(0.20, plot.axis->range().upper);
-      plot.axis_top_and_bottom[1]->position->setCoords(0.20, plot.axis->range().lower);
-      plot.axis_top_and_bottom[2]->position->setCoords(0.80, plot.axis->range().upper);
-      plot.axis_top_and_bottom[3]->position->setCoords(0.80, plot.axis->range().lower);
-      break;
-    case 3:
-      plot.axis_top_and_bottom[0]->position->setCoords(0.20, plot.axis->range().upper);
-      plot.axis_top_and_bottom[1]->position->setCoords(0.20, plot.axis->range().lower);
-      plot.axis_top_and_bottom[2]->position->setCoords(0.50, plot.axis->range().upper);
-      plot.axis_top_and_bottom[3]->position->setCoords(0.50, plot.axis->range().lower);
-      plot.axis_top_and_bottom[4]->position->setCoords(0.80, plot.axis->range().upper);
-      plot.axis_top_and_bottom[5]->position->setCoords(0.80, plot.axis->range().lower);
-      break;
-    default:
-      break;
+  case 1:
+    plot.axis_top_and_bottom[0]->position->setCoords(0.50, plot.axis->range().upper);
+    plot.axis_top_and_bottom[1]->position->setCoords(0.50, plot.axis->range().lower);
+    break;
+  case 2:
+    plot.axis_top_and_bottom[0]->position->setCoords(0.20, plot.axis->range().upper);
+    plot.axis_top_and_bottom[1]->position->setCoords(0.20, plot.axis->range().lower);
+    plot.axis_top_and_bottom[2]->position->setCoords(0.80, plot.axis->range().upper);
+    plot.axis_top_and_bottom[3]->position->setCoords(0.80, plot.axis->range().lower);
+    break;
+  case 3:
+    plot.axis_top_and_bottom[0]->position->setCoords(0.20, plot.axis->range().upper);
+    plot.axis_top_and_bottom[1]->position->setCoords(0.20, plot.axis->range().lower);
+    plot.axis_top_and_bottom[2]->position->setCoords(0.50, plot.axis->range().upper);
+    plot.axis_top_and_bottom[3]->position->setCoords(0.50, plot.axis->range().lower);
+    plot.axis_top_and_bottom[4]->position->setCoords(0.80, plot.axis->range().upper);
+    plot.axis_top_and_bottom[5]->position->setCoords(0.80, plot.axis->range().lower);
+    break;
   }
 }
 
@@ -742,8 +744,8 @@ void graph_widget::set_range(plot plot)
 
   reset_graph_interaction_axes();
 
-  double lower_range = -(plot.scale->value() * 5.0) - (plot.position->value());
-  double upper_range = (plot.scale->value() * 5.0) - (plot.position->value());
+  double lower_range = -(plot.scale->value() * 5.0) - plot.position->value();
+  double upper_range = (plot.scale->value() * 5.0) - plot.position->value();
 
   {
     QSignalBlocker blocker(plot.axis);
@@ -777,6 +779,7 @@ QCPItemText * graph_widget::axis_arrow(plot plot, double degrees)
 
 void graph_widget::save_settings()
 {
+  // TODO: shouldn't we pass 'this' instead of NULL?
   QString filename = QFileDialog::getSaveFileName((QWidget* )0,
     "Save graph settings", QString(), "*.txt", Q_NULLPTR);
 
@@ -799,7 +802,10 @@ void graph_widget::save_settings()
         plot->position->cleanText() << "," << plot->scale->cleanText() << ","
         << plot->default_color << "," << plot->dark_color << '\n';
     }
-  } else {
+  }
+  else
+  {
+    // TODO: report errors
     return;
   }
   file_out.close();
@@ -809,15 +815,22 @@ void graph_widget::load_settings()
 {
   QStringList all_plots_settings;
 
+  // TODO: shouldn't we pass 'this' instead of NULL?
   QString filename = QFileDialog::getOpenFileName((QWidget* )0,
     "Load graph settings", QString(), "*.txt");
 
   QFile file_in(filename);
-  if (file_in.open(QFile::ReadOnly | QFile::Text)) {
+  if (file_in.open(QFile::ReadOnly | QFile::Text))
+  {
     QTextStream stream_in(&file_in);
     while (!stream_in.atEnd())
+    {
       all_plots_settings += stream_in.readLine();
-  } else {
+    }
+  }
+  else
+  {
+    // TODO: report errors
     return;
   }
 
@@ -846,7 +859,9 @@ void graph_widget::load_settings()
       switch_to_dark();
     }
     else
+    {
       switch_to_default();
+    }
   }
 }
 
@@ -940,13 +955,8 @@ void graph_widget::show_all_none_clicked()
 
   for (auto plot : all_plots)
   {
-    {
-      QSignalBlocker blocker(plot->display);
-      if (all_checked)
-        plot->display->setChecked(false);
-      else
-        plot->display->setChecked(true);
-    }
+    QSignalBlocker blocker(plot->display);
+    plot->display->setChecked(!all_checked);
   }
 
   set_line_visible();
@@ -973,8 +983,6 @@ void graph_widget::on_reset_all_button_clicked()
 
     reset_graph_interaction_axes();
   }
-  else
-    return;
 }
 
 // This is a reimplementation of the QWidget::mousePressEvent slot.
@@ -1044,7 +1052,9 @@ void graph_widget::mouse_press(QMouseEvent * event)
       show_color_change_menu(temp_plot, true);
     }
     else
+    {
       set_graph_interaction_axis(*temp_plot);
+    }
   }
 }
 

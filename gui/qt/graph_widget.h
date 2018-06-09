@@ -23,19 +23,19 @@ public:
 
   struct plot
   {
-    dynamic_decimal_spinbox *scale;
+    dynamic_decimal_spinbox * scale;
     dynamic_decimal_spinbox * position;
-    QCheckBox *display;
+    QCheckBox * display;
     QString default_color;
     QString dark_color;
     QString original_default_color;
     QString original_dark_color;
     bool default_changed = false;
     bool dark_changed = false;
-    QCPAxis *axis;
-    QCPGraph *graph;
+    QCPAxis * axis;
+    QCPGraph * graph;
     int32_t plot_value = 0;
-    QPushButton *reset_button;
+    QPushButton * reset_button;
     QCPItemText * axis_label;
     QCPItemText * axis_position_label;
     QCPItemText * axis_scale_label;
@@ -60,7 +60,6 @@ public:
   QGridLayout * plot_visible_layout;
   QMenuBar * setup_menu_bar();
 
-
   void set_preview_mode(bool preview_mode);
   void set_paused(bool paused);
   void clear_graphs();
@@ -84,14 +83,14 @@ private:
   QAction * default_theme_action;
 
   // Used to add new plot
-  void setup_plot(plot& x, QString display_text, QString default_color,
+  void setup_plot(plot & x, QString display_text, QString default_color,
     QString dark_color, double scale, bool default_visible = false);
 
   QCPItemText * axis_arrow(plot x, double degrees);
   QPushButton *pause_run_button;
-  QSpinBox *domain;
-  QPushButton *show_all_none;
-  QPushButton *reset_all_button;
+  QSpinBox * domain;
+  QPushButton * show_all_none;
+  QPushButton * reset_all_button;
 
   void remove_data_to_scroll(uint32_t time);
   void set_graph_interaction_axis(plot x);
@@ -129,7 +128,9 @@ private slots:
 // This subclass of QDoubleSpinBox is used to add more control to both the
 // value displayed in the QDoubleSpinBox and the steps caused by "arrow up",
 // "arrow down", "page up", and "page down" keys.
-class dynamic_decimal_spinbox : public QDoubleSpinBox {   Q_OBJECT
+class dynamic_decimal_spinbox : public QDoubleSpinBox
+{
+  Q_OBJECT
 
 public:
   explicit dynamic_decimal_spinbox(QWidget * parent = 0) :
