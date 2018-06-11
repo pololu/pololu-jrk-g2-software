@@ -314,27 +314,38 @@ void graph_widget::setup_ui()
   bottom_control_layout->addWidget(domain, 0);
   bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignRight);
 
-  setup_plot(input, "Input", "#00ffff", "#ff355e", 4095);
+  setup_plot(input, "input", "Input",
+    "#00ffff", "#ff355e", 4095);
 
-  setup_plot(target, "Target", "#0000ff", "#ff6037", 4095, true);
+  setup_plot(target, "target", "Target",
+    "#0000ff", "#ff6037", 4095, true);
 
-  setup_plot(feedback, "Feedback", "#ff0077", "#ffcc33", 4095);
+  setup_plot(feedback, "feedback", "Feedback",
+    "#ff0077", "#ffcc33", 4095);
 
-  setup_plot(scaled_feedback, "Scaled feedback", "#ff0000", "#ccff00", 4095, true);
+  setup_plot(scaled_feedback, "scaled_feedback", "Scaled feedback",
+    "#ff0000", "#ccff00", 4095, true);
 
-  setup_plot(error, "Error", "#9400d3", "#aaf0d1", 4095);
+  setup_plot(error, "error", "Error",
+    "#9400d3", "#aaf0d1", 4095);
 
-  setup_plot(integral, "Integral", "#ff8c00", "#ff6eff", 0x7fff);
+  setup_plot(integral, "integral", "Integral",
+    "#ff8c00", "#ff6eff", 0x7fff);
 
-  setup_plot(duty_cycle_target, "Duty cycle target", "#32cd32", "#fd5b78", 600);
+  setup_plot(duty_cycle_target, "duty_cycle_target",
+    "Duty cycle target", "#32cd32", "#fd5b78", 600);
 
-  setup_plot(duty_cycle, "Duty cycle", "#006400", "#ff9933", 600);
+  setup_plot(duty_cycle, "duty_cycle", "Duty cycle",
+    "#006400", "#ff9933", 600);
 
-  setup_plot(raw_current, "Raw current (mV)", "#660066", "#ffff66", 4095);
+  setup_plot(raw_current, "raw_current",
+    "Raw current (mV)", "#660066", "#ffff66", 4095);
 
-  setup_plot(current, "Current (mA)", "#b8860b", "#66ff66", 100000);
+  setup_plot(current, "current", "Current (mA)",
+    "#b8860b", "#66ff66", 100000);
 
-  setup_plot(current_chopping, "Current chopping", "#e900ff", "#50bfe6", 1);
+  setup_plot(current_chopping, "current_chopping",
+    "Current chopping", "#e900ff", "#50bfe6", 1);
 
   QFrame * division_frame = new QFrame();
   division_frame->setFrameShadow(QFrame::Plain);
@@ -428,10 +439,13 @@ QMenuBar * graph_widget::setup_menu_bar()
   return menu_bar;
 }
 
-void graph_widget::setup_plot(plot & plot, const QString & display_text,
+void graph_widget::setup_plot(plot & plot,
+  const QString & id_string, const QString & display_text,
   const QString & default_color, const QString & dark_color,
   double scale, bool default_visible)
 {
+  plot.id_string = id_string;
+
   plot.original_default_color = plot.default_color = default_color;
   plot.original_dark_color = plot.dark_color = dark_color;
 
@@ -795,13 +809,18 @@ void graph_widget::save_settings()
   }
 
   QFile file_out(filename);
-  if (file_out.open(QFile::WriteOnly | QFile::Text)) {
+  if (file_out.open(QFile::WriteOnly | QFile::Text))
+  {
     QTextStream out(&file_out);
     for(auto plot : all_plots)
     {
-      out << plot->display->text() << "," << plot->display->isChecked() << "," <<
-        plot->position->cleanText() << "," << plot->scale->cleanText() << ","
-        << plot->default_color << "," << plot->dark_color << '\n';
+      out
+        << plot->id_string << ","
+        << plot->display->isChecked() << ","
+        << plot->position->cleanText() << ","
+        << plot->scale->cleanText() << ","
+        << plot->default_color << ","
+        << plot->dark_color << '\n';
     }
   }
   else

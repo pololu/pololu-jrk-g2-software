@@ -23,6 +23,7 @@ public:
 
   struct plot
   {
+    QString id_string;
     dynamic_decimal_spinbox * scale;
     dynamic_decimal_spinbox * position;
     QCheckBox * display;
@@ -88,7 +89,8 @@ private:
   QAction * default_theme_action;
 
   // Used to add new plot
-  void setup_plot(plot &, const QString & display_text,
+  void setup_plot(plot &,
+    const QString & id_string, const QString & display_text,
     const QString & default_color, const QString & dark_color,
     double scale, bool default_visible = false);
 
