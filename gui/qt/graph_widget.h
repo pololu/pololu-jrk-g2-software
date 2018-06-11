@@ -65,7 +65,7 @@ public:
   void clear_graphs();
   void plot_data(uint32_t time);
 
-  void change_plot_colors(plot * plot, const QString&);
+  void change_plot_colors(plot * plot, const QString &);
 
 protected:
   bool eventFilter(QObject * o, QEvent * e);
@@ -87,7 +87,7 @@ private:
     QString dark_color, double scale, bool default_visible = false);
 
   QCPItemText * axis_arrow(plot x, double degrees);
-  QPushButton *pause_run_button;
+  QPushButton * pause_run_button;
   QSpinBox * domain;
   QPushButton * show_all_none;
   QPushButton * reset_all_button;
@@ -122,7 +122,7 @@ private slots:
   void set_line_visible();
   void show_all_none_clicked();
   void on_reset_all_button_clicked();
-  void mouse_press(QMouseEvent*);
+  void mouse_press(QMouseEvent *);
 };
 
 // This subclass of QDoubleSpinBox is used to add more control to both the
