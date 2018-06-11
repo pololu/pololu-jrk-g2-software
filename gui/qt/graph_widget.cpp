@@ -395,11 +395,11 @@ QMenuBar * graph_widget::setup_menu_bar()
   options_menu = menu_bar->addMenu(tr("&Options"));
 
   save_settings_action = new QAction(this);
-  save_settings_action->setText("Save settings...");
+  save_settings_action->setText("Save graph settings...");
   save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
   load_settings_action = new QAction(this);
-  load_settings_action->setText("Load settings...");
+  load_settings_action->setText("Load graph settings...");
   load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
 
   dark_theme_action = new QAction(this);
