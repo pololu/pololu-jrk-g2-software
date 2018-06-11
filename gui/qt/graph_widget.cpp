@@ -438,7 +438,7 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
   plot.scale = new dynamic_decimal_spinbox();
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
-  plot.scale->setValue(scale/5.0);
+  plot.scale->setValue(scale / 5.0);
   plot.scale->setMinimumWidth(plot.scale->minimumSizeHint().width());
 
   plot.position = new dynamic_decimal_spinbox();
@@ -518,6 +518,9 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(QColor(plot.default_color), 1));
+
+  // Briton says StepCenter mode helped with performance issues when dragging
+  // the axis range.
   plot.graph->setLineStyle(QCPGraph::lsStepCenter);
 
   connect(plot.reset_button, &QPushButton::clicked, [=]
@@ -532,11 +535,11 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
     custom_plot->replot();
   });
 
-  connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange&, const QCPRange&)>
+  connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange &, const QCPRange &)>
     (&QCPAxis::rangeChanged), [=](const QCPRange & newRange, const QCPRange & oldRange)
   {
-    double position_value = -(newRange.upper + newRange.lower)/2.0;
-    double scale_value = (-newRange.lower + newRange.upper)/10.0;
+    double position_value = -(newRange.upper + newRange.lower) / 2.0;
+    double scale_value = (-newRange.lower + newRange.upper) / 10.0;
 
     if (scale_value < plot.scale->minimum()
       || scale_value > plot.scale->maximum()
@@ -560,14 +563,14 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
     set_axis_text(plot);
   });
 
-  connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(const QString&)>
-    (&QDoubleSpinBox::valueChanged), [=](const QString& value)
+  connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(const QString &)>
+    (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
   });
 
-  connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString&)>
-    (&QDoubleSpinBox::valueChanged), [=](const QString& value)
+  connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString &)>
+    (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
   });
