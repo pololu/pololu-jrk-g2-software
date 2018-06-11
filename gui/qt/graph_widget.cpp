@@ -341,14 +341,14 @@ void graph_widget::setup_ui()
   division_frame->setLineWidth(0);
   division_frame->setFrameShape(QFrame::HLine);
 
-  plot_visible_layout->addWidget(division_frame, row, 0, 1, 5);
-  plot_visible_layout->addLayout(bottom_control_layout, ++row, 0, 1, 5, Qt::AlignCenter);
+  plot_visible_layout->addWidget(division_frame, row++, 0, 1, 5);
+  plot_visible_layout->addLayout(bottom_control_layout, row++, 0, 1, 5, Qt::AlignCenter);
 
   QSharedPointer<QCPAxisTickerText> y_axis_ticker(new QCPAxisTickerText);
 
   y_axis_ticker->addTick(0, "");
 
-  for (int i = 10; i <= 50; (i += 10))
+  for (int i = 10; i <= 50; i += 10)
   {
     y_axis_ticker->addTick(i, "");
     y_axis_ticker->addTick(-i, "");
@@ -370,12 +370,13 @@ void graph_widget::setup_ui()
   custom_plot->yAxis->grid()->setSubGridVisible(true);
   custom_plot->yAxis->setSelectableParts(QCPAxis::spNone);
 
-  custom_plot->yAxis->setRange(-50,50);
+  custom_plot->yAxis->setRange(-50, 50);
   custom_plot->xAxis->setTickLabelPadding(10);
   custom_plot->xAxis->setLabel("Time (ms)");
   custom_plot->xAxis->setLabelPadding(2);
 
-  // this is used to see the x-axis to see accurate time.
+  // Uncomment this line if you want to see "real" time scrolling by on the
+  // top side of the graph.
   // custom_plot->xAxis2->setVisible(true);
 
   set_line_visible();
