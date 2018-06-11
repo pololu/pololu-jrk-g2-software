@@ -113,7 +113,10 @@ private:
   bool in_preview = false; // used to store local copy of preview_mode
   bool graph_paused = false;
   bool dark_theme = false;
-  int viewport_width = 0; // used to determine location of mouse press event.
+
+  // A cached copy of the graph's width that helps us know when the graph has
+  // been resized and we should consider drawing arrows at the top and bottom.
+  int viewport_width = 0;
 
 public slots:
   void save_settings();
