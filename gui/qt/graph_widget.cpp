@@ -138,12 +138,6 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
 
   QMenu * color_change_menu = new QMenu();
 
-  QLabel* label = new QLabel(plot->display->text());
-  label->setContentsMargins(10, 5, 0, 5);
-
-  QWidgetAction* menu_title = new QWidgetAction(color_change_menu);
-  menu_title->setDefaultWidget(label);
-
   QAction * change_action = new QAction(this);
   change_action->setText("Change color");
 
@@ -167,6 +161,10 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
 
   if (with_title)
   {
+    QLabel * label = new QLabel(plot->display->text());
+    label->setContentsMargins(10, 5, 0, 5);
+    QWidgetAction * menu_title = new QWidgetAction(color_change_menu);
+    menu_title->setDefaultWidget(label);
     color_change_menu->addAction(menu_title);
     color_change_menu->addSeparator();
   }
@@ -226,6 +224,8 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
   });
 
   color_change_menu->popup(QCursor::pos());
+
+  // Note: There is probably a memory leak when the menu closes.
 }
 
 void graph_widget::set_plot_color(plot * plot)
