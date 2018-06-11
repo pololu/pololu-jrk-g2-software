@@ -92,7 +92,7 @@ void graph_widget::plot_data(uint32_t time)
 
 void graph_widget::change_plot_colors(plot * plot, const QString & color)
 {
-  plot->display->setStyleSheet("QCheckBox{border: 2px ridge " + color + ";"
+  plot->display->setStyleSheet("QCheckBox{border: 2px solid " + color + ";"
     "padding: 2px;"
     "background-color: white;}");
   plot->graph->setPen(QPen(color));
@@ -448,7 +448,7 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
   plot.display->setToolTip("Right-click to change plot color");
-  plot.display->setStyleSheet("QCheckBox{border: 2px ridge "+ plot.default_color + ";"
+  plot.display->setStyleSheet("QCheckBox{border: 2px solid " + plot.default_color + ";"
     "padding: 2px;"
     "background: white;}");
   plot.display->setCheckable(true);
