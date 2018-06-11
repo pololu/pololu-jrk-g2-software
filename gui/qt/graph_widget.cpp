@@ -129,8 +129,7 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
       return false;
     }
   }
-
-  return graph_widget::eventFilter(o, e);  // TODO: this is an infinite loop?
+  return QWidget::eventFilter(o, e);
 }
 
 void graph_widget::show_color_change_menu(plot * plot, bool with_title)
