@@ -224,8 +224,6 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
   });
 
   color_change_menu->popup(QCursor::pos());
-
-  // Note: There is probably a memory leak when the menu closes.
 }
 
 void graph_widget::set_plot_color(plot * plot)
@@ -236,16 +234,16 @@ void graph_widget::set_plot_color(plot * plot)
   color_dialog->move(QCursor::pos());
   color_dialog->open();
 
-  connect(color_dialog, static_cast<void (QColorDialog::*)(const QColor&)>
-    (&QColorDialog::currentColorChanged), [=](const QColor& color)
+  connect(color_dialog, &QColorDialog::currentColorChanged,
+    [=](const QColor& color)
   {
     QString selected_color = color.name(QColor::HexArgb);
 
     change_plot_colors(plot, selected_color);
   });
 
-  connect(color_dialog, static_cast<void (QColorDialog::*)(const QColor&)>
-    (&QColorDialog::colorSelected), [=](const QColor& color)
+  connect(color_dialog, &QColorDialog::colorSelected,
+    [=](const QColor& color)
   {
     QString selected_color = color.name(QColor::HexArgb);
 
@@ -261,7 +259,7 @@ void graph_widget::set_plot_color(plot * plot)
     }
   });
 
-  connect(color_dialog, static_cast<void (QDialog::*)()>(&QDialog::rejected), [=]
+  connect(color_dialog, &QDialog::rejected, [=]
   {
     if (!dark_theme)
     {
@@ -293,11 +291,11 @@ void graph_widget::setup_ui()
   domain->setValue(10); // initialized the graph to show 10 seconds of data
   domain->setRange(1, 90);
 
-  show_all_none = new QPushButton("Show all/none");
+  show_all_none = new QPushButton("Show &all/none");
   show_all_none->setObjectName("show_all_none");
   show_all_none->setStyleSheet("QPushButton{padding: 4px;}");
 
-  reset_all_button = new QPushButton(tr("Reset all"), this);
+  reset_all_button = new QPushButton(tr("&Reset all"), this);
   reset_all_button->setStyleSheet("QPushButton{padding: 4px;}");
   reset_all_button->setObjectName("reset_all_button");
   reset_all_button->setToolTip("Reset all plots\nposition and scale");
@@ -393,7 +391,7 @@ QMenuBar * graph_widget::setup_menu_bar()
 {
   menu_bar = new QMenuBar();
 
-  options_menu = menu_bar->addMenu(tr("Options"));
+  options_menu = menu_bar->addMenu(tr("&Options"));
 
   save_settings_action = new QAction(this);
   save_settings_action->setText("Save settings");
