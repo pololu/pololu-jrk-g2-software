@@ -69,6 +69,7 @@ public:
   void clear_graphs();
   void plot_data(uint32_t time);
 
+  void set_checkbox_style(plot *, const QString &);
   void change_plot_colors(plot *, const QString &);
 
 protected:

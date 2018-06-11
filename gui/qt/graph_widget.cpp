@@ -90,11 +90,17 @@ void graph_widget::plot_data(uint32_t time)
   remove_data_to_scroll(time);
 }
 
-void graph_widget::change_plot_colors(plot * plot, const QString & color)
+void graph_widget::set_checkbox_style(plot * plot, const QString & color)
 {
-  plot->display->setStyleSheet("QCheckBox{border: 2px solid " + color + ";"
+  plot->display->setStyleSheet(
+    "QCheckBox{border: 2px solid " + color + ";"
     "padding: 2px;"
     "background-color: white;}");
+}
+
+void graph_widget::change_plot_colors(plot * plot, const QString & color)
+{
+  set_checkbox_style(plot, color);
   plot->graph->setPen(QPen(color));
   plot->axis_label->setColor(color);
   plot->axis_position_label->setColor(color);
@@ -448,9 +454,7 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
   plot.display->setToolTip("Right-click to change plot color");
-  plot.display->setStyleSheet("QCheckBox{border: 2px solid " + plot.default_color + ";"
-    "padding: 2px;"
-    "background-color: white;}");
+  set_checkbox_style(&plot, plot.default_color);
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
   plot.display->installEventFilter(this);
