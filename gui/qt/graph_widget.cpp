@@ -794,11 +794,6 @@ void graph_widget::save_settings()
     return;
   }
 
-  if (QFileInfo(filename).suffix().isEmpty())
-  {
-    filename.append(".txt");
-  }
-
   QFile file_out(filename);
   if (file_out.open(QFile::WriteOnly | QFile::Text)) {
     QTextStream out(&file_out);
