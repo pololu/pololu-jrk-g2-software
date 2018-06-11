@@ -598,6 +598,8 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
   custom_plot->replot();
 }
 
+// Configures the specified plot so we can use the mouse to change its scale
+// and position.  Display the scale and position labels.
 void graph_widget::set_graph_interaction_axis(const plot & plot)
 {
   plot.graph->setPen(QPen(plot.graph->pen().color(), 2));
@@ -784,9 +786,8 @@ QCPItemText * graph_widget::axis_arrow(const plot & plot, double degrees)
 
 void graph_widget::save_settings()
 {
-  // TODO: shouldn't we pass 'this' instead of NULL?
-  QString filename = QFileDialog::getSaveFileName((QWidget* )0,
-    "Save graph settings", QString(), "*.txt", Q_NULLPTR);
+  QString filename = QFileDialog::getSaveFileName(this,
+    "Save Graph Settings", "jrk_graph_settings.txt", "Text files (*.txt)");
 
   if (filename.isEmpty())
   {
@@ -820,9 +821,8 @@ void graph_widget::load_settings()
 {
   QStringList all_plots_settings;
 
-  // TODO: shouldn't we pass 'this' instead of NULL?
-  QString filename = QFileDialog::getOpenFileName((QWidget* )0,
-    "Load graph settings", QString(), "*.txt");
+  QString filename = QFileDialog::getOpenFileName(this,
+    "Load Graph Settings", "", "Text files (*.txt)");
 
   QFile file_in(filename);
   if (file_in.open(QFile::ReadOnly | QFile::Text))
