@@ -196,8 +196,8 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
   connect(reset_all_action, &QAction::triggered, [=]()
   {
     QMessageBox mbox(QMessageBox::Question, "",
-    QString::fromStdString("Reset all colors to default?"),
-    QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
+      QString::fromStdString("Reset all colors to default?"),
+      QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
 
     mbox.setWindowFlags(Qt::Popup);
     mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
@@ -207,16 +207,16 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
       for (auto plot : all_plots)
       {
         plot->default_color = plot->original_default_color;
+        plot->default_changed = false;
         plot->dark_color = plot->original_dark_color;
+        plot->dark_changed = false;
 
         if (dark_theme)
         {
-          plot->dark_changed = false;
           change_plot_colors(plot, plot->dark_color);
         }
         else
         {
-          plot->default_changed = false;
           change_plot_colors(plot, plot->default_color);
         }
       }
