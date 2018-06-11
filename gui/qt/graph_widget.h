@@ -39,6 +39,10 @@ public:
     QCPItemText * axis_label;
     QCPItemText * axis_position_label;
     QCPItemText * axis_scale_label;
+
+    // Holds the arrows sometimes shown at the top and bottom of the graph.
+    // When the graph gets wider, there are up to 6 arrows, so this list
+    // has 6 arrows.
     QList<QCPItemText *> axis_top_and_bottom;
   };
 

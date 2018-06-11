@@ -90,9 +90,9 @@ void graph_widget::plot_data(uint32_t time)
   remove_data_to_scroll(time);
 }
 
-void graph_widget::change_plot_colors(plot * plot, const QString& color)
+void graph_widget::change_plot_colors(plot * plot, const QString & color)
 {
-  plot->display->setStyleSheet("QCheckBox{border: 2px ridge "+ color + ";"
+  plot->display->setStyleSheet("QCheckBox{border: 2px ridge " + color + ";"
     "padding: 2px;"
     "background-color: white;}");
   plot->graph->setPen(QPen(color));
@@ -114,8 +114,8 @@ bool graph_widget::eventFilter(QObject * o, QEvent * e)
     if (o == plot->display)
     {
       QMouseEvent * event = static_cast<QMouseEvent*>(e);
-      if (e->type()==QEvent::MouseButtonPress &&
-        event->button()==Qt::RightButton)
+      if (e->type() == QEvent::MouseButtonPress &&
+        event->button() == Qt::RightButton)
       {
         show_color_change_menu(plot, false);
         return true;
@@ -688,7 +688,7 @@ void graph_widget::set_axis_text(const plot & plot)
   QCPGraphDataContainer::const_iterator end = plot.graph->data()->
     at(plot.graph->data()->dataRange().end()); // get range end iterator from index
 
-  for (QCPGraphDataContainer::const_iterator it=begin; it!=end; ++it)
+  for (QCPGraphDataContainer::const_iterator it = begin; it != end; ++it)
   {
     if (it->value > plot.axis->range().upper)
     {
@@ -703,7 +703,7 @@ void graph_widget::set_axis_text(const plot & plot)
 
   int temp_width = custom_plot->viewport().width();
 
-  temp_width = qBound(1, temp_width/350, 3);
+  temp_width = qBound(1, temp_width / 350, 3);
 
   bool plot_visible = plot.display->isChecked();
 
