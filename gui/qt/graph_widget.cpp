@@ -424,8 +424,9 @@ QMenuBar * graph_widget::setup_menu_bar()
   return menu_bar;
 }
 
-void graph_widget::setup_plot(plot& plot, QString display_text, QString default_color,
-  QString dark_color, double scale, bool default_visible)
+void graph_widget::setup_plot(plot & plot, const QString & display_text,
+  const QString & default_color, const QString & dark_color,
+  double scale, bool default_visible)
 {
   plot.original_default_color = plot.default_color = default_color;
   plot.original_dark_color = plot.dark_color = dark_color;
@@ -592,7 +593,7 @@ void graph_widget::remove_data_to_scroll(uint32_t time)
   custom_plot->replot();
 }
 
-void graph_widget::set_graph_interaction_axis(plot plot)
+void graph_widget::set_graph_interaction_axis(const plot & plot)
 {
   plot.graph->setPen(QPen(plot.graph->pen().color(), 2));
 
@@ -638,7 +639,7 @@ void graph_widget::reset_graph_interaction_axes()
   }
 }
 
-void graph_widget::set_axis_text(plot plot)
+void graph_widget::set_axis_text(const plot & plot)
 {
   plot.axis_position_label->setText("Position:\n" + plot.position->cleanText());
   plot.axis_scale_label->setText("Scale:\n" + plot.scale->cleanText());
@@ -738,7 +739,7 @@ void graph_widget::set_axis_text(plot plot)
   }
 }
 
-void graph_widget::set_range(plot plot)
+void graph_widget::set_range(const plot & plot)
 {
   plot.display->setCheckState(Qt::Checked);
 
@@ -759,9 +760,9 @@ void graph_widget::set_range(plot plot)
   custom_plot->replot();
 }
 
-QCPItemText * graph_widget::axis_arrow(plot plot, double degrees)
+QCPItemText * graph_widget::axis_arrow(const plot & plot, double degrees)
 {
-  QCPItemText * label_instance  = new QCPItemText(custom_plot);
+  QCPItemText * label_instance = new QCPItemText(custom_plot);
   label_instance->setClipToAxisRect(false);
   label_instance->setPositionAlignment(Qt::AlignCenter);
   label_instance->setFont(x_label_font);
@@ -773,7 +774,6 @@ QCPItemText * graph_widget::axis_arrow(plot plot, double degrees)
   label_instance->position->setAxisRect(custom_plot->axisRect());
   label_instance->position->setAxes(0, plot.axis);
   label_instance->setVisible(false);
-
   return label_instance;
 }
 

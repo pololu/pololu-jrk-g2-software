@@ -65,14 +65,14 @@ public:
   void clear_graphs();
   void plot_data(uint32_t time);
 
-  void change_plot_colors(plot * plot, const QString &);
+  void change_plot_colors(plot *, const QString &);
 
 protected:
   bool eventFilter(QObject * o, QEvent * e);
 
 private:
-  void show_color_change_menu(plot * x, bool with_title);
-  void set_plot_color(plot * x);
+  void show_color_change_menu(plot *, bool with_title);
+  void set_plot_color(plot *);
   void setup_ui();
 
   QMenuBar * menu_bar;
@@ -83,20 +83,21 @@ private:
   QAction * default_theme_action;
 
   // Used to add new plot
-  void setup_plot(plot & x, QString display_text, QString default_color,
-    QString dark_color, double scale, bool default_visible = false);
+  void setup_plot(plot &, const QString & display_text,
+    const QString & default_color, const QString & dark_color,
+    double scale, bool default_visible = false);
 
-  QCPItemText * axis_arrow(plot x, double degrees);
+  QCPItemText * axis_arrow(const plot &, double degrees);
   QPushButton * pause_run_button;
   QSpinBox * domain;
   QPushButton * show_all_none;
   QPushButton * reset_all_button;
 
   void remove_data_to_scroll(uint32_t time);
-  void set_graph_interaction_axis(plot x);
+  void set_graph_interaction_axis(const plot &);
   void reset_graph_interaction_axes();
-  void set_axis_text(plot x);
-  void set_range(plot x);
+  void set_axis_text(const plot &);
+  void set_range(const plot &);
   void set_plot_grid_colors(int value);
 
   QFont y_label_font;
@@ -141,8 +142,8 @@ public:
 protected:
   virtual void stepBy(int step_value);
   virtual StepEnabled stepEnabled();
-  QString textFromValue ( double value ) const;
-  double valueFromText ( const QString & text ) const;
+  QString textFromValue(double value) const;
+  double valueFromText(const QString & text) const;
 
 private:
   double calculate_decimal_step(int steps);
