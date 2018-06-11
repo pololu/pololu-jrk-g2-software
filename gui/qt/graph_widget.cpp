@@ -450,7 +450,7 @@ void graph_widget::setup_plot(plot & plot, const QString & display_text,
   plot.display->setToolTip("Right-click to change plot color");
   plot.display->setStyleSheet("QCheckBox{border: 2px solid " + plot.default_color + ";"
     "padding: 2px;"
-    "background: white;}");
+    "background-color: white;}");
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
   plot.display->installEventFilter(this);
