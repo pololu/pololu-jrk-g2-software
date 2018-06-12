@@ -478,10 +478,6 @@ void graph_widget::setup_plot(plot & plot,
   plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
   plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
 
-  // This line is weird but without it, dragging of graphs using the arrows on
-  // the left side stops working.  (TODO: figure out why)
-  plot.reset_button->setIcon(QIcon(":invalid"));
-
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
   plot.axis->setRange(-scale, scale);
   plot.axis->setVisible(false);
@@ -1003,18 +999,15 @@ void graph_widget::on_reset_all_button_clicked()
 
 void graph_widget::mouse_press(QMouseEvent * event)
 {
-  if (in_preview)
-  {
-    return;
-  }
+  if (in_preview) { return; }
 
   reset_graph_interaction_axes();
 
-  plot * temp_plot = Q_NULLPTR;
+  plot * temp_plot = NULL;
 
   int temp_view_height = custom_plot->viewport().height();
 
-  double temp_axis_value = (double)temp_view_height * 0.02; // Selection tolerance for mouse press.
+  double temp_axis_value = 8.0;  // Selection tolerance for mouse press.
   double temp_plot_value = 5.0;
 
   for (auto plot : all_plots)
