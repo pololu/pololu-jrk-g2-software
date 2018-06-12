@@ -111,7 +111,7 @@ private:
   QFont y_label_font;
   QFont x_label_font;
 
-  uint32_t key; // used to store local copy of time value
+  uint32_t current_time;
 
   int row = 1;
   bool in_preview = false; // used to store local copy of preview_mode

@@ -595,15 +595,16 @@ void graph_widget::setup_plot(plot & plot,
 // and removes data outside of visible range
 void graph_widget::remove_data_to_scroll(uint32_t time)
 {
-  key = time; // stores a local copy of time value
+  current_time = time;
 
   // Warning: This code is duplicated in change_ranges.
-  custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
-  custom_plot->xAxis2->setRange(time, domain->value() * 1000, Qt::AlignRight);
+  int domain_ms = domain->value() * 1000;
+  custom_plot->xAxis->setRange(-domain_ms, 0);
+  custom_plot->xAxis2->setRange(current_time, domain_ms, Qt::AlignRight);
 
   for (auto plot : all_plots)
   {
-    plot->graph->data()->removeBefore(domain->value() * 1000);
+    plot->graph->data()->removeBefore(time - domain_ms);
   }
 
   custom_plot->replot();
@@ -708,13 +709,14 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
 
   bool out_top = false;
   bool out_bottom = false;
+
   if (plot_visible)
   {
     auto begin = plot.graph->data()->constBegin();
     auto end = plot.graph->data()->constEnd();
-    auto upper = plot.axis->range().upper;
-    auto lower = plot.axis->range().lower;
-    for (QCPGraphDataContainer::const_iterator it = begin; it != end; ++it)
+    double upper = plot.axis->range().upper;
+    double lower = plot.axis->range().lower;
+    for (auto it = begin; it != end; ++it)
     {
       if (it->value > upper) { out_top = true; }
       if (it->value < lower) { out_bottom = true; }
@@ -929,11 +931,12 @@ void graph_widget::switch_to_default()
   custom_plot->replot();
 }
 
-void graph_widget::change_ranges(int value)
+void graph_widget::change_ranges(int domain)
 {
   // Warning: This code is duplicated in remove_data_to_scroll.
-  custom_plot->xAxis->setRange(-value * 1000, 0);
-  custom_plot->xAxis2->setRange(key, value * 1000, Qt::AlignRight);
+  int domain_ms = domain * 1000;
+  custom_plot->xAxis->setRange(-domain_ms, 0);
+  custom_plot->xAxis2->setRange(current_time, domain_ms, Qt::AlignRight);
 
   custom_plot->replot();
 }
