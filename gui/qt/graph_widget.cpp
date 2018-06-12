@@ -85,6 +85,8 @@ void graph_widget::plot_data(uint32_t time)
 
   if (graph_paused) { return; }
 
+  update_x_axis();
+
   for (auto plot : all_plots)
   {
     if (plot->display->isChecked())
@@ -92,6 +94,8 @@ void graph_widget::plot_data(uint32_t time)
       update_plot_overflow_arrows(*plot);
     }
   }
+
+  custom_plot->replot();
 }
 
 void graph_widget::set_checkbox_style(plot * plot, const QString & color)
@@ -594,21 +598,20 @@ void graph_widget::setup_plot(plot & plot,
   row++;
 }
 
-// modifies the x-axis based on the domain value
-// and removes data outside of visible range
-void graph_widget::remove_old_data()
+void graph_widget::update_x_axis()
 {
-  // Warning: This code is duplicated in change_ranges.
   int domain_ms = domain->value() * 1000;
   custom_plot->xAxis->setRange(-domain_ms, 0);
   custom_plot->xAxis2->setRange(display_time, domain_ms, Qt::AlignRight);
+}
 
+void graph_widget::remove_old_data()
+{
+  int max_domain_ms = (domain->maximum() + 1) * 1000;
   for (auto plot : all_plots)
   {
-    plot->graph->data()->removeBefore(display_time - domain_ms);
+    plot->graph->data()->removeBefore(display_time - max_domain_ms);
   }
-
-  custom_plot->replot();
 }
 
 // Configures the specified plot so we can use the mouse to change its scale
@@ -934,11 +937,7 @@ void graph_widget::switch_to_default()
 
 void graph_widget::change_ranges(int domain)
 {
-  // Warning: This code is duplicated in remove_data_to_scroll.
-  int domain_ms = domain * 1000;
-  custom_plot->xAxis->setRange(-domain_ms, 0);
-  custom_plot->xAxis2->setRange(display_time, domain_ms, Qt::AlignRight);
-
+  update_x_axis();
   custom_plot->replot();
 }
 

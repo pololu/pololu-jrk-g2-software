@@ -100,6 +100,7 @@ private:
   QPushButton * show_all_none;
   QPushButton * reset_all_button;
 
+  void update_x_axis();
   void remove_old_data();
   void set_graph_interaction_axis(const plot &);
   void reset_graph_interaction_axes();
