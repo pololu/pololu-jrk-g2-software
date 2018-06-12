@@ -35,21 +35,15 @@ void graph_window::receive_widget(graph_widget * widget)
 
   grabbed_widget->plot_visible_layout->setParent(0);
 
-  // Note: central_layout is really just two things side-by-side, so its
-  // row and column assignments should be simplified, but when we try to
-  // simplify it, dragging of graphs using the arrows on the left side
-  // seems to break.
-
-  central_layout->addWidget(grabbed_widget->custom_plot,
-    1, 0, 2, 2);
+  central_layout->addWidget(grabbed_widget->custom_plot, 0, 0);
   central_layout->addLayout(grabbed_widget->plot_visible_layout,
-    1, 2, Qt::AlignTop | Qt::AlignRight);
+    0, 1, Qt::AlignTop | Qt::AlignRight);
 
   central_layout->setColumnMinimumWidth(0,
     grabbed_widget->plot_visible_layout->sizeHint().height());
 
-  central_layout->setColumnStretch(1, 3);
-  central_layout->setRowStretch(2, 3);
+  central_layout->setColumnStretch(0, 1);
+  central_layout->setRowStretch(0, 1);
 
   central_layout->setMenuBar(grabbed_widget->setup_menu_bar());
 }
