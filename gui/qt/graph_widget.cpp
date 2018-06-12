@@ -766,6 +766,7 @@ void graph_widget::set_range(const plot & plot)
 
   reset_graph_interaction_axes();
 
+  // Warning: These formulas are duplicated in load_settings().
   double lower_range = -(plot.scale->value() * 5.0) - plot.position->value();
   double upper_range = (plot.scale->value() * 5.0) - plot.position->value();
 
@@ -803,32 +804,28 @@ void graph_widget::save_settings()
   QString filename = QFileDialog::getSaveFileName(this,
     "Save Graph Settings", "jrk_graph_settings.txt", "Text files (*.txt)");
 
-  if (filename.isEmpty())
-  {
-    return;
-  }
+  if (filename.isEmpty()) { return; }
 
   QFile file_out(filename);
   if (file_out.open(QFile::WriteOnly | QFile::Text))
   {
     QTextStream out(&file_out);
-    for(auto plot : all_plots)
+    for (auto plot : all_plots)
     {
       out
-        << plot->id_string << ","
-        << plot->display->isChecked() << ","
-        << plot->position->cleanText() << ","
-        << plot->scale->cleanText() << ","
-        << plot->default_color << ","
+        << plot->id_string << ','
+        << plot->display->isChecked() << ','
+        << plot->position->cleanText() << ','
+        << plot->scale->cleanText() << ','
+        << plot->default_color << ','
         << plot->dark_color << '\n';
     }
   }
   else
   {
-    // TODO: report errors
+    // TODO: report file save errors (e.g. file_out.errorMessage())
     return;
   }
-  file_out.close();
 }
 
 void graph_widget::load_settings()
@@ -837,6 +834,8 @@ void graph_widget::load_settings()
 
   QString filename = QFileDialog::getOpenFileName(this,
     "Load Graph Settings", "", "Text files (*.txt)");
+
+  if (filename.isEmpty()) { return; }
 
   QFile file_in(filename);
   if (file_in.open(QFile::ReadOnly | QFile::Text))
@@ -849,7 +848,7 @@ void graph_widget::load_settings()
   }
   else
   {
-    // TODO: report errors
+    // TODO: report file read errors (e.g. file_in.errorMessage())
     return;
   }
 
@@ -863,6 +862,7 @@ void graph_widget::load_settings()
     }
 
     all_plots[i]->display->setChecked(settings[1].toInt());
+    // Warning: These formulas are duplicated in set_range().
     double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     all_plots[i]->axis->setRange(lower_range, upper_range);
@@ -872,15 +872,15 @@ void graph_widget::load_settings()
       all_plots[i]->default_color = settings[4];
       all_plots[i]->dark_color = settings[5];
     }
+  }
 
-    if (dark_theme)
-    {
-      switch_to_dark();
-    }
-    else
-    {
-      switch_to_default();
-    }
+  if (dark_theme)
+  {
+    switch_to_dark();
+  }
+  else
+  {
+    switch_to_default();
   }
 }
 
