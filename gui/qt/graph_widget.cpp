@@ -76,16 +76,17 @@ void graph_widget::plot_data(uint32_t time)
   for (auto plot : all_plots)
   {
     plot->graph->addData(time, plot->plot_value);
-
-    if (custom_plot->viewport().width() != viewport_width && plot->graph->visible())
-    {
-      update_plot_text_and_arrows(*plot);
-    }
   }
 
-  viewport_width = custom_plot->viewport().width();
-
   if (graph_paused) { return; }
+
+  for (auto plot : all_plots)
+  {
+    if (plot->display->isChecked())
+    {
+      update_plot_overflow_arrows(*plot);
+    }
+  }
 
   remove_data_to_scroll(time);
 }
@@ -698,42 +699,39 @@ void graph_widget::update_plot_text_and_arrows(const plot & plot)
     plot.axis_position_label->position->setParentAnchor(plot.axis_label->top);
   }
 
+  update_plot_overflow_arrows(plot);
+}
+
+void graph_widget::update_plot_overflow_arrows(const plot & plot)
+{
+  bool plot_visible = plot.display->isChecked();
+
   bool out_top = false;
   bool out_bottom = false;
-  QCPGraphDataContainer::const_iterator begin = plot.graph->data()->
-    at(plot.graph->data()->dataRange().begin()); // get range begin iterator from index
-  QCPGraphDataContainer::const_iterator end = plot.graph->data()->
-    at(plot.graph->data()->dataRange().end()); // get range end iterator from index
-
-  for (QCPGraphDataContainer::const_iterator it = begin; it != end; ++it)
+  if (plot_visible)
   {
-    if (it->value > plot.axis->range().upper)
+    auto begin = plot.graph->data()->constBegin();
+    auto end = plot.graph->data()->constEnd();
+    auto upper = plot.axis->range().upper;
+    auto lower = plot.axis->range().lower;
+    for (QCPGraphDataContainer::const_iterator it = begin; it != end; ++it)
     {
-      out_top = true;
-    }
-
-    if (it->value < plot.axis->range().lower)
-    {
-      out_bottom = true;
+      if (it->value > upper) { out_top = true; }
+      if (it->value < lower) { out_bottom = true; }
     }
   }
 
-  int temp_width = custom_plot->viewport().width();
-
-  temp_width = qBound(1, temp_width / 350, 3);
-
-  bool plot_visible = plot.display->isChecked();
+  int width = custom_plot->viewport().width();
+  int arrow_count = qBound(1, width / 350, 3);
 
   plot.axis_top_and_bottom[0]->setVisible(plot_visible && out_top);
   plot.axis_top_and_bottom[1]->setVisible(plot_visible && out_bottom);
+  plot.axis_top_and_bottom[2]->setVisible(plot_visible && out_top && arrow_count > 1);
+  plot.axis_top_and_bottom[3]->setVisible(plot_visible && out_bottom && arrow_count > 1);
+  plot.axis_top_and_bottom[4]->setVisible(plot_visible && out_top && arrow_count > 2);
+  plot.axis_top_and_bottom[5]->setVisible(plot_visible && out_bottom && arrow_count > 2);
 
-  plot.axis_top_and_bottom[2]->setVisible(plot_visible && out_top && (temp_width > 1));
-  plot.axis_top_and_bottom[3]->setVisible(plot_visible && out_bottom && (temp_width > 1));
-
-  plot.axis_top_and_bottom[4]->setVisible(plot_visible && out_top && (temp_width > 2));
-  plot.axis_top_and_bottom[5]->setVisible(plot_visible && out_bottom && (temp_width > 2));
-
-  switch (temp_width)
+  switch (arrow_count)
   {
   case 1:
     plot.axis_top_and_bottom[0]->position->setCoords(0.50, plot.axis->range().upper);

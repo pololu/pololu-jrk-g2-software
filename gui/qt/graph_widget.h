@@ -104,6 +104,7 @@ private:
   void set_graph_interaction_axis(const plot &);
   void reset_graph_interaction_axes();
   void update_plot_text_and_arrows(const plot &);
+  void update_plot_overflow_arrows(const plot &);
   void set_range(const plot &);
   void set_plot_grid_colors(int value);
 
@@ -116,10 +117,6 @@ private:
   bool in_preview = false; // used to store local copy of preview_mode
   bool graph_paused = false;
   bool dark_theme = false;
-
-  // A cached copy of the graph's width that helps us know when the graph has
-  // been resized and we should consider drawing arrows at the top and bottom.
-  int viewport_width = 0;
 
 public slots:
   void save_settings();
