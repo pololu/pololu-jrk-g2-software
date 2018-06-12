@@ -418,10 +418,12 @@ QMenuBar * graph_widget::setup_menu_bar()
 
   default_theme_action = new QAction(this);
   default_theme_action->setText(tr("&Use default theme"));
+  default_theme_action->setVisible(false);
 
   options_menu->addAction(save_settings_action);
   options_menu->addAction(load_settings_action);
   options_menu->addSeparator();
+  options_menu->addAction(default_theme_action);
   options_menu->addAction(dark_theme_action);
 
   connect(save_settings_action, &QAction::triggered, this,
@@ -900,14 +902,12 @@ void graph_widget::switch_to_dark()
   custom_plot->setBackground(QColor(170, 170, 170));
   custom_plot->xAxis->grid()->pen().setColor(QColor(225, 225, 225));
   custom_plot->yAxis->grid()->pen().setColor(QColor(225, 225, 225));
-  custom_plot->xAxis->setBasePen(
-    QPen(QColor(Qt::white), 1, Qt::SolidLine));
-  custom_plot->yAxis->setBasePen(
-    QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->xAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->yAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
   custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(225, 225, 225));
 
-  options_menu->removeAction(dark_theme_action);
-  options_menu->addAction(default_theme_action);
+  dark_theme_action->setVisible(false);
+  default_theme_action->setVisible(true);
 
   dark_theme = true;
 
@@ -925,14 +925,12 @@ void graph_widget::switch_to_default()
   custom_plot->setBackground(QColor(Qt::white));
   custom_plot->xAxis->grid()->pen().setColor(QColor(100, 100, 100));
   custom_plot->yAxis->grid()->pen().setColor(QColor(100, 100, 100));
-  custom_plot->xAxis->setBasePen(
-    QPen(QColor(Qt::black), 1, Qt::SolidLine));
-  custom_plot->yAxis->setBasePen(
-    QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
   custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(100, 100, 100));
 
-  options_menu->removeAction(default_theme_action);
-  options_menu->addAction(dark_theme_action);
+  dark_theme_action->setVisible(true);
+  default_theme_action->setVisible(false);
 
   dark_theme = false;
 
