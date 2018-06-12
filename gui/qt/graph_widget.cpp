@@ -716,8 +716,9 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
 
   if (plot_visible)
   {
-    auto begin = plot.graph->data()->constBegin();
-    auto end = plot.graph->data()->constEnd();
+    int domain_ms = domain->value() * 1000;
+    auto begin = plot.graph->data()->findBegin(display_time - domain_ms);
+    auto end = plot.graph->data()->findEnd(display_time);
     double upper = plot.axis->range().upper;
     double lower = plot.axis->range().lower;
     for (auto it = begin; it != end; ++it)
