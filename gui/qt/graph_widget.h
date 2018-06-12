@@ -21,6 +21,9 @@ class graph_widget : public QWidget
 public:
   graph_widget(QWidget * parent = 0);
 
+  // The maximum time span that can be displayed, in milliseconds.
+  const int max_domain_ms = 90000;
+
   struct plot
   {
     QString id_string;

@@ -296,8 +296,8 @@ void graph_widget::setup_ui()
     this, SLOT(mouse_press(QMouseEvent*)));
 
   domain = new QSpinBox();
-  domain->setValue(10); // initialized the graph to show 10 seconds of data
-  domain->setRange(1, 90);
+  domain->setValue(10);  // show a time span of 10 seconds by default
+  domain->setRange(1, max_domain_ms / 1000);
 
   show_all_none = new QPushButton("Show &all/none");
   show_all_none->setObjectName("show_all_none");
@@ -605,12 +605,18 @@ void graph_widget::update_x_axis()
   custom_plot->xAxis2->setRange(display_time, domain_ms, Qt::AlignRight);
 }
 
+// Removes old data that we will not need to display later so that the graph
+// doesn't consume too much memory.
+// Note: We are not doing anything to handle the uint32_t overflow
+// of our time variable.
 void graph_widget::remove_old_data()
 {
-  int max_domain_ms = (domain->maximum() + 1) * 1000;
+  uint32_t oldest_displayable_time = display_time - max_domain_ms - 1000;
+  uint32_t oldest_later_displayable_time = current_time - max_domain_ms - 1000;
   for (auto plot : all_plots)
   {
-    plot->graph->data()->removeBefore(display_time - max_domain_ms);
+    plot->graph->data()->removeBefore(oldest_displayable_time);
+    plot->graph->data()->remove(display_time, oldest_later_displayable_time);
   }
 }
 
