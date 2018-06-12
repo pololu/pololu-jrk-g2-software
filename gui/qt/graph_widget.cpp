@@ -454,6 +454,7 @@ void graph_widget::setup_plot(plot & plot,
   const QString & default_color, const QString & dark_color,
   double scale, bool default_visible)
 {
+  plot.index = all_plots.size();
   plot.id_string = id_string;
 
   plot.original_default_color = plot.default_color = default_color;
@@ -718,7 +719,9 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
   bool plot_visible = plot.display->isChecked();
 
   bool out_top = false;
-  bool out_bottom = false;
+  bool out_bot = false;
+  double arrow_offset = 0;
+  int arrow_count = 0;
 
   if (plot_visible)
   {
@@ -730,39 +733,43 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
     for (auto it = begin; it != end; ++it)
     {
       if (it->value > upper) { out_top = true; }
-      if (it->value < lower) { out_bottom = true; }
+      if (it->value < lower) { out_bot = true; }
     }
+
+    arrow_count = qBound(1, custom_plot->viewport().width() / 350, 3);
+
+    arrow_offset = 0.05 + 0.9 * plot.index / (all_plots.size() - 1);
   }
 
-  int width = custom_plot->viewport().width();
-  int arrow_count = qBound(1, width / 350, 3);
+  plot.overflow_arrows[0]->setVisible(out_top && arrow_count >= 1);
+  plot.overflow_arrows[1]->setVisible(out_bot && arrow_count >= 1);
+  plot.overflow_arrows[2]->setVisible(out_top && arrow_count >= 2);
+  plot.overflow_arrows[3]->setVisible(out_bot && arrow_count >= 2);
+  plot.overflow_arrows[4]->setVisible(out_top && arrow_count >= 3);
+  plot.overflow_arrows[5]->setVisible(out_bot && arrow_count >= 3);
 
-  plot.overflow_arrows[0]->setVisible(plot_visible && out_top);
-  plot.overflow_arrows[1]->setVisible(plot_visible && out_bottom);
-  plot.overflow_arrows[2]->setVisible(plot_visible && out_top && arrow_count > 1);
-  plot.overflow_arrows[3]->setVisible(plot_visible && out_bottom && arrow_count > 1);
-  plot.overflow_arrows[4]->setVisible(plot_visible && out_top && arrow_count > 2);
-  plot.overflow_arrows[5]->setVisible(plot_visible && out_bottom && arrow_count > 2);
+  double top = plot.axis->range().upper;
+  double bot = plot.axis->range().lower;
 
   switch (arrow_count)
   {
   case 1:
-    plot.overflow_arrows[0]->position->setCoords(0.50, plot.axis->range().upper);
-    plot.overflow_arrows[1]->position->setCoords(0.50, plot.axis->range().lower);
+    plot.overflow_arrows[0]->position->setCoords(arrow_offset, top);
+    plot.overflow_arrows[1]->position->setCoords(arrow_offset, bot);
     break;
   case 2:
-    plot.overflow_arrows[0]->position->setCoords(0.20, plot.axis->range().upper);
-    plot.overflow_arrows[1]->position->setCoords(0.20, plot.axis->range().lower);
-    plot.overflow_arrows[2]->position->setCoords(0.80, plot.axis->range().upper);
-    plot.overflow_arrows[3]->position->setCoords(0.80, plot.axis->range().lower);
+    plot.overflow_arrows[0]->position->setCoords(arrow_offset / 2, top);
+    plot.overflow_arrows[1]->position->setCoords(arrow_offset / 2, bot);
+    plot.overflow_arrows[2]->position->setCoords((arrow_offset + 1) / 2, top);
+    plot.overflow_arrows[3]->position->setCoords((arrow_offset + 1) / 2, bot);
     break;
   case 3:
-    plot.overflow_arrows[0]->position->setCoords(0.20, plot.axis->range().upper);
-    plot.overflow_arrows[1]->position->setCoords(0.20, plot.axis->range().lower);
-    plot.overflow_arrows[2]->position->setCoords(0.50, plot.axis->range().upper);
-    plot.overflow_arrows[3]->position->setCoords(0.50, plot.axis->range().lower);
-    plot.overflow_arrows[4]->position->setCoords(0.80, plot.axis->range().upper);
-    plot.overflow_arrows[5]->position->setCoords(0.80, plot.axis->range().lower);
+    plot.overflow_arrows[0]->position->setCoords(arrow_offset / 3, top);
+    plot.overflow_arrows[1]->position->setCoords(arrow_offset / 3, bot);
+    plot.overflow_arrows[2]->position->setCoords((arrow_offset + 1) / 3, top);
+    plot.overflow_arrows[3]->position->setCoords((arrow_offset + 1) / 3, bot);
+    plot.overflow_arrows[4]->position->setCoords((arrow_offset + 2) / 3, top);
+    plot.overflow_arrows[5]->position->setCoords((arrow_offset + 2) / 3, bot);
     break;
   }
 }

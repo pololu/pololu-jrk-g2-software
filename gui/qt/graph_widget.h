@@ -26,6 +26,7 @@ public:
 
   struct plot
   {
+    int index = 0;
     QString id_string;
     dynamic_decimal_spinbox * scale;
     dynamic_decimal_spinbox * position;
