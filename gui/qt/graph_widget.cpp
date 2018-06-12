@@ -714,6 +714,9 @@ void graph_widget::update_plot_text_and_arrows(const plot & plot)
   update_plot_overflow_arrows(plot);
 }
 
+// Note: There is just barely enough space for the overflow arrows with our
+// current number of plots (11).  If we add more plots, we might need to make
+// the arrows smaller.
 void graph_widget::update_plot_overflow_arrows(const plot & plot)
 {
   bool plot_visible = plot.display->isChecked();
@@ -1008,10 +1011,7 @@ void graph_widget::on_reset_all_button_clicked()
   }
 }
 
-// This is a reimplementation of the QWidget::mousePressEvent slot.
-// Due to the graph containing multiple scrolling plots, QCPAbstactPlottable::selectTest
-// is used to determine the plot being selected.
-
+// Receives a click event from Qt and figures out which plot to select, if any.
 void graph_widget::mouse_press(QMouseEvent * event)
 {
   if (in_preview) { return; }
@@ -1023,44 +1023,38 @@ void graph_widget::mouse_press(QMouseEvent * event)
   // Mouse click position tolerances.
   const double arrow_tolerance = 8.0;
   const double plot_tolerance = 5.0;
-
-  // TODO: if there are multiple labels matching, pick the closest one
-  // TODO: actually try to interpret clicks on the upper and lower arrows
-  // correctly instead of just picking the latest plot that's visible
-  // TODO: reject distances less than 0, they indicate something is invalid
+  double click_distance = 999;
 
   for (auto plot : all_plots)
   {
     if (!plot->display->isChecked()) { continue; }
 
-    if (event->localPos().x() < custom_plot->axisRect()->left())
+    double distance = plot->axis_label->selectTestPololu(event->localPos(), false);
+    if (distance <= arrow_tolerance && distance < click_distance)
     {
-      double distance = plot->axis_label->selectTest(event->localPos(), false);
-      if (qFabs(distance) <= arrow_tolerance)
+      plot_clicked = plot;
+      click_distance = distance;
+    }
+
+    for (auto arrow : plot->overflow_arrows)
+    {
+      if (!arrow->visible()) { continue; }
+
+      distance = arrow->selectTestPololu(event->localPos(), false);
+      if (distance <= arrow_tolerance && distance < click_distance)
       {
         plot_clicked = plot;
+        click_distance = distance;
       }
     }
-    else if (event->localPos().y() <= custom_plot->axisRect()->top())
-    {
-      if (plot->overflow_arrows[0]->visible())
-      {
-        plot_clicked = plot;
-      }
-    }
-    else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
-    {
-      if (plot->overflow_arrows[1]->visible())
-      {
-        plot_clicked = plot;
-      }
-    }
-    else if (!plot->graph->data()->isEmpty())
+
+    if (!plot->graph->data()->isEmpty())
     {
       double distance = plot->graph->selectTest(event->localPos(), false);
-      if (qFabs(distance) <= plot_tolerance)
+      if (distance > 0 && distance <= plot_tolerance && distance < click_distance)
       {
         plot_clicked = plot;
+        click_distance = distance;
       }
     }
   }

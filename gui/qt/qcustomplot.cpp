@@ -28920,6 +28920,57 @@ double QCPItemText::selectTest(const QPointF &pos, bool onlySelectable, QVariant
   return rectDistance(textBoxRect, rotatedPos, true);
 }
 
+// We (Pololu) added this because the QCPItemText::selectTest returns 0 at the
+// border of the text and higher numbers (capped at 7.92) inside the text item.
+// So when you have some items that were close to eachother, and you click on
+// the center of the one you want to select, you would usually end up
+// selecting the wrong item.
+//
+// Our version fixes that, by returning -300*300 plus the
+// distance to the center squared, if pos is inside the item.
+//
+// Assumption: You're trying to select a thing that fits inside a 300-radius
+// circle.  If that's not true, and you click inside the thing but near the
+// border, you might get a positive number.
+//
+// By finding the item with the lowest distance, as returned by
+// selectTestPololu, you can make sure that when the user clicks inside multiple
+// items, they will select the item whose center is closest to where they
+// clicked.
+//
+// Also, we return the maximum possible double value as an error value, so there
+// is no need to handle those errors as a special case.
+double QCPItemText::selectTestPololu(const QPointF &pos, bool onlySelectable, QVariant *details) const
+{
+  Q_UNUSED(details)
+  if (onlySelectable && !mSelectable)
+  {
+    return std::numeric_limits<double>::max();
+  }
+
+  QPointF positionPixels(position->pixelPosition());
+  QTransform inputTransform;
+  inputTransform.translate(positionPixels.x(), positionPixels.y());
+  inputTransform.rotate(-mRotation);
+  inputTransform.translate(-positionPixels.x(), -positionPixels.y());
+  QPointF rotatedPos = inputTransform.map(pos);
+  QFontMetrics fontMetrics(mFont);
+  QRect textRect = fontMetrics.boundingRect(0, 0, 0, 0, Qt::TextDontClip|mTextAlignment, mText);
+  QRect textBoxRect = textRect.adjusted(-mPadding.left(), -mPadding.top(), mPadding.right(), mPadding.bottom());
+  QPointF textPos = getTextDrawPoint(positionPixels, textBoxRect, mPositionAlignment);
+  textBoxRect.moveTopLeft(textPos.toPoint());
+
+  if (!textBoxRect.contains(rotatedPos.toPoint()))
+  {
+    return rectDistance(textBoxRect, rotatedPos, true);
+  }
+  else
+  {
+    QPointF dist = textBoxRect.center() - rotatedPos;
+    return (double)-90000 + QPointF::dotProduct(dist, dist);
+  }
+}
+
 /* inherits documentation from base class */
 void QCPItemText::draw(QCPPainter *painter)
 {

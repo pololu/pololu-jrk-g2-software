@@ -6333,6 +6333,8 @@ public:
   // reimplemented virtual methods:
   virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details=0) const Q_DECL_OVERRIDE;
 
+  double selectTestPololu(const QPointF &pos, bool onlySelectable, QVariant *details=0) const;
+
   QCPItemPosition * const position;
   QCPItemAnchor * const topLeft;
   QCPItemAnchor * const top;
