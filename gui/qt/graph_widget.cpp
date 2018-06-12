@@ -611,8 +611,8 @@ void graph_widget::update_x_axis()
 // of our time variable.
 void graph_widget::remove_old_data()
 {
-  uint32_t oldest_displayable_time = display_time - max_domain_ms - 1000;
-  uint32_t oldest_later_displayable_time = current_time - max_domain_ms - 1000;
+  double oldest_displayable_time = (double)display_time - max_domain_ms - 1000;
+  double oldest_later_displayable_time = (double)current_time - max_domain_ms - 1000;
   for (auto plot : all_plots)
   {
     plot->graph->data()->removeBefore(oldest_displayable_time);
@@ -723,8 +723,8 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
   if (plot_visible)
   {
     int domain_ms = domain->value() * 1000;
-    auto begin = plot.graph->data()->findBegin(display_time - domain_ms);
-    auto end = plot.graph->data()->findEnd(display_time);
+    auto begin = plot.graph->data()->findBegin((double)display_time - domain_ms);
+    auto end = plot.graph->data()->findEnd((double)display_time);
     double upper = plot.axis->range().upper;
     double lower = plot.axis->range().lower;
     for (auto it = begin; it != end; ++it)
