@@ -547,8 +547,6 @@ void graph_widget::setup_plot(plot & plot,
   connect(plot.display, &QCheckBox::toggled, [=](bool checked)
   {
     set_line_visible();
-
-    custom_plot->replot();
   });
 
   connect(plot.axis, static_cast<void (QCPAxis::*)(const QCPRange &, const QCPRange &)>
@@ -597,13 +595,13 @@ void graph_widget::setup_plot(plot & plot,
 }
 
 // modifies the x-axis based on the domain value
-// and removes data outside of visible scale
+// and removes data outside of visible range
 void graph_widget::remove_data_to_scroll(uint32_t time)
 {
   key = time; // stores a local copy of time value
 
+  // Warning: This code is duplicated in change_ranges.
   custom_plot->xAxis->setRange(-domain->value() * 1000, 0);
-
   custom_plot->xAxis2->setRange(time, domain->value() * 1000, Qt::AlignRight);
 
   for (auto plot : all_plots)
@@ -939,8 +937,8 @@ void graph_widget::switch_to_default()
 
 void graph_widget::change_ranges(int value)
 {
+  // Warning: This code is duplicated in remove_data_to_scroll.
   custom_plot->xAxis->setRange(-value * 1000, 0);
-
   custom_plot->xAxis2->setRange(key, value * 1000, Qt::AlignRight);
 
   custom_plot->replot();
@@ -968,7 +966,7 @@ void graph_widget::set_line_visible()
 void graph_widget::show_all_none_clicked()
 {
   bool all_checked = std::all_of(all_plots.begin(), all_plots.end(),
-    [](const plot * plot) {return plot->display->isChecked();});
+    [](const plot * plot) { return plot->display->isChecked(); });
 
   for (auto plot : all_plots)
   {
