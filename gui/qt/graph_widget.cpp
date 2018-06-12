@@ -113,7 +113,7 @@ void graph_widget::change_plot_colors(plot * plot, const QString & color)
   plot->axis_label->setColor(color);
   plot->axis_position_label->setColor(color);
   plot->axis_scale_label->setColor(color);
-  for (auto label : plot->axis_top_and_bottom)
+  for (auto label : plot->overflow_arrows)
   {
     label->setColor(color);
   }
@@ -524,12 +524,12 @@ void graph_widget::setup_plot(plot & plot,
 
   x_label_font.setPixelSize(30);
 
-  plot.axis_top_and_bottom.append(axis_arrow(plot, 270));
-  plot.axis_top_and_bottom.append(axis_arrow(plot, 90));
-  plot.axis_top_and_bottom.append(axis_arrow(plot, 270));
-  plot.axis_top_and_bottom.append(axis_arrow(plot, 90));
-  plot.axis_top_and_bottom.append(axis_arrow(plot, 270));
-  plot.axis_top_and_bottom.append(axis_arrow(plot, 90));
+  plot.overflow_arrows.append(axis_arrow(plot, 270));
+  plot.overflow_arrows.append(axis_arrow(plot, 90));
+  plot.overflow_arrows.append(axis_arrow(plot, 270));
+  plot.overflow_arrows.append(axis_arrow(plot, 90));
+  plot.overflow_arrows.append(axis_arrow(plot, 270));
+  plot.overflow_arrows.append(axis_arrow(plot, 90));
 
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.position, row, 1);
@@ -634,7 +634,7 @@ void graph_widget::set_graph_interaction_axis(const plot & plot)
   plot.axis_position_label->setVisible(true);
   plot.axis_scale_label->setVisible(true);
 
-  for (auto label : plot.axis_top_and_bottom)
+  for (auto label : plot.overflow_arrows)
   {
     label->setFont(x_label_font);
   }
@@ -661,7 +661,7 @@ void graph_widget::reset_graph_interaction_axes()
     plot->axis_position_label->setVisible(false);
     plot->axis_scale_label->setVisible(false);
 
-    for (auto label : plot->axis_top_and_bottom)
+    for (auto label : plot->overflow_arrows)
     {
       label->setFont(x_label_font);
     }
@@ -737,32 +737,32 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
   int width = custom_plot->viewport().width();
   int arrow_count = qBound(1, width / 350, 3);
 
-  plot.axis_top_and_bottom[0]->setVisible(plot_visible && out_top);
-  plot.axis_top_and_bottom[1]->setVisible(plot_visible && out_bottom);
-  plot.axis_top_and_bottom[2]->setVisible(plot_visible && out_top && arrow_count > 1);
-  plot.axis_top_and_bottom[3]->setVisible(plot_visible && out_bottom && arrow_count > 1);
-  plot.axis_top_and_bottom[4]->setVisible(plot_visible && out_top && arrow_count > 2);
-  plot.axis_top_and_bottom[5]->setVisible(plot_visible && out_bottom && arrow_count > 2);
+  plot.overflow_arrows[0]->setVisible(plot_visible && out_top);
+  plot.overflow_arrows[1]->setVisible(plot_visible && out_bottom);
+  plot.overflow_arrows[2]->setVisible(plot_visible && out_top && arrow_count > 1);
+  plot.overflow_arrows[3]->setVisible(plot_visible && out_bottom && arrow_count > 1);
+  plot.overflow_arrows[4]->setVisible(plot_visible && out_top && arrow_count > 2);
+  plot.overflow_arrows[5]->setVisible(plot_visible && out_bottom && arrow_count > 2);
 
   switch (arrow_count)
   {
   case 1:
-    plot.axis_top_and_bottom[0]->position->setCoords(0.50, plot.axis->range().upper);
-    plot.axis_top_and_bottom[1]->position->setCoords(0.50, plot.axis->range().lower);
+    plot.overflow_arrows[0]->position->setCoords(0.50, plot.axis->range().upper);
+    plot.overflow_arrows[1]->position->setCoords(0.50, plot.axis->range().lower);
     break;
   case 2:
-    plot.axis_top_and_bottom[0]->position->setCoords(0.20, plot.axis->range().upper);
-    plot.axis_top_and_bottom[1]->position->setCoords(0.20, plot.axis->range().lower);
-    plot.axis_top_and_bottom[2]->position->setCoords(0.80, plot.axis->range().upper);
-    plot.axis_top_and_bottom[3]->position->setCoords(0.80, plot.axis->range().lower);
+    plot.overflow_arrows[0]->position->setCoords(0.20, plot.axis->range().upper);
+    plot.overflow_arrows[1]->position->setCoords(0.20, plot.axis->range().lower);
+    plot.overflow_arrows[2]->position->setCoords(0.80, plot.axis->range().upper);
+    plot.overflow_arrows[3]->position->setCoords(0.80, plot.axis->range().lower);
     break;
   case 3:
-    plot.axis_top_and_bottom[0]->position->setCoords(0.20, plot.axis->range().upper);
-    plot.axis_top_and_bottom[1]->position->setCoords(0.20, plot.axis->range().lower);
-    plot.axis_top_and_bottom[2]->position->setCoords(0.50, plot.axis->range().upper);
-    plot.axis_top_and_bottom[3]->position->setCoords(0.50, plot.axis->range().lower);
-    plot.axis_top_and_bottom[4]->position->setCoords(0.80, plot.axis->range().upper);
-    plot.axis_top_and_bottom[5]->position->setCoords(0.80, plot.axis->range().lower);
+    plot.overflow_arrows[0]->position->setCoords(0.20, plot.axis->range().upper);
+    plot.overflow_arrows[1]->position->setCoords(0.20, plot.axis->range().lower);
+    plot.overflow_arrows[2]->position->setCoords(0.50, plot.axis->range().upper);
+    plot.overflow_arrows[3]->position->setCoords(0.50, plot.axis->range().lower);
+    plot.overflow_arrows[4]->position->setCoords(0.80, plot.axis->range().upper);
+    plot.overflow_arrows[5]->position->setCoords(0.80, plot.axis->range().lower);
     break;
   }
 }
@@ -1036,14 +1036,14 @@ void graph_widget::mouse_press(QMouseEvent * event)
     }
     else if (event->localPos().y() <= custom_plot->axisRect()->top())
     {
-      if (plot->axis_top_and_bottom[0]->visible())
+      if (plot->overflow_arrows[0]->visible())
       {
         plot_clicked = plot;
       }
     }
     else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
     {
-      if (plot->axis_top_and_bottom[1]->visible())
+      if (plot->overflow_arrows[1]->visible())
       {
         plot_clicked = plot;
       }
