@@ -861,17 +861,17 @@ void graph_widget::load_settings()
       settings[3] = "0.1";
     }
 
+    // TODO: instead of using all_plots[i], locate the specified plot using its
+    // name.  This also saves us from an array overflow bug.
+
     all_plots[i]->display->setChecked(settings[1].toInt());
     // Warning: These formulas are duplicated in set_range().
     double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
     all_plots[i]->axis->setRange(lower_range, upper_range);
 
-    if (settings.count() == 6)
-    {
-      all_plots[i]->default_color = settings[4];
-      all_plots[i]->dark_color = settings[5];
-    }
+    all_plots[i]->default_color = settings[4];
+    all_plots[i]->dark_color = settings[5];
   }
 
   if (dark_theme)
