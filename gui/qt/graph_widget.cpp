@@ -44,7 +44,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
     if (plot->display->isChecked())
     {
       plot->axis_label->setVisible(true);
-      set_axis_text(*plot);
+      update_plot_text_and_arrows(*plot);
     }
   }
 
@@ -79,7 +79,7 @@ void graph_widget::plot_data(uint32_t time)
 
     if (custom_plot->viewport().width() != viewport_width && plot->graph->visible())
     {
-      set_axis_text(*plot);
+      update_plot_text_and_arrows(*plot);
     }
   }
 
@@ -570,7 +570,7 @@ void graph_widget::setup_plot(plot & plot,
       plot.scale->setValue(scale_value);
     }
 
-    set_axis_text(plot);
+    update_plot_text_and_arrows(plot);
   });
 
   connect(plot.scale, static_cast<void (QDoubleSpinBox::*)(const QString &)>
@@ -656,7 +656,7 @@ void graph_widget::reset_graph_interaction_axes()
   }
 }
 
-void graph_widget::set_axis_text(const plot & plot)
+void graph_widget::update_plot_text_and_arrows(const plot & plot)
 {
   plot.axis_position_label->setText("Position:\n" + plot.position->cleanText());
   plot.axis_scale_label->setText("Scale:\n" + plot.scale->cleanText());
@@ -771,7 +771,7 @@ void graph_widget::set_range(const plot & plot)
     plot.axis->setRange(lower_range, upper_range);
   }
 
-  set_axis_text(plot);
+  update_plot_text_and_arrows(plot);
 
   set_graph_interaction_axis(plot);
 
@@ -953,7 +953,7 @@ void graph_widget::set_line_visible()
   {
     plot->graph->setVisible(plot->display->isChecked());
     plot->axis_label->setVisible(plot->display->isChecked());
-    set_axis_text(*plot);
+    update_plot_text_and_arrows(*plot);
   }
 
   custom_plot->replot();

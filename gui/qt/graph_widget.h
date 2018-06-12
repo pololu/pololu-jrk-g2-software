@@ -103,7 +103,7 @@ private:
   void remove_data_to_scroll(uint32_t time);
   void set_graph_interaction_axis(const plot &);
   void reset_graph_interaction_axes();
-  void set_axis_text(const plot &);
+  void update_plot_text_and_arrows(const plot &);
   void set_range(const plot &);
   void set_plot_grid_colors(int value);
 
