@@ -1012,6 +1012,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
   // TODO: if there are multiple labels matching, pick the closest one
   // TODO: actually try to interpret clicks on the upper and lower arrows
   // correctly instead of just picking the latest plot that's visible
+  // TODO: reject distances less than 0, they indicate something is invalid
 
   for (auto plot : all_plots)
   {
@@ -1042,7 +1043,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
     else if (!plot->graph->data()->isEmpty())
     {
       double distance = plot->graph->selectTest(event->localPos(), false);
-      if (qFabs(select_test_value) <= plot_tolerance)
+      if (qFabs(distance) <= plot_tolerance)
       {
         plot_clicked = plot;
       }
