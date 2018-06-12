@@ -1012,40 +1012,36 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   for (auto plot : all_plots)
   {
-    if (plot->display->isChecked())
+    if (!plot->display->isChecked()) { continue; }
+
+    if (event->localPos().x() < custom_plot->axisRect()->left())
     {
-      if (event->localPos().x() < custom_plot->axisRect()->left())
+      double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
+      if (qFabs(select_test_value) <= qFabs(temp_axis_value))
       {
-        double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
-
-        if (qFabs(select_test_value) <= qFabs(temp_axis_value))
-        {
-          temp_plot = plot;
-        }
+        temp_plot = plot;
       }
-      else if (event->localPos().y() <= custom_plot->axisRect()->top())
+    }
+    else if (event->localPos().y() <= custom_plot->axisRect()->top())
+    {
+      if (plot->axis_top_and_bottom[0]->visible())
       {
-        if (plot->axis_top_and_bottom[0]->visible())
-        {
-          temp_plot = plot;
-        }
-
+        temp_plot = plot;
       }
-      else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
+    }
+    else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
+    {
+      if (plot->axis_top_and_bottom[1]->visible())
       {
-        if (plot->axis_top_and_bottom[1]->visible())
-        {
-          temp_plot = plot;
-        }
+        temp_plot = plot;
       }
-      else if (!plot->graph->data()->isEmpty())
+    }
+    else if (!plot->graph->data()->isEmpty())
+    {
+      double select_test_value = plot->graph->selectTest(event->localPos(), false);
+      if (qFabs(select_test_value) <= qFabs(temp_plot_value))
       {
-        double select_test_value = plot->graph->selectTest(event->localPos(), false);
-
-        if (qFabs(select_test_value) <= qFabs(temp_plot_value))
-        {
-          temp_plot = plot;
-        }
+        temp_plot = plot;
       }
     }
   }
