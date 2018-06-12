@@ -73,10 +73,15 @@ void graph_widget::clear_graphs()
 
 void graph_widget::plot_data(uint32_t time)
 {
+  current_time = time;
+  if (!graph_paused) { display_time = time; }
+
   for (auto plot : all_plots)
   {
     plot->graph->addData(time, plot->plot_value);
   }
+
+  remove_old_data();
 
   if (graph_paused) { return; }
 
@@ -87,8 +92,6 @@ void graph_widget::plot_data(uint32_t time)
       update_plot_overflow_arrows(*plot);
     }
   }
-
-  remove_data_to_scroll(time);
 }
 
 void graph_widget::set_checkbox_style(plot * plot, const QString & color)
@@ -593,18 +596,16 @@ void graph_widget::setup_plot(plot & plot,
 
 // modifies the x-axis based on the domain value
 // and removes data outside of visible range
-void graph_widget::remove_data_to_scroll(uint32_t time)
+void graph_widget::remove_old_data()
 {
-  current_time = time;
-
   // Warning: This code is duplicated in change_ranges.
   int domain_ms = domain->value() * 1000;
   custom_plot->xAxis->setRange(-domain_ms, 0);
-  custom_plot->xAxis2->setRange(current_time, domain_ms, Qt::AlignRight);
+  custom_plot->xAxis2->setRange(display_time, domain_ms, Qt::AlignRight);
 
   for (auto plot : all_plots)
   {
-    plot->graph->data()->removeBefore(time - domain_ms);
+    plot->graph->data()->removeBefore(display_time - domain_ms);
   }
 
   custom_plot->replot();
@@ -936,7 +937,7 @@ void graph_widget::change_ranges(int domain)
   // Warning: This code is duplicated in remove_data_to_scroll.
   int domain_ms = domain * 1000;
   custom_plot->xAxis->setRange(-domain_ms, 0);
-  custom_plot->xAxis2->setRange(current_time, domain_ms, Qt::AlignRight);
+  custom_plot->xAxis2->setRange(display_time, domain_ms, Qt::AlignRight);
 
   custom_plot->replot();
 }

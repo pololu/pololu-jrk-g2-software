@@ -100,7 +100,7 @@ private:
   QPushButton * show_all_none;
   QPushButton * reset_all_button;
 
-  void remove_data_to_scroll(uint32_t time);
+  void remove_old_data();
   void set_graph_interaction_axis(const plot &);
   void reset_graph_interaction_axes();
   void update_plot_text_and_arrows(const plot &);
@@ -111,6 +111,11 @@ private:
   QFont y_label_font;
   QFont x_label_font;
 
+  // time value corresponding to the right edge of the graph
+  uint32_t display_time;
+
+  // time value corresponding to the latest data from the device.
+  // Should equal display_time if we are not paused.
   uint32_t current_time;
 
   int row = 1;
