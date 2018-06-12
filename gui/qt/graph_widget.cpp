@@ -1003,12 +1003,15 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   reset_graph_interaction_axes();
 
-  plot * temp_plot = NULL;
+  plot * plot_clicked = NULL;
 
-  int temp_view_height = custom_plot->viewport().height();
+  // Mouse click position tolerances.
+  const double arrow_tolerance = 8.0;
+  const double plot_tolerance = 5.0;
 
-  double temp_axis_value = 8.0;  // Selection tolerance for mouse press.
-  double temp_plot_value = 5.0;
+  // TODO: if there are multiple labels matching, pick the closest one
+  // TODO: actually try to interpret clicks on the upper and lower arrows
+  // correctly instead of just picking the latest plot that's visible
 
   for (auto plot : all_plots)
   {
@@ -1016,46 +1019,45 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
     if (event->localPos().x() < custom_plot->axisRect()->left())
     {
-      double select_test_value = plot->axis_label->selectTest(event->localPos(), false);
-      if (qFabs(select_test_value) <= qFabs(temp_axis_value))
+      double distance = plot->axis_label->selectTest(event->localPos(), false);
+      if (qFabs(distance) <= arrow_tolerance)
       {
-        temp_plot = plot;
+        plot_clicked = plot;
       }
     }
     else if (event->localPos().y() <= custom_plot->axisRect()->top())
     {
       if (plot->axis_top_and_bottom[0]->visible())
       {
-        temp_plot = plot;
+        plot_clicked = plot;
       }
     }
     else if (event->localPos().y() >= custom_plot->axisRect()->bottom())
     {
       if (plot->axis_top_and_bottom[1]->visible())
       {
-        temp_plot = plot;
+        plot_clicked = plot;
       }
     }
     else if (!plot->graph->data()->isEmpty())
     {
-      double select_test_value = plot->graph->selectTest(event->localPos(), false);
-      if (qFabs(select_test_value) <= qFabs(temp_plot_value))
+      double distance = plot->graph->selectTest(event->localPos(), false);
+      if (qFabs(select_test_value) <= plot_tolerance)
       {
-        temp_plot = plot;
+        plot_clicked = plot;
       }
     }
   }
 
-  if (temp_plot != Q_NULLPTR)
+  if (plot_clicked == NULL) { return; }
+
+  if (event->button() == Qt::RightButton)
   {
-    if (event->button() == Qt::RightButton)
-    {
-      show_color_change_menu(temp_plot, true);
-    }
-    else
-    {
-      set_graph_interaction_axis(*temp_plot);
-    }
+    show_color_change_menu(plot_clicked, true);
+  }
+  else
+  {
+    set_graph_interaction_axis(*plot_clicked);
   }
 }
 
