@@ -124,23 +124,22 @@ void graph_widget::change_plot_colors(plot * plot, const QString & color)
   custom_plot->replot();
 }
 
-bool graph_widget::eventFilter(QObject * o, QEvent * e)
+bool graph_widget::eventFilter(QObject * object, QEvent * e)
 {
-  for (auto plot : all_plots)
+  if (e->type() == QEvent::MouseButtonPress)
   {
-    if (o == plot->display)
+    QMouseEvent * event = static_cast<QMouseEvent *>(e);
+    for (auto plot : all_plots)
     {
-      QMouseEvent * event = static_cast<QMouseEvent*>(e);
-      if (e->type() == QEvent::MouseButtonPress &&
-        event->button() == Qt::RightButton)
+      if (object != plot->display) { continue; }
+      if (event->button() == Qt::RightButton)
       {
         show_color_change_menu(plot, false);
         return true;
       }
-      return false;
     }
   }
-  return QWidget::eventFilter(o, e);
+  return QWidget::eventFilter(object, e);
 }
 
 void graph_widget::show_color_change_menu(plot * plot, bool with_title)
