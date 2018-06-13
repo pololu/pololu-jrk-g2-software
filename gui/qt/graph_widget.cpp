@@ -241,6 +241,7 @@ void graph_widget::set_plot_color(plot * plot)
   color_dialog->setWindowFlags(Qt::Popup);
   color_dialog->setOption(QColorDialog::DontUseNativeDialog);
   color_dialog->move(QCursor::pos());
+  color_dialog->setAttribute(Qt::WA_DeleteOnClose);
   color_dialog->open();
 
   connect(color_dialog, &QColorDialog::currentColorChanged,
