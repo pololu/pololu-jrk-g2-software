@@ -263,10 +263,12 @@ protected:
   // the user wants to close the window.
   void closeEvent(QCloseEvent *) override;
 
+  bool eventFilter(QObject *, QEvent *) override;
+
 private slots:
   void on_update_timer_timeout();
   void restore_graph_preview();
-  void preview_pane_clicked();
+  void open_graph_window();
   void on_device_name_value_linkActivated();
   void on_documentation_action_triggered();
   void on_about_action_triggered();

@@ -63,6 +63,9 @@ public:
 
   QCustomPlot * custom_plot;
   QGridLayout * plot_visible_layout;
+
+  bool preview_mode = true;
+
   QMenuBar * setup_menu_bar();
 
   void set_preview_mode(bool preview_mode);
@@ -120,7 +123,6 @@ private:
   uint32_t current_time;
 
   int row = 1;
-  bool in_preview = false; // used to store local copy of preview_mode
   bool graph_paused = false;
   bool dark_theme = false;
 

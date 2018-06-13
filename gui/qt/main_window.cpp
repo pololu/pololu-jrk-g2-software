@@ -1158,6 +1158,17 @@ void main_window::closeEvent(QCloseEvent * event)
   }
 }
 
+bool main_window::eventFilter(QObject * object, QEvent * event)
+{
+  if (event->type() == QEvent::MouseButtonPress && object == graph->custom_plot
+    && graph->preview_mode)
+  {
+    open_graph_window();
+    return true;
+  }
+  return QMainWindow::eventFilter(object, event);
+}
+
 void main_window::on_update_timer_timeout()
 {
   controller->update();
@@ -1172,18 +1183,20 @@ void main_window::restore_graph_preview()
   graph_preview_frame->setFrameShape(QFrame::Box);
 }
 
-void main_window::preview_pane_clicked()
+void main_window::open_graph_window()
 {
-  graph_preview_frame_layout->removeWidget(graph);
-  graph_preview_frame->setFrameShape(QFrame::NoFrame);
-  if (graph_window == 0)
+  if (graph_window == NULL)
   {
     graph_window = new ::graph_window(this);
-    connect(graph_window, SIGNAL(pass_widget()), this,
-    SLOT(restore_graph_preview()));
+    connect(graph_window, &::graph_window::pass_widget,
+      this, &main_window::restore_graph_preview);
   }
-
-  graph_window->receive_widget(graph);
+  if (graph->preview_mode)
+  {
+    graph_preview_frame_layout->removeWidget(graph);
+    graph_preview_frame->setFrameShape(QFrame::NoFrame);
+    graph_window->receive_widget(graph);
+  }
   graph_window->raise_window();
 }
 
@@ -2032,7 +2045,7 @@ void main_window::setup_menu_bar()
   graph_action->setObjectName("graph_action");
   graph_action->setText(tr("&Graph"));
   graph_action->setShortcut(Qt::CTRL + Qt::Key_G);
-  connect(graph_action, SIGNAL(triggered()), this, SLOT(preview_pane_clicked()));
+  connect(graph_action, &QAction::triggered, this, &main_window::open_graph_window);
 
   documentation_action = new QAction(this);
   documentation_action->setObjectName("documentation_action");
@@ -2127,6 +2140,7 @@ QWidget * main_window::setup_graph()
   graph = new graph_widget();
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
+  graph->custom_plot->installEventFilter(this);
 
   graph_preview_frame = new QFrame();
   graph_preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
@@ -2135,9 +2149,6 @@ QWidget * main_window::setup_graph()
   graph_preview_frame_layout = new QHBoxLayout();
   graph_preview_frame_layout->setContentsMargins(0, 0, 0, 0);
   graph_preview_frame_layout->addWidget(graph->custom_plot, 1);
-
-  connect(graph->custom_plot, SIGNAL(mousePress(QMouseEvent*)), this,
-    SLOT(preview_pane_clicked()));
 
   graph_preview_frame->setLayout(graph_preview_frame_layout);
 

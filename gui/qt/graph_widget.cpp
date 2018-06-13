@@ -22,7 +22,7 @@ graph_widget::graph_widget(QWidget * parent)
 // Changes options for the custom_plot when in preview mode.
 void graph_widget::set_preview_mode(bool preview_mode)
 {
-  in_preview = preview_mode;
+  this->preview_mode = preview_mode;
 
   if (preview_mode)
   {
@@ -1023,8 +1023,6 @@ void graph_widget::on_reset_all_button_clicked()
 // Receives a click event from Qt and figures out which plot to select, if any.
 void graph_widget::mouse_press(QMouseEvent * event)
 {
-  if (in_preview) { return; }
-
   reset_graph_interaction_axes();
 
   plot * plot_clicked = NULL;
