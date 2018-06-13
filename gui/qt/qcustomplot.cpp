@@ -17889,6 +17889,12 @@ void QCPAxisRect::mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos)
 */
 void QCPAxisRect::wheelEvent(QWheelEvent *event)
 {
+  // Don't allow the mouse wheel to zoom while the user is dragging.
+  // This line was added by Pololu because the mouse wheel action doesn't
+  // really work while an axis is being dragged: the effect of the mouse wheel
+  // gets if the user continues dragging after using it.
+  if (mDragging) { return; }
+
   // Mouse range zooming interaction:
   if (mParentPlot->interactions().testFlag(QCP::iRangeZoom))
   {
