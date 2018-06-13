@@ -632,11 +632,13 @@ void graph_widget::set_graph_interaction_axis(const plot & plot)
 
   plot.axis_label->setFont(y_label_font);
 
-  // Move the axis label in front of the other axis labels.
-  plot.axis_label->setLayer(plot.axis_label->layer());
-
   plot.axis_position_label->setVisible(true);
   plot.axis_scale_label->setVisible(true);
+
+  // Move these items in front of other items.
+  plot.axis_label->setLayer(plot.axis_label->layer());
+  plot.axis_position_label->setLayer(plot.axis_position_label->layer());
+  plot.axis_scale_label->setLayer(plot.axis_scale_label->layer());
 
   for (auto label : plot.overflow_arrows)
   {
