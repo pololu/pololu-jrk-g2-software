@@ -328,8 +328,10 @@ void graph_widget::setup_ui()
   setup_plot(target, "target", "Target",
     "#0000ff", "#ff6037", 4095, true);
 
+  // The original Jrk software used #ffc0cb for feedback, but that is kind of
+  // hard to see when we use it as a text color.
   setup_plot(feedback, "feedback", "Feedback",
-    "#ff0077", "#ffcc33", 4095);
+    "#ff00aa", "#ffcc33", 4095);
 
   setup_plot(scaled_feedback, "scaled_feedback", "Scaled feedback",
     "#ff0000", "#ccff00", 4095, true);
@@ -340,8 +342,8 @@ void graph_widget::setup_ui()
   setup_plot(integral, "integral", "Integral",
     "#ff8c00", "#ff6eff", 0x7fff);
 
-  setup_plot(duty_cycle_target, "duty_cycle_target",
-    "Duty cycle target", "#32cd32", "#fd5b78", 600);
+  setup_plot(duty_cycle_target, "duty_cycle_target", "Duty cycle target",
+    "#32cd32", "#fd5b78", 600);
 
   setup_plot(duty_cycle, "duty_cycle", "Duty cycle",
     "#006400", "#ff9933", 600);
@@ -353,7 +355,7 @@ void graph_widget::setup_ui()
     "#b8860b", "#66ff66", 100000);
 
   setup_plot(current_chopping, "current_chopping",
-    "Current chopping", "#e900ff", "#50bfe6", 1);
+    "Current chopping", "#d500ff", "#50bfe6", 1);
 
   QFrame * division_frame = new QFrame();
   division_frame->setFrameShadow(QFrame::Plain);
