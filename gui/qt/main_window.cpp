@@ -66,7 +66,7 @@ main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
 {
   setup_ui();
-  popout_graph_window = 0;
+  graph_window = 0;
 }
 
 void main_window::set_controller(main_controller * controller)
@@ -1153,7 +1153,9 @@ void main_window::closeEvent(QCloseEvent * event)
     event->ignore();
   }
   else
+  {
     qApp->quit();
+  }
 }
 
 void main_window::on_update_timer_timeout()
@@ -1166,23 +1168,23 @@ void main_window::restore_graph_preview()
 {
   graph->set_preview_mode(true);
 
-  horizontal_layout->addWidget(graph->custom_plot, 1);
-  preview_frame->setFrameShape(QFrame::Box);
+  graph_preview_frame_layout->addWidget(graph->custom_plot, 1);
+  graph_preview_frame->setFrameShape(QFrame::Box);
 }
 
 void main_window::preview_pane_clicked()
 {
-  horizontal_layout->removeWidget(graph);
-  preview_frame->setFrameShape(QFrame::NoFrame);
-  if(popout_graph_window == 0)
+  graph_preview_frame_layout->removeWidget(graph);
+  graph_preview_frame->setFrameShape(QFrame::NoFrame);
+  if (graph_window == 0)
   {
-    popout_graph_window = new graph_window(this);
-    connect(popout_graph_window, SIGNAL(pass_widget()), this,
+    graph_window = new ::graph_window(this);
+    connect(graph_window, SIGNAL(pass_widget()), this,
     SLOT(restore_graph_preview()));
   }
 
-  popout_graph_window->receive_widget(graph);
-  popout_graph_window->raise_window();
+  graph_window->receive_widget(graph);
+  graph_window->raise_window();
 }
 
 void main_window::on_device_name_value_linkActivated()
@@ -2126,19 +2128,20 @@ QWidget * main_window::setup_graph()
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
 
-  preview_frame = new QFrame();
-  preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
-  preview_frame->setLineWidth(1);
+  graph_preview_frame = new QFrame();
+  graph_preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
+  graph_preview_frame->setLineWidth(1);
 
-  horizontal_layout = new QHBoxLayout();
-  horizontal_layout->addWidget(graph->custom_plot, 1);
+  graph_preview_frame_layout = new QHBoxLayout();
+  //graph_preview_frame_layout->setContentsMargins(0, 0, 0, 0);
+  graph_preview_frame_layout->addWidget(graph->custom_plot, 1);
 
   connect(graph->custom_plot, SIGNAL(mousePress(QMouseEvent*)), this,
     SLOT(preview_pane_clicked()));
 
-  preview_frame->setLayout(horizontal_layout);
+  graph_preview_frame->setLayout(graph_preview_frame_layout);
 
-  return preview_frame;
+  return graph_preview_frame;
 }
 
 QWidget * main_window::setup_variables_box()

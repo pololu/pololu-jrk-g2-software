@@ -410,12 +410,12 @@ private:
 
   QTimer *update_timer = NULL;
 
-  QWidget *central_widget;
-  QVBoxLayout *main_window_layout;
-  QHBoxLayout *horizontal_layout;
-  graph_widget *graph;
-  graph_window *popout_graph_window;
-  QFrame * preview_frame;
+  QWidget * central_widget;
+  QVBoxLayout * main_window_layout;
+  graph_widget * graph;
+  graph_window * graph_window;
+  QFrame * graph_preview_frame;
+  QHBoxLayout * graph_preview_frame_layout;
 
   QMenuBar * menu_bar;
   QMenu * file_menu;
