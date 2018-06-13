@@ -236,7 +236,8 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
 
 void graph_widget::set_plot_color(plot * plot)
 {
-  QColorDialog * color_dialog = new QColorDialog(plot->graph->pen().color());
+  QColorDialog * color_dialog = new QColorDialog(this);
+  color_dialog->setCurrentColor(plot->graph->pen().color());
   color_dialog->setWindowFlags(Qt::Popup);
   color_dialog->setOption(QColorDialog::DontUseNativeDialog);
   color_dialog->move(QCursor::pos());
