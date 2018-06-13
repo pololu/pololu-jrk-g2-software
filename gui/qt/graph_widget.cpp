@@ -28,7 +28,7 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     reset_graph_interaction_axes();
 
-    custom_plot->axisRect()->setMargins(QMargins(40, 10, 10, 10));
+    custom_plot->axisRect()->setMargins(QMargins(40, 15, 15, 15));
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click to open graph window");
   }
@@ -47,6 +47,9 @@ void graph_widget::set_preview_mode(bool preview_mode)
       update_plot_text_and_arrows(*plot);
     }
   }
+
+  custom_plot->xAxis->setTickLabels(!preview_mode);
+  custom_plot->xAxis->setLabel(preview_mode ? "" : "Time (ms)");
 
   custom_plot->replot();
 }
@@ -393,7 +396,6 @@ void graph_widget::setup_ui()
 
   custom_plot->yAxis->setRange(-50, 50);
   custom_plot->xAxis->setTickLabelPadding(10);
-  custom_plot->xAxis->setLabel("Time (ms)");
   custom_plot->xAxis->setLabelPadding(2);
 
   // Uncomment this line if you want to see "real" time scrolling by on the
