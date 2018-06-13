@@ -632,6 +632,9 @@ void graph_widget::set_graph_interaction_axis(const plot & plot)
 
   plot.axis_label->setFont(y_label_font);
 
+  // Move the axis label in front of the other axis labels.
+  plot.axis_label->setLayer(plot.axis_label->layer());
+
   plot.axis_position_label->setVisible(true);
   plot.axis_scale_label->setVisible(true);
 
