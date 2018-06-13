@@ -28,13 +28,13 @@ void graph_widget::set_preview_mode(bool preview_mode)
   {
     reset_graph_interaction_axes();
 
-    custom_plot->axisRect()->setMargins(QMargins(50, 50, 50, 50));
+    custom_plot->axisRect()->setMargins(QMargins(40, 10, 10, 10));
     custom_plot->setCursor(Qt::PointingHandCursor);
     custom_plot->setToolTip("Click to open graph window");
   }
   else
   {
-    custom_plot->axisRect()->setMargins(QMargins(55, 50, 50, 50));
+    custom_plot->axisRect()->setMargins(QMargins(55, 50, 20, 50));
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
   }

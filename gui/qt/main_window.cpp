@@ -2133,7 +2133,7 @@ QWidget * main_window::setup_graph()
   graph_preview_frame->setLineWidth(1);
 
   graph_preview_frame_layout = new QHBoxLayout();
-  //graph_preview_frame_layout->setContentsMargins(0, 0, 0, 0);
+  graph_preview_frame_layout->setContentsMargins(0, 0, 0, 0);
   graph_preview_frame_layout->addWidget(graph->custom_plot, 1);
 
   connect(graph->custom_plot, SIGNAL(mousePress(QMouseEvent*)), this,
