@@ -238,17 +238,14 @@ void graph_widget::set_plot_color(plot * plot)
 {
   QColorDialog * color_dialog = new QColorDialog(this);
   color_dialog->setCurrentColor(plot->graph->pen().color());
-  color_dialog->setWindowFlags(Qt::Popup);
   color_dialog->setOption(QColorDialog::DontUseNativeDialog);
   color_dialog->move(QCursor::pos());
   color_dialog->setAttribute(Qt::WA_DeleteOnClose);
-  color_dialog->open();
 
   connect(color_dialog, &QColorDialog::currentColorChanged,
     [=](const QColor& color)
   {
     QString selected_color = color.name(QColor::HexArgb);
-
     change_plot_colors(plot, selected_color);
   });
 
@@ -256,7 +253,6 @@ void graph_widget::set_plot_color(plot * plot)
     [=](const QColor& color)
   {
     QString selected_color = color.name(QColor::HexArgb);
-
     if (!dark_theme)
     {
       plot->default_changed = true;
@@ -280,6 +276,8 @@ void graph_widget::set_plot_color(plot * plot)
       change_plot_colors(plot, plot->dark_color);
     }
   });
+
+  color_dialog->show();
 }
 
 void graph_widget::setup_ui()
