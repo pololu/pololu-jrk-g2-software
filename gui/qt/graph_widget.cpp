@@ -681,7 +681,7 @@ void graph_widget::update_plot_text_and_arrows(const plot & plot)
   {
     plot.axis_label->setRotation(90);
     plot.axis_label->setPositionAlignment(Qt::AlignTop | Qt::AlignHCenter);
-    plot.axis_label->setPadding(QMargins(6, 6, 6, 6));
+    plot.axis_label->setPadding(QMargins(6, 0, 6, 0));
     plot.axis_label->position->setCoords(0, plot.axis->range().lower);
 
     plot.axis_scale_label->setPositionAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -693,7 +693,7 @@ void graph_widget::update_plot_text_and_arrows(const plot & plot)
   {
     plot.axis_label->setRotation(270);
     plot.axis_label->setPositionAlignment(Qt::AlignBottom | Qt::AlignHCenter);
-    plot.axis_label->setPadding(QMargins(6, 6, 6, 6));
+    plot.axis_label->setPadding(QMargins(6, 0, 6, 0));
     plot.axis_label->position->setCoords(0, plot.axis->range().upper);
 
     plot.axis_scale_label->setPositionAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -705,7 +705,7 @@ void graph_widget::update_plot_text_and_arrows(const plot & plot)
   {
     plot.axis_label->setRotation(0);
     plot.axis_label->setPositionAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    plot.axis_label->setPadding(QMargins(10, 10, 10, 10));
+    plot.axis_label->setPadding(QMargins(10, -5, 10, -5));
     plot.axis_label->position->setCoords(0, 0);
 
     plot.axis_scale_label->setPositionAlignment(Qt::AlignHCenter | Qt::AlignTop);
