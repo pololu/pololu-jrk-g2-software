@@ -13,7 +13,7 @@ public:
   graph_window(QWidget * parent = 0);
 
 private:
-  graph_widget * grabbed_widget;
+  graph_widget * widget;
   QGridLayout * central_layout;
 
   void setup_ui();

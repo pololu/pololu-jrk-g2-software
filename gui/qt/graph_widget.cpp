@@ -8,7 +8,7 @@
 
 #include <assert.h>
 
-graph_widget::graph_widget(QWidget * parent)
+graph_widget::graph_widget()
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
   QString family = QFontDatabase::applicationFontFamilies(id).at(0);
@@ -144,7 +144,7 @@ bool graph_widget::eventFilter(QObject * object, QEvent * e)
       }
     }
   }
-  return QWidget::eventFilter(object, e);
+  return QObject::eventFilter(object, e);
 }
 
 void graph_widget::show_plot_menu(plot * plot, bool with_title)
@@ -206,7 +206,7 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
 
 void graph_widget::pick_plot_color(plot * plot)
 {
-  QColorDialog * color_dialog = new QColorDialog(this);
+  QColorDialog * color_dialog = new QColorDialog(custom_plot);
   color_dialog->setCurrentColor(plot->graph->pen().color());
   color_dialog->setOption(QColorDialog::DontUseNativeDialog);
   color_dialog->move(QCursor::pos());
@@ -252,7 +252,7 @@ void graph_widget::pick_plot_color(plot * plot)
 
 void graph_widget::setup_ui()
 {
-  pause_run_button = new QPushButton(this);
+  pause_run_button = new QPushButton();
   pause_run_button->setObjectName("pause_run_button");
   pause_run_button->setText(tr("&Pause"));
   pause_run_button->setMinimumSize(pause_run_button->sizeHint());
@@ -804,7 +804,7 @@ QCPItemText * graph_widget::axis_arrow(const plot & plot, double degrees)
 
 void graph_widget::save_settings()
 {
-  QString filename = QFileDialog::getSaveFileName(this,
+  QString filename = QFileDialog::getSaveFileName(custom_plot,
     "Save Graph Settings", "jrk_graph_settings.txt", "Text files (*.txt)");
 
   if (filename.isEmpty()) { return; }
@@ -835,7 +835,7 @@ void graph_widget::load_settings()
 {
   QStringList all_plots_settings;
 
-  QString filename = QFileDialog::getOpenFileName(this,
+  QString filename = QFileDialog::getOpenFileName(custom_plot,
     "Load Graph Settings", "", "Text files (*.txt)");
 
   if (filename.isEmpty()) { return; }

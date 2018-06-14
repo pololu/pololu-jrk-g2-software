@@ -1193,7 +1193,6 @@ void main_window::open_graph_window()
   }
   if (graph->preview_mode)
   {
-    graph_preview_frame_layout->removeWidget(graph);
     graph_preview_frame->setFrameShape(QFrame::NoFrame);
     graph_window->receive_widget(graph);
   }

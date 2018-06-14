@@ -14,12 +14,13 @@
 
 class dynamic_decimal_spin_box;
 
-class graph_widget : public QWidget
+class graph_widget : public QObject
 {
   Q_OBJECT
 
 public:
-  graph_widget(QWidget * parent = 0);
+
+  graph_widget();
 
   // The maximum time span that can be displayed, in milliseconds.
   const int max_domain_ms = 90000;

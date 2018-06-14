@@ -20,32 +20,29 @@ void graph_window::setup_ui()
 
 void graph_window::closeEvent(QCloseEvent * event)
 {
-  central_layout->removeWidget(grabbed_widget);
-
   emit pass_widget();
-
   QWidget::closeEvent(event);
 }
 
 void graph_window::receive_widget(graph_widget * widget)
 {
-  grabbed_widget = widget;
+  this->widget = widget;
 
-  grabbed_widget->set_preview_mode(false);
+  widget->set_preview_mode(false);
 
-  grabbed_widget->controls_layout->setParent(0);
+  widget->controls_layout->setParent(0);
 
-  central_layout->addWidget(grabbed_widget->custom_plot, 0, 0);
-  central_layout->addLayout(grabbed_widget->controls_layout,
+  central_layout->addWidget(widget->custom_plot, 0, 0);
+  central_layout->addLayout(widget->controls_layout,
     0, 1, Qt::AlignTop | Qt::AlignRight);
 
   central_layout->setColumnMinimumWidth(0,
-    grabbed_widget->controls_layout->sizeHint().height());
+    widget->controls_layout->sizeHint().height());
 
   central_layout->setColumnStretch(0, 1);
   central_layout->setRowStretch(0, 1);
 
-  central_layout->setMenuBar(grabbed_widget->setup_menu_bar());
+  central_layout->setMenuBar(widget->setup_menu_bar());
 }
 
 // Shows the window and directs focus to it.
