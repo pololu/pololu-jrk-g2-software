@@ -3,6 +3,7 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QFontDatabase>
+#include <QGuiApplication>
 #include <QMessageBox>
 #include <QWidgetAction>
 
@@ -579,9 +580,12 @@ void graph_widget::update_x_axis()
 }
 
 // Removes old data that we will not need to display later so that the graph
-// doesn't consume too much memory.
-// Note: We are not doing anything to handle the uint32_t overflow
-// of our time variable.
+// does not consume too much memory.
+//
+// Note: We are not doing anything to handle overflow of the uint32_t
+// time variable, so all data will disappear from the graph every
+// 49 days if you can keep your Jrk running that long.
+// (Add `time -= 30000;` in plot_data() to simulate this.)
 void graph_widget::remove_old_data()
 {
   double oldest_displayable_time = (double)display_time - max_domain_ms - 1000;
@@ -1022,6 +1026,9 @@ void graph_widget::reset_all_ranges()
 
 // Receives a click event from Qt and figures out which plot to select, if any.
 //
+// If shift is being pressed, don't do anything, so that the user can drag a
+// selected axis easily without risking deselecting it when they start dragging.
+//
 // Note: We use "distance <= click_distance" below so that if two axis arrows
 // are exactly on top of each other, the click will choose the one that
 // has a later index (i.e. is lower on the list of plots).  That's a good
@@ -1030,6 +1037,8 @@ void graph_widget::reset_all_ranges()
 // Z ordering, this falls apart.
 void graph_widget::mouse_press(QMouseEvent * event)
 {
+  if (QGuiApplication::keyboardModifiers() & Qt::ShiftModifier) { return; }
+
   reset_graph_interaction_axes();
 
   plot * plot_clicked = NULL;
