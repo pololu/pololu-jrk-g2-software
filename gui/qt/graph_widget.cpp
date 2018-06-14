@@ -1073,6 +1073,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
   {
     set_graph_interaction_axis(*plot_clicked);
   }
+  custom_plot->replot();
 }
 
 void dynamic_decimal_spin_box::stepBy(int steps)
