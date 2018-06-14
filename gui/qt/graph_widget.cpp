@@ -156,31 +156,11 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
   QAction * change_color_action = new QAction(this);
   change_color_action->setText("Change color");
 
-  // TODO: remove all the logic for enabling reset command here.
-  // It seems inconsistent to care about the enable state of
-  // the reset colors commands so much when we don't care about the enable
-  // state of the "Reset all" (positions and scales) command.
-
   QAction * reset_color_action = new QAction(this);
   reset_color_action->setText("Reset color");
-  reset_color_action->setEnabled((dark_theme && plot->dark_changed)
-    || (!dark_theme && plot->default_changed));
 
   QAction * reset_range_action = new QAction(this);
   reset_range_action->setText("Reset position and scale");
-
-  bool some_plot_color_changed = false;
-
-  for (auto plot : all_plots)
-  {
-    some_plot_color_changed = (some_plot_color_changed
-      || plot->default_changed
-      || plot->dark_changed);
-  }
-
-  QAction * reset_all_colors_action = new QAction(this);
-  reset_all_colors_action->setText("Reset all colors");
-  reset_all_colors_action->setEnabled(some_plot_color_changed);
 
   if (with_title)
   {
@@ -195,8 +175,6 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
   menu->addAction(change_color_action);
   menu->addAction(reset_color_action);
   menu->addAction(reset_range_action);
-  menu->addSeparator();
-  menu->addAction(reset_all_colors_action);
 
   connect(change_color_action, &QAction::triggered, [=]()
   {
@@ -221,36 +199,6 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
   {
     reset_plot_range(*plot);
     custom_plot->replot();
-  });
-
-  connect(reset_all_colors_action, &QAction::triggered, [=]()
-  {
-    QMessageBox mbox(QMessageBox::Question, "",
-      QString::fromStdString("Reset all colors to default?"),
-      QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
-
-    mbox.setWindowFlags(Qt::Popup);  // TODO: remove
-    mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
-
-    if (mbox.exec() == QMessageBox::Ok)
-    {
-      for (auto plot : all_plots)
-      {
-        plot->default_color = plot->original_default_color;
-        plot->default_changed = false;
-        plot->dark_color = plot->original_dark_color;
-        plot->dark_changed = false;
-
-        if (dark_theme)
-        {
-          change_plot_colors(plot, plot->dark_color);
-        }
-        else
-        {
-          change_plot_colors(plot, plot->default_color);
-        }
-      }
-    }
   });
 
   menu->popup(QCursor::pos());
@@ -428,15 +376,17 @@ void graph_widget::setup_ui()
 
 QMenuBar * graph_widget::setup_menu_bar()
 {
+  if (menu_bar) { return menu_bar; }
+
   menu_bar = new QMenuBar();
 
-  options_menu = menu_bar->addMenu(tr("&Options"));
+  QMenu * options_menu = menu_bar->addMenu(tr("&Options"));
 
-  save_settings_action = new QAction(this);
+  QAction * save_settings_action = new QAction(this);
   save_settings_action->setText("Save graph settings...");
   save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
-  load_settings_action = new QAction(this);
+  QAction * load_settings_action = new QAction(this);
   load_settings_action->setText("Load graph settings...");
   load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
 
@@ -447,6 +397,9 @@ QMenuBar * graph_widget::setup_menu_bar()
   default_theme_action->setText(tr("&Use default theme"));
   default_theme_action->setVisible(false);
 
+  QAction * reset_all_colors_action = new QAction(this);
+  reset_all_colors_action->setText("Reset all &colors");
+
   QAction * reset_all_ranges_action = new QAction(this);
   reset_all_ranges_action->setText("&Reset all positions and scales");
 
@@ -455,6 +408,7 @@ QMenuBar * graph_widget::setup_menu_bar()
   options_menu->addSeparator();
   options_menu->addAction(default_theme_action);
   options_menu->addAction(dark_theme_action);
+  options_menu->addAction(reset_all_colors_action);
   options_menu->addAction(reset_all_ranges_action);
 
   connect(save_settings_action, &QAction::triggered, this,
@@ -468,6 +422,9 @@ QMenuBar * graph_widget::setup_menu_bar()
 
   connect(default_theme_action, &QAction::triggered, this,
     &graph_widget::switch_to_default);
+
+  connect(reset_all_colors_action, &QAction::triggered, this,
+    &graph_widget::reset_all_colors);
 
   connect(reset_all_ranges_action, &QAction::triggered, this,
     &graph_widget::reset_all_ranges);
@@ -1020,22 +977,47 @@ void graph_widget::show_all_none_clicked()
   set_line_visible();
 }
 
+void graph_widget::reset_all_colors()
+{
+  QMessageBox mbox(QMessageBox::Question, "Reset all colors",
+    QString::fromStdString("Reset all colors to default?"),
+    QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
+
+  if (mbox.exec() != QMessageBox::Ok) { return; }
+
+  for (auto plot : all_plots)
+  {
+    plot->default_color = plot->original_default_color;
+    plot->default_changed = false;
+    plot->dark_color = plot->original_dark_color;
+    plot->dark_changed = false;
+
+    if (dark_theme)
+    {
+      change_plot_colors(plot, plot->dark_color);
+    }
+    else
+    {
+      change_plot_colors(plot, plot->default_color);
+    }
+  }
+}
+
 // Resets all position and scale values to default.
 void graph_widget::reset_all_ranges()
 {
-  QMessageBox mbox(QMessageBox::Question, "Reset all",
+  QMessageBox mbox(QMessageBox::Question, "Reset all positions",
     "Reset all positions and scales?",
     QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
 
-  if (mbox.exec() == QMessageBox::Ok)
+  if (mbox.exec() != QMessageBox::Ok) { return; }
+
+  for (auto plot : all_plots)
   {
-    for (auto plot : all_plots)
-    {
-      reset_plot_range(*plot);
-    }
-    reset_graph_interaction_axes();
-    custom_plot->replot();
+    reset_plot_range(*plot);
   }
+  reset_graph_interaction_axes();
+  custom_plot->replot();
 }
 
 // Receives a click event from Qt and figures out which plot to select, if any.

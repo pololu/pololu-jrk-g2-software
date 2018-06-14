@@ -85,9 +85,6 @@ private:
   void setup_ui();
 
   QMenuBar * menu_bar;
-  QMenu * options_menu;
-  QAction * save_settings_action;
-  QAction * load_settings_action;
   QAction * dark_theme_action;
   QAction * default_theme_action;
 
@@ -138,6 +135,7 @@ private slots:
   void on_pause_run_button_clicked();
   void set_line_visible();
   void show_all_none_clicked();
+  void reset_all_colors();
   void reset_all_ranges();
   void mouse_press(QMouseEvent *);
 };
