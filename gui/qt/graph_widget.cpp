@@ -467,14 +467,10 @@ void graph_widget::setup_plot(plot & plot,
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
   plot.scale->setValue(scale / 5.0);
-  plot.scale->setMinimumWidth(plot.scale->minimumSizeHint().width());
 
   plot.position = new dynamic_decimal_spinbox();
-  plot.position->setMinimumWidth(plot.position->minimumSizeHint().width());
-
   plot.position->setAccelerated(true);
   plot.position->setRange(-1000000, 1000000);
-
   plot.position->setValue(0);
 
   plot.display = new QCheckBox();
@@ -1077,18 +1073,9 @@ void graph_widget::mouse_press(QMouseEvent * event)
   }
 }
 
-QSize dynamic_decimal_spinbox::minimumSizeHint() const
-{
-  const QFontMetrics fm = fontMetrics();
-  const int width = fm.width("00000000000000");
-  const int height = fm.height();
-  return QSize(width, height);
-}
-
 void dynamic_decimal_spinbox::stepBy(int step_value)
 {
   double single_step = calculate_decimal_step(step_value);
-
   setValue(value() + (single_step * step_value));
   selectAll();
 }

@@ -152,8 +152,6 @@ public:
   explicit dynamic_decimal_spinbox(QWidget * parent = 0) :
     QDoubleSpinBox(parent) {}
 
-  QSize minimumSizeHint() const;
-
 protected:
   virtual void stepBy(int step_value);
   QString textFromValue(double value) const;
