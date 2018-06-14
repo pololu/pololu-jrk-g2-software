@@ -133,10 +133,13 @@ bool graph_widget::eventFilter(QObject * object, QEvent * e)
     QMouseEvent * event = static_cast<QMouseEvent *>(e);
     for (auto plot : all_plots)
     {
-      if (object != plot->display) { continue; }
+      if (object != plot->display)
+      {
+        continue;
+      }
       if (event->button() == Qt::RightButton)
       {
-        show_color_change_menu(plot, false);
+        show_plot_menu(plot, false);
         return true;
       }
     }
@@ -144,19 +147,27 @@ bool graph_widget::eventFilter(QObject * object, QEvent * e)
   return QWidget::eventFilter(object, e);
 }
 
-void graph_widget::show_color_change_menu(plot * plot, bool with_title)
+void graph_widget::show_plot_menu(plot * plot, bool with_title)
 {
   plot->display->setCheckState(Qt::Checked);
 
-  QMenu * color_change_menu = new QMenu();
+  QMenu * menu = new QMenu();
 
-  QAction * change_action = new QAction(this);
-  change_action->setText("Change color");
+  QAction * change_color_action = new QAction(this);
+  change_color_action->setText("Change color");
 
-  QAction * reset_action = new QAction(this);
-  reset_action->setText("Reset color");
-  reset_action->setEnabled((dark_theme && plot->dark_changed)
+  // TODO: remove all the logic for enabling reset command here.
+  // It seems inconsistent to care about the enable state of
+  // the reset colors commands so much when we don't care about the enable
+  // state of the "Reset all" (positions and scales) command.
+
+  QAction * reset_color_action = new QAction(this);
+  reset_color_action->setText("Reset color");
+  reset_color_action->setEnabled((dark_theme && plot->dark_changed)
     || (!dark_theme && plot->default_changed));
+
+  QAction * reset_range_action = new QAction(this);
+  reset_range_action->setText("Reset position and scale");
 
   bool some_plot_color_changed = false;
 
@@ -167,31 +178,32 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
       || plot->dark_changed);
   }
 
-  QAction * reset_all_action = new QAction(this);
-  reset_all_action->setText("Reset all colors");
-  reset_all_action->setEnabled(some_plot_color_changed);
+  QAction * reset_all_colors_action = new QAction(this);
+  reset_all_colors_action->setText("Reset all colors");
+  reset_all_colors_action->setEnabled(some_plot_color_changed);
 
   if (with_title)
   {
     QLabel * label = new QLabel(plot->display->text());
     label->setContentsMargins(10, 5, 0, 5);
-    QWidgetAction * menu_title = new QWidgetAction(color_change_menu);
+    QWidgetAction * menu_title = new QWidgetAction(menu);
     menu_title->setDefaultWidget(label);
-    color_change_menu->addAction(menu_title);
-    color_change_menu->addSeparator();
+    menu->addAction(menu_title);
+    menu->addSeparator();
   }
 
-  color_change_menu->addAction(change_action);
-  color_change_menu->addAction(reset_action);
-  color_change_menu->addSeparator();
-  color_change_menu->addAction(reset_all_action);
+  menu->addAction(change_color_action);
+  menu->addAction(reset_color_action);
+  menu->addAction(reset_range_action);
+  menu->addSeparator();
+  menu->addAction(reset_all_colors_action);
 
-  connect(change_action, &QAction::triggered, [=]()
+  connect(change_color_action, &QAction::triggered, [=]()
   {
-    set_plot_color(plot);
+    pick_plot_color(plot);
   });
 
-  connect(reset_action, &QAction::triggered, [=]()
+  connect(reset_color_action, &QAction::triggered, [=]()
   {
     if (dark_theme)
     {
@@ -205,13 +217,19 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
     }
   });
 
-  connect(reset_all_action, &QAction::triggered, [=]()
+  connect(reset_range_action, &QAction::triggered, [=]
+  {
+    reset_plot_range(*plot);
+    custom_plot->replot();
+  });
+
+  connect(reset_all_colors_action, &QAction::triggered, [=]()
   {
     QMessageBox mbox(QMessageBox::Question, "",
       QString::fromStdString("Reset all colors to default?"),
       QMessageBox::Ok | QMessageBox::Cancel, custom_plot);
 
-    mbox.setWindowFlags(Qt::Popup);
+    mbox.setWindowFlags(Qt::Popup);  // TODO: remove
     mbox.setStyleSheet("QMessageBox{border: 1px solid black;}");
 
     if (mbox.exec() == QMessageBox::Ok)
@@ -235,10 +253,10 @@ void graph_widget::show_color_change_menu(plot * plot, bool with_title)
     }
   });
 
-  color_change_menu->popup(QCursor::pos());
+  menu->popup(QCursor::pos());
 }
 
-void graph_widget::set_plot_color(plot * plot)
+void graph_widget::pick_plot_color(plot * plot)
 {
   QColorDialog * color_dialog = new QColorDialog(this);
   color_dialog->setCurrentColor(plot->graph->pen().color());
@@ -457,10 +475,11 @@ QMenuBar * graph_widget::setup_menu_bar()
 void graph_widget::setup_plot(plot & plot,
   const QString & id_string, const QString & display_text,
   const QString & default_color, const QString & dark_color,
-  double scale, bool default_visible)
+  int typical_max_value, bool default_visible)
 {
   plot.index = all_plots.size();
   plot.id_string = id_string;
+  plot.default_scale = typical_max_value / 5.0;
 
   plot.original_default_color = plot.default_color = default_color;
   plot.original_dark_color = plot.dark_color = dark_color;
@@ -468,7 +487,7 @@ void graph_widget::setup_plot(plot & plot,
   plot.scale = new dynamic_decimal_spin_box();
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
-  plot.scale->setValue(scale / 5.0);
+  plot.scale->setValue(plot.default_scale);
 
   plot.position = new QDoubleSpinBox();
   plot.position->setAccelerated(true);
@@ -479,19 +498,14 @@ void graph_widget::setup_plot(plot & plot,
 
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
-  plot.display->setToolTip("Right-click to change plot color");
+  plot.display->setToolTip("Right-click to change plot options");
   set_checkbox_style(&plot, plot.default_color);
   plot.display->setCheckable(true);
   plot.display->setChecked(default_visible);
   plot.display->installEventFilter(this);
 
-  plot.reset_button = new QPushButton();
-  plot.reset_button->setText(tr("Reset"));
-  plot.reset_button->setStyleSheet("QPushButton{margin: 0px; padding: 3px;}");
-  plot.reset_button->setToolTip("Reset " + display_text + " plot\nposition and scale");
-
   plot.axis = custom_plot->axisRect()->addAxis(QCPAxis::atLeft);
-  plot.axis->setRange(-scale, scale);
+  plot.axis->setRange(-typical_max_value, typical_max_value);
   plot.axis->setVisible(false);
 
   y_label_font.setPixelSize(35);
@@ -538,7 +552,6 @@ void graph_widget::setup_plot(plot & plot,
   plot_visible_layout->addWidget(plot.display, row, 0);
   plot_visible_layout->addWidget(plot.position, row, 1);
   plot_visible_layout->addWidget(plot.scale, row, 2);
-  plot_visible_layout->addWidget(plot.reset_button, row, 3, Qt::AlignCenter);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(QColor(plot.default_color), 1));
@@ -546,11 +559,6 @@ void graph_widget::setup_plot(plot & plot,
   // Briton says StepCenter mode helped with performance issues when dragging
   // the axis range.
   plot.graph->setLineStyle(QCPGraph::lsStepCenter);
-
-  connect(plot.reset_button, &QPushButton::clicked, [=]
-  {
-    plot.axis->setRange(-scale, scale);
-  });
 
   connect(plot.display, &QCheckBox::toggled, [=](bool checked)
   {
@@ -791,6 +799,11 @@ void graph_widget::update_position_step_value(const plot & plot)
   plot.position->setSingleStep(plot.scale->value() / 10);
 }
 
+void graph_widget::reset_plot_range(const plot & plot)
+{
+  plot.axis->setRange(-plot.default_scale * 5.0, plot.default_scale * 5.0);
+}
+
 void graph_widget::set_range(const plot & plot)
 {
   plot.display->setCheckState(Qt::Checked);
@@ -1015,12 +1028,10 @@ void graph_widget::on_reset_all_button_clicked()
   {
     for (auto plot : all_plots)
     {
-      plot->reset_button->click();
+      reset_plot_range(*plot);
     }
-
-    custom_plot->replot();
-
     reset_graph_interaction_axes();
+    custom_plot->replot();
   }
 }
 
@@ -1074,7 +1085,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   if (event->button() == Qt::RightButton)
   {
-    show_color_change_menu(plot_clicked, true);
+    show_plot_menu(plot_clicked, true);
   }
   else
   {

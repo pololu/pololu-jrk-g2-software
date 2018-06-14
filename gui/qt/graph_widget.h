@@ -31,6 +31,7 @@ public:
     QDoubleSpinBox * position;
     dynamic_decimal_spin_box * scale;
     QCheckBox * display;
+    double default_scale;
     QString default_color;
     QString dark_color;
     QString original_default_color;
@@ -40,7 +41,6 @@ public:
     QCPAxis * axis;
     QCPGraph * graph;
     int32_t plot_value = 0;
-    QPushButton * reset_button;
     QCPItemText * axis_label;
     QCPItemText * axis_position_label;
     QCPItemText * axis_scale_label;
@@ -80,8 +80,8 @@ protected:
   bool eventFilter(QObject * o, QEvent * e);
 
 private:
-  void show_color_change_menu(plot *, bool with_title);
-  void set_plot_color(plot *);
+  void show_plot_menu(plot *, bool with_title);
+  void pick_plot_color(plot *);
   void setup_ui();
 
   QMenuBar * menu_bar;
@@ -95,7 +95,7 @@ private:
   void setup_plot(plot &,
     const QString & id_string, const QString & display_text,
     const QString & default_color, const QString & dark_color,
-    double scale, bool default_visible = false);
+    int typical_max_value, bool default_visible = false);
 
   QCPItemText * axis_arrow(const plot &, double degrees);
   QPushButton * pause_run_button;
@@ -110,6 +110,7 @@ private:
   void update_plot_text_and_arrows(const plot &);
   void update_plot_overflow_arrows(const plot &);
   void update_position_step_value(const plot &);
+  void reset_plot_range(const plot &);
   void set_range(const plot &);
   void set_plot_grid_colors(int value);
 
