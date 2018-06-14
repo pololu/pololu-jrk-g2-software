@@ -12,7 +12,7 @@
 #include <QString>
 #include <QWidget>
 
-class dynamic_decimal_spinbox;
+class dynamic_decimal_spin_box;
 
 class graph_widget : public QWidget
 {
@@ -28,8 +28,8 @@ public:
   {
     int index = 0;
     QString id_string;
-    dynamic_decimal_spinbox * scale;
-    dynamic_decimal_spinbox * position;
+    dynamic_decimal_spin_box * scale;
+    dynamic_decimal_spin_box * position;
     QCheckBox * display;
     QString default_color;
     QString dark_color;
@@ -144,19 +144,19 @@ private slots:
 // This subclass of QDoubleSpinBox is used to add more control to both the
 // value displayed in the QDoubleSpinBox and the steps caused by "arrow up",
 // "arrow down", "page up", and "page down" keys.
-class dynamic_decimal_spinbox : public QDoubleSpinBox
+class dynamic_decimal_spin_box : public QDoubleSpinBox
 {
   Q_OBJECT
 
 public:
-  explicit dynamic_decimal_spinbox(QWidget * parent = 0) :
+  explicit dynamic_decimal_spin_box(QWidget * parent = 0) :
     QDoubleSpinBox(parent) {}
 
 protected:
-  virtual void stepBy(int step_value);
+  virtual void stepBy(int steps);
+  static void step_up(QString &);
+  static void step_down(QString &);
+  static int digit_to_change(const QString & str);
   QString textFromValue(double value) const;
   double valueFromText(const QString & text) const;
-
-private:
-  double calculate_decimal_step(int steps);
 };

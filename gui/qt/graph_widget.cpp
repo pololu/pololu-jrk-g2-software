@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QWidgetAction>
 
+#include <assert.h>
+
 graph_widget::graph_widget(QWidget * parent)
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
@@ -463,12 +465,12 @@ void graph_widget::setup_plot(plot & plot,
   plot.original_default_color = plot.default_color = default_color;
   plot.original_dark_color = plot.dark_color = dark_color;
 
-  plot.scale = new dynamic_decimal_spinbox();
+  plot.scale = new dynamic_decimal_spin_box();
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
   plot.scale->setValue(scale / 5.0);
 
-  plot.position = new dynamic_decimal_spinbox();
+  plot.position = new dynamic_decimal_spin_box();
   plot.position->setAccelerated(true);
   plot.position->setRange(-1000000, 1000000);
   plot.position->setValue(0);
@@ -1073,14 +1075,93 @@ void graph_widget::mouse_press(QMouseEvent * event)
   }
 }
 
-void dynamic_decimal_spinbox::stepBy(int step_value)
+void dynamic_decimal_spin_box::stepBy(int steps)
 {
-  double single_step = calculate_decimal_step(step_value);
-  setValue(value() + (single_step * step_value));
+  QString str = QString::number(value(), 'f', 2);
+  while (steps > 0)
+  {
+    step_up(str);
+    steps--;
+  }
+  while (steps < 0)
+  {
+    step_down(str);
+    steps++;
+  }
+  setValue(valueFromText(str));
   selectAll();
 }
 
-QString dynamic_decimal_spinbox::textFromValue (double value) const
+#include <iostream>  //tmphax
+
+// Basic plan: Convert to a decimal string, find a digit to increase, and then
+// increase it, setting all digits after it to zero, then convert back to a
+// float.  We pick the digit to change to ensure that the value always
+// changes by at least 1%.  I think this matches pretty well people normally do
+// when they are increasing or decreasing a numeric quantity and don't have a
+// super specific idea of what it should be.
+void dynamic_decimal_spin_box::step_up(QString & str)
+{
+  std::cout << "step_up: " << str.toStdString() << " ";
+
+  // TODO: for negative numbers we should call step_down on the unsigned version? ick
+
+  int i = digit_to_change(str);
+  if (i < 0) { assert(0); return; }
+
+  std::cout << " inc " << i;
+
+  //TODO: clear_digits_after(str, i);
+
+  while (true)
+  {
+    // Increase the digit by one.
+    assert(str[i].isDigit());
+    str[i] = '0' + (str[i].digitValue() + 1) % 10;
+    if (str[i] != '0') { break; }
+
+    // The addition carries to the previous digit.
+    if (i == 0)
+    {
+      str.insert(0, '0');
+    }
+    else
+    {
+      i -= 1;
+    }
+  }
+
+  std::cout << " -> " << str.toStdString() << std::endl;
+}
+
+void dynamic_decimal_spin_box::step_down(QString & str)
+{
+  // TODO
+}
+
+// Returns the index of the digit right after the first non-zero digit, or
+// the index of the last digit in the string, or -1 if there are no digits
+// (shouldn't happen for our use case).
+int dynamic_decimal_spin_box::digit_to_change(const QString & str)
+{
+  int last_digit = -1;
+  int size = str.size();
+  for (int i = 0; i < size; i++)
+  {
+    if (str[i].digitValue() > 0)
+    {
+      // str[i] is the first non-zero digit in the number.
+      // We'd like to increase the next digit after this one.
+      int first_nonzero_digit = i;
+      for (; i < size && (i == first_nonzero_digit || !str[i].isDigit()); i++);
+      return i;
+    }
+    if (str[i].isDigit()) { last_digit = i; }
+  }
+  return last_digit;
+}
+
+QString dynamic_decimal_spin_box::textFromValue(double value) const
 {
   if (qFabs(value) >= 10000 || value == 0)
   {
@@ -1096,40 +1177,7 @@ QString dynamic_decimal_spinbox::textFromValue (double value) const
   }
 }
 
-double dynamic_decimal_spinbox::valueFromText (const QString & text) const
+double dynamic_decimal_spin_box::valueFromText(const QString & text) const
 {
   return text.toDouble();
-}
-
-// Modification of the calculateAdaptiveDecimalStep() function in
-// QDoubleSpinBoxPrivate used to change the step value of the
-// dynamic_decimal_spinbox based on the value displayed. This was done in order
-// to change the steps based on the decimals of the spinbox value only instead of
-// the decimal precision and the log10 of the integer combined.
-double dynamic_decimal_spinbox::calculate_decimal_step(int steps)
-{
-  double value = cleanText().toDouble();
-  QStringList decimals = textFromValue(value).split('.');
-  int decimal_count = 0;
-
-  if (decimals.size() == 2)
-  {
-    decimal_count = decimals[1].count();
-  }
-
-  if (value == 0 || (value == 0.1 && steps < 0)
-    || (value == -0.1 && steps > 0))
-  {
-    decimal_count = 2;
-  }
-
-  if ((value == 10000 && steps < 0)
-    || (value == -10000 && steps > 0))
-  {
-    decimal_count = 1;
-  }
-
-  double minimum_step = std::pow(10, -decimal_count);
-
-  return minimum_step;
 }
