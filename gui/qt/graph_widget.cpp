@@ -1133,28 +1133,6 @@ int dynamic_decimal_spin_box::step_down(int value)
   return (value - 1) / change * change;
 }
 
-// Returns the index of the digit right after the first non-zero digit, or
-// the index of the last digit in the string, or -1 if there are no digits
-// (shouldn't happen for our use case).
-int dynamic_decimal_spin_box::digit_to_change(const QString & str)
-{
-  int last_digit = -1;
-  int size = str.size();
-  for (int i = 0; i < size; i++)
-  {
-    if (str[i].digitValue() > 0)
-    {
-      // str[i] is the first non-zero digit in the number.
-      // We'd like to increase the next digit after this one.
-      int first_nonzero_digit = i;
-      for (; i < size && (i == first_nonzero_digit || !str[i].isDigit()); i++);
-      return i;
-    }
-    if (str[i].isDigit()) { last_digit = i; }
-  }
-  return last_digit;
-}
-
 // Show 0 to 2 digits after the decimal point, making sure to show at least
 // 3 significant digits if we can, so that the steps taken by stpeBy are
 // always visible.

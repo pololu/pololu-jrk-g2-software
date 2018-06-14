@@ -156,7 +156,6 @@ protected:
   virtual void stepBy(int steps);
   static int step_up(int);
   static int step_down(int);
-  static int digit_to_change(const QString & str);
   QString textFromValue(double value) const;
   double valueFromText(const QString & text) const;
 };
