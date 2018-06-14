@@ -154,8 +154,8 @@ public:
 
 protected:
   virtual void stepBy(int steps);
-  static void step_up(QString &);
-  static void step_down(QString &);
+  static int step_up(int);
+  static int step_down(int);
   static int digit_to_change(const QString & str);
   QString textFromValue(double value) const;
   double valueFromText(const QString & text) const;

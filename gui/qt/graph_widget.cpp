@@ -1078,66 +1078,53 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
 void dynamic_decimal_spin_box::stepBy(int steps)
 {
-  QString str = QString::number(value(), 'f', 2);
+  int val = qRound(value() * 100);
   while (steps > 0)
   {
-    step_up(str);
+    val = step_up(val);
     steps--;
   }
   while (steps < 0)
   {
-    step_down(str);
+    val = step_down(val);
     steps++;
   }
-  setValue(valueFromText(str));
+  setValue(val / 100.0);
   selectAll();
 }
 
-#include <iostream>  //tmphax
-
-// Basic plan: Convert to a decimal string, find a digit to increase, and then
-// increase it, setting all digits after it to zero, then convert back to a
-// float.  We pick the digit to change to ensure that the value always
-// changes by at least 1%.  I think this matches pretty well people normally do
-// when they are increasing or decreasing a numeric quantity and don't have a
-// super specific idea of what it should be.
-void dynamic_decimal_spin_box::step_up(QString & str)
+int dynamic_decimal_spin_box::step_up(int value)
 {
-  std::cout << "step_up: " << str.toStdString() << " ";
-
-  // TODO: for negative numbers we should call step_down on the unsigned version? ick
-
-  int i = digit_to_change(str);
-  if (i < 0) { assert(0); return; }
-
-  std::cout << " inc " << i;
-
-  //TODO: clear_digits_after(str, i);
-
-  while (true)
+  // If the value is negative, negate it and use step_down so that the core
+  // algorithms don't have to deal with negative numbers.
+  if (value < 0)
   {
-    // Increase the digit by one.
-    assert(str[i].isDigit());
-    str[i] = '0' + (str[i].digitValue() + 1) % 10;
-    if (str[i] != '0') { break; }
+    // Make sure we can actually get a non-negative value when we negate,
+    // so we aren't stuck in an infinite loop.
+    if (-value < 0) { value++; }
 
-    // The addition carries to the previous digit.
-    if (i == 0)
-    {
-      str.insert(0, '0');
-    }
-    else
-    {
-      i -= 1;
-    }
+    return -step_down(-value);
   }
-
-  std::cout << " -> " << str.toStdString() << std::endl;
+  int change = 1;
+  while (change * 100 <= value) { change *= 10; }
+  return (value + change) / change * change;
 }
 
-void dynamic_decimal_spin_box::step_down(QString & str)
+int dynamic_decimal_spin_box::step_down(int value)
 {
-  // TODO
+  // If the value is negative, negate it and use step_up so that the core
+  // algorithms don't have to deal with negative numbers.
+  if (value < 0)
+  {
+    // Make sure we can actually get a non-negative value when we negate,
+    // so we aren't stuck in an infinite loop.
+    if (-value < 0) { value++; }
+
+    return -step_up(-value);
+  }
+  int change = 1;
+  while (change * 100 < value) { change *= 10; }
+  return (value - 1) / change * change;
 }
 
 // Returns the index of the digit right after the first non-zero digit, or
@@ -1162,19 +1149,22 @@ int dynamic_decimal_spin_box::digit_to_change(const QString & str)
   return last_digit;
 }
 
+// Show 0 to 2 digits after the decimal point, making sure to show at least
+// 3 significant digits if we can, so that the steps taken by stpeBy are
+// always visible.
 QString dynamic_decimal_spin_box::textFromValue(double value) const
 {
-  if (qFabs(value) >= 10000 || value == 0)
+  if (qFabs(value) >= 100 || value == 0)
   {
     return QString::number(value, 'f', 0);
   }
-  else if (qFabs(value) < 0.1)
-  {
-    return QString::number(value, 'f', 2);
-  }
-  else if (qFabs(value) < 10000)
+  else if (qFabs(value) >= 10)
   {
     return QString::number(value, 'f', 1);
+  }
+  else
+  {
+    return QString::number(value, 'f', 2);
   }
 }
 
