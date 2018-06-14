@@ -325,11 +325,6 @@ void graph_widget::setup_ui()
   show_all_none->setObjectName("show_all_none");
   show_all_none->setStyleSheet("QPushButton{padding: 4px;}");
 
-  reset_all_button = new QPushButton(tr("&Reset all"), this);
-  reset_all_button->setStyleSheet("QPushButton{padding: 4px;}");
-  reset_all_button->setObjectName("reset_all_button");
-  reset_all_button->setToolTip("Reset all plots\nposition and scale");
-
   connect(show_all_none, SIGNAL(clicked()),
     this, SLOT(show_all_none_clicked()));
 
@@ -337,7 +332,6 @@ void graph_widget::setup_ui()
   plot_visible_layout->addWidget(show_all_none, 0, 0);
   plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
   plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 2, Qt::AlignCenter);
-  plot_visible_layout->addWidget(reset_all_button, 0, 3, Qt::AlignLeft);
 
   QHBoxLayout * bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(new QLabel(tr(" Time (s):")), 0, Qt::AlignRight);
@@ -384,8 +378,10 @@ void graph_widget::setup_ui()
   division_frame->setLineWidth(0);
   division_frame->setFrameShape(QFrame::HLine);
 
-  plot_visible_layout->addWidget(division_frame, row++, 0, 1, 5);
-  plot_visible_layout->addLayout(bottom_control_layout, row++, 0, 1, 5, Qt::AlignCenter);
+  int col_span = plot_visible_layout->columnCount();
+  plot_visible_layout->addWidget(division_frame, row++, 0, 1, col_span);
+  plot_visible_layout->addLayout(bottom_control_layout, row++, 0, 1, col_span,
+    Qt::AlignCenter);
 
   QSharedPointer<QCPAxisTickerText> y_axis_ticker(new QCPAxisTickerText);
 
@@ -451,11 +447,15 @@ QMenuBar * graph_widget::setup_menu_bar()
   default_theme_action->setText(tr("&Use default theme"));
   default_theme_action->setVisible(false);
 
+  QAction * reset_all_ranges_action = new QAction(this);
+  reset_all_ranges_action->setText("&Reset all positions and scales");
+
   options_menu->addAction(save_settings_action);
   options_menu->addAction(load_settings_action);
   options_menu->addSeparator();
   options_menu->addAction(default_theme_action);
   options_menu->addAction(dark_theme_action);
+  options_menu->addAction(reset_all_ranges_action);
 
   connect(save_settings_action, &QAction::triggered, this,
     &graph_widget::save_settings);
@@ -468,6 +468,9 @@ QMenuBar * graph_widget::setup_menu_bar()
 
   connect(default_theme_action, &QAction::triggered, this,
     &graph_widget::switch_to_default);
+
+  connect(reset_all_ranges_action, &QAction::triggered, this,
+    &graph_widget::reset_all_ranges);
 
   return menu_bar;
 }
@@ -1018,7 +1021,7 @@ void graph_widget::show_all_none_clicked()
 }
 
 // Resets all position and scale values to default.
-void graph_widget::on_reset_all_button_clicked()
+void graph_widget::reset_all_ranges()
 {
   QMessageBox mbox(QMessageBox::Question, "Reset all",
     "Reset all positions and scales?",

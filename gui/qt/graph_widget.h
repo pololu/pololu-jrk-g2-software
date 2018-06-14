@@ -101,7 +101,6 @@ private:
   QPushButton * pause_run_button;
   QSpinBox * domain;
   QPushButton * show_all_none;
-  QPushButton * reset_all_button;
 
   void update_x_axis();
   void remove_old_data();
@@ -139,7 +138,7 @@ private slots:
   void on_pause_run_button_clicked();
   void set_line_visible();
   void show_all_none_clicked();
-  void on_reset_all_button_clicked();
+  void reset_all_ranges();
   void mouse_press(QMouseEvent *);
 };
 
