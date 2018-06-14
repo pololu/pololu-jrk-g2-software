@@ -28,8 +28,8 @@ public:
   {
     int index = 0;
     QString id_string;
+    QDoubleSpinBox * position;
     dynamic_decimal_spin_box * scale;
-    dynamic_decimal_spin_box * position;
     QCheckBox * display;
     QString default_color;
     QString dark_color;
@@ -109,6 +109,7 @@ private:
   void reset_graph_interaction_axes();
   void update_plot_text_and_arrows(const plot &);
   void update_plot_overflow_arrows(const plot &);
+  void update_position_step_value(const plot &);
   void set_range(const plot &);
   void set_plot_grid_colors(int value);
 

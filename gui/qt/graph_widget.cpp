@@ -470,10 +470,12 @@ void graph_widget::setup_plot(plot & plot,
   plot.scale->setRange(0.01, 1000000);
   plot.scale->setValue(scale / 5.0);
 
-  plot.position = new dynamic_decimal_spin_box();
+  plot.position = new QDoubleSpinBox();
   plot.position->setAccelerated(true);
   plot.position->setRange(-1000000, 1000000);
   plot.position->setValue(0);
+
+  update_position_step_value(plot);
 
   plot.display = new QCheckBox();
   plot.display->setText(display_text);
@@ -580,6 +582,7 @@ void graph_widget::setup_plot(plot & plot,
       plot.scale->setValue(scale_value);
     }
 
+    update_position_step_value(plot);
     update_plot_text_and_arrows(plot);
   });
 
@@ -783,6 +786,11 @@ void graph_widget::update_plot_overflow_arrows(const plot & plot)
   }
 }
 
+void graph_widget::update_position_step_value(const plot & plot)
+{
+  plot.position->setSingleStep(plot.scale->value() / 10);
+}
+
 void graph_widget::set_range(const plot & plot)
 {
   plot.display->setCheckState(Qt::Checked);
@@ -798,10 +806,9 @@ void graph_widget::set_range(const plot & plot)
     plot.axis->setRange(lower_range, upper_range);
   }
 
+  update_position_step_value(plot);
   update_plot_text_and_arrows(plot);
-
   set_graph_interaction_axis(plot);
-
   custom_plot->replot();
 }
 
