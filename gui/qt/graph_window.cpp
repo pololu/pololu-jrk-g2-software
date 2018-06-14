@@ -33,14 +33,14 @@ void graph_window::receive_widget(graph_widget * widget)
 
   grabbed_widget->set_preview_mode(false);
 
-  grabbed_widget->plot_visible_layout->setParent(0);
+  grabbed_widget->controls_layout->setParent(0);
 
   central_layout->addWidget(grabbed_widget->custom_plot, 0, 0);
-  central_layout->addLayout(grabbed_widget->plot_visible_layout,
+  central_layout->addLayout(grabbed_widget->controls_layout,
     0, 1, Qt::AlignTop | Qt::AlignRight);
 
   central_layout->setColumnMinimumWidth(0,
-    grabbed_widget->plot_visible_layout->sizeHint().height());
+    grabbed_widget->controls_layout->sizeHint().height());
 
   central_layout->setColumnStretch(0, 1);
   central_layout->setRowStretch(0, 1);

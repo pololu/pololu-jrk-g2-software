@@ -328,10 +328,10 @@ void graph_widget::setup_ui()
   connect(show_all_none, SIGNAL(clicked()),
     this, SLOT(show_all_none_clicked()));
 
-  plot_visible_layout = new QGridLayout();
-  plot_visible_layout->addWidget(show_all_none, 0, 0);
-  plot_visible_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
-  plot_visible_layout->addWidget(new QLabel("Scale:"), 0, 2, Qt::AlignCenter);
+  controls_layout = new QGridLayout();
+  controls_layout->addWidget(show_all_none, 0, 0);
+  controls_layout->addWidget(new QLabel("Position:"), 0, 1, Qt::AlignCenter);
+  controls_layout->addWidget(new QLabel("Scale:"), 0, 2, Qt::AlignCenter);
 
   QHBoxLayout * bottom_control_layout = new QHBoxLayout();
   bottom_control_layout->addWidget(new QLabel(tr(" Time (s):")), 0, Qt::AlignRight);
@@ -378,9 +378,9 @@ void graph_widget::setup_ui()
   division_frame->setLineWidth(0);
   division_frame->setFrameShape(QFrame::HLine);
 
-  int col_span = plot_visible_layout->columnCount();
-  plot_visible_layout->addWidget(division_frame, row++, 0, 1, col_span);
-  plot_visible_layout->addLayout(bottom_control_layout, row++, 0, 1, col_span,
+  int col_span = controls_layout->columnCount();
+  controls_layout->addWidget(division_frame, row++, 0, 1, col_span);
+  controls_layout->addLayout(bottom_control_layout, row++, 0, 1, col_span,
     Qt::AlignCenter);
 
   QSharedPointer<QCPAxisTickerText> y_axis_ticker(new QCPAxisTickerText);
@@ -552,9 +552,9 @@ void graph_widget::setup_plot(plot & plot,
   plot.overflow_arrows.append(axis_arrow(plot, 270));
   plot.overflow_arrows.append(axis_arrow(plot, 90));
 
-  plot_visible_layout->addWidget(plot.display, row, 0);
-  plot_visible_layout->addWidget(plot.position, row, 1);
-  plot_visible_layout->addWidget(plot.scale, row, 2);
+  controls_layout->addWidget(plot.display, row, 0);
+  controls_layout->addWidget(plot.position, row, 1);
+  controls_layout->addWidget(plot.scale, row, 2);
 
   plot.graph = custom_plot->addGraph(custom_plot->xAxis2, plot.axis);
   plot.graph->setPen(QPen(QColor(plot.default_color), 1));

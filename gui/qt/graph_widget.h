@@ -62,7 +62,7 @@ public:
   plot current_chopping;
 
   QCustomPlot * custom_plot;
-  QGridLayout * plot_visible_layout;
+  QGridLayout * controls_layout;
 
   bool preview_mode = true;
 
