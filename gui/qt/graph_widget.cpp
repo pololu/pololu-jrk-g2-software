@@ -154,6 +154,9 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
 
   QMenu * menu = new QMenu();
 
+  QAction * select_action = new QAction(this);
+  select_action->setText("Select");
+
   QAction * change_color_action = new QAction(this);
   change_color_action->setText("Change color");
 
@@ -173,9 +176,16 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
     menu->addSeparator();
   }
 
+  menu->addAction(select_action);
   menu->addAction(change_color_action);
   menu->addAction(reset_color_action);
   menu->addAction(reset_range_action);
+
+  connect(select_action, &QAction::triggered, [=]()
+  {
+    reset_graph_interaction_axes();
+    set_graph_interaction_axis(*plot);
+  });
 
   connect(change_color_action, &QAction::triggered, [=]()
   {
