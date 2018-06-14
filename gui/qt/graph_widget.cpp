@@ -1093,16 +1093,25 @@ void dynamic_decimal_spin_box::stepBy(int steps)
   selectAll();
 }
 
+// step_up behaves much the same way a person might behave when entering an
+// increasing sequence of numbers without a specific value in mind.  It finds
+// the decimal digit that is one digit after the first non-zero decimal digit
+// (or the same digit if that is not possible), and then increases or decreases
+// that digit while setting the later digits to zero.
+//
+// This means our step size is always between 1% and 10%, and after taking
+// a step there are at most two non-zero decimal digits.
+//
+// Note: We assume the integers used in this function and step_down are pretty
+// far from overflowing or underflowing (by a factor of 1000 at least).
+// INT_MIN will result in a stack overflow, and the core calculations could
+// underflow or overflow if that is not the case.
 int dynamic_decimal_spin_box::step_up(int value)
 {
   // If the value is negative, negate it and use step_down so that the core
   // algorithms don't have to deal with negative numbers.
   if (value < 0)
   {
-    // Make sure we can actually get a non-negative value when we negate,
-    // so we aren't stuck in an infinite loop.
-    if (-value < 0) { value++; }
-
     return -step_down(-value);
   }
   int change = 1;
@@ -1110,16 +1119,13 @@ int dynamic_decimal_spin_box::step_up(int value)
   return (value + change) / change * change;
 }
 
+// Does the opposite of step_up.  Some tweaks were needed to make
+// sure that (for example) 561 through 569 map to 560 instead of 550, and
+// 100 maps to 99 instead of 90.
 int dynamic_decimal_spin_box::step_down(int value)
 {
-  // If the value is negative, negate it and use step_up so that the core
-  // algorithms don't have to deal with negative numbers.
   if (value < 0)
   {
-    // Make sure we can actually get a non-negative value when we negate,
-    // so we aren't stuck in an infinite loop.
-    if (-value < 0) { value++; }
-
     return -step_up(-value);
   }
   int change = 1;
