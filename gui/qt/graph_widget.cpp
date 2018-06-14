@@ -256,6 +256,8 @@ void graph_widget::setup_ui()
   pause_run_button->setObjectName("pause_run_button");
   pause_run_button->setText(tr("&Pause"));
   pause_run_button->setMinimumSize(pause_run_button->sizeHint());
+  connect(pause_run_button, &QPushButton::clicked,
+    this, &graph_widget::pause_or_run);
 
   custom_plot = new QCustomPlot();
   custom_plot->axisRect()->setAutoMargins(QCP::msNone);
@@ -370,8 +372,6 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeDragAxes(0, 0);
   custom_plot->axisRect()->setRangeZoomAxes(0, 0);
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
-
-  QMetaObject::connectSlotsByName(this);
 }
 
 QMenuBar * graph_widget::setup_menu_bar()
@@ -944,7 +944,7 @@ void graph_widget::change_ranges(int domain)
   custom_plot->replot();
 }
 
-void graph_widget::on_pause_run_button_clicked()
+void graph_widget::pause_or_run()
 {
   set_paused(!graph_paused);
 }

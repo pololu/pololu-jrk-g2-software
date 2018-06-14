@@ -133,7 +133,7 @@ private slots:
   void switch_to_dark();
   void switch_to_default();
   void change_ranges(int value);
-  void on_pause_run_button_clicked();
+  void pause_or_run();
   void set_line_visible();
   void show_all_none_clicked();
   void reset_all_colors();
