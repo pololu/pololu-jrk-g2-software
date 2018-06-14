@@ -86,7 +86,7 @@ private:
   void pick_plot_color(plot *);
   void setup_ui();
 
-  QMenuBar * menu_bar;
+  QMenuBar * menu_bar = NULL;
   QAction * dark_theme_action;
   QAction * default_theme_action;
 
