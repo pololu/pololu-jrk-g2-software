@@ -415,7 +415,7 @@ private:
   QWidget * central_widget;
   QVBoxLayout * main_window_layout;
   graph_widget * graph;
-  graph_window * graph_window;
+  graph_window * graph_wind;
   QFrame * graph_preview_frame;
   QHBoxLayout * graph_preview_frame_layout;
 

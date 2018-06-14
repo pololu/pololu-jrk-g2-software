@@ -66,7 +66,7 @@ main_window::main_window(QWidget * parent)
   : QMainWindow(parent)
 {
   setup_ui();
-  graph_window = 0;
+  graph_wind = 0;
 }
 
 void main_window::set_controller(main_controller * controller)
@@ -1185,18 +1185,18 @@ void main_window::restore_graph_preview()
 
 void main_window::open_graph_window()
 {
-  if (graph_window == NULL)
+  if (graph_wind == NULL)
   {
-    graph_window = new ::graph_window(this);
-    connect(graph_window, &::graph_window::pass_widget,
+    graph_wind = new graph_window(this);
+    connect(graph_wind, &graph_window::pass_widget,
       this, &main_window::restore_graph_preview);
   }
   if (graph->preview_mode)
   {
     graph_preview_frame->setFrameShape(QFrame::NoFrame);
-    graph_window->receive_widget(graph);
+    graph_wind->receive_widget(graph);
   }
-  graph_window->raise_window();
+  graph_wind->raise_window();
 }
 
 void main_window::on_device_name_value_linkActivated()
