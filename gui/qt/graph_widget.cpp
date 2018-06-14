@@ -457,7 +457,7 @@ void graph_widget::setup_plot(plot & plot,
 
   update_position_step_value(plot);
 
-  plot.display = new QCheckBox();
+  plot.display = new big_hit_check_box();
   plot.display->setText(display_text);
   plot.display->setToolTip("Right-click to change plot options");
   set_checkbox_style(&plot, plot.default_color);

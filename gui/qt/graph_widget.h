@@ -13,6 +13,7 @@
 #include <QWidget>
 
 class dynamic_decimal_spin_box;
+class big_hit_check_box;
 
 class graph_widget : public QObject
 {
@@ -31,7 +32,7 @@ public:
     QString id_string;
     QDoubleSpinBox * position;
     dynamic_decimal_spin_box * scale;
-    QCheckBox * display;
+    big_hit_check_box * display;
     double default_scale;
     QString default_color;
     QString dark_color;
@@ -158,4 +159,15 @@ protected:
   static int step_down(int);
   QString textFromValue(double value) const;
   double valueFromText(const QString & text) const;
+};
+
+// A checkbox where you can click anywhere within its area to activate it.
+// Appropriate for checkboxes that you want to have a border.
+class big_hit_check_box : public QCheckBox
+{
+  bool hitButton(const QPoint & pos) const override
+  {
+    Q_UNUSED(pos);
+    return true;
+  }
 };
