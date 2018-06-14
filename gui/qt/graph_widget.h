@@ -156,7 +156,6 @@ public:
 
 protected:
   virtual void stepBy(int step_value);
-  virtual StepEnabled stepEnabled();
   QString textFromValue(double value) const;
   double valueFromText(const QString & text) const;
 

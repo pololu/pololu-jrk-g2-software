@@ -1093,12 +1093,6 @@ void dynamic_decimal_spinbox::stepBy(int step_value)
   selectAll();
 }
 
-// Necessary for use with stepBy function.
-QDoubleSpinBox::StepEnabled dynamic_decimal_spinbox::stepEnabled()
-{
-  return StepUpEnabled | StepDownEnabled;
-}
-
 QString dynamic_decimal_spinbox::textFromValue (double value) const
 {
   if (qFabs(value) >= 10000 || value == 0)
