@@ -1021,6 +1021,13 @@ void graph_widget::reset_all_ranges()
 }
 
 // Receives a click event from Qt and figures out which plot to select, if any.
+//
+// Note: We use "distance <= click_distance" below so that if two axis arrows
+// are exactly on top of each other, the click will choose the one that
+// has a later index (i.e. is lower on the list of plots).  That's a good
+// default since the arrows for plots with the later indices are on top by
+// default.  As soon as people start moving the axes around and changing the
+// Z ordering, this falls apart.
 void graph_widget::mouse_press(QMouseEvent * event)
 {
   reset_graph_interaction_axes();
@@ -1037,7 +1044,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
     if (!plot->display->isChecked()) { continue; }
 
     double distance = plot->axis_label->selectTestPololu(event->localPos(), false);
-    if (distance <= arrow_tolerance && distance < click_distance)
+    if (distance <= arrow_tolerance && distance <= click_distance)
     {
       plot_clicked = plot;
       click_distance = distance;
@@ -1048,7 +1055,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
       if (!arrow->visible()) { continue; }
 
       distance = arrow->selectTestPololu(event->localPos(), false);
-      if (distance <= arrow_tolerance && distance < click_distance)
+      if (distance <= arrow_tolerance && distance <= click_distance)
       {
         plot_clicked = plot;
         click_distance = distance;
@@ -1058,7 +1065,7 @@ void graph_widget::mouse_press(QMouseEvent * event)
     if (!plot->graph->data()->isEmpty())
     {
       double distance = plot->graph->selectTest(event->localPos(), false);
-      if (distance > 0 && distance <= plot_tolerance && distance < click_distance)
+      if (distance > 0 && distance <= plot_tolerance && distance <= click_distance)
       {
         plot_clicked = plot;
         click_distance = distance;
