@@ -7,8 +7,6 @@
 #include <QMessageBox>
 #include <QWidgetAction>
 
-#include <assert.h>
-
 graph_widget::graph_widget()
 {
   int id = QFontDatabase::addApplicationFont(":dejavu_sans");
