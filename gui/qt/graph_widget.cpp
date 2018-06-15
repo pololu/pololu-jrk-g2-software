@@ -150,7 +150,7 @@ bool graph_widget::eventFilter(QObject * object, QEvent * e)
 
 void graph_widget::show_plot_menu(plot * plot, bool with_title)
 {
-  plot->display->setCheckState(Qt::Checked);
+  plot->display->setChecked(true);
 
   QMenu * menu = new QMenu();
 
@@ -780,7 +780,7 @@ void graph_widget::reset_plot_range(const plot & plot)
 
 void graph_widget::set_range(const plot & plot)
 {
-  plot.display->setCheckState(Qt::Checked);
+  plot.display->setChecked(true);
 
   reset_graph_interaction_axes();
 
@@ -1094,14 +1094,13 @@ void graph_widget::mouse_press(QMouseEvent * event)
 
   if (plot_clicked == NULL) { return; }
 
+  set_graph_interaction_axis(*plot_clicked);
+
   if (event->button() == Qt::RightButton)
   {
     show_plot_menu(plot_clicked, true);
   }
-  else
-  {
-    set_graph_interaction_axis(*plot_clicked);
-  }
+
   custom_plot->replot();
 }
 
