@@ -457,11 +457,13 @@ void graph_widget::setup_plot(plot & plot,
   plot.scale->setAccelerated(true);
   plot.scale->setRange(0.01, 1000000);
   plot.scale->setValue(plot.default_scale);
+  plot.scale->setToolTip("Units per vertical division for this plot.");
 
   plot.position = new QDoubleSpinBox();
   plot.position->setAccelerated(true);
   plot.position->setRange(-1000000, 1000000);
   plot.position->setValue(0);
+  plot.position->setToolTip("Vertical offset of this plot's X axis.");
 
   update_position_step_value(plot);
 
