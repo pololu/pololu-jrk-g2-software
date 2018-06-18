@@ -437,7 +437,7 @@ private:
   QAction * upgrade_firmware_action;
   QMenu * window_menu;
   QAction * graph_action;
-  QAction * manual_target_window_action;
+  QAction * variables_window_action;
   QMenu * help_menu;
   QAction * documentation_action;
   QAction * about_action;
@@ -454,6 +454,7 @@ private:
 
   QWidget * status_page_widget;
   QGroupBox * variables_box;
+  popout_window * variables_window;
   QLabel * device_name_label;
   QLabel * device_name_value;
   QLabel * serial_number_label;
@@ -504,7 +505,6 @@ private:
   // Manually set target box
 
   QGroupBox * manual_target_box;
-  popout_window * manual_target_window;
   QScrollBar * manual_target_scroll_bar;
   QLabel * manual_target_min_label;
   QLabel * manual_target_max_label;
