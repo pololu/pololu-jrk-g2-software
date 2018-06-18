@@ -1,14 +1,12 @@
 #include "config.h"
 #include "main_window.h"
 #include "main_controller.h"
-#include "graph_window.h"
 #include "bootloader_window.h"
 #include "input_wizard.h"
 #include "feedback_wizard.h"
 #include "message_box.h"
 #include "elided_label.h"
 #include "pid_constant_control.h"
-#include "nice_spin_box.h"
 
 #include <to_string.h>
 
@@ -2046,6 +2044,11 @@ void main_window::setup_menu_bar()
   graph_action->setShortcut(Qt::CTRL + Qt::Key_G);
   connect(graph_action, &QAction::triggered, this, &main_window::open_graph_window);
 
+  manual_target_window_action = new QAction(this);
+  manual_target_window_action->setObjectName("manual_target_window_action");
+  manual_target_window_action->setText(tr("Manually set &target"));
+  manual_target_window_action->setShortcut(Qt::CTRL + Qt::Key_T);
+
   documentation_action = new QAction(this);
   documentation_action->setObjectName("documentation_action");
   documentation_action->setText(tr("&Online documentation..."));
@@ -2074,6 +2077,7 @@ void main_window::setup_menu_bar()
   device_menu->addAction(upgrade_firmware_action);
 
   window_menu->addAction(graph_action);
+  window_menu->addAction(manual_target_window_action);
 
   help_menu->addAction(documentation_action);
   help_menu->addAction(about_action);
@@ -2345,6 +2349,16 @@ QWidget * main_window::setup_manual_target_box()
     SLOT(on_manual_target_return_key_shortcut_activated()));
 
   manual_target_box->setLayout(layout);
+
+  manual_target_window = new popout_window();
+  manual_target_window->setObjectName("manual_target_window");
+  manual_target_window->setWindowTitle(
+    tr("Pololu Jrk G2 Configuration Utility - Manually set target"));
+  manual_target_window->set_later_layout(layout);
+  assert(manual_target_window_action);
+  connect(manual_target_window_action, &QAction::triggered,
+    manual_target_window, &popout_window::prepare_and_activate);
+
   return manual_target_box;
 }
 

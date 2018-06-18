@@ -6,6 +6,8 @@
 #include "elided_label.h"
 #include "pid_constant_control.h"
 #include "nice_spin_box.h"
+#include "popout_window.h"
+
 #include "jrk.hpp"
 
 #include <QMainWindow>
@@ -434,7 +436,8 @@ private:
   QAction * apply_settings_action;
   QAction * upgrade_firmware_action;
   QMenu * window_menu;
-  QAction *graph_action;
+  QAction * graph_action;
+  QAction * manual_target_window_action;
   QMenu * help_menu;
   QAction * documentation_action;
   QAction * about_action;
@@ -501,6 +504,7 @@ private:
   // Manually set target box
 
   QGroupBox * manual_target_box;
+  popout_window * manual_target_window;
   QScrollBar * manual_target_scroll_bar;
   QLabel * manual_target_min_label;
   QLabel * manual_target_max_label;

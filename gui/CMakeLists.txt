@@ -27,18 +27,19 @@ endif ()
 qt5_add_resources(RESOURCES_QRC qt/resources.qrc)
 
 add_executable (gui
+  qt/popout_window.cpp
+  qt/main_window.cpp
   main.cpp
   main_controller.cpp
-  qt/bootloader_window.cpp
   qt/graph_window.cpp
   qt/graph_widget.cpp
   qt/input_wizard.cpp
   qt/feedback_wizard.cpp
-  qt/main_window.cpp
-  qt/qcustomplot.cpp
   qt/elided_label.cpp
   qt/pid_constant_control.cpp
   qt/nice_spin_box.cpp
+  qt/bootloader_window.cpp
+  qt/qcustomplot.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/gui_info.rc
   ${ICON_QRC}
   ${RESOURCES_QRC}
