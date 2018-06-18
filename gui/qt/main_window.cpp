@@ -2283,7 +2283,7 @@ QWidget * main_window::setup_variables_box()
   variables_window = new popout_window();
   variables_window->setObjectName("variables_window");
   variables_window->setWindowTitle(
-    tr("Pololu Jrk G2 Configuration Utility - Variables"));
+    tr("Variables - Jrk G2"));
   variables_window->set_later_layout(layout);
 
   assert(variables_window_action);

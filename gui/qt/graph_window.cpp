@@ -11,7 +11,7 @@ void graph_window::setup_ui()
 {
   setObjectName("graph_window");
 
-  setWindowTitle(tr("Pololu Jrk G2 Configuration Utility - Graph"));
+  setWindowTitle(tr("Graph - Jrk G2"));
 
   central_layout = new QGridLayout();
 
