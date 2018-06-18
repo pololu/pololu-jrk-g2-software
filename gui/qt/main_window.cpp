@@ -337,7 +337,7 @@ void main_window::set_device_list_selected(const jrk::device & device)
   suppress_events = false;
 }
 
-void main_window::set_connection_status(std::string const & status, bool error)
+void main_window::set_connection_status(const std::string & status, bool error)
 {
   if (error)
   {

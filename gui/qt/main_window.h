@@ -109,11 +109,11 @@ public:
   void set_pid_period_count(uint16_t);
   void set_pid_period_exceeded(bool);
 
-  void set_device_list_contents(std::vector<jrk::device> const & device_list);
-  void set_device_list_selected(jrk::device const & device);
+  void set_device_list_contents(const std::vector<jrk::device> & device_list);
+  void set_device_list_selected(const jrk::device & device);
 
   // Sets the label that shows the connection status/error.
-  void set_connection_status(std::string const & status, bool error);
+  void set_connection_status(const std::string & status, bool error);
 
   void set_manual_target_enabled(bool enabled);
   void set_manual_target_range(uint16_t min, uint16_t max);
@@ -124,8 +124,7 @@ public:
   // disabled.
   void set_apply_settings_enabled(bool enabled);
 
-
-  void set_motor_status_message(std::string const & message,
+  void set_motor_status_message(const std::string & message,
     uint16_t error_flag = 0);
 
   void set_input_mode(uint8_t input_mode);
