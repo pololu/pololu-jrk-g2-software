@@ -31,8 +31,8 @@
 #include <QProcessEnvironment>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QScrollBar>
 #include <QShortcut>
+#include <QSlider>
 #include <QSpinBox>
 #include <QTabWidget>
 #include <QTimer>
@@ -350,7 +350,8 @@ void main_window::set_manual_target_range(uint16_t min, uint16_t max)
   suppress_events = true;
   manual_target_min_label->setText(QString::number(min));
   manual_target_max_label->setText(QString::number(max));
-  manual_target_scroll_bar->setRange(min, max);
+  manual_target_slider->setRange(min, max);
+  manual_target_slider->setTickInterval((max - min + 1) / 2);
   manual_target_entry_value->setRange(min, max);
   suppress_events = false;
 }
@@ -358,7 +359,7 @@ void main_window::set_manual_target_range(uint16_t min, uint16_t max)
 void main_window::set_manual_target_inputs(uint16_t target)
 {
   suppress_events = true;
-  manual_target_scroll_bar->setValue(target);
+  manual_target_slider->setValue(target);
   manual_target_entry_value->setValue(target);
   suppress_events = false;
 }
@@ -1272,7 +1273,7 @@ void main_window::on_auto_set_target_check_stateChanged(int state)
   }
 }
 
-void main_window::on_manual_target_scroll_bar_valueChanged(int value)
+void main_window::on_manual_target_slider_valueChanged(int value)
 {
   if (suppress_events) { return; }
   manual_target_entry_value->setValue(value);
@@ -1283,7 +1284,7 @@ void main_window::on_manual_target_entry_value_valueChanged(int value)
   if (suppress_events) { return; }
 
   suppress_events = true;
-  manual_target_scroll_bar->setValue(value);
+  manual_target_slider->setValue(value);
   suppress_events = false;
 
   if (auto_set_target_check->isChecked())
@@ -1294,9 +1295,9 @@ void main_window::on_manual_target_entry_value_valueChanged(int value)
 
 void main_window::on_manual_target_return_key_shortcut_activated()
 {
-  if (manual_target_scroll_bar->hasFocus())
+  if (manual_target_slider->hasFocus())
   {
-    // Enter was pressed on the scroll bar.
+    // Enter was pressed on the slider.
     on_set_target_button_clicked();
   }
   else if (manual_target_entry_value->hasFocus())
@@ -1305,7 +1306,7 @@ void main_window::on_manual_target_return_key_shortcut_activated()
     suppress_events = true;
     manual_target_entry_value->interpretText();
     manual_target_entry_value->selectAll();
-    manual_target_scroll_bar->setValue(manual_target_entry_value->value());
+    manual_target_slider->setValue(manual_target_entry_value->value());
     suppress_events = false;
     on_set_target_button_clicked();
   }
@@ -1962,10 +1963,11 @@ void main_window::setup_style_sheet()
   // By default, the fusion style makes the scroll bar look bad, having a border
   // on the top but no borders on the bottom.  This line seems to make it use a
   // totally different style which makes it look more like a normal Windows
-  // scrollbar, and thus better.
+  // scrollbar, and thus better.  Currently this rule is not used because
+  // manual_target_slider is a QSlider.
   if (style_name == "fusion")
   {
-    stylesheet += "QScrollBar#manual_target_scroll_bar { border: 0; }\n";
+    stylesheet += "QScrollBar#manual_target_slider { border: 0; }\n";
   }
 
   setStyleSheet(stylesheet);
@@ -2310,13 +2312,15 @@ QWidget * main_window::setup_manual_target_box()
 
   QGridLayout * layout = new QGridLayout();
 
-  manual_target_scroll_bar = new QScrollBar(Qt::Horizontal);
-  manual_target_scroll_bar->setObjectName("manual_target_scroll_bar");
-  manual_target_scroll_bar->setRange(0, 4095);
-  manual_target_scroll_bar->setValue(2048);
+  manual_target_slider = new QSlider(Qt::Horizontal);
+  manual_target_slider->setObjectName("manual_target_slider");
+  manual_target_slider->setTickPosition(QSlider::TicksBelow);
+  manual_target_slider->setTickInterval(2048);
+  manual_target_slider->setRange(0, 4095);
+  manual_target_slider->setValue(2048);
   // Let the scroll bar be focused when people click on it, so they can
   // then press enter to set the target.
-  manual_target_scroll_bar->setFocusPolicy(Qt::ClickFocus);
+  manual_target_slider->setFocusPolicy(Qt::ClickFocus);
 
   manual_target_min_label = new QLabel("0");
 
@@ -2343,7 +2347,7 @@ QWidget * main_window::setup_manual_target_box()
   spinbox_and_button->addWidget(manual_target_entry_value, 0);
   spinbox_and_button->addWidget(set_target_button, 0);
 
-  layout->addWidget(manual_target_scroll_bar, 0, 0, 1, 5);
+  layout->addWidget(manual_target_slider, 0, 0, 1, 5);
   layout->addWidget(manual_target_min_label, 1, 0);
   layout->addLayout(spinbox_and_button, 1, 2);
   layout->addWidget(manual_target_max_label, 1, 4);
