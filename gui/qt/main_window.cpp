@@ -1263,6 +1263,12 @@ void main_window::on_set_target_button_clicked()
   controller->set_target(manual_target_entry_value->value());
 }
 
+void main_window::on_center_target_button_clicked()
+{
+  manual_target_entry_value->setValue(2048);
+  on_set_target_button_clicked();
+}
+
 void main_window::on_auto_set_target_check_stateChanged(int state)
 {
   if (suppress_events) { return; }
@@ -2336,6 +2342,13 @@ QWidget * main_window::setup_manual_target_box()
   set_target_button = new QPushButton();
   set_target_button->setObjectName("set_target_button");
   set_target_button->setText(tr("Set &target"));
+  set_target_button->setToolTip(
+    tr("Set the target the the value entered to the left."));
+
+  center_target_button = new QPushButton();
+  center_target_button->setObjectName("center_target_button");
+  center_target_button->setText(tr("&Center"));
+  center_target_button->setToolTip(tr("Set the target to 2048."));
 
   auto_set_target_check = new QCheckBox();
   auto_set_target_check->setObjectName("auto_set_target_check");
@@ -2343,13 +2356,15 @@ QWidget * main_window::setup_manual_target_box()
   auto_set_target_check->setText(tr(
     "Set target when slider or entry box are changed"));
 
-  QHBoxLayout * spinbox_and_button = new QHBoxLayout();
-  spinbox_and_button->addWidget(manual_target_entry_value, 0);
-  spinbox_and_button->addWidget(set_target_button, 0);
+  QHBoxLayout * spinbox_and_buttons = new QHBoxLayout();
+  spinbox_and_buttons->addWidget(manual_target_entry_value, 0);
+  spinbox_and_buttons->addWidget(set_target_button, 0);
+  spinbox_and_buttons->addSpacing(10);
+  spinbox_and_buttons->addWidget(center_target_button);
 
   layout->addWidget(manual_target_slider, 0, 0, 1, 5);
   layout->addWidget(manual_target_min_label, 1, 0);
-  layout->addLayout(spinbox_and_button, 1, 2);
+  layout->addLayout(spinbox_and_buttons, 1, 2);
   layout->addWidget(manual_target_max_label, 1, 4);
 
   // Align the checkbox to the left so that clicking far to the right of it

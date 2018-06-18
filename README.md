@@ -35,8 +35,10 @@ from source.
       - You can save and load graph settings files now.
       - The Y axis is no longer labeled.
       - Fixed a bug that would cause memory leaks while the graph is paused.
-    - Change the 'Manually set target box' so it is always visible, and uses
-      a slider instead of a scroll bar.
+    - Change the 'Manually set target box':
+      - Made it visible from any tab.
+      - Made is use a slider control instead of a scrollbar.
+      - Added a "Center" button.
     - Allow the variables displayed in the Status tab to be moved into their
       own window.
     - Fix some bugs in the controls for setting the hard current limits and soft
