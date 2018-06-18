@@ -523,8 +523,8 @@ void main_controller::handle_variables_changed()
   // variables we have fetched if the settings were just applied, so this
   // calculation might be off at that time, but it's not a big deal.
   window->set_current(variables.get_current());
-  window->set_raw_current_mv(
-    jrk::calculate_raw_current_mv64(cached_settings, variables) / 64);
+  window->set_raw_current_mv64(
+    jrk::calculate_raw_current_mv64(cached_settings, variables));
 
   // Tell the window if current chopping is happening now.
   window->set_current_chopping_now(variables.get_current_chopping_occurrence_count() > 0);

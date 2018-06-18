@@ -101,7 +101,7 @@ public:
   void set_integral(int16_t);
   void set_duty_cycle_target(int16_t);
   void set_duty_cycle(int16_t);
-  void set_raw_current_mv(uint16_t);
+  void set_raw_current_mv64(uint32_t);
   void set_current(int32_t);
   void set_current_chopping_now(bool);
   void set_current_chopping_count(uint32_t);

@@ -259,10 +259,11 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
   emit duty_cycle_changed(duty_cycle);
 }
 
-void main_window::set_raw_current_mv(uint16_t current)
+void main_window::set_raw_current_mv64(uint32_t current)
 {
-  graph->raw_current.plot_value = current;
-  raw_current_value->setText(QString::number(current) + " mV");
+  uint32_t current_mv = current / 64;
+  graph->raw_current.plot_value = current_mv;
+  raw_current_value->setText(QString::number(current / 64.0, 'f', 2) + " mV");
 }
 
 void main_window::set_current(int32_t current)
