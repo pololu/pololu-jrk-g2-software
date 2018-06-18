@@ -294,6 +294,16 @@ void main_window::set_pid_period_count(uint16_t count)
 
 void main_window::set_pid_period_exceeded(bool exceeded)
 {
+  bool styled = !pid_period_exceeded_value->styleSheet().isEmpty();
+  if (!styled && exceeded)
+  {
+    pid_period_exceeded_value->setStyleSheet("color: red;");
+  }
+  else if (styled && !exceeded)
+  {
+    pid_period_exceeded_value->setStyleSheet("");
+  }
+
   pid_period_exceeded_value->setText(exceeded ? "Yes" : "No");
 }
 
