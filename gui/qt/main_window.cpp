@@ -1928,7 +1928,7 @@ void main_window::setup_ui()
   header_layout->addWidget(connection_status_value, 1);
 
   main_window_layout->addLayout(header_layout);
-  main_window_layout->addWidget(tab_widget);
+  main_window_layout->addWidget(tab_widget, 1);
   main_window_layout->addWidget(setup_manual_target_box());
   main_window_layout->addLayout(footer_layout);
 
@@ -2133,7 +2133,7 @@ QWidget * main_window::setup_status_tab()
   layout->addWidget(setup_graph(), 0, 1);
   //layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
-  layout->setRowStretch(2, 1);
+  layout->setRowStretch(0, 1);
   layout->setColumnStretch(1, 1);
 
   status_page_widget->setLayout(layout);
