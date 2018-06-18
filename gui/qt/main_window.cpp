@@ -2165,7 +2165,7 @@ QWidget * main_window::setup_variables_box()
   variables_box = new QGroupBox();
   variables_box->setTitle(tr("Variables"));  // TODO: better name?
 
-  QGridLayout * layout = new QGridLayout();
+  QGridLayout * layout = variables_layout = new QGridLayout();
 
   int row = 0;
 
@@ -2285,9 +2285,17 @@ QWidget * main_window::setup_variables_box()
   variables_window->setWindowTitle(
     tr("Pololu Jrk G2 Configuration Utility - Variables"));
   variables_window->set_later_layout(layout);
+
   assert(variables_window_action);
-  connect(variables_window_action, &QAction::triggered,
-    variables_window, &popout_window::prepare_and_activate);
+  connect(variables_window_action, &QAction::triggered, this, [this]() {
+    variables_box->setVisible(false);
+    variables_window->prepare_and_activate();
+  });
+
+  connect(variables_window, popout_window::window_closed, this, [this]() {
+    variables_box->setVisible(true);
+    variables_box->setLayout(variables_layout);
+  });
 
   return variables_box;
 }

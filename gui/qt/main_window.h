@@ -455,6 +455,7 @@ private:
   QWidget * status_page_widget;
   QGroupBox * variables_box;
   popout_window * variables_window;
+  QGridLayout * variables_layout;
   QLabel * device_name_label;
   QLabel * device_name_value;
   QLabel * serial_number_label;

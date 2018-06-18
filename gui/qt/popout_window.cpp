@@ -25,3 +25,9 @@ void popout_window::prepare_and_activate()
   raise();
   activateWindow();
 }
+
+void popout_window::closeEvent(QCloseEvent * event)
+{
+  Q_UNUSED(event);
+  emit window_closed();
+}
