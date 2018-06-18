@@ -2,7 +2,7 @@
 #include "main_window.h"
 #include "graph_widget.h"
 
-graph_window::graph_window(QWidget * parent)
+graph_window::graph_window()
 {
   setup_ui();
 }

@@ -10,7 +10,7 @@ class graph_window : public QWidget
 {
   Q_OBJECT
 public:
-  graph_window(QWidget * parent = 0);
+  graph_window();
 
 private:
   graph_widget * widget;

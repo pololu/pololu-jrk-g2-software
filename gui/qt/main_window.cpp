@@ -1187,7 +1187,7 @@ void main_window::open_graph_window()
 {
   if (graph_wind == NULL)
   {
-    graph_wind = new graph_window(this);
+    graph_wind = new graph_window();
     connect(graph_wind, &graph_window::pass_widget,
       this, &main_window::restore_graph_preview);
   }
