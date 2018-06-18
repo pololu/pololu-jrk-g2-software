@@ -2,6 +2,13 @@
 
 #include <QMainWindow>
 
+popout_window::popout_window()
+{
+  // We want this to be the same background color as a tab widget so that
+  // scroll bars look good on it.
+  setStyleSheet(".popout_window { background-color: white; }");
+}
+
 void popout_window::set_later_layout(QLayout * layout)
 {
   later_layout = layout;
