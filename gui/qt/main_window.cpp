@@ -2293,8 +2293,8 @@ QWidget * main_window::setup_variables_box()
   });
 
   connect(variables_window, popout_window::window_closed, this, [this]() {
-    variables_box->setVisible(true);
     variables_box->setLayout(variables_layout);
+    variables_box->setVisible(true);
   });
 
   return variables_box;
