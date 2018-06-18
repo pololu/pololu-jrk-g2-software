@@ -1674,7 +1674,7 @@ namespace jrk
   }
 
   /// Wrapper for jrk_calculate_raw_current_mv64().
-  inline int32_t calculate_raw_current_mv64(
+  inline uint32_t calculate_raw_current_mv64(
     const settings & settings, const variables & vars)
   {
     return jrk_calculate_raw_current_mv64(
