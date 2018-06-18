@@ -2308,7 +2308,8 @@ QWidget * main_window::setup_manual_target_box()
   auto_set_target_check = new QCheckBox();
   auto_set_target_check->setObjectName("auto_set_target_check");
   auto_set_target_check->setChecked(true);
-  auto_set_target_check->setText(tr("Set target when slider or entry box are changed"));
+  auto_set_target_check->setText(tr(
+    "Set target when slider or entry box are changed"));
 
   QHBoxLayout * spinbox_and_button = new QHBoxLayout();
   spinbox_and_button->addWidget(manual_target_entry_value, 0);
@@ -2328,20 +2329,20 @@ QWidget * main_window::setup_manual_target_box()
   layout->setColumnStretch(3, 1);
 
   // Add shortcuts so we can take actions when enter/return is pressed.
-  {
-    manual_target_return_key_shortcut = new QShortcut(manual_target_box);
-    manual_target_return_key_shortcut->setObjectName("manual_target_return_key_shortcut");
-    manual_target_return_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
-    manual_target_return_key_shortcut->setKey(Qt::Key_Return);
-    manual_target_enter_key_shortcut = new QShortcut(manual_target_box);
-    manual_target_enter_key_shortcut->setObjectName("manual_target_enter_key_shortcut");
-    manual_target_enter_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
-    manual_target_enter_key_shortcut->setKey(Qt::Key_Enter);
+  manual_target_return_key_shortcut = new QShortcut(manual_target_box);
+  manual_target_return_key_shortcut->setObjectName(
+    "manual_target_return_key_shortcut");
+  manual_target_return_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+  manual_target_return_key_shortcut->setKey(Qt::Key_Return);
+  manual_target_enter_key_shortcut = new QShortcut(manual_target_box);
+  manual_target_enter_key_shortcut->setObjectName(
+    "manual_target_enter_key_shortcut");
+  manual_target_enter_key_shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+  manual_target_enter_key_shortcut->setKey(Qt::Key_Enter);
 
-    // Handle both shortcuts with one slot.
-    connect(manual_target_enter_key_shortcut, SIGNAL(activated()), this,
-      SLOT(on_manual_target_return_key_shortcut_activated()));
-  }
+  // Handle both shortcuts with one slot.
+  connect(manual_target_enter_key_shortcut, SIGNAL(activated()), this,
+    SLOT(on_manual_target_return_key_shortcut_activated()));
 
   manual_target_box->setLayout(layout);
   return manual_target_box;
