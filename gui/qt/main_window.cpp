@@ -1926,9 +1926,10 @@ void main_window::setup_ui()
   header_layout->addWidget(device_list_value, 0);
   header_layout->addWidget(connection_status_value, 1);
 
-  main_window_layout->addLayout(header_layout, 0);
-  main_window_layout->addWidget(tab_widget, 0);
-  main_window_layout->addLayout(footer_layout, 0);
+  main_window_layout->addLayout(header_layout);
+  main_window_layout->addWidget(tab_widget);
+  main_window_layout->addWidget(setup_manual_target_box());
+  main_window_layout->addLayout(footer_layout);
 
   connect(stop_motor_button, SIGNAL(clicked()),
     stop_motor_action, SLOT(trigger()));
@@ -2129,7 +2130,7 @@ QWidget * main_window::setup_status_tab()
 
   layout->addWidget(setup_variables_box(), 0, 0);
   layout->addWidget(setup_graph(), 0, 1);
-  layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
+  //layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(2, 1);
   layout->setColumnStretch(1, 1);
@@ -2283,7 +2284,11 @@ QWidget * main_window::setup_variables_box()
 QWidget * main_window::setup_manual_target_box()
 {
   manual_target_box = new QGroupBox();
+  manual_target_box->setObjectName("manual_target_box");
+  //manual_target_box->setStyleSheet(
+  //  "#manual_target_box { background-color: white; }");
   manual_target_box->setTitle(tr("Manually set target (Serial mode only)"));
+
   QGridLayout * layout = new QGridLayout();
 
   manual_target_scroll_bar = new QScrollBar(Qt::Horizontal);
