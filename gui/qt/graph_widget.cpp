@@ -827,6 +827,7 @@ void graph_widget::save_settings()
   if (file_out.open(QFile::WriteOnly | QFile::Text))
   {
     QTextStream out(&file_out);
+    out << "domain," << domain->value() << '\n';
     for (auto plot : all_plots)
     {
       out
@@ -869,7 +870,11 @@ void graph_widget::load_settings()
     return;
   }
 
-  for (int i = 0; i < all_plots_settings.size(); i++)
+  QStringList domain_value = all_plots_settings[0].split(",");
+
+  domain->setValue(domain_value[1].toInt());
+
+  for (int i = 1; i < all_plots_settings.size() - 1; i++)
   {
     QStringList settings = all_plots_settings[i].split(",");
 
