@@ -40,7 +40,6 @@
 #include <QVBoxLayout>
 #include <QString>
 #include <QFontMetrics>
-#include <iostream>
 #include <cassert>
 #include <cmath>
 
@@ -2476,6 +2475,10 @@ QWidget * main_window::setup_input_analog_groupbox()
 
   input_analog_samples_combobox = setup_exponent_combobox(10);
   input_analog_samples_combobox->setObjectName("input_analog_samples_combobox");
+
+  // Note: We can use this line to make the dropdown box bigger, but I am not
+  // sure what size to put here to reliably make it show all ten items.
+  // input_analog_samples_combobox->view()->setMinimumHeight(200);
 
   input_detect_disconnect_checkbox = new QCheckBox(tr("Detect disconnect with power pin (SCL)"));
   input_detect_disconnect_checkbox->setObjectName("input_detect_disconnect_checkbox");
