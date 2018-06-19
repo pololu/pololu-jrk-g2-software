@@ -2802,10 +2802,10 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_error_minimum_spinbox->setRange(0, UINT12_MAX);
 
   QGridLayout * layout = new QGridLayout();
-  layout->addWidget(feedback_wizard_button, 0, 0, 1, 2, Qt::AlignLeft);
-  layout->addWidget(feedback_reset_range_button, 0, 2, Qt::AlignRight);
-  layout->addWidget(feedback_invert_checkbox, 1, 0, 1, 2, Qt::AlignLeft);
-  layout->addWidget(feedback_scaling_order_warning_label, 3, 2, 4, 1, Qt::AlignCenter);
+  layout->addWidget(feedback_wizard_button, 0, 0, 1, 3, Qt::AlignLeft);
+  layout->addWidget(feedback_reset_range_button, 0, 3, Qt::AlignRight);
+  layout->addWidget(feedback_invert_checkbox, 1, 0, 1, 4, Qt::AlignLeft);
+  layout->addWidget(feedback_scaling_order_warning_label, 3, 2, 4, 2, Qt::AlignCenter);
   layout->addWidget(feedback_calibration_label, 2, 1, Qt::AlignLeft);
   layout->addWidget(feedback_error_max_label, 3, 0, Qt::AlignLeft);
   layout->addWidget(feedback_error_maximum_spinbox, 3, 1, Qt::AlignLeft);
