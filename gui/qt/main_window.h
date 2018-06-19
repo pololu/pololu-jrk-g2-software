@@ -332,7 +332,7 @@ private slots:
   void on_fbt_timing_timeout_spinbox_valueChanged(int value);
   void on_fbt_samples_spinbox_valueChanged(int value);
   void on_fbt_divider_combobox_currentIndexChanged(int index);
-  void on_feedback_learn_button_clicked();
+  void on_feedback_wizard_button_clicked();
 
   void on_pid_proportional_control_values_changed(int multiplier, int exponent);
   void on_pid_integral_control_values_changed(int multiplier, int exponent);
@@ -582,20 +582,20 @@ private:
 
   // feedback tab "Scaling (Analog and Tachometer mode only)" groupbox
 
-  QGroupBox *feedback_scaling_groupbox;
-  QCheckBox *feedback_invert_checkbox;
-  QLabel *feedback_error_max_label;
-  QLabel *feedback_maximum_label;
-  QLabel *feedback_minimum_label;
-  QLabel *feedback_error_min_label;
-  QLabel *feedback_calibration_label;
-  QLabel *feedback_scaling_order_warning_label;
-  QSpinBox *feedback_error_maximum_spinbox;
-  QSpinBox *feedback_maximum_spinbox;
-  QSpinBox *feedback_minimum_spinbox;
-  QSpinBox *feedback_error_minimum_spinbox;
-  QPushButton *feedback_learn_button;
-  QPushButton *feedback_reset_range_button;
+  QGroupBox * feedback_scaling_groupbox;
+  QPushButton * feedback_wizard_button;
+  QPushButton * feedback_reset_range_button;
+  QCheckBox * feedback_invert_checkbox;
+  QLabel * feedback_error_max_label;
+  QLabel * feedback_maximum_label;
+  QLabel * feedback_minimum_label;
+  QLabel * feedback_error_min_label;
+  QLabel * feedback_calibration_label;
+  QLabel * feedback_scaling_order_warning_label;
+  QSpinBox * feedback_error_maximum_spinbox;
+  QSpinBox * feedback_maximum_spinbox;
+  QSpinBox * feedback_minimum_spinbox;
+  QSpinBox * feedback_error_minimum_spinbox;
 
   // feedback tab "Analog to digital conversion" groupbox
 

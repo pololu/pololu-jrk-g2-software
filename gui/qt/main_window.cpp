@@ -1635,7 +1635,7 @@ void main_window::on_fbt_divider_combobox_currentIndexChanged(int index)
   controller->handle_fbt_divider_exponent_input(exponent);
 }
 
-void main_window::on_feedback_learn_button_clicked()
+void main_window::on_feedback_wizard_button_clicked()
 {
   run_feedback_wizard(this);
 }
@@ -2751,6 +2751,12 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_scaling_groupbox = new QGroupBox(tr("Scaling"));
   feedback_scaling_groupbox->setObjectName("feedback_scaling_groupbox");
 
+  feedback_wizard_button = new QPushButton(tr("Feedback setup wi&zard..."));
+  feedback_wizard_button->setObjectName("feedback_wizard_button");
+
+  feedback_reset_range_button = new QPushButton(tr("R&eset to full range"));
+  feedback_reset_range_button->setObjectName("feedback_reset_range_button");
+
   feedback_invert_checkbox = new QCheckBox(tr("Invert feedback direction"));
   feedback_invert_checkbox->setObjectName("feedback_invert_checkbox");
 
@@ -2795,28 +2801,22 @@ QWidget * main_window::setup_feedback_scaling_groupbox()
   feedback_error_minimum_spinbox->setObjectName("feedback_error_minimum_spinbox");
   feedback_error_minimum_spinbox->setRange(0, UINT12_MAX);
 
-  feedback_learn_button = new QPushButton(tr("&Learn..."));
-  feedback_learn_button->setObjectName("feedback_learn_button");
+  QGridLayout * layout = new QGridLayout();
+  layout->addWidget(feedback_wizard_button, 0, 0, 1, 2, Qt::AlignLeft);
+  layout->addWidget(feedback_reset_range_button, 0, 2, Qt::AlignRight);
+  layout->addWidget(feedback_invert_checkbox, 1, 0, 1, 2, Qt::AlignLeft);
+  layout->addWidget(feedback_scaling_order_warning_label, 3, 2, 4, 1, Qt::AlignCenter);
+  layout->addWidget(feedback_calibration_label, 2, 1, Qt::AlignLeft);
+  layout->addWidget(feedback_error_max_label, 3, 0, Qt::AlignLeft);
+  layout->addWidget(feedback_error_maximum_spinbox, 3, 1, Qt::AlignLeft);
+  layout->addWidget(feedback_maximum_label, 4, 0, Qt::AlignLeft);
+  layout->addWidget(feedback_maximum_spinbox, 4, 1, Qt::AlignLeft);
+  layout->addWidget(feedback_minimum_label, 5, 0, Qt::AlignLeft);
+  layout->addWidget(feedback_minimum_spinbox, 5, 1, Qt::AlignLeft);
+  layout->addWidget(feedback_error_min_label, 6, 0, Qt::AlignLeft);
+  layout->addWidget(feedback_error_minimum_spinbox, 6, 1, Qt::AlignLeft);
 
-  feedback_reset_range_button = new QPushButton(tr("R&eset to full range"));
-  feedback_reset_range_button->setObjectName("feedback_reset_range_button");
-
-  QGridLayout *feedback_scaling_layout = new QGridLayout();
-  feedback_scaling_layout->addWidget(feedback_invert_checkbox, 0, 0, 1, 3, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_calibration_label, 1, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_error_max_label, 2, 0, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_error_maximum_spinbox, 2, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_maximum_label, 3, 0, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_maximum_spinbox, 3, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_minimum_label, 4, 0, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_minimum_spinbox, 4, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_error_min_label, 5, 0, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_error_minimum_spinbox, 5, 1, Qt::AlignLeft);
-  feedback_scaling_layout->addWidget(feedback_learn_button, 0, 3, Qt::AlignRight);
-  feedback_scaling_layout->addWidget(feedback_reset_range_button, 1, 3, Qt::AlignRight);
-  feedback_scaling_layout->addWidget(feedback_scaling_order_warning_label, 2, 2, 4, 2, Qt::AlignCenter);
-
-  feedback_scaling_groupbox->setLayout(feedback_scaling_layout);
+  feedback_scaling_groupbox->setLayout(layout);
 
   return feedback_scaling_groupbox;
 }
@@ -3048,10 +3048,10 @@ QWidget *main_window::setup_motor_tab()
   motor_invert_checkbox = new QCheckBox(tr("Invert motor direction"));
   motor_invert_checkbox->setObjectName("motor_invert_checkbox");
 
-  detect_motor_button = new QPushButton(tr("&Learn..."));
+  detect_motor_button = new QPushButton(tr("Feedback setup wi&zard..."));
   detect_motor_button->setObjectName("detect_motor_button");
   connect(detect_motor_button, &QPushButton::clicked,
-    this, &main_window::on_feedback_learn_button_clicked);
+    this, &main_window::on_feedback_wizard_button_clicked);
 
   QGridLayout *motor_controls_layout = new QGridLayout();
 
