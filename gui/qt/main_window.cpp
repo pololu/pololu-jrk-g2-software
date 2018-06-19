@@ -1526,7 +1526,7 @@ void main_window::on_input_reset_range_button_clicked()
   controller->handle_input_invert_input(false);
 }
 
-void main_window::on_input_learn_button_clicked()
+void main_window::on_input_wizard_button_clicked()
 {
   controller->handle_input_learn();
 }
@@ -2576,6 +2576,14 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_scaling_groupbox = new QGroupBox(tr("Scaling (analog and RC mode only)"));
   input_scaling_groupbox->setObjectName("input_scaling_groupbox");
 
+  input_wizard_button = new QPushButton();
+  input_wizard_button->setObjectName("input_wizard_button");
+  input_wizard_button->setText(tr("Input setup wi&zard..."));
+
+  input_reset_range_button = new QPushButton();
+  input_reset_range_button->setObjectName("input_reset_range_button");
+  input_reset_range_button->setText(tr("R&eset to full range"));
+
   input_invert_checkbox = new QCheckBox(tr("Invert input direction"));
   input_invert_checkbox->setObjectName("input_invert_checkbox");
 
@@ -2659,14 +2667,6 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_output_minimum_spinbox->setRange(0, UINT12_MAX);
   input_output_minimum_spinbox->setValue(0);
 
-  input_learn_button = new QPushButton();
-  input_learn_button->setObjectName("input_learn_button");
-  input_learn_button->setText(tr("&Learn..."));
-
-  input_reset_range_button = new QPushButton();
-  input_reset_range_button->setObjectName("input_reset_range_button");
-  input_reset_range_button->setText(tr("R&eset to full range"));
-
   // used so layout does not change when item is hidden
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
@@ -2681,33 +2681,33 @@ QWidget * main_window::setup_input_scaling_groupbox()
     "setting should be less than or\n"
     "equal to the setting above it."));
 
-  QGridLayout *input_scaling_layout = new QGridLayout();
-  input_scaling_layout->addWidget(input_invert_checkbox, 0, 0, 1, 3, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_input_label, 1, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_target_label, 1, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_error_max_label, 2, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_error_maximum_spinbox, 2, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_maximum_label, 3, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_maximum_spinbox, 3, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_output_maximum_spinbox, 3, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_neutral_max_label, 4, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_neutral_maximum_spinbox, 4, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_output_neutral_spinbox, 4, 2, 2, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_neutral_min_label, 5, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_neutral_minimum_spinbox, 5, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_minimum_label, 6, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_minimum_spinbox, 6, 1, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_output_minimum_spinbox, 6, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_error_min_label, 7, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_error_minimum_spinbox, 7, 1, Qt::AlignLeft);
-  input_scaling_layout->addItem(setup_vertical_spacer(), 8, 0);
-  input_scaling_layout->addWidget(input_degree_label, 9, 0, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_scaling_degree_combobox, 9, 1, 1, 2, Qt::AlignLeft);
-  input_scaling_layout->addWidget(input_learn_button, 0, 3, Qt::AlignRight);
-  input_scaling_layout->addWidget(input_reset_range_button, 1, 3, Qt::AlignRight);
-  input_scaling_layout->addWidget(input_scaling_order_warning_label, 2, 3, 6, 1);
+  QGridLayout * layout = new QGridLayout();
+  layout->addWidget(input_wizard_button, 0, 0, 1, 3, Qt::AlignLeft);
+  layout->addWidget(input_reset_range_button, 0, 3, Qt::AlignRight);
+  layout->addWidget(input_invert_checkbox, 1, 0, 1, 3, Qt::AlignLeft);
+  layout->addWidget(input_input_label, 2, 1, Qt::AlignLeft);
+  layout->addWidget(input_target_label, 2, 2, Qt::AlignLeft);
+  layout->addWidget(input_error_max_label, 3, 0, Qt::AlignLeft);
+  layout->addWidget(input_error_maximum_spinbox, 3, 1, Qt::AlignLeft);
+  layout->addWidget(input_maximum_label, 4, 0, Qt::AlignLeft);
+  layout->addWidget(input_maximum_spinbox, 4, 1, Qt::AlignLeft);
+  layout->addWidget(input_output_maximum_spinbox, 4, 2, Qt::AlignLeft);
+  layout->addWidget(input_neutral_max_label, 5, 0, Qt::AlignLeft);
+  layout->addWidget(input_neutral_maximum_spinbox, 5, 1, Qt::AlignLeft);
+  layout->addWidget(input_output_neutral_spinbox, 5, 2, 2, 1, Qt::AlignLeft);
+  layout->addWidget(input_neutral_min_label, 6, 0, Qt::AlignLeft);
+  layout->addWidget(input_neutral_minimum_spinbox, 6, 1, Qt::AlignLeft);
+  layout->addWidget(input_minimum_label, 7, 0, Qt::AlignLeft);
+  layout->addWidget(input_minimum_spinbox, 7, 1, Qt::AlignLeft);
+  layout->addWidget(input_output_minimum_spinbox, 7, 2, Qt::AlignLeft);
+  layout->addWidget(input_error_min_label, 8, 0, Qt::AlignLeft);
+  layout->addWidget(input_error_minimum_spinbox, 8, 1, Qt::AlignLeft);
+  layout->addItem(setup_vertical_spacer(), 9, 0);
+  layout->addWidget(input_degree_label, 10, 0, Qt::AlignLeft);
+  layout->addWidget(input_scaling_degree_combobox, 10, 1, 1, 2, Qt::AlignLeft);
+  layout->addWidget(input_scaling_order_warning_label, 3, 3, 6, 1);
 
-  input_scaling_groupbox->setLayout(input_scaling_layout);
+  input_scaling_groupbox->setLayout(layout);
 
   return input_scaling_groupbox;
 }

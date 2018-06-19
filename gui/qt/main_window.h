@@ -314,7 +314,7 @@ private slots:
   void on_input_output_maximum_spinbox_valueChanged(int value);
   void on_input_scaling_degree_combobox_currentIndexChanged(int index);
   void on_input_reset_range_button_clicked();
-  void on_input_learn_button_clicked();
+  void on_input_wizard_button_clicked();
 
   void on_feedback_mode_combobox_currentIndexChanged(int index);
   void on_feedback_invert_checkbox_stateChanged(int state);
@@ -532,30 +532,30 @@ private:
 
   // input tab "Scaling" groupbox
 
-  QGroupBox *input_scaling_groupbox;
-  QLabel *input_scaling_order_warning_label;
-  QLabel *input_error_max_label;
-  QSpinBox *input_error_maximum_spinbox;
-  QLabel *input_maximum_label;
-  QSpinBox *input_maximum_spinbox;
-  QLabel *input_neutral_max_label;
-  QSpinBox *input_neutral_maximum_spinbox;
-  QLabel *input_neutral_min_label;
-  QSpinBox *input_neutral_minimum_spinbox;
-  QLabel *input_minimum_label;
-  QSpinBox *input_minimum_spinbox;
-  QLabel *input_error_min_label;
-  QSpinBox *input_error_minimum_spinbox;
-  QLabel *input_degree_label;
-  QComboBox *input_scaling_degree_combobox;
-  QCheckBox *input_invert_checkbox;
-  QPushButton *input_learn_button;
-  QPushButton *input_reset_range_button;
-  QLabel *input_input_label;
-  QLabel *input_target_label;
-  QSpinBox *input_output_maximum_spinbox;
-  QSpinBox *input_output_neutral_spinbox;
-  QSpinBox *input_output_minimum_spinbox;
+  QGroupBox * input_scaling_groupbox;
+  QPushButton * input_wizard_button;
+  QPushButton * input_reset_range_button;
+  QLabel * input_scaling_order_warning_label;
+  QLabel * input_error_max_label;
+  QSpinBox * input_error_maximum_spinbox;
+  QLabel * input_maximum_label;
+  QSpinBox * input_maximum_spinbox;
+  QLabel * input_neutral_max_label;
+  QSpinBox * input_neutral_maximum_spinbox;
+  QLabel * input_neutral_min_label;
+  QSpinBox * input_neutral_minimum_spinbox;
+  QLabel * input_minimum_label;
+  QSpinBox * input_minimum_spinbox;
+  QLabel * input_error_min_label;
+  QSpinBox * input_error_minimum_spinbox;
+  QLabel * input_degree_label;
+  QComboBox * input_scaling_degree_combobox;
+  QCheckBox * input_invert_checkbox;
+  QLabel * input_input_label;
+  QLabel * input_target_label;
+  QSpinBox * input_output_maximum_spinbox;
+  QSpinBox * input_output_neutral_spinbox;
+  QSpinBox * input_output_minimum_spinbox;
 
   // input tab "Serial interface" groupbox
 
