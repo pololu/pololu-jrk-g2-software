@@ -3322,13 +3322,13 @@ QWidget *main_window::setup_errors_tab()
   errors_hard_label->setFont(font);
   errors_hard_label->setAlignment(Qt::AlignCenter);
 
-  errors_stopping_motor_label = new QLabel(tr("Currently\nstopping motor?"));
+  errors_stopping_motor_label = new QLabel(tr("Stopping\nmotor?"));
   errors_stopping_motor_label->setObjectName("errors_stopping_motor_label");
   errors_stopping_motor_label->setAlignment(Qt::AlignCenter);
   errors_stopping_motor_label->setFont(font);
   errors_stopping_motor_label->setContentsMargins(5, 0, 5, 0);
 
-  errors_occurrence_count_label = new QLabel(tr("Occurrence\ncount"));
+  errors_occurrence_count_label = new QLabel(tr("Count"));
   errors_occurrence_count_label->setObjectName("errors_occurrence_count_label");
   errors_occurrence_count_label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   errors_occurrence_count_label->setFont(font);
