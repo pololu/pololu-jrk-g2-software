@@ -653,7 +653,7 @@ void main_controller::handle_settings_changed()
   window->set_vin_calibration(settings.get_vin_calibration());
 
   window->update_input_tab_enables();
-  window->update_feedback_tab_enables();
+  window->update_feedback_related_enables();
 
   window->set_apply_settings_enabled(connected() && settings_modified);
 }

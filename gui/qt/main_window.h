@@ -169,7 +169,7 @@ public:
   void set_fbt_samples(uint8_t);
   void set_fbt_divider_exponent(uint8_t);
   void set_fbt_range_display(const std::string & message, bool invalid);
-  void update_feedback_tab_enables();
+  void update_feedback_related_enables();
 
   void set_pid_proportional(uint16_t multiplier, uint8_t exponent);
   void set_pid_integral(uint16_t multiplier, uint8_t exponent);

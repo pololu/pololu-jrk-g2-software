@@ -684,12 +684,13 @@ void main_window::set_fbt_range_display(const std::string & message, bool invali
   }
 }
 
-void main_window::update_feedback_tab_enables()
+void main_window::update_feedback_related_enables()
 {
   uint8_t feedback_mode = feedback_mode_combobox->currentData().toUInt();
 
-  feedback_scaling_groupbox->setEnabled(
-    feedback_mode != JRK_FEEDBACK_MODE_NONE);
+  bool pid = feedback_mode != JRK_FEEDBACK_MODE_NONE;
+
+  feedback_scaling_groupbox->setEnabled(pid);
 
   bool analog = feedback_mode == JRK_FEEDBACK_MODE_ANALOG;
   feedback_analog_groupbox->setEnabled(analog || always_analog_fba->isChecked());
@@ -709,6 +710,16 @@ void main_window::update_feedback_tab_enables()
   fbt_timing_polarity_combobox->setEnabled(timing);
   fbt_timing_timeout_label->setEnabled(timing);
   fbt_timing_timeout_spinbox->setEnabled(timing);
+
+  pid_proportional_control->setEnabled(pid);
+  pid_integral_control->setEnabled(pid);
+  pid_derivative_control->setEnabled(pid);
+  integral_limit_label->setEnabled(pid);
+  integral_limit_spinbox->setEnabled(pid);
+  integral_divider_label->setEnabled(pid);
+  integral_divider_combobox->setEnabled(pid);
+  reset_integral_checkbox->setEnabled(pid);
+  feedback_dead_zone_spinbox->setEnabled(pid);
 }
 
 void main_window::set_pid_proportional(uint16_t multiplier, uint8_t exponent)
