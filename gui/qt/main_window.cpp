@@ -261,9 +261,9 @@ void main_window::set_duty_cycle(int16_t duty_cycle)
 
 void main_window::set_raw_current_mv64(uint32_t current)
 {
-  uint32_t current_mv = current / 64;
+  double current_mv = current / 64.0;
   graph->raw_current.plot_value = current_mv;
-  raw_current_value->setText(QString::number(current / 64.0, 'f', 2) + " mV");
+  raw_current_value->setText(QString::number(current_mv, 'f', 2) + " mV");
 }
 
 void main_window::set_current(int32_t current)

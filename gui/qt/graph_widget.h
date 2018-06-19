@@ -42,7 +42,7 @@ public:
     bool dark_changed = false;
     QCPAxis * axis;
     QCPGraph * graph;
-    int32_t plot_value = 0;
+    double plot_value = 0;
     QCPItemText * axis_label;
     QCPItemText * axis_position_label;
     QCPItemText * axis_scale_label;
