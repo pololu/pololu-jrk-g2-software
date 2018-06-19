@@ -242,20 +242,23 @@ void main_window::set_integral(int16_t integral)
   integral_value->setText(QString::number(integral));
 }
 
+static QString format_duty_cycle(int16_t duty_cycle)
+{
+  return QString::number(duty_cycle) + " (" +
+    QString::fromStdString(convert_duty_cycle_to_percent_string(duty_cycle))
+    + ")";
+}
+
 void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 {
   graph->duty_cycle_target.plot_value = duty_cycle_target;
-  duty_cycle_target_value->setText(QString::number(duty_cycle_target));
+  duty_cycle_target_value->setText(format_duty_cycle(duty_cycle_target));
 }
 
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   graph->duty_cycle.plot_value = duty_cycle;
-
-  QString duty_cycle_pretty = " (" + QString::fromStdString(
-      convert_duty_cycle_to_percent_string(duty_cycle)) + ")";
-
-  duty_cycle_value->setText(QString::number(duty_cycle) + duty_cycle_pretty);
+  duty_cycle_value->setText(format_duty_cycle(duty_cycle));
   emit duty_cycle_changed(duty_cycle);
 }
 
