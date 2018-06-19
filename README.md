@@ -41,6 +41,8 @@ from source.
       - Added a "Center" button.
     - Allow the variables displayed in the Status tab to be moved into their
       own window.
+    - Show two digits after the decimal point for the "Raw current" variable
+      in the Status tab and allow its graph to show more resolution as well.
     - Fix some bugs in the controls for setting the hard current limits and soft
       current limits.
     - Fix a bug where the "Graph" command in the "Window" menu would not succeed
