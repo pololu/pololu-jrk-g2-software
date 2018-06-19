@@ -2921,8 +2921,8 @@ QWidget * main_window::setup_feedback_fbt_groupbox()
   fbt_range_label->setObjectName("feedback_range_label");
   fbt_range_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
   fbt_range_label->setText(
-    "Frequency Measurement Range (at 50% duty cycle): 9.99 MHz to 9.99 MHz  ");
-  fbt_range_label->setMinimumWidth(fbt_range_label->sizeHint().width());
+    "Frequency Measurement Range (at 50% duty cycle):  \n9.99 MHz to 9.99 MHz  ");
+  fbt_range_label->setMinimumSize(fbt_range_label->sizeHint());
   fbt_range_label->setText("");
 
   QGridLayout * layout = new QGridLayout();

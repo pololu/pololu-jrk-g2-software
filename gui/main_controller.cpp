@@ -826,11 +826,11 @@ void main_controller::recalculate_fbt_range()
   std::ostringstream ss;
   if (method == JRK_FBT_METHOD_PULSE_TIMING)
   {
-    ss << "Frequency measurement range (at 50% duty cycle): ";
+    ss << "Frequency measurement range (at 50% duty cycle):\n";
   }
   else
   {
-    ss << "Frequency measurement range: ";
+    ss << "Frequency measurement range:\n";
   }
   ss << convert_hz_to_string(min_freq_hz)
      << " to "
