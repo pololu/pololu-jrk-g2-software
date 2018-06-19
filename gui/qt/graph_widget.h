@@ -68,6 +68,7 @@ public:
 
   bool preview_mode = true;
 
+  QMenu * setup_options_menu(const QString &);
   QMenuBar * setup_menu_bar();
 
   void set_preview_mode(bool preview_mode);

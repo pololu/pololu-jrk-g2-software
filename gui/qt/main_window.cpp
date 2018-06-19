@@ -2141,6 +2141,8 @@ QWidget * main_window::setup_graph()
   graph->set_preview_mode(true);
   graph->custom_plot->installEventFilter(this);
 
+  window_menu->addMenu(graph->setup_options_menu("Graph options"));
+
   graph_preview_frame = new QFrame();
   graph_preview_frame->setFrameStyle(QFrame::Box | QFrame::Plain);
   graph_preview_frame->setLineWidth(1);

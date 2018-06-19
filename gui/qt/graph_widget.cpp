@@ -383,13 +383,9 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 }
 
-QMenuBar * graph_widget::setup_menu_bar()
+QMenu * graph_widget::setup_options_menu(const QString& title)
 {
-  if (menu_bar) { return menu_bar; }
-
-  menu_bar = new QMenuBar();
-
-  QMenu * options_menu = menu_bar->addMenu(tr("&Options"));
+  QMenu * options_menu = new QMenu(title);
 
   QAction * save_settings_action = new QAction(this);
   save_settings_action->setText("Save graph settings...");
@@ -437,6 +433,17 @@ QMenuBar * graph_widget::setup_menu_bar()
 
   connect(reset_all_ranges_action, &QAction::triggered, this,
     &graph_widget::reset_all_ranges);
+
+  return options_menu;
+}
+
+QMenuBar * graph_widget::setup_menu_bar()
+{
+  if (menu_bar) { return menu_bar; }
+
+  menu_bar = new QMenuBar();
+
+  menu_bar->addMenu(setup_options_menu(QWidget::tr("&Options")));
 
   return menu_bar;
 }
