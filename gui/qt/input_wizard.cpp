@@ -55,7 +55,7 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
   : QWizard(parent), input_mode(input_mode), controller(controller)
 {
   setWindowTitle(tr("Input setup wizard"));
-  setWindowIcon(QIcon(":app_icon"));  // TODO: make sure this works
+  setWindowIcon(QIcon(":app_icon"));
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
   setPage(INTRO, setup_intro_page());
@@ -80,7 +80,7 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
   connect(button(BackButton), &QAbstractButton::clicked,
     this, &input_wizard::handle_back);
 
-  //TODO: connect(this, &QDialog::finished, this, &input_wizard::copy_form_into_result);
+  connect(this, &QDialog::finished, this, &input_wizard::copy_form_into_result);
 }
 
 void input_wizard::showEvent(QShowEvent * event)
@@ -282,6 +282,8 @@ void input_wizard::handle_sampling_complete()
   {
     if (learn_step == LAST_STEP)
     {
+      copy_result_into_form();
+
       // Go to the conclusion page.
       next();
 
@@ -558,12 +560,24 @@ void input_wizard::update_order_warning()
 
 void input_wizard::copy_result_into_form()
 {
-  // TODO
+  final_invert_checkbox->setChecked(result.invert);
+  final_error_max_spinbox->setValue(result.error_maximum);
+  final_max_spinbox->setValue(result.maximum);
+  final_neutral_max_spinbox->setValue(result.neutral_maximum);
+  final_neutral_min_spinbox->setValue(result.neutral_minimum);
+  final_min_spinbox->setValue(result.minimum);
+  final_error_min_spinbox->setValue(result.error_minimum);
 }
 
 void input_wizard::copy_form_into_result()
 {
-  // TODO
+  result.invert = final_invert_checkbox->isChecked();
+  result.error_maximum = final_error_max_spinbox->value();
+  result.maximum = final_max_spinbox->value();
+  result.neutral_maximum = final_neutral_max_spinbox->value();
+  result.neutral_minimum = final_neutral_min_spinbox->value();
+  result.minimum = final_min_spinbox->value();
+  result.error_minimum = final_error_min_spinbox->value();
 }
 
 bool input_wizard::disconnected_error()
