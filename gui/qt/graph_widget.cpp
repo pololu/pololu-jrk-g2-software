@@ -891,11 +891,11 @@ void graph_widget::load_settings()
   {
     if (settings.contains("theme,dark"))
     {
-      switch_to_dark();
+      emit dark_theme_action->triggered();
     }
     else if (settings.contains("theme,default"))
     {
-      switch_to_default();
+      emit default_theme_action->triggered();
     }
 
     if (settings.contains("domain"))
@@ -903,24 +903,33 @@ void graph_widget::load_settings()
       domain->setValue(settings.split(",").at(1).toInt());
     }
 
+    QStringList split_settings = settings.split(",", QString::SkipEmptyParts);
+
     for (auto plot : all_plots)
     {
-      if (settings.contains(plot->id_string))
+      if (split_settings.count() < 6
+        || split_settings[0] != plot->id_string) { continue; }
+
+      plot->display->setChecked(split_settings[1].toInt());
+
       {
-        QStringList split_settings = settings.split(",");
-
-        if (split_settings[3].toDouble() < 0.1)
-        {
-          split_settings[3] = "0.1";
-        }
-
-        plot->display->setChecked(split_settings[1].toInt());
+        QSignalBlocker blocker(plot->position);
         plot->position->setValue(split_settings[2].toDouble());
-        plot->scale->setValue(split_settings[3].toDouble());
-        set_range(*plot);
-        plot->default_color = split_settings[4];
-        plot->dark_color = split_settings[5];
       }
+
+      if (split_settings[3].toDouble() < 0.1)
+      {
+        split_settings[3] = "0.1";
+      }
+
+      {
+        QSignalBlocker blocker(plot->position);
+        plot->scale->setValue(split_settings[3].toDouble());
+      }
+
+      plot->default_color = split_settings[4];
+      plot->dark_color = split_settings[5];
+      set_range(*plot);
     }
   }
 }
