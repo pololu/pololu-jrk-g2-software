@@ -44,6 +44,8 @@ public:
 
   result result;
 
+  bool has_sent_motor_commands() const { return sent_motor_commands; }
+
   virtual void showEvent(QShowEvent *);
 
 public slots:
@@ -160,4 +162,5 @@ private:
   std::vector<uint16_t> samples;
   uint16_range learned_max;
   uint16_range learned_min;
+  bool sent_motor_commands = false;
 };

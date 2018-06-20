@@ -46,7 +46,10 @@ void run_feedback_wizard(main_window * window)
   // Put the jrk back into a more normal state instead of the force duty cycle
   // state.  Also, this is important to do because the window could conceivably
   // be closed while the duty cycle is being forced to some non-zero value.
-  controller->stop_motor();  // TODO: probably shouldn't do this if they close the wizard before doing anything
+  if (wizard.has_sent_motor_commands())
+  {
+    controller->stop_motor();
+  }
 
   if (result != QDialog::Accepted) { return; }
 
@@ -351,6 +354,8 @@ bool feedback_wizard::handle_next_on_intro_page()
 {
   try
   {
+    sent_motor_commands = true;
+
     // Force the duty cycle target to 0 to make this wizard safer and because
     // that should be the default state when we drive the motor around manually.
     controller->force_duty_cycle_target_nocatch(0);
