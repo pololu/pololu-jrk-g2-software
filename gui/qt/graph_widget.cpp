@@ -576,12 +576,14 @@ void graph_widget::setup_plot(plot & plot,
     (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
+    plot.display->setChecked(true);
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString &)>
     (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
+    plot.display->setChecked(true);
   });
 
   all_plots.append(&plot);
@@ -787,11 +789,8 @@ void graph_widget::reset_plot_range(const plot & plot)
 
 void graph_widget::set_range(const plot & plot)
 {
-  plot.display->setChecked(true);
-
   reset_graph_interaction_axes();
 
-  // Warning: These formulas are duplicated in load_settings().
   double lower_range = -(plot.scale->value() * 5.0) - plot.position->value();
   double upper_range = (plot.scale->value() * 5.0) - plot.position->value();
 
@@ -888,48 +887,41 @@ void graph_widget::load_settings()
     return;
   }
 
-  if (all_plots_settings[0].contains("dark"))
+  for (auto settings : all_plots_settings)
   {
-    switch_to_dark();
-  }
-  else
-  {
-    switch_to_default();
-  }
-
-  QStringList domain_value = all_plots_settings[1].split(",");
-
-  domain->setValue(domain_value[1].toInt());
-
-  for (int i = 2; i < all_plots_settings.size() - 2; i++)
-  {
-    QStringList settings = all_plots_settings[i].split(",");
-
-    if (settings[3].toDouble() < 0.1)
+    if (settings.contains("theme,dark"))
     {
-      settings[3] = "0.1";
+      switch_to_dark();
+    }
+    else if (settings.contains("theme,default"))
+    {
+      switch_to_default();
     }
 
-    // TODO: instead of using all_plots[i], locate the specified plot using its
-    // name.  This also saves us from an array overflow bug.
+    if (settings.contains("domain"))
+    {
+      domain->setValue(settings.split(",").at(1).toInt());
+    }
 
-    all_plots[i]->display->setChecked(settings[1].toInt());
-    // Warning: These formulas are duplicated in set_range().
-    double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
-    double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
-    all_plots[i]->axis->setRange(lower_range, upper_range);
+    for (auto plot : all_plots)
+    {
+      if (settings.contains(plot->id_string))
+      {
+        QStringList split_settings = settings.split(",");
 
-    all_plots[i]->default_color = settings[4];
-    all_plots[i]->dark_color = settings[5];
-  }
+        if (split_settings[3].toDouble() < 0.1)
+        {
+          split_settings[3] = "0.1";
+        }
 
-  if (dark_theme)
-  {
-    switch_to_dark();
-  }
-  else
-  {
-    switch_to_default();
+        plot->display->setChecked(split_settings[1].toInt());
+        plot->position->setValue(split_settings[2].toDouble());
+        plot->scale->setValue(split_settings[3].toDouble());
+        set_range(*plot);
+        plot->default_color = split_settings[4];
+        plot->dark_color = split_settings[5];
+      }
+    }
   }
 }
 
