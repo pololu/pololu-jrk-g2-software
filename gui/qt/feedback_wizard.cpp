@@ -1067,7 +1067,6 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   layout->addWidget(final_motor_invert_checkbox);
   layout->addWidget(final_invert_checkbox);
   layout->addLayout(scaling_layout);
-  layout->addWidget(order_warning_label);
   layout->addStretch(1);
 
   conclusion_page->setLayout(layout);
