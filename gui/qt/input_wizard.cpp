@@ -14,6 +14,45 @@
 #include <algorithm>
 #include <cassert>
 
+void run_input_wizard(main_window * window)
+{
+  main_controller * controller = window->controller;
+
+  if (!controller->check_settings_applied_before_wizard()) { return; }
+
+  jrk::settings * settings = &controller->cached_settings;
+  if (settings->get_input_mode() != JRK_INPUT_MODE_ANALOG &&
+    settings->get_input_mode() != JRK_INPUT_MODE_RC)
+  {
+    // Should not happen because the button is disabled.
+    window->show_info_message(
+      "This wizard helps you set the input scaling parameters for the "
+      "pulse width (RC) or analog input.  "
+      "Please change the input mode to pulse width or analog, then try again.");
+    return;
+  }
+
+  // Stop the motor so it isn't moving while people are learning the input.
+  controller->stop_motor();  // TODO: don't do that until they get past the first screen
+
+  uint8_t input_mode = settings->get_input_mode();
+
+  input_wizard wizard(window, input_mode);
+  QObject::connect(window, &main_window::input_changed,
+    &wizard, &input_wizard::set_input);
+
+  if (wizard.exec() != QDialog::Accepted) { return; }
+
+  controller->handle_input_invert_input(wizard.result.invert);
+  controller->handle_input_error_minimum_input(wizard.result.error_minimum);
+  controller->handle_input_error_maximum_input(wizard.result.error_maximum);
+  controller->handle_input_minimum_input(wizard.result.minimum);
+  controller->handle_input_maximum_input(wizard.result.maximum);
+  controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
+  controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
+  // TODO: apply settings
+}
+
 input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
   : QWizard(parent), input_mode(input_mode)
 {

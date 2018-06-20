@@ -3,11 +3,15 @@
 #include <uint16_range.h>
 #include <stdint.h>
 #include <QWizard>
+#include "main_window.h"
+#include "main_controller.h"
 
 class uint16_range;
 class nice_wizard_page;
 class QLabel;
 class QProgressBar;
+
+void run_input_wizard(main_window *);
 
 class input_wizard : public QWizard
 {

@@ -19,7 +19,6 @@ void run_feedback_wizard(main_window * window)
 {
   main_controller * controller = window->controller;
 
-  if (!controller->connected()) { return; }
   if (!controller->check_settings_applied_before_wizard()) { return; }
 
   jrk::settings * settings = &controller->cached_settings;
@@ -47,7 +46,7 @@ void run_feedback_wizard(main_window * window)
   // Put the jrk back into a more normal state instead of the force duty cycle
   // state.  Also, this is important to do because the window could conceivably
   // be closed while the duty cycle is being forced to some non-zero value.
-  controller->stop_motor();
+  controller->stop_motor();  // TODO: probably shouldn't do this if they close the wizard before doing anything
 
   if (result != QDialog::Accepted) { return; }
 

@@ -557,23 +557,6 @@ void main_window::set_input_scaling_order_warning_label()
   input_scaling_order_warning_label->setVisible(enabled);
 }
 
-void main_window::run_input_wizard(uint8_t input_mode)
-{
-  // TODO: make the input wizard more like the feedback wizard
-  input_wizard wizard(this, input_mode);
-  connect(this, &main_window::input_changed, &wizard, &input_wizard::set_input);
-
-  if (wizard.exec() != QDialog::Accepted) { return; }
-
-  controller->handle_input_invert_input(wizard.result.invert);
-  controller->handle_input_error_minimum_input(wizard.result.error_minimum);
-  controller->handle_input_error_maximum_input(wizard.result.error_maximum);
-  controller->handle_input_minimum_input(wizard.result.minimum);
-  controller->handle_input_maximum_input(wizard.result.maximum);
-  controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
-  controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
-}
-
 void main_window::update_input_tab_enables()
 {
   uint8_t input_mode = input_mode_combobox->currentData().toUInt();
@@ -1528,7 +1511,7 @@ void main_window::on_input_reset_range_button_clicked()
 
 void main_window::on_input_wizard_button_clicked()
 {
-  controller->handle_input_learn();
+  run_input_wizard(this);
 }
 
 void main_window::on_feedback_mode_combobox_currentIndexChanged(int index)

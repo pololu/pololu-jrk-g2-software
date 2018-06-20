@@ -100,7 +100,6 @@ public:
   void handle_output_neutral_input(uint16_t output_neutral);
   void handle_output_maximum_input(uint16_t output_maximum);
   void handle_input_scaling_degree_input(uint8_t input_scaling_degree);
-  void handle_input_learn();
 
   void handle_feedback_mode_input(uint8_t value);
   void handle_feedback_invert_input(bool invert_feedback);
