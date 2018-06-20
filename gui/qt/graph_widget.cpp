@@ -835,6 +835,16 @@ void graph_widget::save_settings()
   {
     QTextStream out(&file_out);
     out << "domain," << domain->value() << '\n';
+
+    if (dark_theme)
+    {
+      out << "dark theme" << '\n';
+    }
+    else
+    {
+      out << "default theme" << '\n';
+    }
+
     for (auto plot : all_plots)
     {
       out
@@ -881,7 +891,16 @@ void graph_widget::load_settings()
 
   domain->setValue(domain_value[1].toInt());
 
-  for (int i = 1; i < all_plots_settings.size() - 1; i++)
+  if (all_plots_settings[1].contains("dark"))
+  {
+    switch_to_dark();
+  }
+  else
+  {
+    switch_to_default();
+  }
+
+  for (int i = 2; i < all_plots_settings.size() - 2; i++)
   {
     QStringList settings = all_plots_settings[i].split(",");
 
