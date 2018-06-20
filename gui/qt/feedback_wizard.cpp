@@ -648,15 +648,7 @@ void feedback_wizard::update_order_warning()
 void feedback_wizard::copy_result_into_form()
 {
   final_motor_invert_checkbox->setChecked(result.motor_invert);
-
-  connect(final_motor_invert_checkbox, &QCheckBox::toggled,
-   this, &feedback_wizard::final_motor_invert_checkbox_toggled);
-
   final_invert_checkbox->setChecked(result.invert);
-
-  connect(final_invert_checkbox, &QCheckBox::toggled,
-   this, &feedback_wizard::final_invert_checkbox_toggled);
-
   final_error_max_spinbox->setValue(result.error_maximum);
   final_max_spinbox->setValue(result.maximum);
   final_min_spinbox->setValue(result.minimum);
@@ -992,9 +984,13 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   final_motor_invert_checkbox = new QCheckBox();
   final_motor_invert_checkbox->setText(tr("Invert motor direction"));
+  connect(final_motor_invert_checkbox, &QCheckBox::toggled,
+   this, &feedback_wizard::final_motor_invert_checkbox_toggled);
 
   final_invert_checkbox = new QCheckBox();
   final_invert_checkbox->setText(tr("Invert feedback direction"));
+  connect(final_invert_checkbox, &QCheckBox::toggled,
+   this, &feedback_wizard::final_invert_checkbox_toggled);
 
   QLabel * final_error_max_label = new QLabel();
   final_error_max_label->setText(tr("Error max:"));
