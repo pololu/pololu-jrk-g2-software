@@ -26,7 +26,7 @@ class input_wizard : public QWizard
   const int LAST_STEP = MIN;
 
 public:
-  input_wizard(QWidget * parent, uint8_t input_mode);
+  input_wizard(QWidget * parent, uint8_t input_mode, main_controller *);
 
   struct result
   {
@@ -49,6 +49,7 @@ private:
   void set_next_button_enabled(bool enabled);
   void set_progress_visible(bool visible);
 
+  bool handle_next_on_intro_page();
   bool handle_back_on_learn_page();
   bool handle_next_on_learn_page();
   void handle_new_sample();
@@ -60,6 +61,8 @@ private:
   uint16_t full_range() const;
 
   void update_learn_text();
+
+  main_controller * controller;
 
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();

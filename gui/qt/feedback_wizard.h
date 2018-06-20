@@ -90,11 +90,6 @@ private:
 
   bool disconnected_error();
 
-  // This class needs to hold a pointer to the main_controller since there are a
-  // variety of commands it needs to send to the jrk to control the motor, which
-  // means it has access to a lot of things that it should not use.
-  main_controller * controller;
-
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
   QWidget * setup_motor_invert_widget();
@@ -103,6 +98,8 @@ private:
   QWidget * setup_feedback_widget();
   QGroupBox * setup_motor_control_box();
   nice_wizard_page * setup_conclusion_page();
+
+  main_controller * controller;
 
   nice_wizard_page * intro_page;
   nice_wizard_page * conclusion_page;

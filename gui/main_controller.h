@@ -68,6 +68,7 @@ public:
   // Returns true on success.
   bool apply_settings();
 
+  void stop_motor_nocatch();
   void stop_motor();
   void run_motor();
   void set_target(uint16_t);

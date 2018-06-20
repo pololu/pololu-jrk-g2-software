@@ -1567,10 +1567,15 @@ bool main_controller::apply_settings()
   return true;
 }
 
+void main_controller::stop_motor_nocatch()
+{
+  if (!connected()) { return; }
+  device_handle.stop_motor();
+}
+
 void main_controller::stop_motor()
 {
   if (!connected()) { return; }
-
   try
   {
     device_handle.stop_motor();

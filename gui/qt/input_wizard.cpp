@@ -32,12 +32,9 @@ void run_input_wizard(main_window * window)
     return;
   }
 
-  // Stop the motor so it isn't moving while people are learning the input.
-  controller->stop_motor();  // TODO: don't do that until they get past the first screen
-
   uint8_t input_mode = settings->get_input_mode();
 
-  input_wizard wizard(window, input_mode);
+  input_wizard wizard(window, input_mode, controller);
   QObject::connect(window, &main_window::input_changed,
     &wizard, &input_wizard::set_input);
 
@@ -53,8 +50,9 @@ void run_input_wizard(main_window * window)
   // TODO: apply settings
 }
 
-input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
-  : QWizard(parent), input_mode(input_mode)
+input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
+  main_controller * controller)
+  : QWizard(parent), input_mode(input_mode), controller(controller)
 {
   setWindowTitle(tr("Input setup wizard"));
   setWindowIcon(QIcon(":app_icon"));  // TODO: make sure this works
@@ -72,8 +70,8 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode)
 
 // This gets called when the user pressed next or back, and it receives the ID
 // of the page the QWizard class it trying to go to.  It figures out what
-// happened and then calls a handler function.  The handler should true if it is
-// OK with changing to the new page and take care of any other effects.
+// happened and then calls a handler function.  The handler should return true
+// if it is OK with changing to the new page and take care of any other effects.
 void input_wizard::handle_next_or_back(int id)
 {
   if (page == id)
@@ -81,6 +79,17 @@ void input_wizard::handle_next_or_back(int id)
     // We are already on the expected page so don't do anything.  This can
     // happen if the user tried to move and we rejected it.
     return;
+  }
+
+  if (page == INTRO)
+  {
+    if (id == LEARN)
+    {
+      if (!handle_next_on_intro_page())
+      {
+        back();
+      }
+    }
   }
 
   if (page == LEARN)
@@ -140,6 +149,27 @@ void input_wizard::set_progress_visible(bool visible)
 {
   sampling_label->setVisible(visible);
   sampling_progress->setVisible(visible);
+}
+
+bool input_wizard::handle_next_on_intro_page()
+{
+  // Stop the motor so it isn't moving during this wizard.
+  try
+  {
+    controller->stop_motor_nocatch();
+  }
+  catch (const std::exception & e)
+  {
+    show_exception(e, this);
+    return false;
+  }
+
+  // This shouldn't be necessary, but if there is ever a bug in the "Back"
+  // button and we go back to the intro page prematurely, it will help.
+  learn_step = FIRST_STEP;
+  sampling = false;
+
+  return true;
 }
 
 bool input_wizard::handle_back_on_learn_page()
@@ -461,8 +491,7 @@ void input_wizard::update_learn_text()
     }
     else
     {
-      // Should not happen.
-      assert(0);
+      assert(0);  // Should not happen.
       instruction_label->setText(tr(
         "Move the input to its neutral position."));
     }
@@ -491,18 +520,37 @@ nice_wizard_page * input_wizard::setup_intro_page()
 
   QLabel * intro_label = new QLabel();
   intro_label->setWordWrap(true);
-  intro_label->setText(tr(
-    "This wizard will help you quickly set up the input scaling parameters."));
+  if (input_mode == JRK_INPUT_MODE_RC)
+  {
+    intro_label->setText(tr(
+      "This wizard will help you quickly set up the scaling parameters "
+      "for your RC input."));
+  }
+  else if (input_mode == JRK_INPUT_MODE_ANALOG)
+  {
+    intro_label->setText(tr(
+      "This wizard will help you quickly set up the scaling parameters "
+      "for your analog input."));
+  }
+  else
+  {
+    assert(0);  // Should not happen.
+    intro_label->setText(tr(
+      "This wizard will help you quickly set up the scaling parameters "
+      "for your input."));
+  }
   layout->addWidget(intro_label);
-  layout->addStretch(1);
 
-  QLabel * stopped_label = new QLabel();
-  stopped_label->setWordWrap(true);
-  stopped_label->setText(tr(
-    "NOTE: Your motor has been automatically stopped so that it does not "
-    "cause problems while you are using this wizard.  To restart it manually "
-    "later, you can click the \"Run motor\" button (after fixing any errors)."));
-  layout->addWidget(stopped_label);
+  QLabel * stop_label = new QLabel();
+  stop_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
+  stop_label->setWordWrap(true);
+  stop_label->setText(tr(
+    "NOTE: When you click Next, this wizard will stop the motor.  "
+    "To restart the motor later, you can click the \"Run motor\" button "
+    "(after fixing any errors)."));
+  layout->addWidget(stop_label);
+
+  layout->addStretch(1);
 
   page->setLayout(layout);
   return page;
