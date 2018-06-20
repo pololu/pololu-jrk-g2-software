@@ -148,7 +148,7 @@ public:
   void set_input_output_neutral(uint16_t input_output_neutral);
   void set_input_output_maximum(uint16_t input_output_maximum);
   void set_input_scaling_degree(uint8_t input_scaling_degree);
-  void set_input_scaling_order_warning_label();
+  void update_input_scaling_order_warning_label();
   void update_input_tab_enables();
 
   void set_feedback_mode(uint8_t feedback_mode);
@@ -157,7 +157,7 @@ public:
   void set_feedback_error_maximum(uint16_t value);
   void set_feedback_minimum(uint16_t value);
   void set_feedback_maximum(uint16_t value);
-  void set_feedback_scaling_order_warning_label();
+  void update_feedback_scaling_order_warning_label();
   void set_feedback_analog_samples_exponent(uint8_t value);
   void set_feedback_detect_disconnect(bool value);
   void set_feedback_wraparound(bool value);

@@ -574,7 +574,7 @@ void main_controller::handle_settings_changed()
   window->set_input_output_neutral(settings.get_output_neutral());
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
-  window->set_input_scaling_order_warning_label();
+  window->update_input_scaling_order_warning_label();
 
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_invert(settings.get_feedback_invert());
@@ -582,7 +582,7 @@ void main_controller::handle_settings_changed()
   window->set_feedback_error_maximum(settings.get_feedback_error_maximum());
   window->set_feedback_maximum(settings.get_feedback_maximum());
   window->set_feedback_minimum(settings.get_feedback_minimum());
-  window->set_feedback_scaling_order_warning_label();
+  window->update_feedback_scaling_order_warning_label();
   window->set_feedback_mode(settings.get_feedback_mode());
   window->set_feedback_analog_samples_exponent(settings.get_feedback_analog_samples_exponent());
   window->set_feedback_detect_disconnect(settings.get_feedback_detect_disconnect());

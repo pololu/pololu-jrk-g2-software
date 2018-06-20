@@ -7,6 +7,7 @@
 #include "message_box.h"
 #include "elided_label.h"
 #include "pid_constant_control.h"
+#include "util.h"
 
 #include <to_string.h>
 
@@ -538,23 +539,16 @@ void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
   set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
 }
 
-static bool ordered(QList<int> p)
+void main_window::update_input_scaling_order_warning_label()
 {
-  for (int i = 0; i < p.size()-1; i++)
-  {
-    if (p[i] > p[i + 1])
-      return false;
-  }
-  return true;
-}
-
-void main_window::set_input_scaling_order_warning_label()
-{
-  bool enabled = !ordered({
-    input_error_minimum_spinbox->value(), input_minimum_spinbox->value(),
-    input_neutral_minimum_spinbox->value(), input_neutral_maximum_spinbox->value(),
-    input_maximum_spinbox->value(), input_error_maximum_spinbox->value()});
-  input_scaling_order_warning_label->setVisible(enabled);
+  bool warn = !ordered({
+    input_error_minimum_spinbox->value(),
+    input_minimum_spinbox->value(),
+    input_neutral_minimum_spinbox->value(),
+    input_neutral_maximum_spinbox->value(),
+    input_maximum_spinbox->value(),
+    input_error_maximum_spinbox->value()});
+  input_scaling_order_warning_label->setVisible(warn);
 }
 
 void main_window::update_input_tab_enables()
@@ -598,12 +592,14 @@ void main_window::set_feedback_maximum(uint16_t value)
   set_spin_box(feedback_maximum_spinbox, value);
 }
 
-void main_window::set_feedback_scaling_order_warning_label()
+void main_window::update_feedback_scaling_order_warning_label()
 {
-  bool enabled =
-  !ordered({feedback_error_minimum_spinbox->value(), feedback_minimum_spinbox->value(),
-    feedback_maximum_spinbox->value(), feedback_error_maximum_spinbox->value()});
-  feedback_scaling_order_warning_label->setVisible(enabled);
+  bool warn = !ordered({
+    feedback_error_minimum_spinbox->value(),
+    feedback_minimum_spinbox->value(),
+    feedback_maximum_spinbox->value(),
+    feedback_error_maximum_spinbox->value()});
+  feedback_scaling_order_warning_label->setVisible(warn);
 }
 
 void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_samples)

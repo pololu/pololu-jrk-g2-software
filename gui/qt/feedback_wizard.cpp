@@ -1,6 +1,7 @@
 #include "feedback_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
+#include "util.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -633,24 +634,12 @@ void feedback_wizard::update_learn_page_completeness()
 // Warn if the scaling values on the last screen are out of order.
 void feedback_wizard::update_order_warning()
 {
-  bool show_warning = false;
-
-  if (final_max_spinbox->value() > final_error_max_spinbox->value())
-  {
-    show_warning = true;
-  }
-
-  if (final_min_spinbox->value() > final_max_spinbox->value())
-  {
-    show_warning = true;
-  }
-
-  if (final_error_min_spinbox->value() > final_min_spinbox->value())
-  {
-    show_warning = true;
-  }
-
-  order_warning_label->setVisible(show_warning);
+  bool warn = !ordered({
+    final_error_min_spinbox->value(),
+    final_min_spinbox->value(),
+    final_max_spinbox->value(),
+    final_error_max_spinbox->value()});
+  order_warning_label->setVisible(warn);
 }
 
 // This is called when we are about to show the conclusion page.  It copies the

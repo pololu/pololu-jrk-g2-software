@@ -66,6 +66,11 @@ private:
 
   void update_learn_page();
   void update_learn_text();
+
+  void update_order_warning();
+  void copy_result_into_form();
+  void copy_form_into_result();
+
   bool disconnected_error();
 
   nice_wizard_page * setup_intro_page();

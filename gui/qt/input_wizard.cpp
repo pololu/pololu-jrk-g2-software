@@ -1,6 +1,7 @@
 #include "input_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
+#include "util.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -543,6 +544,28 @@ void input_wizard::update_learn_text()
   }
 }
 
+void input_wizard::update_order_warning()
+{
+  bool warn = !ordered({
+    final_error_min_spinbox->value(),
+    final_min_spinbox->value(),
+    final_neutral_min_spinbox->value(),
+    final_neutral_max_spinbox->value(),
+    final_max_spinbox->value(),
+    final_error_max_spinbox->value()});
+  order_warning_label->setVisible(warn);
+}
+
+void input_wizard::copy_result_into_form()
+{
+  // TODO
+}
+
+void input_wizard::copy_form_into_result()
+{
+  // TODO
+}
+
 bool input_wizard::disconnected_error()
 {
   if (controller->connected()) { return false; }
@@ -721,6 +744,7 @@ nice_wizard_page * input_wizard::setup_conclusion_page()
   order_warning_label = new QLabel();
   order_warning_label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
   order_warning_label->setStyleSheet("color: red;");
+  order_warning_label->setVisible(false);
   order_warning_label->setText(tr(
     "Warning: Each input scaling\n"
     "setting should be less than or\n"
@@ -741,6 +765,20 @@ nice_wizard_page * input_wizard::setup_conclusion_page()
   scaling_layout->addWidget(final_error_min_spinbox, 5, 1);
   scaling_layout->addWidget(order_warning_label, 0, 2, 6, 1);
   scaling_layout->setColumnStretch(2, 1);
+
+  auto valueChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
+  connect(final_error_max_spinbox, valueChanged,
+    this, &input_wizard::update_order_warning);
+  connect(final_max_spinbox, valueChanged,
+    this, &input_wizard::update_order_warning);
+  connect(final_neutral_max_spinbox, valueChanged,
+    this, &input_wizard::update_order_warning);
+  connect(final_neutral_min_spinbox, valueChanged,
+    this, &input_wizard::update_order_warning);
+  connect(final_min_spinbox, valueChanged,
+    this, &input_wizard::update_order_warning);
+  connect(final_error_min_spinbox, valueChanged,
+    this, &input_wizard::update_order_warning);
 
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(completed_label);
