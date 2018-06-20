@@ -1,7 +1,6 @@
 #include "input_wizard.h"
 #include "message_box.h"
 #include "nice_wizard_page.h"
-#include "wizard_button_text.h"
 
 #include <to_string.h>
 #include <jrk_protocol.h>
@@ -62,60 +61,90 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
   setPage(LEARN, setup_learn_page());
   setPage(CONCLUSION, setup_conclusion_page());
 
-  setFixedSize(sizeHint());
+  QSize size = sizeHint();
+  size.setHeight(size.height() * 4 / 3);
+  setFixedSize(size);
 
-  connect(this, &QWizard::currentIdChanged,
-    this, &input_wizard::handle_next_or_back);
+  // Custom text for the buttons, so that it doesn't change when they are on
+  // macOS and so we can make it clear that the 'Finish' button also applies
+  // settings.
+  setButtonText(NextButton, tr("Next"));
+  setButtonText(FinishButton, tr("Finish and apply settings"));
+
+  // Handle the next and back buttons with custom slots.
+  disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
+  connect(button(NextButton), &QAbstractButton::clicked,
+    this, &input_wizard::handle_next);
+  disconnect(button(BackButton), &QAbstractButton::clicked, 0, 0);
+  connect(button(BackButton), &QAbstractButton::clicked,
+    this, &input_wizard::handle_back);
+
+  //TODO: connect(this, &QDialog::finished, this, &input_wizard::copy_form_into_result);
 }
 
-// This gets called when the user pressed next or back, and it receives the ID
-// of the page the QWizard class it trying to go to.  It figures out what
-// happened and then calls a handler function.  The handler should return true
-// if it is OK with changing to the new page and take care of any other effects.
-void input_wizard::handle_next_or_back(int id)
+void input_wizard::showEvent(QShowEvent * event)
 {
-  if (page == id)
+#ifdef _WIN32
+  // In Windows, there is a special back button that we need to find and fix.
+  // It doesn't have a good object name or class name, so we just identify it
+  // using "disconnect".
+  //
+  // The back button is set up in QWizard::event when it receives a show event.
+  // It then calls QDialog::event, which eventually calls QWidget::event, which
+  // calls showEvent, so showEvent is a good place to fix the button.
+  for (QAbstractButton * button : findChildren<QAbstractButton *>())
   {
-    // We are already on the expected page so don't do anything.  This can
-    // happen if the user tried to move and we rejected it.
-    return;
-  }
-
-  if (page == INTRO)
-  {
-    if (id == LEARN)
+    if (disconnect(button, SIGNAL(clicked()), this, SLOT(back())))
     {
-      if (!handle_next_on_intro_page())
-      {
-        back();
-      }
+      connect(button, SIGNAL(clicked()), this, SLOT(handle_back()));
     }
   }
 
-  if (page == LEARN)
+  // Make the margins symmetric instead of having the left margin be larger than
+  // the right margin.  In qwizard.cpp, there is a hardcoded margin of 18 for
+  // the QFrame object.  It's hard to override the margins for the QFrame
+  // because it gets set at different times, so just add a margin to our pages.
+  QWidget * frame = qobject_cast<QWidget *>(learn_page->parent());
+  if (frame)
   {
-    if (id == INTRO)
-    {
-      // User clicked back from the learn page.
-      if (!handle_back_on_learn_page())
-      {
-        next();
-      }
-    }
-    else if (id == CONCLUSION)
-    {
-      if (!handle_next_on_learn_page())
-      {
-        back();
-      }
-    }
+    int left, top, right, bottom;
+    frame->getContentsMargins(&left, &top, &right, &bottom);
+    int fudge = left - right;
+    intro_page->setContentsMargins(0, 0, fudge, 0);
+    learn_page->setContentsMargins(0, 0, fudge, 0);
+    conclusion_page->setContentsMargins(0, 0, fudge, 0);
   }
+#endif
+}
 
-  page = currentId();
+void input_wizard::handle_next()
+{
+  if (disconnected_error()) { return; }
 
-  set_next_button_enabled(!sampling);
-  set_progress_visible(sampling);
-  update_learn_text();
+  if (currentId() == INTRO)
+  {
+    handle_next_on_intro_page();
+  }
+  else if (currentId() == LEARN)
+  {
+    handle_next_on_learn_page();
+  }
+  else
+  {
+    next();
+  }
+}
+
+void input_wizard::handle_back()
+{
+  if (currentId() == LEARN)
+  {
+    handle_back_on_learn_page();
+  }
+  else
+  {
+    back();
+  }
 }
 
 void input_wizard::set_input(uint16_t value)
@@ -151,7 +180,7 @@ void input_wizard::set_progress_visible(bool visible)
   sampling_progress->setVisible(visible);
 }
 
-bool input_wizard::handle_next_on_intro_page()
+void input_wizard::handle_next_on_intro_page()
 {
   // Stop the motor so it isn't moving during this wizard.
   try
@@ -161,62 +190,47 @@ bool input_wizard::handle_next_on_intro_page()
   catch (const std::exception & e)
   {
     show_exception(e, this);
-    return false;
+    return;
   }
 
   // This shouldn't be necessary, but if there is ever a bug in the "Back"
   // button and we go back to the intro page prematurely, it will help.
   learn_step = FIRST_STEP;
   sampling = false;
-
-  return true;
+  update_learn_page();
+  next();
 }
 
-bool input_wizard::handle_back_on_learn_page()
+void input_wizard::handle_back_on_learn_page()
 {
   if (sampling)
   {
     // We were in the middle of sampling, so just cancel that.
     sampling = false;
-    return false;
+    update_learn_page();
   }
   else
   {
     // We were not sampling, so go back to the previous step or page.
     if (learn_step == FIRST_STEP)
     {
-      return true;
+      back();
     }
     else
     {
       learn_step--;
-      return false;
+      update_learn_page();
     }
   }
 }
 
-bool input_wizard::handle_next_on_learn_page()
+void input_wizard::handle_next_on_learn_page()
 {
-  if (learn_step_succeeded)
-  {
-    // We completed this step of the learning so go to the next step or page.
-    learn_step_succeeded = false;
-    if (learn_step == LAST_STEP)
-    {
-      return true;
-    }
-    else
-    {
-      learn_step++;
-      return false;
-    }
-  }
-  else if (sampling)
+  if (sampling)
   {
     // We will advance to the next step/page when the sampling is finished.
     // This case shouldn't even happen because we disable the 'Next' button.
     assert(0);
-    return false;
   }
   else
   {
@@ -224,7 +238,7 @@ bool input_wizard::handle_next_on_learn_page()
     sampling = true;
     samples.clear();
     sampling_progress->setValue(0);
-    return false;
+    update_learn_page();
   }
 }
 
@@ -247,28 +261,39 @@ void input_wizard::handle_sampling_complete()
   set_next_button_enabled(true);
   set_progress_visible(false);
 
+  bool success = false;
   switch (learn_step)
   {
   case NEUTRAL:
-    learn_step_succeeded = learn_neutral();
+    success = learn_neutral();
     break;
 
   case MAX:
-    learn_step_succeeded = learn_max();
+    success = learn_max();
     break;
 
   case MIN:
-    learn_step_succeeded = learn_min();
+    success = learn_min();
     break;
   }
 
-  if (learn_step_succeeded)
+  if (success)
   {
-    // Go to the next step or page.  We can't directly control it so just
-    // trigger handle_next_or_back(), which will check the learn_step_succeded
-    // flag.
-    next();
+    if (learn_step == LAST_STEP)
+    {
+      // Go to the conclusion page.
+      next();
+
+      // We don't want a checkbox to get visibly highlighted on the final
+      // screen, it puts too much emphasis on something that is optional.
+      focusWidget()->clearFocus();
+    }
+    else
+    {
+      learn_step++;
+    }
   }
+  update_learn_page();
 }
 
 bool input_wizard::learn_neutral()
@@ -470,6 +495,13 @@ uint16_t input_wizard::full_range() const
   return 4095;
 }
 
+void input_wizard::update_learn_page()
+{
+  set_next_button_enabled(!sampling);
+  set_progress_visible(sampling);
+  update_learn_text();
+}
+
 void input_wizard::update_learn_text()
 {
   switch (learn_step)
@@ -511,9 +543,17 @@ void input_wizard::update_learn_text()
   }
 }
 
+bool input_wizard::disconnected_error()
+{
+  if (controller->connected()) { return false; }
+  show_error_message(
+    "The jrk is disconnected.  Please exit this wizard and reconnect.", this);
+  return true;
+}
+
 nice_wizard_page * input_wizard::setup_intro_page()
 {
-  nice_wizard_page * page = new nice_wizard_page();
+  nice_wizard_page * page = intro_page = new nice_wizard_page();
   QVBoxLayout * layout = new QVBoxLayout();
 
   page->setTitle("Welcome to the input setup wizard");
@@ -571,11 +611,11 @@ nice_wizard_page * input_wizard::setup_learn_page()
   layout->addLayout(setup_input_layout());
   layout->addSpacing(fontMetrics().height());
 
-  QLabel * next_label = new QLabel(
-    tr("When you click ") + NEXT_BUTTON_TEXT +
-    tr(", this wizard will sample the input values for one second.  "
-    "Please do not change the input while it is being sampled."));
+  QLabel * next_label = new QLabel();
   next_label->setWordWrap(true);
+  next_label->setText(tr(
+    "When you click Next, this wizard will sample the input values for one "
+    "second.  Please do not change the input while it is being sampled."));
   layout->addWidget(next_label);
   layout->addSpacing(fontMetrics().height());
 
@@ -626,7 +666,7 @@ QLayout * input_wizard::setup_input_layout()
 
 nice_wizard_page * input_wizard::setup_conclusion_page()
 {
-  nice_wizard_page * page = new nice_wizard_page();
+  nice_wizard_page * page = conclusion_page = new nice_wizard_page();
   page->setTitle(tr("Review new settings"));
 
   QLabel * completed_label = new QLabel();

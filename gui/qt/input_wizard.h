@@ -41,17 +41,21 @@ public:
 
   result result;
 
+protected:
+  void showEvent(QShowEvent *) override;
+
 public slots:
-  void handle_next_or_back(int index);
+  void handle_next();
+  void handle_back();
   void set_input(uint16_t);
 
 private:
   void set_next_button_enabled(bool enabled);
   void set_progress_visible(bool visible);
 
-  bool handle_next_on_intro_page();
-  bool handle_back_on_learn_page();
-  bool handle_next_on_learn_page();
+  void handle_next_on_intro_page();
+  void handle_back_on_learn_page();
+  void handle_next_on_learn_page();
   void handle_new_sample();
   void handle_sampling_complete();
   bool learn_neutral();
@@ -60,16 +64,19 @@ private:
   bool check_range_not_too_big(const uint16_range &);
   uint16_t full_range() const;
 
+  void update_learn_page();
   void update_learn_text();
-
-  main_controller * controller;
+  bool disconnected_error();
 
   nice_wizard_page * setup_intro_page();
   nice_wizard_page * setup_learn_page();
   QLayout * setup_input_layout();
   nice_wizard_page * setup_conclusion_page();
 
-  // Controls on the learn page.
+  main_controller * controller;
+
+  nice_wizard_page * intro_page;
+
   nice_wizard_page * learn_page;
   QLabel * instruction_label;
   QLabel * sampling_label;
@@ -77,7 +84,7 @@ private:
   QLabel * input_value;
   QLabel * input_pretty;
 
-  // Controls on the conclusion page.
+  nice_wizard_page * conclusion_page;
   QCheckBox * final_invert_checkbox;
   QSpinBox * final_error_max_spinbox;
   QSpinBox * final_max_spinbox;
@@ -94,9 +101,7 @@ private:
   uint16_t input;
 
   // Current state of the wizard.
-  int page = INTRO;
   int learn_step = FIRST_STEP;
-  bool learn_step_succeeded = false;
   bool sampling = false;
   std::vector<uint16_t> samples;
   uint16_range learned_neutral;
