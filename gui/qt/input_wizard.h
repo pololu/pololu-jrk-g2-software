@@ -69,13 +69,23 @@ private:
   QLayout * setup_input_layout();
   nice_wizard_page * setup_conclusion_page();
 
-  // Controls on the 'Learn' page
+  // Controls on the learn page.
   nice_wizard_page * learn_page;
   QLabel * instruction_label;
   QLabel * sampling_label;
   QProgressBar * sampling_progress;
   QLabel * input_value;
   QLabel * input_pretty;
+
+  // Controls on the conclusion page.
+  QCheckBox * final_invert_checkbox;
+  QSpinBox * final_error_max_spinbox;
+  QSpinBox * final_max_spinbox;
+  QSpinBox * final_neutral_max_spinbox;
+  QSpinBox * final_neutral_min_spinbox;
+  QSpinBox * final_min_spinbox;
+  QSpinBox * final_error_min_spinbox;
+  QLabel * order_warning_label;
 
   // Input mode setting (RC or analog).
   uint8_t input_mode;

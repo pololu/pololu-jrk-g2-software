@@ -47,7 +47,7 @@ void run_input_wizard(main_window * window)
   controller->handle_input_maximum_input(wizard.result.maximum);
   controller->handle_input_neutral_minimum_input(wizard.result.neutral_minimum);
   controller->handle_input_neutral_maximum_input(wizard.result.neutral_maximum);
-  // TODO: apply settings
+  controller->apply_settings();
 }
 
 input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
@@ -627,19 +627,86 @@ QLayout * input_wizard::setup_input_layout()
 nice_wizard_page * input_wizard::setup_conclusion_page()
 {
   nice_wizard_page * page = new nice_wizard_page();
-  QVBoxLayout * layout = new QVBoxLayout();
+  page->setTitle(tr("Review new settings"));
 
-  page->setTitle(tr("Input setup finished"));
-
-  QLabel * completed_label = new QLabel(
-    tr("You have successfully completed this wizard.  You can see your new "
-    "settings in the \"Input\" column and \"Invert input direction\" checkbox "
-    "after you click ") +
-    FINISH_BUTTON_TEXT + tr(".  "
-    "To use the new settings, you must first apply them to the device."));
+  QLabel * completed_label = new QLabel();
+  completed_label->setAlignment(Qt::AlignTop | Qt::AlignJustify);
   completed_label->setWordWrap(true);
-  layout->addWidget(completed_label);
+  completed_label->setText(tr(
+    "You have successfully completed this wizard.  "
+    "You can review and edit your new settings below.  "
+    "Click \"Finsh and apply settings\" to close this wizard and apply "
+    "these new settings to the device."
+  ));
 
+  final_invert_checkbox = new QCheckBox();
+  final_invert_checkbox->setText(tr("Invert input direction"));
+
+  QLabel * final_error_max_label = new QLabel();
+  final_error_max_label->setText(tr("Error max:"));
+
+  final_error_max_spinbox = new QSpinBox();
+  final_error_max_spinbox->setRange(0, 4095);
+
+  QLabel * final_max_label = new QLabel();
+  final_max_label->setText(tr("Maximum:"));
+
+  final_max_spinbox = new QSpinBox();
+  final_max_spinbox->setRange(0, 4095);
+
+  QLabel * final_neutral_max_label = new QLabel();
+  final_neutral_max_label->setText(tr("Neutral max:"));
+
+  final_neutral_max_spinbox = new QSpinBox();
+  final_neutral_max_spinbox->setRange(0, 4095);
+
+  QLabel * final_neutral_min_label = new QLabel();
+  final_neutral_min_label->setText(tr("Neutral min:"));
+
+  final_neutral_min_spinbox = new QSpinBox();
+  final_neutral_min_spinbox->setRange(0, 4095);
+
+  QLabel * final_min_label = new QLabel();
+  final_min_label->setText(tr("Minimum:"));
+
+  final_min_spinbox = new QSpinBox();
+  final_min_spinbox->setRange(0, 4095);
+
+  QLabel * final_error_min_label = new QLabel();
+  final_error_min_label->setText(tr("Error min:"));
+
+  final_error_min_spinbox = new QSpinBox();
+  final_error_min_spinbox->setRange(0, 4095);
+
+  order_warning_label = new QLabel();
+  order_warning_label->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+  order_warning_label->setStyleSheet("color: red;");
+  order_warning_label->setText(tr(
+    "Warning: Each input scaling\n"
+    "setting should be less than or\n"
+    "equal to the setting above it."));
+
+  QGridLayout * scaling_layout = new QGridLayout();
+  scaling_layout->addWidget(final_error_max_label, 0, 0);
+  scaling_layout->addWidget(final_error_max_spinbox, 0, 1);
+  scaling_layout->addWidget(final_max_label, 1, 0);
+  scaling_layout->addWidget(final_max_spinbox, 1, 1);
+  scaling_layout->addWidget(final_neutral_max_label, 2, 0);
+  scaling_layout->addWidget(final_neutral_max_spinbox, 2, 1);
+  scaling_layout->addWidget(final_neutral_min_label, 3, 0);
+  scaling_layout->addWidget(final_neutral_min_spinbox, 3, 1);
+  scaling_layout->addWidget(final_min_label, 4, 0);
+  scaling_layout->addWidget(final_min_spinbox, 4, 1);
+  scaling_layout->addWidget(final_error_min_label, 5, 0);
+  scaling_layout->addWidget(final_error_min_spinbox, 5, 1);
+  scaling_layout->addWidget(order_warning_label, 0, 2, 6, 1);
+  scaling_layout->setColumnStretch(2, 1);
+
+  QVBoxLayout * layout = new QVBoxLayout();
+  layout->addWidget(completed_label);
+  layout->addItem(new QSpacerItem(1, fontMetrics().height()));
+  layout->addWidget(final_invert_checkbox);
+  layout->addLayout(scaling_layout);
   layout->addStretch(1);
 
   page->setLayout(layout);
