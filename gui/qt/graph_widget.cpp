@@ -834,16 +834,17 @@ void graph_widget::save_settings()
   if (file_out.open(QFile::WriteOnly | QFile::Text))
   {
     QTextStream out(&file_out);
-    out << "domain," << domain->value() << '\n';
 
     if (dark_theme)
     {
-      out << "dark theme" << '\n';
+      out << "theme,dark" << '\n';
     }
     else
     {
-      out << "default theme" << '\n';
+      out << "theme,default" << '\n';
     }
+
+    out << "domain," << domain->value() << '\n';
 
     for (auto plot : all_plots)
     {
@@ -887,11 +888,7 @@ void graph_widget::load_settings()
     return;
   }
 
-  QStringList domain_value = all_plots_settings[0].split(",");
-
-  domain->setValue(domain_value[1].toInt());
-
-  if (all_plots_settings[1].contains("dark"))
+  if (all_plots_settings[0].contains("dark"))
   {
     switch_to_dark();
   }
@@ -899,6 +896,10 @@ void graph_widget::load_settings()
   {
     switch_to_default();
   }
+
+  QStringList domain_value = all_plots_settings[1].split(",");
+
+  domain->setValue(domain_value[1].toInt());
 
   for (int i = 2; i < all_plots_settings.size() - 2; i++)
   {
