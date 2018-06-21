@@ -574,7 +574,7 @@ void main_controller::handle_settings_changed()
   window->set_input_output_neutral(settings.get_output_neutral());
   window->set_input_output_maximum(settings.get_output_maximum());
   window->set_input_scaling_degree(settings.get_input_scaling_degree());
-  window->update_dead_zone_label();
+  window->update_deadband_label();
   window->update_input_scaling_order_warning_label();
 
   window->set_feedback_mode(settings.get_feedback_mode());

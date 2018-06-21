@@ -539,14 +539,14 @@ void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
   set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
 }
 
-void main_window::update_dead_zone_label()
+void main_window::update_deadband_label()
 {
-  QString s = tr("Dead zone: ");
-  int dead_zone = input_neutral_maximum_spinbox->value() -
+  QString s = tr("Deadband width: ");
+  int deadband = input_neutral_maximum_spinbox->value() -
     input_neutral_minimum_spinbox->value();
-  dead_zone = qMax(dead_zone, 0);
-  s.append(QString::number(dead_zone));
-  dead_zone_label->setText(s);
+  deadband = qMax(deadband, 0);
+  s.append(QString::number(deadband));
+  deadband_label->setText(s);
 }
 
 void main_window::update_input_scaling_order_warning_label()
@@ -2656,12 +2656,12 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_output_minimum_spinbox->setRange(0, UINT12_MAX);
   input_output_minimum_spinbox->setValue(0);
 
-  dead_zone_label = new QLabel();
-  dead_zone_label->setObjectName("dead_zone_label");
-  dead_zone_label->setText("Dead zone: 9999");
-  dead_zone_label->setMinimumSize(dead_zone_label->sizeHint());
-  dead_zone_label->setText("");
-  dead_zone_label->setToolTip(tr("Neutral max minus neutral min: "
+  deadband_label = new QLabel();
+  deadband_label->setObjectName("deadband_label");
+  deadband_label->setText("Deadband width: 9999");
+  deadband_label->setMinimumSize(deadband_label->sizeHint());
+  deadband_label->setText("");
+  deadband_label->setToolTip(tr("Neutral max minus neutral min: "
     "how much of the input range maps to the neutral target value."));
 
   // used so layout does not change when item is hidden
@@ -2692,7 +2692,7 @@ QWidget * main_window::setup_input_scaling_groupbox()
   layout->addWidget(input_neutral_max_label, 5, 0, Qt::AlignLeft);
   layout->addWidget(input_neutral_maximum_spinbox, 5, 1, Qt::AlignLeft);
   layout->addWidget(input_output_neutral_spinbox, 5, 2, 2, 1, Qt::AlignLeft);
-  layout->addWidget(dead_zone_label, 5, 3, 2, 1, Qt::AlignLeft);
+  layout->addWidget(deadband_label, 5, 3, 2, 1, Qt::AlignLeft);
   layout->addWidget(input_neutral_min_label, 6, 0, Qt::AlignLeft);
   layout->addWidget(input_neutral_minimum_spinbox, 6, 1, Qt::AlignLeft);
   layout->addWidget(input_minimum_label, 7, 0, Qt::AlignLeft);
