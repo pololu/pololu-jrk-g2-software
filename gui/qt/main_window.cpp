@@ -541,7 +541,7 @@ void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
 
 void main_window::update_dead_zone_label()
 {
-  QString s = tr("Dead zone (neutral max - min): ");
+  QString s = tr("Dead zone: ");
   int dead_zone = input_neutral_maximum_spinbox->value() -
     input_neutral_minimum_spinbox->value();
   dead_zone = qMax(dead_zone, 0);
@@ -2658,9 +2658,11 @@ QWidget * main_window::setup_input_scaling_groupbox()
 
   dead_zone_label = new QLabel();
   dead_zone_label->setObjectName("dead_zone_label");
-  dead_zone_label->setText("Dead zone (neutral max - min): 9999");
+  dead_zone_label->setText("Dead zone: 9999");
   dead_zone_label->setMinimumSize(dead_zone_label->sizeHint());
   dead_zone_label->setText("");
+  dead_zone_label->setToolTip(tr("Neutral max minus neutral min: "
+    "how much of the input range maps to the neutral target value."));
 
   // used so layout does not change when item is hidden
   QSizePolicy p = sizePolicy();
