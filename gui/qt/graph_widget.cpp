@@ -567,7 +567,6 @@ void graph_widget::setup_plot(plot & plot,
       QSignalBlocker blocker(plot.scale);
       plot.scale->setValue(scale_value);
     }
-
     update_position_step_value(plot);
     update_plot_text_and_arrows(plot);
   });
@@ -577,6 +576,7 @@ void graph_widget::setup_plot(plot & plot,
   {
     set_range(plot);
     plot.display->setChecked(true);
+    set_graph_interaction_axis(plot);
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString &)>
@@ -584,6 +584,7 @@ void graph_widget::setup_plot(plot & plot,
   {
     set_range(plot);
     plot.display->setChecked(true);
+    set_graph_interaction_axis(plot);
   });
 
   all_plots.append(&plot);
@@ -801,7 +802,6 @@ void graph_widget::set_range(const plot & plot)
 
   update_position_step_value(plot);
   update_plot_text_and_arrows(plot);
-  set_graph_interaction_axis(plot);
   custom_plot->replot();
 }
 
@@ -923,7 +923,7 @@ void graph_widget::load_settings()
       }
 
       {
-        QSignalBlocker blocker(plot->position);
+        QSignalBlocker blocker(plot->scale);
         plot->scale->setValue(split_settings[3].toDouble());
       }
 
