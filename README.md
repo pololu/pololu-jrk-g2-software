@@ -42,21 +42,23 @@ from source.
     - Input wizard:
       - Added a "Skip" button to skip the step of learning the neutral point.
       - Changed it to be much more like the feedback wizard.
-    - Allow the variables displayed in the Status tab to be moved into their
-      own window.
+    - Display the dead zone in the input scaling tab.
+    - Added the "Variables" window.
     - Show two digits after the decimal point for the "Raw current" variable
       in the Status tab and allow its graph to show more resolution as well.
-    - Fix some bugs in the controls for setting the hard current limits and soft
-      current limits.
-    - Fix a bug where the "Graph" command in the "Window" menu would not succeed
-      if the graph was minimized.
-    - Fix a bug where the range of the target scroll bar and the corresponding
-      number entry would not get updated when you click "Apply settings",
-      changing the feedback mode.
-    - Fix a bug where the target scroll bar was not being updated when you
-      type a target in and press Enter.
-    - Fix a bug where you could enter "0" as a deceleration limit (but the GUI
-      would warn you and prevent that setting from being applied).
+    - Bug fixes:
+      - Fix some bugs in the controls for setting the hard current limits and soft
+        current limits.
+      - Fix a bug where the "Graph" command in the "Window" menu would not succeed
+        if the graph was minimized.
+      - Fix a bug where the range of the target scroll bar and the corresponding
+        number entry would not get updated when you click "Apply settings",
+        changing the feedback mode.
+      - Fix a bug where the target scroll bar was not being updated when you
+        type a target in and press Enter.
+      - Fix a bug where you could enter "0" as a deceleration limit (but the GUI
+        would warn you and prevent that setting from being applied).
+    - Several other minor changes and bug fixes.
   - Jrk G2 Command-line Utility (jrk2cmd):
     - Make the `--run` and `--target` options work together properly.
     - Expand the allowed range of `--speed` arguments to -2048 to 2047, making

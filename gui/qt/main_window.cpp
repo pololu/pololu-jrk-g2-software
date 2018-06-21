@@ -539,6 +539,16 @@ void main_window::set_input_scaling_degree(uint8_t input_scaling_degree)
   set_u8_combobox(input_scaling_degree_combobox, input_scaling_degree);
 }
 
+void main_window::update_dead_zone_label()
+{
+  QString s = tr("Dead zone (neutral max - min): ");
+  int dead_zone = input_neutral_maximum_spinbox->value() -
+    input_neutral_minimum_spinbox->value();
+  dead_zone = qMax(dead_zone, 0);
+  s.append(QString::number(dead_zone));
+  dead_zone_label->setText(s);
+}
+
 void main_window::update_input_scaling_order_warning_label()
 {
   bool warn = !ordered({
@@ -2646,6 +2656,12 @@ QWidget * main_window::setup_input_scaling_groupbox()
   input_output_minimum_spinbox->setRange(0, UINT12_MAX);
   input_output_minimum_spinbox->setValue(0);
 
+  dead_zone_label = new QLabel();
+  dead_zone_label->setObjectName("dead_zone_label");
+  dead_zone_label->setText("Dead zone (neutral max - min): 9999");
+  dead_zone_label->setMinimumSize(dead_zone_label->sizeHint());
+  dead_zone_label->setText("");
+
   // used so layout does not change when item is hidden
   QSizePolicy p = sizePolicy();
   p.setRetainSizeWhenHidden(true);
@@ -2674,17 +2690,18 @@ QWidget * main_window::setup_input_scaling_groupbox()
   layout->addWidget(input_neutral_max_label, 5, 0, Qt::AlignLeft);
   layout->addWidget(input_neutral_maximum_spinbox, 5, 1, Qt::AlignLeft);
   layout->addWidget(input_output_neutral_spinbox, 5, 2, 2, 1, Qt::AlignLeft);
+  layout->addWidget(dead_zone_label, 5, 3, 2, 1, Qt::AlignLeft);
   layout->addWidget(input_neutral_min_label, 6, 0, Qt::AlignLeft);
   layout->addWidget(input_neutral_minimum_spinbox, 6, 1, Qt::AlignLeft);
   layout->addWidget(input_minimum_label, 7, 0, Qt::AlignLeft);
   layout->addWidget(input_minimum_spinbox, 7, 1, Qt::AlignLeft);
+  layout->addWidget(input_scaling_order_warning_label, 7, 3, 2, 1);
   layout->addWidget(input_output_minimum_spinbox, 7, 2, Qt::AlignLeft);
   layout->addWidget(input_error_min_label, 8, 0, Qt::AlignLeft);
   layout->addWidget(input_error_minimum_spinbox, 8, 1, Qt::AlignLeft);
   layout->addItem(setup_vertical_spacer(), 9, 0);
   layout->addWidget(input_degree_label, 10, 0, Qt::AlignLeft);
   layout->addWidget(input_scaling_degree_combobox, 10, 1, 1, 2, Qt::AlignLeft);
-  layout->addWidget(input_scaling_order_warning_label, 3, 3, 6, 1);
 
   input_scaling_groupbox->setLayout(layout);
 

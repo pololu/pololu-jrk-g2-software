@@ -148,6 +148,7 @@ public:
   void set_input_output_neutral(uint16_t input_output_neutral);
   void set_input_output_maximum(uint16_t input_output_maximum);
   void set_input_scaling_degree(uint8_t input_scaling_degree);
+  void update_dead_zone_label();
   void update_input_scaling_order_warning_label();
   void update_input_tab_enables();
 
@@ -535,6 +536,7 @@ private:
   QPushButton * input_wizard_button;
   QPushButton * input_reset_range_button;
   QLabel * input_scaling_order_warning_label;
+  QLabel * dead_zone_label;
   QLabel * input_error_max_label;
   QSpinBox * input_error_maximum_spinbox;
   QLabel * input_maximum_label;
