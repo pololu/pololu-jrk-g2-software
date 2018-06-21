@@ -1936,6 +1936,8 @@ void main_window::setup_ui()
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
+  apply_settings_button->setStyleSheet(
+    ":enabled { background-color: #1f2f93; color: white; font-weight: bold; }");
 
   QHBoxLayout *footer_layout = new QHBoxLayout();
   footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);
