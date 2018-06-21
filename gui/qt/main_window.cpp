@@ -1913,6 +1913,7 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
   tab_widget->addTab(setup_advanced_tab(), tr("Advanced"));
+  tab_widget->addTab(setup_info_tab(), tr("Info"));
 
   // Let the user specify which tab to start on.  Handy for development.
   auto env = QProcessEnvironment::systemEnvironment();
@@ -2193,43 +2194,7 @@ QWidget * main_window::setup_variables_box()
   // We set all the value labels to have a fixed size for performance.
   // We set that size based on the largest text we expect any of
   // the labels to hold.
-  QSize value_size = QLabel(tr("Software reset (bootloader)")).sizeHint();
-
-  setup_read_only_text_field(layout, row++, value_size,
-    &device_name_label, &device_name_value);
-  device_name_value->setObjectName("device_name_value");
-  device_name_value->setTextInteractionFlags(Qt::TextBrowserInteraction);
-  device_name_label->setText(tr("Name:"));
-
-  setup_read_only_text_field(layout, row++, value_size,
-    &serial_number_label, &serial_number_value);
-  serial_number_label->setText(tr("Serial number:"));
-
-  setup_read_only_text_field(layout, row++, value_size,
-    &firmware_version_label, &firmware_version_value);
-  firmware_version_label->setText(tr("Firmware version:"));
-
-  setup_read_only_text_field(layout, row++, value_size,
-    &cmd_port_label, &cmd_port_value);
-  cmd_port_label->setText(tr("Command port:"));
-
-  setup_read_only_text_field(layout, row++, value_size,
-    &ttl_port_label, &ttl_port_value);
-  ttl_port_label->setText(tr("TTL port:"));
-
-#ifdef __APPLE__
-  {
-    cmd_port_value->setText("/dev/cu.usbmodem01234567x");
-    int width = cmd_port_value->sizeHint().width();
-    cmd_port_value->setText("");
-    cmd_port_value->setMinimumWidth(width);
-    ttl_port_value->setMinimumWidth(width);
-  }
-#endif
-
-  setup_read_only_text_field(layout, row++, value_size,
-    &device_reset_label, &device_reset_value);
-  device_reset_label->setText(tr("Last reset:"));
+  QSize value_size = QLabel(tr("99999 (99.999 V)")).sizeHint();
 
   setup_read_only_text_field(layout, row++, value_size,
     &up_time_label, &up_time_value);
@@ -3554,4 +3519,58 @@ QWidget * main_window::setup_advanced_miscellaneous_groupbox()
   advanced_miscellaneous_groupbox->setLayout(layout);
 
   return advanced_miscellaneous_groupbox;
+}
+
+QWidget * main_window::setup_info_tab()
+{
+  QGridLayout * layout = new QGridLayout();
+
+  int row = 0;
+
+  // We're just doing this here because we did it in the status tab, where it
+  // supposedly had a performance benefit.
+  QSize value_size = QLabel(tr("Software reset (bootloader)")).sizeHint();
+
+#ifdef __APPLE__
+  {
+    int width = QLabel("/dev/cu.usbmodem01234567x").sizeHint().width();
+    if (width > value_size.width())
+    {
+      value_size.setWidth(width);
+    }
+  }
+#endif
+
+  setup_read_only_text_field(layout, row++, value_size,
+    &device_name_label, &device_name_value);
+  device_name_value->setObjectName("device_name_value");
+  device_name_value->setTextInteractionFlags(Qt::TextBrowserInteraction);
+  device_name_label->setText(tr("Name:"));
+
+  setup_read_only_text_field(layout, row++, value_size,
+    &serial_number_label, &serial_number_value);
+  serial_number_label->setText(tr("Serial number:"));
+
+  setup_read_only_text_field(layout, row++, value_size,
+    &firmware_version_label, &firmware_version_value);
+  firmware_version_label->setText(tr("Firmware version:"));
+
+  setup_read_only_text_field(layout, row++, value_size,
+    &cmd_port_label, &cmd_port_value);
+  cmd_port_label->setText(tr("Command port:"));
+
+  setup_read_only_text_field(layout, row++, value_size,
+    &ttl_port_label, &ttl_port_value);
+  ttl_port_label->setText(tr("TTL port:"));
+
+  setup_read_only_text_field(layout, row++, value_size,
+    &device_reset_label, &device_reset_value);
+  device_reset_label->setText(tr("Last reset:"));
+
+  layout->setColumnStretch(2, 1);
+  layout->setRowStretch(row, 1);
+
+  QWidget * info_page = new QWidget();
+  info_page->setLayout(layout);
+  return info_page;
 }

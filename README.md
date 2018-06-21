@@ -44,6 +44,7 @@ from source.
       - Changed it to be much more like the feedback wizard.
     - Display the dead zone in the input scaling tab.
     - Added the "Variables" window.
+    - Added the "Info" tab and moved some information from the status tab to there.
     - Show two digits after the decimal point for the "Raw current" variable
       in the Status tab and allow its graph to show more resolution as well.
     - Bug fixes:

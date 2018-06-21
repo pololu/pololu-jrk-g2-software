@@ -412,6 +412,8 @@ private:
   QWidget * setup_pin_configuration_groupbox();
   QWidget * setup_advanced_miscellaneous_groupbox();
 
+  QWidget * setup_info_tab();
+
   QTimer *update_timer = NULL;
 
   QWidget * central_widget;
@@ -456,18 +458,6 @@ private:
   QGroupBox * variables_box;
   popout_window * variables_window;
   QGridLayout * variables_layout;
-  QLabel * device_name_label;
-  QLabel * device_name_value;
-  QLabel * serial_number_label;
-  QLabel * serial_number_value;
-  QLabel * firmware_version_label;
-  QLabel * firmware_version_value;
-  QLabel * cmd_port_label;
-  QLabel * cmd_port_value;
-  QLabel * ttl_port_label;
-  QLabel * ttl_port_value;
-  QLabel * device_reset_label;
-  QLabel * device_reset_value;
   QLabel * up_time_label;
   QLabel * up_time_value;
   QLabel * input_label;
@@ -720,6 +710,22 @@ private:
   QGroupBox * advanced_miscellaneous_groupbox;
   QCheckBox * never_sleep_checkbox;
   QSpinBox * vin_calibration_value;
+
+  // info tab
+
+  QLabel * device_name_label;
+  QLabel * device_name_value;
+  QLabel * serial_number_label;
+  QLabel * serial_number_value;
+  QLabel * firmware_version_label;
+  QLabel * firmware_version_value;
+  QLabel * cmd_port_label;
+  QLabel * cmd_port_value;
+  QLabel * ttl_port_label;
+  QLabel * ttl_port_value;
+  QLabel * device_reset_label;
+  QLabel * device_reset_value;
+
   bool start_event_reported = false;
 
   QString directory_hint;
