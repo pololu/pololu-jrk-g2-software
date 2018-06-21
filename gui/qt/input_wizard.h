@@ -46,6 +46,7 @@ protected:
 
 public slots:
   void handle_next();
+  void handle_skip();
   void handle_back();
   void set_input(uint16_t);
 
@@ -56,6 +57,7 @@ private:
   void handle_next_on_intro_page();
   void handle_back_on_learn_page();
   void handle_next_on_learn_page();
+  void handle_skip_on_learn_page();
   void handle_new_sample();
   void handle_sampling_complete();
   bool learn_neutral();
@@ -88,6 +90,7 @@ private:
   QProgressBar * sampling_progress;
   QLabel * input_value;
   QLabel * input_pretty;
+  QPushButton * skip_button;
 
   nice_wizard_page * conclusion_page;
   QCheckBox * final_invert_checkbox;
@@ -109,6 +112,7 @@ private:
   int learn_step = FIRST_STEP;
   bool sampling = false;
   std::vector<uint16_t> samples;
+  bool skipped_neutral = false;
   uint16_range learned_neutral;
   uint16_range learned_max;
   uint16_range learned_min;

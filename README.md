@@ -39,6 +39,9 @@ from source.
       - Made it visible from any tab.
       - Made is use a slider control instead of a scrollbar.
       - Added a "Center" button.
+    - Input wizard:
+      - Added a "Skip" button to skip the step of learning the neutral point.
+      - Changed it to be much more like the feedback wizard.
     - Allow the variables displayed in the Status tab to be moved into their
       own window.
     - Show two digits after the decimal point for the "Raw current" variable

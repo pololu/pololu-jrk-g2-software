@@ -66,6 +66,19 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
   size.setHeight(size.height() * 4 / 3);
   setFixedSize(size);
 
+  // Make CustomButton1 be a skip button, so the user can skip the neutral step.
+  skip_button = new QPushButton();
+  setButton(CustomButton1, skip_button);
+  setButtonText(CustomButton1, "Skip");
+  connect(skip_button, &QAbstractButton::clicked,
+    this, &input_wizard::handle_skip);
+
+  setButtonLayout(
+    {Stretch, BackButton, CustomButton1, NextButton, FinishButton});
+
+  // Must be done after setButtonLayout
+  skip_button->setVisible(false);
+
   // Custom text for the buttons, so that it doesn't change when they are on
   // macOS and so we can make it clear that the 'Finish' button also applies
   // settings.
@@ -136,6 +149,20 @@ void input_wizard::handle_next()
   }
 }
 
+void input_wizard::handle_skip()
+{
+  if (disconnected_error()) { return; }
+
+  if (currentId() == LEARN)
+  {
+    handle_skip_on_learn_page();
+  }
+  else
+  {
+    assert(0);
+  }
+}
+
 void input_wizard::handle_back()
 {
   if (currentId() == LEARN)
@@ -173,6 +200,9 @@ void input_wizard::set_next_button_enabled(bool enabled)
   // We only care about setting the next button to be enabled when we are on the
   // learn page; it is always enabled on the other pages.
   learn_page->setComplete(enabled);
+
+  // Skip button should only be enabled if the next button is.
+  skip_button->setEnabled(enabled);
 }
 
 void input_wizard::set_progress_visible(bool visible)
@@ -198,8 +228,8 @@ void input_wizard::handle_next_on_intro_page()
   // button and we go back to the intro page prematurely, it will help.
   learn_step = FIRST_STEP;
   sampling = false;
-  update_learn_page();
   next();
+  update_learn_page();
 }
 
 void input_wizard::handle_back_on_learn_page()
@@ -208,7 +238,6 @@ void input_wizard::handle_back_on_learn_page()
   {
     // We were in the middle of sampling, so just cancel that.
     sampling = false;
-    update_learn_page();
   }
   else
   {
@@ -220,9 +249,9 @@ void input_wizard::handle_back_on_learn_page()
     else
     {
       learn_step--;
-      update_learn_page();
     }
   }
+  update_learn_page();
 }
 
 void input_wizard::handle_next_on_learn_page()
@@ -240,6 +269,21 @@ void input_wizard::handle_next_on_learn_page()
     samples.clear();
     sampling_progress->setValue(0);
     update_learn_page();
+  }
+}
+
+void input_wizard::handle_skip_on_learn_page()
+{
+  if (learn_step == NEUTRAL)
+  {
+    skipped_neutral = true;
+    learned_neutral = uint16_range();
+    learn_step++;
+    update_learn_page();
+  }
+  else
+  {
+    assert(0);
   }
 }
 
@@ -308,6 +352,7 @@ bool input_wizard::learn_neutral()
   // sampled range, whichever is greater.
   uint16_t deadband = std::max<uint16_t>((full_range() + 10) / 20, r.range());
 
+  skipped_neutral = false;
   learned_neutral = uint16_range::from_center_and_range(r.average, deadband, 4095);
 
   return true;
@@ -318,7 +363,7 @@ bool input_wizard::learn_max()
   learned_max = uint16_range::from_samples(samples);
   if (!check_range_not_too_big(learned_max)) { return false; }
 
-  if (learned_max.intersects(learned_neutral))
+  if (!skipped_neutral && learned_max.intersects(learned_neutral))
   {
     // The input was indistinguishable from neutral, so warn the user!
     show_warning_message(
@@ -355,7 +400,8 @@ bool input_wizard::learn_min()
   }
 
   // Make sure at least one input direction is distinguishable from neutral.
-  if (learned_min.intersects(learned_neutral) && learned_max.intersects(learned_min))
+  if (!skipped_neutral && learned_min.intersects(learned_neutral)
+    && learned_max.intersects(learned_min))
   {
     show_error_message(
       "The values sampled for the minimum input (" +
@@ -381,7 +427,7 @@ bool input_wizard::learn_min()
   assert(real_max->is_entirely_above(*real_min));
 
   // Check that the max and min are not both on the same side of the deadband.
-  if (real_min->is_entirely_above(learned_neutral))
+  if (!skipped_neutral && real_min->is_entirely_above(learned_neutral))
   {
     show_error_message(
       "The maximum and minimum values measured for the input (" +
@@ -391,7 +437,7 @@ bool input_wizard::learn_min()
       learned_neutral.min_max_string() + ")." + try_again, this);
     return false;
   }
-  if (learned_neutral.is_entirely_above(*real_max))
+  if (!skipped_neutral && learned_neutral.is_entirely_above(*real_max))
   {
     show_error_message(
       "The maximum and minimum values measured for the input (" +
@@ -402,7 +448,7 @@ bool input_wizard::learn_min()
     return false;
   }
 
-  if (learned_min.intersects(learned_neutral))
+  if (!skipped_neutral && learned_min.intersects(learned_neutral))
   {
     show_warning_message(
       "The values sampled for the minimum input (" +
@@ -417,41 +463,54 @@ bool input_wizard::learn_min()
 
   // All the checks are done, so figure out the new settings.
 
-  result.neutral_minimum = learned_neutral.min;
-  result.neutral_maximum = learned_neutral.max;
-
-  if (real_max->intersects(learned_neutral))
+  if (skipped_neutral)
   {
-    // real_max intersects the deadband, so that is a direction
-    // that the user doesn't want to move their input.
-    result.maximum = result.neutral_maximum;
-  }
-  else
-  {
-    // Try to set input maximum to a value that is a little bit below
-    // real_max->min so that when the user pushes the input all the way in that
-    // direction, they can get the full output.
     int margin = std::min(
-      (real_max->min - result.neutral_maximum + 15) / 30,
+      (real_max->min - real_min->max + 15) / 30,
       (full_range() + 50) / 100);
     result.maximum = real_max->min - margin;
-  }
-
-  if (real_min->intersects(learned_neutral))
-  {
-    // real_min intersects the deadband, so that is a direction
-    // that the user doesn't want to move their input.
-    result.minimum = result.neutral_minimum;
+    result.minimum = real_min->max + margin;
+    uint16_t midpoint = (result.maximum + result.minimum) / 2;
+    result.neutral_maximum = result.neutral_minimum = midpoint;
   }
   else
   {
-    // Try to set input minimum to a value that is a little bit above
-    // real_min->max so that when the user pushes the input all the way in that
-    // direction, they can get the full output.
-    int margin = std::min(
-      (result.neutral_maximum - real_min->max + 15) / 30,
-      (full_range() + 50) / 100);
-    result.minimum = real_min->max + margin;
+    result.neutral_minimum = learned_neutral.min;
+    result.neutral_maximum = learned_neutral.max;
+
+    if (real_max->intersects(learned_neutral))
+    {
+      // real_max intersects the deadband, so that is a direction
+      // that the user doesn't want to move their input.
+      result.maximum = result.neutral_maximum;
+    }
+    else
+    {
+      // Try to set input maximum to a value that is a little bit below
+      // real_max->min so that when the user pushes the input all the way in that
+      // direction, they can get the full output.
+      int margin = std::min(
+        (real_max->min - result.neutral_maximum + 15) / 30,
+        (full_range() + 50) / 100);
+      result.maximum = real_max->min - margin;
+    }
+
+    if (real_min->intersects(learned_neutral))
+    {
+      // real_min intersects the deadband, so that is a direction
+      // that the user doesn't want to move their input.
+      result.minimum = result.neutral_minimum;
+    }
+    else
+    {
+      // Try to set input minimum to a value that is a little bit above
+      // real_min->max so that when the user pushes the input all the way in that
+      // direction, they can get the full output.
+      int margin = std::min(
+        (result.neutral_maximum - real_min->max + 15) / 30,
+        (full_range() + 50) / 100);
+      result.minimum = real_min->max + margin;
+    }
   }
 
   // Set the error range: when the input is outside of this range, the jrk
@@ -503,6 +562,7 @@ void input_wizard::update_learn_page()
   set_next_button_enabled(!sampling);
   set_progress_visible(sampling);
   update_learn_text();
+  skip_button->setVisible(currentId() == LEARN && learn_step == NEUTRAL);
 }
 
 void input_wizard::update_learn_text()
@@ -522,7 +582,11 @@ void input_wizard::update_learn_text()
     {
       instruction_label->setText(tr(
         "Verify that you have connected your analog input to the SDA/AN pin.  "
-        "Next, move the input to its neutral position."));
+        "Next, move the input to its neutral position.  "
+        "If your input does not have a neutral position or you do not wish "
+        "to take the neutral position into account, "
+        "you can click the Skip button to skip this step."
+        ));
     }
     else
     {
@@ -641,7 +705,7 @@ nice_wizard_page * input_wizard::setup_learn_page()
   instruction_label = new QLabel();
   instruction_label->setWordWrap(true);
   instruction_label->setAlignment(Qt::AlignTop);
-  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 2);
+  instruction_label->setMinimumHeight(fontMetrics().lineSpacing() * 4);
   layout->addWidget(instruction_label);
   layout->addSpacing(fontMetrics().height());
 
