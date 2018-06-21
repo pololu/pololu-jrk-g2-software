@@ -2996,7 +2996,7 @@ QWidget * main_window::setup_pid_tab()
   return pid_page_widget;
 }
 
-QWidget *main_window::setup_motor_tab()
+QWidget * main_window::setup_motor_tab()
 {
   motor_page_widget = new QWidget();
 
@@ -3214,17 +3214,17 @@ QWidget *main_window::setup_motor_tab()
   coast_when_off_button_group->addButton(motor_brake_radio, 0);
   coast_when_off_button_group->addButton(motor_coast_radio, 1);
 
-  QHBoxLayout *frequency_layout = new QHBoxLayout();
+  QHBoxLayout * frequency_layout = new QHBoxLayout();
   frequency_layout->addWidget(pwm_frequency_label);
   frequency_layout->addWidget(pwm_frequency_combobox);
-  frequency_layout->addStretch(1);;
+  frequency_layout->addStretch(1);
 
-  QHBoxLayout *invert_layout = new QHBoxLayout();
+  QHBoxLayout * invert_layout = new QHBoxLayout();
   invert_layout->addWidget(motor_invert_checkbox);
   invert_layout->addWidget(detect_motor_button);
   invert_layout->addStretch(1);
 
-  QHBoxLayout *deceleration_layout = new QHBoxLayout();
+  QHBoxLayout * deceleration_layout = new QHBoxLayout();
   deceleration_layout->addWidget(
     max_duty_cycle_while_feedback_out_of_range_label);
   deceleration_layout->addWidget(
@@ -3233,13 +3233,13 @@ QWidget *main_window::setup_motor_tab()
     max_duty_cycle_while_feedback_out_of_range_means_label);
   deceleration_layout->addStretch(1);
 
-  QGridLayout *motor_off_layout = new QGridLayout();
-  motor_off_layout->addWidget(motor_off_label,0,0);
-  motor_off_layout->addWidget(motor_brake_radio,0,1);
-  motor_off_layout->addWidget(motor_coast_radio,1,1);
-  motor_off_layout->setColumnStretch(2, 1);
+  QGridLayout * motor_off_layout = new QGridLayout();
+  motor_off_layout->addWidget(motor_off_label, 0, 0);
+  motor_off_layout->addWidget(motor_brake_radio, 0, 1);
+  motor_off_layout->addWidget(motor_coast_radio, 0, 2);
+  motor_off_layout->setColumnStretch(3, 1);
 
-  QVBoxLayout *layout = motor_page_layout = new QVBoxLayout();
+  QVBoxLayout * layout = motor_page_layout = new QVBoxLayout();
   layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addLayout(frequency_layout);
   layout->addLayout(invert_layout);
@@ -3253,7 +3253,7 @@ QWidget *main_window::setup_motor_tab()
   return motor_page_widget;
 }
 
-QWidget *main_window::setup_errors_tab()
+QWidget * main_window::setup_errors_tab()
 {
   errors_page_widget = new QWidget();
 
