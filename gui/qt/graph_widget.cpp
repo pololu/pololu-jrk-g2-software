@@ -1,4 +1,6 @@
 #include "graph_widget.h"
+#include "file_util.h"
+#include "message_box.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -383,17 +385,21 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 }
 
-QMenu * graph_widget::setup_options_menu(const QString& title)
+QMenu * graph_widget::setup_options_menu(const QString& title, bool shortcuts)
 {
   QMenu * options_menu = new QMenu(title);
 
   QAction * save_settings_action = new QAction(this);
   save_settings_action->setText("Save graph settings...");
-  save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
   QAction * load_settings_action = new QAction(this);
   load_settings_action->setText("Load graph settings...");
-  load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
+
+  if (shortcuts)
+  {
+    save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
+    load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
+  }
 
   dark_theme_action = new QAction(this);
   dark_theme_action->setText(tr("&Use dark theme"));
@@ -443,7 +449,7 @@ QMenuBar * graph_widget::setup_menu_bar()
 
   menu_bar = new QMenuBar();
 
-  menu_bar->addMenu(setup_options_menu(QWidget::tr("&Options")));
+  menu_bar->addMenu(setup_options_menu(QWidget::tr("&Options"), true));
 
   return menu_bar;
 }
@@ -829,63 +835,61 @@ void graph_widget::save_settings()
 
   if (filename.isEmpty()) { return; }
 
-  QFile file_out(filename);
-  if (file_out.open(QFile::WriteOnly | QFile::Text))
+  QString settings_string = NULL;
+
+  if (dark_theme)
   {
-    QTextStream out(&file_out);
-
-    if (dark_theme)
-    {
-      out << "theme,dark" << '\n';
-    }
-    else
-    {
-      out << "theme,default" << '\n';
-    }
-
-    out << "domain," << domain->value() << '\n';
-
-    for (auto plot : all_plots)
-    {
-      out
-        << plot->id_string << ','
-        << plot->display->isChecked() << ','
-        << plot->position->cleanText() << ','
-        << plot->scale->cleanText() << ','
-        << plot->default_color << ','
-        << plot->dark_color << '\n';
-    }
+    settings_string.append("theme,dark\n");
   }
   else
   {
-    // TODO: report file save errors (e.g. file_out.errorMessage())
-    return;
+    settings_string.append("theme,default\n");
+  }
+
+  settings_string.append("domain," + QString::number(domain->value()) + "\n");
+
+  for (auto plot : all_plots)
+  {
+    QString plot_settings = QString("%1,%2,%3,%4,%5,%6").
+    arg(plot->id_string).
+    arg(QString::number(plot->display->isChecked())).
+    arg(plot->position->cleanText()).
+    arg(plot->scale->cleanText()).
+    arg(plot->default_color).
+    arg(plot->dark_color + "\n");
+
+    settings_string.append(plot_settings);
+  }
+
+  try
+  {
+    write_string_to_file(filename.toStdString(), settings_string.toStdString());
+  }
+  catch (std::exception const & e)
+  {
+    show_exception(e, "", qobject_cast<QWidget*>(parent()));
   }
 }
 
 void graph_widget::load_settings()
 {
-  QStringList all_plots_settings;
-
   QString filename = QFileDialog::getOpenFileName(custom_plot,
     "Load Graph Settings", "", "Text files (*.txt)");
 
   if (filename.isEmpty()) { return; }
 
-  QFile file_in(filename);
-  if (file_in.open(QFile::ReadOnly | QFile::Text))
+  QString settings_file = NULL;
+
+  try
   {
-    QTextStream stream_in(&file_in);
-    while (!stream_in.atEnd())
-    {
-      all_plots_settings += stream_in.readLine();
-    }
+    settings_file = QString::fromStdString(read_string_from_file(filename.toStdString()));
   }
-  else
+  catch (std::exception const & e)
   {
-    // TODO: report file read errors (e.g. file_in.errorMessage())
-    return;
+    show_exception(e, "", qobject_cast<QWidget*>(parent()));
   }
+
+  QStringList all_plots_settings = settings_file.split("\n");
 
   for (auto settings : all_plots_settings)
   {

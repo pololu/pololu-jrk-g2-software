@@ -2140,6 +2140,7 @@ QWidget * main_window::setup_graph()
   graph->setObjectName(QStringLiteral("graph"));
   graph->set_preview_mode(true);
   graph->custom_plot->installEventFilter(this);
+  graph->setParent(this);
 
   window_menu->addMenu(graph->setup_options_menu("Graph options"));
 
