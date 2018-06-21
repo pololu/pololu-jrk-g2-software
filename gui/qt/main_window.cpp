@@ -416,6 +416,45 @@ void main_window::set_motor_status_message(
   motor_status_value->setText(message_qstr);
 }
 
+void main_window::set_apply_settings_button_stylesheet(int offset)
+{
+  int base = 12;
+  int left = base + offset;
+  int right = base - offset;
+  QString style = QString(
+    ":enabled {"
+    "background-color: #1f2f93;"  // Pololu blue
+    "color: white;"
+    "font-weight: bold;"
+    "padding: 0.3em %1px 0.3em %2px; }").arg(left).arg(right);
+  apply_settings_button->setStyleSheet(style);
+}
+
+void main_window::animate_apply_settings_button()
+{
+  static const int8_t offsets[] = {
+    // 2 seconds of stillness
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    // move right and left
+    1, 2, 3, 4, 3, 2, 1, 0, -1, -2, -3, -4, -3, -2, -1,
+  };
+
+  if (!apply_settings_button->isEnabled())
+  {
+    apply_settings_animation_count = 0;
+    set_apply_settings_button_stylesheet(0);
+    return;
+  }
+
+  apply_settings_animation_count++;
+  if (apply_settings_animation_count >= sizeof(offsets)/sizeof(offsets[0]))
+  {
+    apply_settings_animation_count = 0;
+  }
+  set_apply_settings_button_stylesheet(offsets[apply_settings_animation_count]);
+}
+
 void main_window::set_input_mode(uint8_t input_mode)
 {
   set_u8_combobox(input_mode_combobox, input_mode);
@@ -1186,6 +1225,7 @@ void main_window::on_update_timer_timeout()
 {
   controller->update();
   emit controller_updated();
+  animate_apply_settings_button();
 }
 
 void main_window::restore_graph_preview()
@@ -1936,8 +1976,7 @@ void main_window::setup_ui()
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
-  apply_settings_button->setStyleSheet(
-    ":enabled { background-color: #1f2f93; color: white; font-weight: bold; }");
+  set_apply_settings_button_stylesheet(0);
 
   QHBoxLayout *footer_layout = new QHBoxLayout();
   footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);

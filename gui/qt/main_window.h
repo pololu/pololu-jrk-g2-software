@@ -127,6 +127,9 @@ public:
   void set_motor_status_message(const std::string & message,
     uint16_t error_flag = 0);
 
+  void set_apply_settings_button_stylesheet(int offset);
+  void animate_apply_settings_button();
+
   void set_input_mode(uint8_t input_mode);
   void set_input_invert(bool input_invert);
   void set_input_analog_samples_exponent(uint8_t value);
@@ -696,6 +699,7 @@ private:
   QPushButton * stop_motor_button;
   QPushButton * run_motor_button;
   QPushButton * apply_settings_button;
+  uint32_t apply_settings_animation_count = 0;
 
   // advanced tab
 
