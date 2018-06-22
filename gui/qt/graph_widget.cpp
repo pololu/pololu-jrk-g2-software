@@ -851,13 +851,13 @@ void graph_widget::save_settings()
 
   for (auto plot : all_plots)
   {
-    QString plot_settings = QString("%1,%2,%3,%4,%5,%6").
-    arg(plot->id_string).
-    arg(QString::number(plot->display->isChecked())).
-    arg(plot->position->cleanText()).
-    arg(plot->scale->cleanText()).
-    arg(plot->default_color).
-    arg(plot->dark_color + "\n");
+    QString plot_settings = QString("%1,%2,%3,%4,%5,%6\n")
+      .arg(plot->id_string)
+      .arg(plot->display->isChecked())
+      .arg(plot->position->cleanText())
+      .arg(plot->scale->cleanText())
+      .arg(plot->default_color)
+      .arg(plot->dark_color);
 
     settings_string.append(plot_settings);
   }
@@ -866,9 +866,11 @@ void graph_widget::save_settings()
   {
     write_string_to_file(filename.toStdString(), settings_string.toStdString());
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
-    show_exception(e, "", qobject_cast<QWidget*>(parent()));
+    // Set the custom_plot as the parent, since that's a good guess and it's
+    // hard to do better (the menu item is visible in two different windows).
+    show_exception(e, "", custom_plot);
   }
 }
 
@@ -879,15 +881,18 @@ void graph_widget::load_settings()
 
   if (filename.isEmpty()) { return; }
 
-  QString settings_file = NULL;
+  QString settings_file;
 
   try
   {
     settings_file = QString::fromStdString(read_string_from_file(filename.toStdString()));
   }
-  catch (std::exception const & e)
+  catch (const std::exception & e)
   {
-    show_exception(e, "", qobject_cast<QWidget*>(parent()));
+    // Set the custom_plot as the parent, since that's a good guess and it is
+    // hard to do better (the menu item is visible in two different windows).
+    show_exception(e, "", custom_plot);
+    return;
   }
 
   QStringList all_plots_settings = settings_file.split("\n");
