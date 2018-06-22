@@ -652,9 +652,9 @@ void main_window::update_feedback_scaling_order_warning_label()
   feedback_scaling_order_warning_label->setVisible(warn);
 }
 
-void main_window::set_feedback_analog_samples_exponent(uint8_t feedback_analog_samples)
+void main_window::set_feedback_analog_samples_exponent(uint8_t samples)
 {
-  set_u8_combobox(feedback_analog_samples_combobox, feedback_analog_samples);
+  set_u8_combobox(feedback_analog_samples_combobox, samples);
 }
 
 void main_window::set_feedback_detect_disconnect(bool value)
