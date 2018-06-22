@@ -791,15 +791,13 @@ static QCPRange axis_range(double position, double scale)
 {
   double lower_range = -(scale * 5.0) - position;
   double upper_range = (scale * 5.0) - position;
-
-  QCPRange calculated_range(lower_range, upper_range);
-
-  return calculated_range;
+  return QCPRange(lower_range, upper_range);
 }
 
 void graph_widget::set_range(const plot & plot)
 {
   reset_graph_interaction_axes();
+  set_graph_interaction_axis(plot);
 
   {
     QSignalBlocker blocker(plot.axis);
@@ -811,7 +809,6 @@ void graph_widget::set_range(const plot & plot)
 
   update_position_step_value(plot);
   update_plot_text_and_arrows(plot);
-  set_graph_interaction_axis(plot);
   custom_plot->replot();
 }
 
