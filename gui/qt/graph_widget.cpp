@@ -885,7 +885,8 @@ void graph_widget::load_settings()
 
   try
   {
-    settings_file = QString::fromStdString(read_string_from_file(filename.toStdString()));
+    settings_file = QString::fromStdString(read_string_from_file(
+      filename.toStdString()));
   }
   catch (const std::exception & e)
   {
@@ -899,40 +900,60 @@ void graph_widget::load_settings()
 
   for (auto settings : all_plots_settings)
   {
-    if (settings.contains("theme,dark"))
+    QStringList parts = settings.split(",", QString::SkipEmptyParts);
+
+    if (parts.count() >= 2 && parts[0] == "theme")
     {
-      switch_to_dark();
-    }
-    else if (settings.contains("theme,default"))
-    {
-      switch_to_default();
+      if (parts[1] == "dark")
+      {
+        switch_to_dark();
+      }
+      else if (parts[1] == "default")
+      {
+        switch_to_default();
+      }
+      continue;
     }
 
-    if (settings.contains("domain"))
+    if (parts.count() >= 2 && parts[0] == "domain")
     {
-      domain->setValue(settings.split(",").at(1).toInt());
+      domain->setValue(parts[1].toInt());
+      continue;
     }
-
-    QStringList split_settings = settings.split(",", QString::SkipEmptyParts);
 
     for (auto plot : all_plots)
     {
-      if (split_settings.count() < 6
-        || split_settings[0] != plot->id_string) { continue; }
+      if (parts.count() < 6 || parts[0] != plot->id_string) { continue; }
 
-      plot->display->setChecked(split_settings[1].toInt());
+      plot->display->setChecked(parts[1].toInt());
 
-      if (split_settings[3].toDouble() < 0.1)
+      double position = parts[2].toDouble();
+      double scale = parts[3].toDouble();
+      if (scale < 0.1)
       {
-        split_settings[3] = "0.1";
+        scale = 0.1;
       }
 
-      plot->axis->setRange(axis_range(split_settings[2].toDouble(),
-        split_settings[3].toDouble()));
-      plot->default_color = split_settings[4];
-      plot->dark_color = split_settings[5];
+      plot->axis->setRange(axis_range(position, scale));
+      plot->default_color = parts[4];
+      plot->dark_color = parts[5];
+
+      if (dark_theme)
+      {
+        change_plot_colors(plot, plot->dark_color);
+      }
+      else
+      {
+        change_plot_colors(plot, plot->default_color);
+      }
+
+      update_position_step_value(*plot);
+      update_plot_text_and_arrows(*plot);
+      break;
     }
   }
+
+  custom_plot->replot();
 }
 
 void graph_widget::switch_to_dark()
