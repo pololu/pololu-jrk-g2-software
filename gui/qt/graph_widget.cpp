@@ -385,7 +385,7 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 }
 
-QMenu * graph_widget::setup_options_menu(const QString& title, bool shortcuts)
+QMenu * graph_widget::setup_options_menu(const QString & title, bool shortcuts)
 {
   QMenu * options_menu = new QMenu(title);
 
@@ -446,11 +446,8 @@ QMenu * graph_widget::setup_options_menu(const QString& title, bool shortcuts)
 QMenuBar * graph_widget::setup_menu_bar()
 {
   if (menu_bar) { return menu_bar; }
-
   menu_bar = new QMenuBar();
-
   menu_bar->addMenu(setup_options_menu(QWidget::tr("&Options"), true));
-
   return menu_bar;
 }
 
