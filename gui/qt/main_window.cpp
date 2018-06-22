@@ -212,6 +212,7 @@ void main_window::set_feedback(uint16_t feedback, uint8_t feedback_mode)
 void main_window::set_scaled_feedback(uint16_t scaled_feedback)
 {
   graph->scaled_feedback.plot_value = scaled_feedback;
+  manual_target_slider->set_scaled_feedback(scaled_feedback);
   scaled_feedback_value->setText(QString::number(scaled_feedback));
 }
 
@@ -258,6 +259,7 @@ void main_window::set_duty_cycle_target(int16_t duty_cycle_target)
 void main_window::set_duty_cycle(int16_t duty_cycle)
 {
   graph->duty_cycle.plot_value = duty_cycle;
+  manual_target_slider->set_duty_cycle(duty_cycle);
   duty_cycle_value->setText(format_duty_cycle(duty_cycle));
   emit duty_cycle_changed(duty_cycle);
 }
@@ -354,13 +356,33 @@ void main_window::set_connection_status(const std::string & status, bool error)
   connection_status_value->setText(QString::fromStdString(status));
 }
 
-void main_window::set_manual_target_enabled(bool enabled)
+void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode)
 {
-  manual_target_box->setEnabled(enabled);
-}
+  manual_target_box->setEnabled(input_mode == JRK_INPUT_MODE_SERIAL);
 
-void main_window::set_manual_target_range(uint16_t min, uint16_t max)
-{
+  int min;
+  int max;
+  manual_target_slider->set_scaled_feedback_enabled(false);
+  manual_target_slider->set_duty_cycle_enabled(false);
+  if (feedback_mode == JRK_FEEDBACK_MODE_NONE)
+  {
+    min = 1448;
+    max = 2648;
+    manual_target_slider->set_duty_cycle_enabled(true);
+    manual_target_slider->setToolTip(tr(
+      "Use this slider to set the target.  The green dot is the duty cycle (plus 2048)."
+    ));
+  }
+  else
+  {
+    min = 0;
+    max = 4095;
+    manual_target_slider->set_scaled_feedback_enabled(true);
+    manual_target_slider->setToolTip(tr(
+      "Use this slider to set the target.  The red dot is the scaled feedback."
+    ));
+  }
+
   suppress_events = true;
   manual_target_min_label->setText(QString::number(min));
   manual_target_max_label->setText(QString::number(max));

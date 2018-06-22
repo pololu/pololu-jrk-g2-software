@@ -115,8 +115,7 @@ public:
   // Sets the label that shows the connection status/error.
   void set_connection_status(const std::string & status, bool error);
 
-  void set_manual_target_enabled(bool enabled);
-  void set_manual_target_range(uint16_t min, uint16_t max);
+  void set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode);
   void set_manual_target_inputs(uint16_t target);
   uint16_t get_manual_target_numeric_input();
 

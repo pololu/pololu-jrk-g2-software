@@ -669,17 +669,8 @@ void main_controller::handle_settings_loaded()
     // time or are about to change.  We should reinitialize the manual target
     // interface.
 
-    window->set_manual_target_enabled(
-      settings.get_input_mode() == JRK_INPUT_MODE_SERIAL);
-
-    if (settings.get_feedback_mode() == JRK_FEEDBACK_MODE_NONE)
-    {
-      window->set_manual_target_range(1448, 2648);
-    }
-    else
-    {
-      window->set_manual_target_range(0, 4095);
-    }
+    window->set_manual_target_mode(settings.get_input_mode(),
+      settings.get_feedback_mode());
     window->set_manual_target_inputs(2048);
   }
 
