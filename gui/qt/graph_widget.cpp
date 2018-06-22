@@ -578,16 +578,12 @@ void graph_widget::setup_plot(plot & plot,
     (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
-    plot.display->setChecked(true);
-    set_graph_interaction_axis(plot);
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString &)>
     (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
-    plot.display->setChecked(true);
-    set_graph_interaction_axis(plot);
   });
 
   all_plots.append(&plot);
@@ -791,20 +787,31 @@ void graph_widget::reset_plot_range(const plot & plot)
   plot.axis->setRange(-plot.default_scale * 5.0, plot.default_scale * 5.0);
 }
 
+static QCPRange axis_range(double position, double scale)
+{
+  double lower_range = -(scale * 5.0) - position;
+  double upper_range = (scale * 5.0) - position;
+
+  QCPRange calculated_range(lower_range, upper_range);
+
+  return calculated_range;
+}
+
 void graph_widget::set_range(const plot & plot)
 {
   reset_graph_interaction_axes();
 
-  double lower_range = -(plot.scale->value() * 5.0) - plot.position->value();
-  double upper_range = (plot.scale->value() * 5.0) - plot.position->value();
-
   {
     QSignalBlocker blocker(plot.axis);
-    plot.axis->setRange(lower_range, upper_range);
+    plot.axis->setRange(axis_range(plot.position->value(),
+      plot.scale->value()));
   }
+
+  plot.display->setChecked(true);
 
   update_position_step_value(plot);
   update_plot_text_and_arrows(plot);
+  set_graph_interaction_axis(plot);
   custom_plot->replot();
 }
 
@@ -892,11 +899,11 @@ void graph_widget::load_settings()
   {
     if (settings.contains("theme,dark"))
     {
-      emit dark_theme_action->triggered();
+      switch_to_dark();
     }
     else if (settings.contains("theme,default"))
     {
-      emit default_theme_action->triggered();
+      switch_to_default();
     }
 
     if (settings.contains("domain"))
@@ -913,24 +920,15 @@ void graph_widget::load_settings()
 
       plot->display->setChecked(split_settings[1].toInt());
 
-      {
-        QSignalBlocker blocker(plot->position);
-        plot->position->setValue(split_settings[2].toDouble());
-      }
-
       if (split_settings[3].toDouble() < 0.1)
       {
         split_settings[3] = "0.1";
       }
 
-      {
-        QSignalBlocker blocker(plot->scale);
-        plot->scale->setValue(split_settings[3].toDouble());
-      }
-
+      plot->axis->setRange(axis_range(split_settings[2].toDouble(),
+        split_settings[3].toDouble()));
       plot->default_color = split_settings[4];
       plot->dark_color = split_settings[5];
-      set_range(*plot);
     }
   }
 }
