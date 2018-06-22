@@ -695,9 +695,12 @@ private:
   QWidget * new_error_row;
   QList<error_row> error_rows;
 
+  // footer
+
   QHBoxLayout * footer_layout;
   QPushButton * stop_motor_button;
   QPushButton * run_motor_button;
+  QLabel * apply_settings_label;
   QPushButton * apply_settings_button;
   uint32_t apply_settings_animation_count = 0;
 

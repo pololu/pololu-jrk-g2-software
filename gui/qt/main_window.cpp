@@ -387,6 +387,7 @@ void main_window::set_apply_settings_enabled(bool enabled)
 {
   apply_settings_button->setEnabled(enabled);
   apply_settings_action->setEnabled(enabled);
+  apply_settings_label->setVisible(enabled);
 }
 
 void main_window::set_motor_status_message(
@@ -422,7 +423,7 @@ void main_window::set_apply_settings_button_stylesheet(int offset)
   int left = base + offset;
   int right = base - offset;
   QString style = QString(
-    ":enabled {"
+    "QPushButton:enabled {"
     "background-color: #1f2f93;"  // Pololu blue
     "color: white;"
     "font-weight: bold;"
@@ -1973,15 +1974,24 @@ void main_window::setup_ui()
 
   motor_status_value = new elided_label();
 
+  apply_settings_label = new QLabel();
+  apply_settings_label->setText(tr("There are unapplied changes."));
+  apply_settings_label->setToolTip(tr(
+    "You changed some settings but have not saved them to your device yet."
+  ));
+  apply_settings_label->setStyleSheet("color: #1f2f93;");
+
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
+  apply_settings_button->setToolTip(apply_settings_label->toolTip());
   set_apply_settings_button_stylesheet(0);
 
   QHBoxLayout *footer_layout = new QHBoxLayout();
   footer_layout->addWidget(stop_motor_button, 0, Qt::AlignLeft);
   footer_layout->addWidget(run_motor_button, 0, Qt::AlignLeft);
   footer_layout->addWidget(motor_status_value, 1);
+  footer_layout->addWidget(apply_settings_label, 0, Qt::AlignRight);
   footer_layout->addWidget(apply_settings_button, 0, Qt::AlignRight);
 
   QHBoxLayout *header_layout = new QHBoxLayout();
