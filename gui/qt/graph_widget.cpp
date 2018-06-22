@@ -938,6 +938,8 @@ void graph_widget::load_settings()
       plot->default_color = parts[4];
       plot->dark_color = parts[5];
 
+      // Assumption:  The line in the file for setting the theme as already
+      // processed, and 'dark_theme' was changed accordingly.
       if (dark_theme)
       {
         change_plot_colors(plot, plot->dark_color);
