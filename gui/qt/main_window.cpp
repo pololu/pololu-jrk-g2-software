@@ -405,7 +405,7 @@ void main_window::set_motor_status_message(
 
   if (!styled && stopped)
   {
-    motor_status_value->setStyleSheet("color: red;");
+    motor_status_value->setStyleSheet("QLabel { color: red; }");
   }
   else if (styled && !stopped)
   {
