@@ -265,14 +265,12 @@ void graph_widget::setup_ui()
 {
   dark_theme_action = new QAction(this);
   dark_theme_action->setText(tr("&Use dark theme"));
+  connect(dark_theme_action, &QAction::triggered, this,
+    &graph_widget::switch_to_dark);
 
   default_theme_action = new QAction(this);
   default_theme_action->setText(tr("&Use default theme"));
   default_theme_action->setVisible(false);
-
-  connect(dark_theme_action, &QAction::triggered, this,
-    &graph_widget::switch_to_dark);
-
   connect(default_theme_action, &QAction::triggered, this,
     &graph_widget::switch_to_default);
 
