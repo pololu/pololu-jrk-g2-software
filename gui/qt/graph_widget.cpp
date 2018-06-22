@@ -1,4 +1,6 @@
 #include "graph_widget.h"
+#include "file_util.h"
+#include "message_box.h"
 
 #include <QColorDialog>
 #include <QFileDialog>
@@ -383,21 +385,21 @@ void graph_widget::setup_ui()
   custom_plot->axisRect()->setRangeZoom(Qt::Vertical);
 }
 
-QMenuBar * graph_widget::setup_menu_bar()
+QMenu * graph_widget::setup_options_menu(const QString& title, bool shortcuts)
 {
-  if (menu_bar) { return menu_bar; }
-
-  menu_bar = new QMenuBar();
-
-  QMenu * options_menu = menu_bar->addMenu(tr("&Options"));
+  QMenu * options_menu = new QMenu(title);
 
   QAction * save_settings_action = new QAction(this);
   save_settings_action->setText("Save graph settings...");
-  save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
 
   QAction * load_settings_action = new QAction(this);
   load_settings_action->setText("Load graph settings...");
-  load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
+
+  if (shortcuts)
+  {
+    save_settings_action->setShortcut(Qt::CTRL + Qt::Key_S);
+    load_settings_action->setShortcut(Qt::CTRL + Qt::Key_L);
+  }
 
   dark_theme_action = new QAction(this);
   dark_theme_action->setText(tr("&Use dark theme"));
@@ -437,6 +439,17 @@ QMenuBar * graph_widget::setup_menu_bar()
 
   connect(reset_all_ranges_action, &QAction::triggered, this,
     &graph_widget::reset_all_ranges);
+
+  return options_menu;
+}
+
+QMenuBar * graph_widget::setup_menu_bar()
+{
+  if (menu_bar) { return menu_bar; }
+
+  menu_bar = new QMenuBar();
+
+  menu_bar->addMenu(setup_options_menu(QWidget::tr("&Options"), true));
 
   return menu_bar;
 }
@@ -560,7 +573,6 @@ void graph_widget::setup_plot(plot & plot,
       QSignalBlocker blocker(plot.scale);
       plot.scale->setValue(scale_value);
     }
-
     update_position_step_value(plot);
     update_plot_text_and_arrows(plot);
   });
@@ -569,12 +581,16 @@ void graph_widget::setup_plot(plot & plot,
     (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
+    plot.display->setChecked(true);
+    set_graph_interaction_axis(plot);
   });
 
   connect(plot.position, static_cast<void (QDoubleSpinBox::*)(const QString &)>
     (&QDoubleSpinBox::valueChanged), [=](const QString & value)
   {
     set_range(plot);
+    plot.display->setChecked(true);
+    set_graph_interaction_axis(plot);
   });
 
   all_plots.append(&plot);
@@ -780,11 +796,8 @@ void graph_widget::reset_plot_range(const plot & plot)
 
 void graph_widget::set_range(const plot & plot)
 {
-  plot.display->setChecked(true);
-
   reset_graph_interaction_axes();
 
-  // Warning: These formulas are duplicated in load_settings().
   double lower_range = -(plot.scale->value() * 5.0) - plot.position->value();
   double upper_range = (plot.scale->value() * 5.0) - plot.position->value();
 
@@ -795,7 +808,6 @@ void graph_widget::set_range(const plot & plot)
 
   update_position_step_value(plot);
   update_plot_text_and_arrows(plot);
-  set_graph_interaction_axis(plot);
   custom_plot->replot();
 }
 
@@ -823,81 +835,106 @@ void graph_widget::save_settings()
 
   if (filename.isEmpty()) { return; }
 
-  QFile file_out(filename);
-  if (file_out.open(QFile::WriteOnly | QFile::Text))
+  QString settings_string = NULL;
+
+  if (dark_theme)
   {
-    QTextStream out(&file_out);
-    for (auto plot : all_plots)
-    {
-      out
-        << plot->id_string << ','
-        << plot->display->isChecked() << ','
-        << plot->position->cleanText() << ','
-        << plot->scale->cleanText() << ','
-        << plot->default_color << ','
-        << plot->dark_color << '\n';
-    }
+    settings_string.append("theme,dark\n");
   }
   else
   {
-    // TODO: report file save errors (e.g. file_out.errorMessage())
-    return;
+    settings_string.append("theme,default\n");
+  }
+
+  settings_string.append("domain," + QString::number(domain->value()) + "\n");
+
+  for (auto plot : all_plots)
+  {
+    QString plot_settings = QString("%1,%2,%3,%4,%5,%6").
+    arg(plot->id_string).
+    arg(QString::number(plot->display->isChecked())).
+    arg(plot->position->cleanText()).
+    arg(plot->scale->cleanText()).
+    arg(plot->default_color).
+    arg(plot->dark_color + "\n");
+
+    settings_string.append(plot_settings);
+  }
+
+  try
+  {
+    write_string_to_file(filename.toStdString(), settings_string.toStdString());
+  }
+  catch (std::exception const & e)
+  {
+    show_exception(e, "", qobject_cast<QWidget*>(parent()));
   }
 }
 
 void graph_widget::load_settings()
 {
-  QStringList all_plots_settings;
-
   QString filename = QFileDialog::getOpenFileName(custom_plot,
     "Load Graph Settings", "", "Text files (*.txt)");
 
   if (filename.isEmpty()) { return; }
 
-  QFile file_in(filename);
-  if (file_in.open(QFile::ReadOnly | QFile::Text))
+  QString settings_file = NULL;
+
+  try
   {
-    QTextStream stream_in(&file_in);
-    while (!stream_in.atEnd())
+    settings_file = QString::fromStdString(read_string_from_file(filename.toStdString()));
+  }
+  catch (std::exception const & e)
+  {
+    show_exception(e, "", qobject_cast<QWidget*>(parent()));
+  }
+
+  QStringList all_plots_settings = settings_file.split("\n");
+
+  for (auto settings : all_plots_settings)
+  {
+    if (settings.contains("theme,dark"))
     {
-      all_plots_settings += stream_in.readLine();
+      emit dark_theme_action->triggered();
     }
-  }
-  else
-  {
-    // TODO: report file read errors (e.g. file_in.errorMessage())
-    return;
-  }
-
-  for (int i = 0; i < all_plots_settings.size(); i++)
-  {
-    QStringList settings = all_plots_settings[i].split(",");
-
-    if (settings[3].toDouble() < 0.1)
+    else if (settings.contains("theme,default"))
     {
-      settings[3] = "0.1";
+      emit default_theme_action->triggered();
     }
 
-    // TODO: instead of using all_plots[i], locate the specified plot using its
-    // name.  This also saves us from an array overflow bug.
+    if (settings.contains("domain"))
+    {
+      domain->setValue(settings.split(",").at(1).toInt());
+    }
 
-    all_plots[i]->display->setChecked(settings[1].toInt());
-    // Warning: These formulas are duplicated in set_range().
-    double lower_range = -(settings[3].toDouble() * 5.0) - (settings[2].toDouble());
-    double upper_range = (settings[3].toDouble() * 5.0) - (settings[2].toDouble());
-    all_plots[i]->axis->setRange(lower_range, upper_range);
+    QStringList split_settings = settings.split(",", QString::SkipEmptyParts);
 
-    all_plots[i]->default_color = settings[4];
-    all_plots[i]->dark_color = settings[5];
-  }
+    for (auto plot : all_plots)
+    {
+      if (split_settings.count() < 6
+        || split_settings[0] != plot->id_string) { continue; }
 
-  if (dark_theme)
-  {
-    switch_to_dark();
-  }
-  else
-  {
-    switch_to_default();
+      plot->display->setChecked(split_settings[1].toInt());
+
+      {
+        QSignalBlocker blocker(plot->position);
+        plot->position->setValue(split_settings[2].toDouble());
+      }
+
+      if (split_settings[3].toDouble() < 0.1)
+      {
+        split_settings[3] = "0.1";
+      }
+
+      {
+        QSignalBlocker blocker(plot->scale);
+        plot->scale->setValue(split_settings[3].toDouble());
+      }
+
+      plot->default_color = split_settings[4];
+      plot->dark_color = split_settings[5];
+      set_range(*plot);
+    }
   }
 }
 
