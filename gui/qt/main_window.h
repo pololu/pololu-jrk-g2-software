@@ -28,13 +28,13 @@ class QMenu;
 class QRadioButton;
 class QShortcut;
 class QShowEvent;
-class QSlider;
 class QSpacerItem;
 class QSpinBox;
 
 class pid_constant_control;
 class pid_constant_validator;
 class main_controller;
+class target_slider;
 
 class main_window : public QMainWindow
 {
@@ -499,7 +499,7 @@ private:
   // Manually set target box
 
   QGroupBox * manual_target_box;
-  QSlider * manual_target_slider;
+  target_slider * manual_target_slider;
   QLabel * manual_target_min_label;
   QLabel * manual_target_max_label;
   QSpinBox * manual_target_entry_value;

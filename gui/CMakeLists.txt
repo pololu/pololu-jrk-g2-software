@@ -27,6 +27,7 @@ endif ()
 qt5_add_resources(RESOURCES_QRC qt/resources.qrc)
 
 add_executable (gui
+  qt/target_slider.cpp
   qt/popout_window.cpp
   qt/main_window.cpp
   main.cpp

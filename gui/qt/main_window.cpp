@@ -8,6 +8,7 @@
 #include "elided_label.h"
 #include "pid_constant_control.h"
 #include "util.h"
+#include "target_slider.h"
 
 #include <to_string.h>
 
@@ -33,7 +34,6 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QShortcut>
-#include <QSlider>
 #include <QSpinBox>
 #include <QTabWidget>
 #include <QTimer>
@@ -2353,7 +2353,7 @@ QWidget * main_window::setup_manual_target_box()
 
   QGridLayout * layout = new QGridLayout();
 
-  manual_target_slider = new QSlider(Qt::Horizontal);
+  manual_target_slider = new target_slider(Qt::Horizontal);
   manual_target_slider->setObjectName("manual_target_slider");
   manual_target_slider->setTickPosition(QSlider::TicksBelow);
   manual_target_slider->setTickInterval(2048);
