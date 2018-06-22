@@ -8,28 +8,28 @@ namespace
 {
   void show_error_message(const std::string & message, QWidget * parent)
   {
-    QMessageBox mbox(QMessageBox::Critical, parent->windowTitle(),
+    QMessageBox mbox(QMessageBox::Critical, parent->window()->windowTitle(),
       QString::fromStdString(message), QMessageBox::NoButton, parent);
     mbox.exec();
   }
 
   void show_info_message(const std::string & message, QWidget * parent)
   {
-    QMessageBox mbox(QMessageBox::Information, parent->windowTitle(),
+    QMessageBox mbox(QMessageBox::Information, parent->window()->windowTitle(),
       QString::fromStdString(message), QMessageBox::NoButton, parent);
     mbox.exec();
   }
 
   void show_warning_message(const std::string & message, QWidget * parent)
   {
-    QMessageBox mbox(QMessageBox::Warning, parent->windowTitle(),
+    QMessageBox mbox(QMessageBox::Warning, parent->window()->windowTitle(),
       QString::fromStdString(message), QMessageBox::NoButton, parent);
     mbox.exec();
   }
 
   bool apply_and_continue(const std::string & question, QWidget * parent)
   {
-    QMessageBox mbox(QMessageBox::Information, parent->windowTitle(),
+    QMessageBox mbox(QMessageBox::Information, parent->window()->windowTitle(),
       QString::fromStdString(question),
       QMessageBox::Apply | QMessageBox::Cancel, parent);
     mbox.setButtonText(QMessageBox::Apply, "Apply settings");
@@ -39,7 +39,7 @@ namespace
 
   bool confirm(const std::string & question, QWidget * parent)
   {
-    QMessageBox mbox(QMessageBox::Question, parent->windowTitle(),
+    QMessageBox mbox(QMessageBox::Question, parent->window()->windowTitle(),
       QString::fromStdString(question),
       QMessageBox::Ok | QMessageBox::Cancel, parent);
     int button = mbox.exec();
