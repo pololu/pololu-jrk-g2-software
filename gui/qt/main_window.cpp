@@ -1982,7 +1982,7 @@ void main_window::setup_ui()
   apply_settings_label->setToolTip(tr(
     "You changed some settings but have not saved them to your device yet."
   ));
-  apply_settings_label->setStyleSheet("color: #1f2f93;");
+  apply_settings_label->setStyleSheet("QLabel { color: #1f2f93; }");
 
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
