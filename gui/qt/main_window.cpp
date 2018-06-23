@@ -85,11 +85,6 @@ void main_window::start_update_timer()
   update_timer->start();
 }
 
-bool main_window::apply_and_continue(const std::string & question)
-{
-  return ::apply_and_continue(question, this);
-}
-
 bool main_window::confirm(const std::string & question)
 {
   return ::confirm(question, this);

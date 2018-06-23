@@ -27,16 +27,6 @@ namespace
     mbox.exec();
   }
 
-  bool apply_and_continue(const std::string & question, QWidget * parent)
-  {
-    QMessageBox mbox(QMessageBox::Information, parent->window()->windowTitle(),
-      QString::fromStdString(question),
-      QMessageBox::Apply | QMessageBox::Cancel, parent);
-    mbox.setButtonText(QMessageBox::Apply, "Apply settings");
-    int button = mbox.exec();
-    return button == QMessageBox::Apply;
-  }
-
   bool confirm(const std::string & question, QWidget * parent)
   {
     QMessageBox mbox(QMessageBox::Question, parent->window()->windowTitle(),
