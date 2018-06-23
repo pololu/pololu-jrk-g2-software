@@ -94,6 +94,9 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   setButtonText(NextButton, tr("Next"));
   setButtonText(FinishButton, tr("Finish and apply settings"));
 
+  setButtonLayout(
+    {CancelButton, Stretch, BackButton, NextButton, FinishButton});
+
   // Handle the next and back buttons with custom slots.
   disconnect(button(NextButton), &QAbstractButton::clicked, 0, 0);
   connect(button(NextButton), &QAbstractButton::clicked,

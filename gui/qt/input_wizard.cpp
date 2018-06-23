@@ -74,7 +74,7 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
     this, &input_wizard::handle_skip);
 
   setButtonLayout(
-    {Stretch, BackButton, CustomButton1, NextButton, FinishButton});
+    {CancelButton, Stretch, BackButton, CustomButton1, NextButton, FinishButton});
 
   // Must be done after setButtonLayout
   skip_button->setVisible(false);
