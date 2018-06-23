@@ -365,7 +365,7 @@ void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mo
     max = 2648;
     manual_target_slider->set_duty_cycle_enabled(true);
     manual_target_slider->setToolTip(tr(
-      "Use this slider to set the target.  The green dot is the duty cycle (plus 2048)."
+      "Use this slider to set the target.  The green dot shows the duty cycle (plus 2048)."
     ));
   }
   else
@@ -374,7 +374,7 @@ void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mo
     max = 4095;
     manual_target_slider->set_scaled_feedback_enabled(true);
     manual_target_slider->setToolTip(tr(
-      "Use this slider to set the target.  The red dot is the scaled feedback."
+      "Use this slider to set the target.  The red dot shows the scaled feedback."
     ));
   }
 
