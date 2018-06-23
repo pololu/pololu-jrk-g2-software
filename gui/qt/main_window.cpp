@@ -1971,7 +1971,7 @@ void main_window::setup_ui()
   tab_widget->addTab(setup_motor_tab(), tr("Motor"));
   tab_widget->addTab(setup_errors_tab(), tr("Errors"));
   tab_widget->addTab(setup_advanced_tab(), tr("Advanced"));
-  tab_widget->addTab(setup_info_tab(), tr("Info"));
+  tab_widget->addTab(setup_info_tab(), tr("Device info"));
 
   // Let the user specify which tab to start on.  Handy for development.
   auto env = QProcessEnvironment::systemEnvironment();
