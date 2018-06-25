@@ -1039,6 +1039,13 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
   scaling_layout->addWidget(order_warning_label, 0, 2, 4, 1);
   scaling_layout->setColumnStretch(2, 1);
 
+  QVBoxLayout * settings_layout = new QVBoxLayout();
+  settings_layout->setContentsMargins(
+    fontMetrics().averageCharWidth() * 4, fontMetrics().height(), 0, 0);
+  settings_layout->addWidget(final_motor_invert_checkbox);
+  settings_layout->addWidget(final_invert_checkbox);
+  settings_layout->addLayout(scaling_layout);
+
   auto valueChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
   connect(final_error_max_spinbox, valueChanged,
     this, &feedback_wizard::update_order_warning);
@@ -1051,10 +1058,7 @@ nice_wizard_page * feedback_wizard::setup_conclusion_page()
 
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(completed_label);
-  layout->addItem(new QSpacerItem(1, fontMetrics().height()));
-  layout->addWidget(final_motor_invert_checkbox);
-  layout->addWidget(final_invert_checkbox);
-  layout->addLayout(scaling_layout);
+  layout->addLayout(settings_layout);
   layout->addStretch(1);
 
   conclusion_page->setLayout(layout);

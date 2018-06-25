@@ -858,11 +858,15 @@ nice_wizard_page * input_wizard::setup_conclusion_page()
   connect(final_error_min_spinbox, valueChanged,
     this, &input_wizard::update_order_warning);
 
+  QVBoxLayout * settings_layout = new QVBoxLayout();
+  settings_layout->setContentsMargins(
+    fontMetrics().averageCharWidth() * 4, fontMetrics().height(), 0, 0);
+  settings_layout->addWidget(final_invert_checkbox);
+  settings_layout->addLayout(scaling_layout);
+
   QVBoxLayout * layout = new QVBoxLayout();
   layout->addWidget(completed_label);
-  layout->addItem(new QSpacerItem(1, fontMetrics().height()));
-  layout->addWidget(final_invert_checkbox);
-  layout->addLayout(scaling_layout);
+  layout->addLayout(settings_layout);
   layout->addStretch(1);
 
   page->setLayout(layout);
