@@ -311,39 +311,39 @@ void graph_widget::setup_ui()
   bottom_control_layout->addWidget(pause_run_button, 0, Qt::AlignRight);
 
   setup_plot(input, "input", "Input",
-    "#00ffff", "#ff355e", 4095);
+    "#00ffff", "#84ffff", 4095);
 
   setup_plot(target, "target", "Target",
-    "#0000ff", "#ff6037", 4095, true);
+    "#0000ff", "#8282ff", 4095, true);
 
   // The original Jrk software used #ffc0cb for feedback, but that is kind of
   // hard to see when we use it as a text color.
   setup_plot(feedback, "feedback", "Feedback",
-    "#ff00aa", "#ffcc33", 4095);
+    "#ff00aa", "#ff84d6", 4095);
 
   setup_plot(scaled_feedback, "scaled_feedback", "Scaled feedback",
-    "#ff0000", "#ccff00", 4095, true);
+    "#ff0000", "#fc4646", 4095, true);
 
   setup_plot(error, "error", "Error",
-    "#9400d3", "#aaf0d1", 4095);
+    "#9400d3", "#b970d8", 4095);
 
   setup_plot(integral, "integral", "Integral",
-    "#ff8c00", "#ff6eff", 0x7fff);
+    "#ff8c00", "#ff8c00", 0x7fff);
 
   setup_plot(duty_cycle_target, "duty_cycle_target", "Duty cycle target",
-    "#32cd32", "#fd5b78", 600);
+    "#32cd32", "#76e076", 600);
 
   setup_plot(duty_cycle, "duty_cycle", "Duty cycle",
-    "#006400", "#ff9933", 600);
+    "#006400", "#4ea04e", 600);
 
   setup_plot(raw_current, "raw_current",
-    "Raw current (mV)", "#660066", "#ffff66", 4095);
+    "Raw current (mV)", "#660066", "#bc00bc", 4095);
 
   setup_plot(current, "current", "Current (mA)",
-    "#b8860b", "#66ff66", 100000);
+    "#b8860b", "#e8ac7f", 100000);
 
   setup_plot(current_chopping, "current_chopping",
-    "Current chopping", "#d500ff", "#50bfe6", 1);
+    "Current chopping", "#d500ff", "#ea82ff", 1);
 
   QFrame * division_frame = new QFrame();
   division_frame->setFrameShadow(QFrame::Plain);
@@ -963,18 +963,17 @@ void graph_widget::switch_to_dark()
     change_plot_colors(plot, plot->dark_color);
   }
 
-  QLinearGradient axis_rect_gradient;
-  axis_rect_gradient.setStart(0, 0);
-  axis_rect_gradient.setFinalStop(0, 350);
-  axis_rect_gradient.setColorAt(0, QColor(40, 40, 40));
-  axis_rect_gradient.setColorAt(1, QColor(10, 10, 10));
-  custom_plot->axisRect()->setBackground(axis_rect_gradient);
-  custom_plot->setBackground(QColor(170, 170, 170));
+  custom_plot->axisRect()->setBackground(QColor(Qt::black));
+  custom_plot->setBackground(QColor(25, 25, 25));
   custom_plot->xAxis->grid()->pen().setColor(QColor(225, 225, 225));
   custom_plot->yAxis->grid()->pen().setColor(QColor(225, 225, 225));
   custom_plot->xAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
   custom_plot->yAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
   custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(225, 225, 225));
+  custom_plot->xAxis->setTickPen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->yAxis->setTickPen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->xAxis->setSubTickPen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->yAxis->setSubTickPen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
 
   dark_theme_action->setVisible(false);
   default_theme_action->setVisible(true);
