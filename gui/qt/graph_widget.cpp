@@ -970,6 +970,7 @@ void graph_widget::switch_to_dark()
   custom_plot->xAxis->grid()->pen().setColor(QColor(225, 225, 225));
   custom_plot->yAxis->grid()->pen().setColor(QColor(225, 225, 225));
   custom_plot->xAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
+  custom_plot->xAxis->setTickLabelColor(QColor(Qt::white));
   custom_plot->yAxis->setBasePen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
   custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(225, 225, 225));
   custom_plot->xAxis->setTickPen(QPen(QColor(Qt::white), 1, Qt::SolidLine));
@@ -997,8 +998,13 @@ void graph_widget::switch_to_default()
   custom_plot->xAxis->grid()->pen().setColor(QColor(100, 100, 100));
   custom_plot->yAxis->grid()->pen().setColor(QColor(100, 100, 100));
   custom_plot->xAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->xAxis->setTickLabelColor(QColor(Qt::black));
   custom_plot->yAxis->setBasePen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
   custom_plot->yAxis->grid()->zeroLinePen().setColor(QColor(100, 100, 100));
+  custom_plot->xAxis->setTickPen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->yAxis->setTickPen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->xAxis->setSubTickPen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
+  custom_plot->yAxis->setSubTickPen(QPen(QColor(Qt::black), 1, Qt::SolidLine));
 
   dark_theme_action->setVisible(true);
   default_theme_action->setVisible(false);
