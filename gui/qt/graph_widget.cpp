@@ -37,7 +37,13 @@ void graph_widget::set_preview_mode(bool preview_mode)
   }
   else
   {
+#ifdef __linux__
+    // "Time (ms)" was almost getting cut off on Linux with only
+    // a 50px bottom margin.
+    custom_plot->axisRect()->setMargins(QMargins(55, 50, 20, 60));
+#else
     custom_plot->axisRect()->setMargins(QMargins(55, 50, 20, 50));
+#endif
     custom_plot->setCursor(Qt::ArrowCursor);
     custom_plot->setToolTip("");
   }
