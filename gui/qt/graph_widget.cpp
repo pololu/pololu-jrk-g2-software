@@ -896,6 +896,8 @@ void graph_widget::load_settings()
 
   QStringList all_plots_settings = settings_file.split("\n");
 
+  bool dark = false;
+
   for (auto settings : all_plots_settings)
   {
     QStringList parts = settings.split(",", QString::SkipEmptyParts);
@@ -904,11 +906,11 @@ void graph_widget::load_settings()
     {
       if (parts[1] == "dark")
       {
-        switch_to_dark();
+        dark = true;
       }
       else if (parts[1] == "default")
       {
-        switch_to_default();
+        dark = false;
       }
       continue;
     }
@@ -936,24 +938,21 @@ void graph_widget::load_settings()
       plot->default_color = parts[4];
       plot->dark_color = parts[5];
 
-      // Assumption:  The line in the file for setting the theme as already
-      // processed, and 'dark_theme' was changed accordingly.
-      if (dark_theme)
-      {
-        change_plot_colors(plot, plot->dark_color);
-      }
-      else
-      {
-        change_plot_colors(plot, plot->default_color);
-      }
-
       update_position_step_value(*plot);
       update_plot_text_and_arrows(*plot);
       break;
     }
   }
 
-  custom_plot->replot();
+  if (dark)
+  {
+    switch_to_dark();
+  }
+  else
+  {
+    switch_to_default();
+  }
+  // custom_plot->replot() was called by the theme-switching functions above
 }
 
 void graph_widget::switch_to_dark()
