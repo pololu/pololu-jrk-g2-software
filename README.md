@@ -1,7 +1,7 @@
 # Jrk G2 software
 
 Version: 1.2.0<br>
-Release date: not released yet<br>
+Release date: 2018-06-25<br>
 [www.pololu.com](https://www.pololu.com/)
 
 This repository contains the source code of the configuration and control software for
@@ -20,7 +20,7 @@ from source.
 
 ## Version history
 
-- 1.2.0 (not released yet):
+- 1.2.0 (2018-06-25):
   - Jrk G2 Configuration Utility (jrk2gui):
     - Major changes to the graph window:
       - You can now set the scale and vertical position.
