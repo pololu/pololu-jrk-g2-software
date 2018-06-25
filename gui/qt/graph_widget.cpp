@@ -327,7 +327,7 @@ void graph_widget::setup_ui()
     "#ff8c00", "#ff8c00", 0x7fff);
 
   setup_plot(duty_cycle_target, "duty_cycle_target", "Duty cycle target",
-    "#32cd32", "#76e076", 600);
+    "#32cd32", "#85ff85", 600);
 
   setup_plot(duty_cycle, "duty_cycle", "Duty cycle",
     "#006400", "#4ea04e", 600);
