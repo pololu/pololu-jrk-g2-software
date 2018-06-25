@@ -36,13 +36,22 @@ void target_slider::draw_ball(int value, const QColor & color)
 
   int span = groove_rect.width() - handle_rect.width();
   int length_offset = groove_rect.x() + handle_rect.width() / 2;
+#ifdef __linux__
+  int radius = handle_rect.width() / 4 + 1;
+#else
   int radius = handle_rect.width() / 2 - 1;
+#endif
   int thickness_offset = height() / 2 - radius;
   int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), value, span);
 
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
+#ifdef __linux__
+  // Make the dark green dot more visible against the blue groove background.
+  painter.setPen(QPen(QColor(Qt::white)));
+#else
   painter.setPen(Qt::NoPen);
+#endif
   painter.setBrush(color);
   painter.translate(length_offset, thickness_offset);
   painter.drawEllipse(QPoint(pos, 0), radius, radius);

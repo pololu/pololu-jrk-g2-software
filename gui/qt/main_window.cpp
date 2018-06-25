@@ -2051,14 +2051,10 @@ void main_window::setup_style_sheet()
     stylesheet += "QPushButton { padding: 0.3em 1em; }\n";
   }
 
-  // By default, the fusion style makes the scroll bar look bad, having a border
-  // on the top but no borders on the bottom.  This line seems to make it use a
-  // totally different style which makes it look more like a normal Windows
-  // scrollbar, and thus better.  Currently this rule is not used because
-  // manual_target_slider is a QSlider.
   if (style_name == "fusion")
   {
-    stylesheet += "QScrollBar#manual_target_slider { border: 0; }\n";
+    // The top Pixel of the slider was getting cut off on Linux.
+    stylesheet += "QSlider { padding-top: 3px; }";
   }
 
   setStyleSheet(stylesheet);
