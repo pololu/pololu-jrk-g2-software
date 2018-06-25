@@ -234,12 +234,10 @@ void graph_widget::pick_plot_color(plot * plot)
     QString selected_color = color.name(QColor::HexArgb);
     if (!dark_theme)
     {
-      plot->default_changed = true;
       plot->default_color = selected_color;
     }
     else
     {
-      plot->dark_changed = true;
       plot->dark_color = selected_color;
     }
   });
