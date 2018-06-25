@@ -5,11 +5,9 @@ let
     builder = ./builder.sh;
     inherit src;
     cross_inputs = [ env.libusbp env.qt ];
-    dejavu = (if env.os == "linux" then env.dejavu-fonts else null);
   };
 
   license_set =
-    (if env.os == "linux" then env.dejavu-fonts.license_set else {}) //
     env.libusbp.license_set //
     env.qt.license_set //
     env.global_license_set;
