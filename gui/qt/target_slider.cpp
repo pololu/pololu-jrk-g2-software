@@ -4,6 +4,8 @@
 #include <QPaintEvent>
 #include <QStyleOptionSlider>
 
+#include <assert.h>
+
 void target_slider::paintEvent(QPaintEvent * event)
 {
   assert(orientation() == Qt::Horizontal);
