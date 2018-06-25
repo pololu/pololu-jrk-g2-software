@@ -196,12 +196,10 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
   {
     if (dark_theme)
     {
-      plot->dark_changed = false;
       change_plot_colors(plot, plot->original_dark_color);
     }
     else
     {
-      plot->default_changed = false;
       change_plot_colors(plot, plot->original_default_color);
     }
   });
@@ -1055,9 +1053,7 @@ void graph_widget::reset_all_colors()
   for (auto plot : all_plots)
   {
     plot->default_color = plot->original_default_color;
-    plot->default_changed = false;
     plot->dark_color = plot->original_dark_color;
-    plot->dark_changed = false;
 
     if (dark_theme)
     {

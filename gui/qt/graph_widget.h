@@ -38,8 +38,6 @@ public:
     QString dark_color;
     QString original_default_color;
     QString original_dark_color;
-    bool default_changed = false;
-    bool dark_changed = false;
     QCPAxis * axis;
     QCPGraph * graph;
     double plot_value = 0;
