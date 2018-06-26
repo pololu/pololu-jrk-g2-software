@@ -493,6 +493,7 @@ private:
 
   // Manually set target box
 
+  bool manual_target_enabled = false;
   QGroupBox * manual_target_box;
   target_slider * manual_target_slider;
   QLabel * manual_target_min_label;

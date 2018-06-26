@@ -353,7 +353,9 @@ void main_window::set_connection_status(const std::string & status, bool error)
 
 void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode)
 {
-  manual_target_box->setEnabled(input_mode == JRK_INPUT_MODE_SERIAL);
+  manual_target_enabled = input_mode == JRK_INPUT_MODE_SERIAL;
+  manual_target_box->setEnabled(
+    variables_box->isEnabled() && manual_target_enabled);
 
   int min;
   int max;
@@ -1086,7 +1088,8 @@ void main_window::set_tab_pages_enabled(bool enabled)
 {
   variables_box->setEnabled(enabled);
   variables_window->setEnabled(enabled);
-  manual_target_box->setEnabled(enabled);
+  manual_target_box->setEnabled(
+    variables_box->isEnabled() && manual_target_enabled);
 
   for (int i = 1; i < tab_widget->count(); i++)
   {
@@ -2221,7 +2224,6 @@ QWidget * main_window::setup_status_tab()
 
   layout->addWidget(setup_variables_box(), 0, 0);
   layout->addWidget(setup_graph(), 0, 1);
-  //layout->addWidget(setup_manual_target_box(), 1, 0, 1, 3);
 
   layout->setRowStretch(0, 1);
   layout->setColumnStretch(1, 1);
