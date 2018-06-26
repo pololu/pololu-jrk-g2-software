@@ -5,7 +5,7 @@ Release date: 2018-06-25<br>
 [www.pololu.com](https://www.pololu.com/)
 
 This repository contains the source code of the configuration and control software for
-the [Jrk G2 USB Motor Controllers with Feedback](jrk).
+the [Jrk G2 USB Motor Controllers with Feedback][jrk].
 There are two programs:
 the Pololu Jrk G2 Configuration Utility (jrk2gui)
 and the Pololu Jrk G2 Command-line Utility (jrk2cmd).
