@@ -5,7 +5,7 @@ class target_slider : public QSlider
   Q_OBJECT;
 
 public:
-  using QSlider::QSlider;
+  target_slider();
 
   void set_scaled_feedback_enabled(bool enabled)
   {
@@ -40,4 +40,6 @@ protected:
     bool enabled = false;
     int value = 0;
   } scaled_feedback, duty_cycle;
+
+  bool fusion_style = false;
 };

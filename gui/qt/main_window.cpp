@@ -2366,7 +2366,7 @@ QWidget * main_window::setup_manual_target_box()
 
   QGridLayout * layout = new QGridLayout();
 
-  manual_target_slider = new target_slider(Qt::Horizontal);
+  manual_target_slider = new target_slider();
   manual_target_slider->setObjectName("manual_target_slider");
   manual_target_slider->setTickPosition(QSlider::TicksBelow);
   manual_target_slider->setTickInterval(2048);
