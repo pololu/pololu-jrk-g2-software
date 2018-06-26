@@ -191,6 +191,7 @@ void graph_widget::show_plot_menu(plot * plot, bool with_title)
   {
     reset_graph_interaction_axes();
     set_graph_interaction_axis(*plot);
+    custom_plot->replot();
   });
 
   connect(change_color_action, &QAction::triggered, [=]()
