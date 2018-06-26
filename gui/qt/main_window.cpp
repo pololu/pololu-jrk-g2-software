@@ -405,6 +405,8 @@ void main_window::set_apply_settings_enabled(bool enabled)
   apply_settings_button->setEnabled(enabled);
   apply_settings_action->setEnabled(enabled);
   apply_settings_label->setVisible(enabled);
+  apply_settings_button->setToolTip(
+    enabled ? apply_settings_label->toolTip() : "");
 }
 
 void main_window::set_motor_status_message(
@@ -2004,7 +2006,6 @@ void main_window::setup_ui()
   apply_settings_button = new QPushButton();
   apply_settings_button->setObjectName("apply_settings");
   apply_settings_button->setText(tr("&Apply settings"));
-  apply_settings_button->setToolTip(apply_settings_label->toolTip());
   set_apply_settings_button_stylesheet(0);
 
   QHBoxLayout *footer_layout = new QHBoxLayout();
