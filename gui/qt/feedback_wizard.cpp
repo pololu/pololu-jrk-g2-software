@@ -650,8 +650,14 @@ void feedback_wizard::update_order_warning()
 // them and edit them.
 void feedback_wizard::copy_result_into_form()
 {
-  final_motor_invert_checkbox->setChecked(result.motor_invert);
-  final_invert_checkbox->setChecked(result.invert);
+  {
+    QSignalBlocker blocker(final_motor_invert_checkbox);
+    final_motor_invert_checkbox->setChecked(result.motor_invert);
+  }
+  {
+    QSignalBlocker blocker(final_invert_checkbox);
+    final_invert_checkbox->setChecked(result.invert);
+  }
   final_error_max_spinbox->setValue(result.error_maximum);
   final_max_spinbox->setValue(result.maximum);
   final_min_spinbox->setValue(result.minimum);
