@@ -30,7 +30,7 @@ from source.
         - Use the mouse wheel to zoom that plot in or out, or
         - Use the mouse to drag it up and down.
       - New buttons for resetting the position and scale.
-      - You can right-click on a plot or checkbox to change the plot's color.
+      - You can change plot colors.
       - You can change the graph to use a dark theme.
       - You can save and load graph settings files now.
       - The Y axis is no longer labeled.
