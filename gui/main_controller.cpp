@@ -668,15 +668,9 @@ void main_controller::handle_settings_loaded()
     // The cached feedback mode and input mode are going to be set for the first
     // time or are about to change.  We should reinitialize the manual target
     // interface.
-
-    std::cout << "hello calling set_manual_target_mode" << (uint32_t)settings.get_input_mode() << " " << (uint32_t)settings.get_feedback_mode() << std::endl;
     window->set_manual_target_mode(settings.get_input_mode(),
       settings.get_feedback_mode());
     window->set_manual_target_inputs(2048);
-  }
-  else
-  {
-    std::cout << "hello not calling set_manual_target_mode" << (uint32_t)settings.get_input_mode() << " " << (uint32_t)settings.get_feedback_mode() << std::endl;
   }
 
   cached_settings = settings;

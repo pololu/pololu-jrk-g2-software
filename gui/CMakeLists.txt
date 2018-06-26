@@ -52,9 +52,9 @@ set_target_properties (gui PROPERTIES
 )
 
 if (WIN32)
-  #set_target_properties (gui PROPERTIES
-  #  LINK_FLAGS "-mwindows"
-  #)
+  set_target_properties (gui PROPERTIES
+    LINK_FLAGS "-mwindows"
+  )
 endif ()
 
 target_link_libraries (gui Qt5::Widgets lib bootloader)
