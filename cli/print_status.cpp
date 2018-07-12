@@ -43,6 +43,20 @@ static void print_pin_info(const jrk::variables & vars,
     << vars.get_digital_reading(pin) << std::endl;
 }
 
+// Question mark is a special character in YAML so we need to put quotes
+// around it to avoid parse errors.
+static std::string quote_port_if_needed(const std::string & port_name)
+{
+  if (port_name == "?")
+  {
+    return "'?'";
+  }
+  else
+  {
+    return port_name;
+  }
+}
+
 void print_status(const jrk::variables & vars,
   const jrk::settings & settings,
   const std::string & name,
@@ -67,10 +81,10 @@ void print_status(const jrk::variables & vars,
     << firmware_version << std::endl;
 
   std::cout << left_column << "Command port: "
-    << cmd_port << std::endl;
+    << quote_port_if_needed(cmd_port) << std::endl;
 
   std::cout << left_column << "TTL port: "
-    << ttl_port << std::endl;
+    << quote_port_if_needed(ttl_port) << std::endl;
 
   std::cout << left_column << "Last reset: "
     << jrk_look_up_device_reset_name_ui(vars.get_device_reset())
