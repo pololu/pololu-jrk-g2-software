@@ -60,8 +60,6 @@ class main_window : public QMainWindow
   };
 
 public:
-  virtual int widthForHeight (int h) const { return h; };
-
   main_window(QWidget * parent = 0);
   void set_controller(main_controller * controller);
 
@@ -110,6 +108,8 @@ public:
 
   // Sets the label that shows the connection status/error.
   void set_connection_status(const std::string & status, bool error);
+
+  void adjust_ui_for_product(uint32_t product);
 
   void set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode);
   void set_manual_target_inputs(uint16_t target);

@@ -611,5 +611,11 @@ uint32_t jrk_calculate_raw_current_mv64(
     return current << dac_ref;
   }
 
+  if (product == JRK_PRODUCT_UMC06A)
+  {
+    // The raw current is always in mV/16 units, so just multiply by 4.
+    return jrk_variables_get_raw_current(vars) * 4;
+  }
+
   return 0;
 }

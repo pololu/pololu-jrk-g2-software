@@ -21,6 +21,7 @@ extern "C" {
 #define JRK_PRODUCT_UMC04A_40V 2
 #define JRK_PRODUCT_UMC05A_30V 3
 #define JRK_PRODUCT_UMC05A_40V 4
+#define JRK_PRODUCT_UMC06A     5
 
 // The maximum firmware major version supported by this library.
 #define JRK_FIRMWARE_VERSION_MAJOR_MAX 1
@@ -959,6 +960,9 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 // to a higher value if you expect some current chopping to happen (e.g. when
 // starting up) but you still want to it to be an error when your motor leads
 // are shorted out.
+//
+// This setting is not used on the umc06a since it cannot sense when the
+// current chopping takes effect.
 JRK_API
 void jrk_settings_set_hard_overcurrent_threshold(jrk_settings *,
   uint8_t hard_overcurrent_threshold);
@@ -984,8 +988,10 @@ uint8_t jrk_settings_get_hard_overcurrent_threshold(const jrk_settings *);
 //
 //   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 //
-// This setting should be between -800 (for an offset of 0 mV) and 800 (for an
-// offset of 100 mV).
+// For the umc04a/umc05a Jrk models, this setting should be between -800
+// (for an offset of 0 mV) and 800 (for an offset of 100 mV).
+//
+// For the umc06a, this setting can be any int16_t value and has units of mV/16.
 JRK_API
 void jrk_settings_set_current_offset_calibration(jrk_settings *,
   int16_t current_offset_calibration);
@@ -1000,12 +1006,17 @@ int16_t jrk_settings_get_current_offset_calibration(const jrk_settings *);
 // You can use this current calibration setting to correct current measurements
 // and current limit settings that are off by a constant percentage.
 //
-// The algorithm for calculating currents in amps involves multiplying the
-// current by (1875 + current_scale_calibration).
+// For the umc04a/umc05a models, the algorithm for calculating currents in
+// milliamps involves multiplying the current by
+// (1875 + current_scale_calibration).
+// This setting must be between -1875 and 1875.
+//
+// For the umc06a models, the algorithm for calculating currents in
+// milliamps involves multiplying the current by
+// (1136 + current_scale_calibration).
+// This setting must be between -1136 and 1136.
 //
 // The default current_scale_calibration value is 0.
-// A current_scale_calibration value of 19 would increase the current
-// readings by about 1%.
 JRK_API
 void jrk_settings_set_current_scale_calibration(jrk_settings *,
   int16_t current_scale_calibration);
@@ -1149,6 +1160,9 @@ uint16_t jrk_settings_get_max_duty_cycle_reverse(const jrk_settings *);
 //
 // This setting is not actually a current, it is an encoded value telling
 // the Jrk how to set up its current limiting hardware.
+//
+// This setting is not used for the umc06a, since it does not have a
+// configurable hardware current limiting.
 //
 // The correspondence between this setting and the actual current limit
 // in milliamps depends on what product you are using.  See also:
@@ -1679,9 +1693,15 @@ uint16_t jrk_variables_get_fbt_reading(const jrk_variables *);
 
 // Gets the raw_current variable.
 //
-// This is an analog voltage reading from the Jrk's current sense pin.  The
-// units of the reading depend on what hard current limit is being used
-// (jrk_variable_get_encoded_hard_current_limit()).
+// This is an analog voltage reading from the Jrk's current sense pin.
+//
+// For the umc04a/umc05a models, the units of the reading depend on what hard
+// current limit is being used (jrk_variable_get_encoded_hard_current_limit()).
+//
+// For the umc06a, the units are always mV / 16.
+//
+// Either way, use jrk_calculate_raw_current_mv64() to get a raw current
+// reading with reliable units.
 JRK_API
 uint16_t jrk_variables_get_raw_current(const jrk_variables *);
 

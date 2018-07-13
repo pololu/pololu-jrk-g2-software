@@ -131,21 +131,22 @@ def generate_settings_fixing_code(stream)
       next
     end
 
-    stream.puts "{"
-    stream.puts "  #{integer_type} #{name} = jrk_settings_get_#{name}(settings);"
+    s = []
+    s << "{"
+    s << "  #{integer_type} #{name} = jrk_settings_get_#{name}(settings);"
 
     if type == :enum
       english_default = setting_info.fetch(:english_default)
       max = setting_info.fetch(:max)
       default = setting_info.fetch(:default)
 
-      stream.puts "  if (#{name} > #{max})"
-      stream.puts "  {"
-      stream.puts "    #{name} = #{default};"
-      stream.puts "    jrk_sprintf(warnings,"
-      stream.puts "      \"Warning: The #{english_name} is invalid \""
-      stream.puts "      \"so it will be changed to #{english_default}.\\n\");"
-      stream.puts "  }"
+      s << "  if (#{name} > #{max})"
+      s << "  {"
+      s << "    #{name} = #{default};"
+      s << "    jrk_sprintf(warnings,"
+      s << "      \"Warning: The #{english_name} is invalid \""
+      s << "      \"so it will be changed to #{english_default}.\\n\");"
+      s << "  }"
     else
       if setting_info[:range]
         min, max = setting_info[:range].minmax
@@ -155,29 +156,35 @@ def generate_settings_fixing_code(stream)
       end
 
       if min && !(pf == 'u' && min == 0)
-        stream.puts "  if (#{name} < #{min})"
-        stream.puts "  {"
-        stream.puts "    #{name} = #{min};"
-        stream.puts "    jrk_sprintf(warnings,"
-        stream.puts "      \"Warning: The #{english_name} is too low \""
-        stream.puts "      \"so it will be changed to %#{pf}.\\n\", #{name});"
-        stream.puts "  }"
+        s << "  if (#{name} < #{min})"
+        s << "  {\n"
+        s << "    #{name} = #{min};"
+        s << "    jrk_sprintf(warnings,"
+        s << "      \"Warning: The #{english_name} is too low \""
+        s << "      \"so it will be changed to %#{pf}.\\n\", #{name});"
+        s << "  }\n"
+        keep = true
       end
 
       if max
-        stream.puts "  if (#{name} > #{max})"
-        stream.puts "  {"
-        stream.puts "    #{name} = #{max};"
-        stream.puts "    jrk_sprintf(warnings,"
-        stream.puts "      \"Warning: The #{english_name} is too high \""
-        stream.puts "      \"so it will be changed to %#{pf}.\\n\", #{name});"
-        stream.puts "  }"
+        s << "  if (#{name} > #{max})"
+        s << "  {"
+        s << "    #{name} = #{max};"
+        s << "    jrk_sprintf(warnings,"
+        s << "      \"Warning: The #{english_name} is too high \""
+        s << "      \"so it will be changed to %#{pf}.\\n\", #{name});"
+        s << "  }"
+        keep = true
       end
+
+      next if !keep
     end
 
-    stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
-    stream.puts "}"
-    stream.puts
+    s << "  jrk_settings_set_#{name}(settings, #{name});"
+    s << "}"
+    s << ''
+
+    s.each { |l| stream.puts l }
   end
 end
 

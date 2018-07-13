@@ -351,6 +351,24 @@ void main_window::set_connection_status(const std::string & status, bool error)
   connection_status_value->setText(QString::fromStdString(status));
 }
 
+void main_window::adjust_ui_for_product(uint32_t product)
+{
+  bool configurable_hard_current_limit = true;
+  bool current_chopping_sensing = true;
+  if (product == JRK_PRODUCT_UMC06A)
+  {
+    configurable_hard_current_limit = false;
+    current_chopping_sensing = false;
+  }
+
+  current_limit_label->setEnabled(configurable_hard_current_limit);
+  current_limit_forward_spinbox->setEnabled(configurable_hard_current_limit);
+  current_limit_reverse_spinbox->setEnabled(configurable_hard_current_limit
+    && motor_asymmetric_checkbox->isChecked());
+  overcurrent_threshold_label->setEnabled(current_chopping_sensing);
+  overcurrent_threshold_spinbox->setEnabled(current_chopping_sensing);
+}
+
 void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode)
 {
   manual_target_enabled = input_mode == JRK_INPUT_MODE_SERIAL;
@@ -834,7 +852,8 @@ void main_window::set_motor_asymmetric(bool checked)
   max_acceleration_reverse_spinbox->setEnabled(checked);
   max_deceleration_reverse_spinbox->setEnabled(checked);
   brake_duration_reverse_spinbox->setEnabled(checked);
-  current_limit_reverse_spinbox->setEnabled(checked);
+  current_limit_reverse_spinbox->setEnabled(checked &&
+    current_limit_forward_spinbox->isEnabled());
   max_current_reverse_spinbox->setEnabled(checked);
 }
 
@@ -900,6 +919,9 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
 
     mapping.insert(code, current);
   }
+
+  // Mapping will be empty for products without a configurable hard
+  // current limit (e.g. umc06a).
 
   current_limit_forward_spinbox->set_mapping(mapping);
   current_limit_reverse_spinbox->set_mapping(mapping);

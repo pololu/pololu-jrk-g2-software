@@ -78,6 +78,9 @@ jrk_error * jrk_list_connected_devices(
     case JRK_USB_PRODUCT_ID_UMC05A_40V:
       product_code = JRK_PRODUCT_UMC05A_40V;
       break;
+    case JRK_USB_PRODUCT_ID_UMC06A:
+      product_code = JRK_PRODUCT_UMC06A;
+      break;
     default:
       // Unrecognized product.
       continue;
@@ -135,7 +138,6 @@ jrk_error * jrk_list_connected_devices(
         usb_device, &new_device->firmware_version));
     if (error) { break; }
 
-    // Get the product code.
     new_device->product = product_code;
   }
 
@@ -206,6 +208,7 @@ jrk_error * jrk_device_copy(const jrk_device * source, jrk_device ** dest)
 
   if (error == NULL)
   {
+    new_device->firmware_version = source->firmware_version;
     new_device->product = source->product;
   }
 
@@ -225,12 +228,6 @@ jrk_error * jrk_device_copy(const jrk_device * source, jrk_device ** dest)
     {
       error = &jrk_error_no_memory;
     }
-  }
-
-  if (error == NULL)
-  {
-    new_device->firmware_version = source->firmware_version;
-    new_device->product = source->product;
   }
 
   if (error == NULL)

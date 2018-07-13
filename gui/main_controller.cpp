@@ -462,6 +462,8 @@ void main_controller::handle_device_changed()
     window->set_ttl_port(ttl_port);
 
     window->set_connection_status("", false);
+
+    window->adjust_ui_for_product(device.get_product());
   }
   else
   {

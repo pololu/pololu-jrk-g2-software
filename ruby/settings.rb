@@ -563,8 +563,6 @@ EOF
     name: 'current_offset_calibration',
     type: :int16_t,
     default: 0,
-    min: -800,
-    max: 800,
     comment: <<EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings.
@@ -588,8 +586,6 @@ EOF
     name: 'current_scale_calibration',
     type: :int16_t,
     default: 0,
-    min: -1875,
-    max: 1875,
     comment: <<EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant percentage.

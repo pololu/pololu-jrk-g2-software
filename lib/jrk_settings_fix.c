@@ -2,6 +2,8 @@
 
 static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings)
 {
+  uint8_t product = jrk_settings_get_product(settings);
+
   // Beginning of auto-generated settings fixing code.
 
   {
@@ -209,11 +211,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    uint8_t feedback_dead_zone = jrk_settings_get_feedback_dead_zone(settings);
-    jrk_settings_set_feedback_dead_zone(settings, feedback_dead_zone);
-  }
-
-  {
     uint8_t feedback_analog_samples_exponent = jrk_settings_get_feedback_analog_samples_exponent(settings);
     if (feedback_analog_samples_exponent > 10)
     {
@@ -389,44 +386,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
   }
 
   {
-    int16_t current_offset_calibration = jrk_settings_get_current_offset_calibration(settings);
-    if (current_offset_calibration < -800)
-    {
-      current_offset_calibration = -800;
-      jrk_sprintf(warnings,
-        "Warning: The current offset calibration is too low "
-        "so it will be changed to %d.\n", current_offset_calibration);
-    }
-    if (current_offset_calibration > 800)
-    {
-      current_offset_calibration = 800;
-      jrk_sprintf(warnings,
-        "Warning: The current offset calibration is too high "
-        "so it will be changed to %d.\n", current_offset_calibration);
-    }
-    jrk_settings_set_current_offset_calibration(settings, current_offset_calibration);
-  }
-
-  {
-    int16_t current_scale_calibration = jrk_settings_get_current_scale_calibration(settings);
-    if (current_scale_calibration < -1875)
-    {
-      current_scale_calibration = -1875;
-      jrk_sprintf(warnings,
-        "Warning: The current scale calibration is too low "
-        "so it will be changed to %d.\n", current_scale_calibration);
-    }
-    if (current_scale_calibration > 1875)
-    {
-      current_scale_calibration = 1875;
-      jrk_sprintf(warnings,
-        "Warning: The current scale calibration is too high "
-        "so it will be changed to %d.\n", current_scale_calibration);
-    }
-    jrk_settings_set_current_scale_calibration(settings, current_scale_calibration);
-  }
-
-  {
     uint16_t max_duty_cycle_while_feedback_out_of_range = jrk_settings_get_max_duty_cycle_while_feedback_out_of_range(settings);
     if (max_duty_cycle_while_feedback_out_of_range < 1)
     {
@@ -567,31 +526,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
         "so it will be changed to %u.\n", encoded_hard_current_limit_reverse);
     }
     jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);
-  }
-
-  {
-    uint16_t soft_current_limit_forward = jrk_settings_get_soft_current_limit_forward(settings);
-    jrk_settings_set_soft_current_limit_forward(settings, soft_current_limit_forward);
-  }
-
-  {
-    uint16_t soft_current_limit_reverse = jrk_settings_get_soft_current_limit_reverse(settings);
-    jrk_settings_set_soft_current_limit_reverse(settings, soft_current_limit_reverse);
-  }
-
-  {
-    uint16_t error_enable = jrk_settings_get_error_enable(settings);
-    jrk_settings_set_error_enable(settings, error_enable);
-  }
-
-  {
-    uint16_t error_latch = jrk_settings_get_error_latch(settings);
-    jrk_settings_set_error_latch(settings, error_latch);
-  }
-
-  {
-    uint16_t error_hard = jrk_settings_get_error_hard(settings);
-    jrk_settings_set_error_hard(settings, error_hard);
   }
 
   {
@@ -788,6 +722,67 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
 
     jrk_settings_set_serial_timeout(settings, timeout);
   }
+
+  {
+    int16_t offset_calibration =
+      jrk_settings_get_current_offset_calibration(settings);
+    int16_t scale_calibration =
+      jrk_settings_get_current_scale_calibration(settings);
+
+    int16_t min_offset_calibration = -32768;
+    int16_t max_offset_calibration = 32767;
+    int16_t min_scale_calibration = -32768;
+    int16_t max_scale_calibration = 32767;
+    switch (product)
+    {
+    case JRK_PRODUCT_UMC04A_30V:
+    case JRK_PRODUCT_UMC04A_40V:
+    case JRK_PRODUCT_UMC05A_40V:
+    case JRK_PRODUCT_UMC05A_30V:
+      min_offset_calibration = -800;
+      max_offset_calibration = 800;
+      min_scale_calibration = -1875;
+      max_scale_calibration = 1875;
+      break;
+    case JRK_PRODUCT_UMC06A:
+      min_scale_calibration = -1136;
+      max_scale_calibration = 1136;
+      break;
+    }
+
+    if (offset_calibration < min_offset_calibration)
+    {
+      offset_calibration = min_offset_calibration;
+      jrk_sprintf(warnings,
+        "Warning: The current offset calibration is too low "
+        "so it will be changed to %d.\n", offset_calibration);
+    }
+    if (offset_calibration > max_offset_calibration)
+    {
+      offset_calibration = max_offset_calibration;
+      jrk_sprintf(warnings,
+        "Warning: The current offset calibration is too high "
+        "so it will be changed to %d.\n", offset_calibration);
+    }
+    if (scale_calibration < min_scale_calibration)
+    {
+      scale_calibration = min_scale_calibration;
+      jrk_sprintf(warnings,
+        "Warning: The current scale calibration is too low "
+        "so it will be changed to %d.\n", scale_calibration);
+    }
+    if (scale_calibration > max_scale_calibration)
+    {
+      scale_calibration = max_scale_calibration;
+      jrk_sprintf(warnings,
+        "Warning: The current scale calibration is too high "
+        "so it will be changed to %d.\n", scale_calibration);
+    }
+
+    jrk_settings_set_current_offset_calibration(settings, offset_calibration);
+    jrk_settings_set_current_scale_calibration(settings, scale_calibration);
+  }
+
 
   // TODO: fix invalid pin configurations here
 }

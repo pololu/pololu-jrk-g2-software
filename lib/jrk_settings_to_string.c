@@ -269,6 +269,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "current_samples_exponent: %u\n", current_samples_exponent);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint8_t hard_overcurrent_threshold = jrk_settings_get_hard_overcurrent_threshold(settings);
     jrk_sprintf(&str, "hard_overcurrent_threshold: %u\n", hard_overcurrent_threshold);
@@ -325,11 +326,13 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "max_duty_cycle_reverse: %u\n", max_duty_cycle_reverse);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint16_t encoded_hard_current_limit_forward = jrk_settings_get_encoded_hard_current_limit_forward(settings);
     jrk_sprintf(&str, "encoded_hard_current_limit_forward: %u\n", encoded_hard_current_limit_forward);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint16_t encoded_hard_current_limit_reverse = jrk_settings_get_encoded_hard_current_limit_reverse(settings);
     jrk_sprintf(&str, "encoded_hard_current_limit_reverse: %u\n", encoded_hard_current_limit_reverse);
