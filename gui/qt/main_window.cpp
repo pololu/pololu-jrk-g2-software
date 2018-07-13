@@ -361,12 +361,11 @@ void main_window::adjust_ui_for_product(uint32_t product)
     current_chopping_sensing = false;
   }
 
-  current_limit_label->setEnabled(configurable_hard_current_limit);
-  current_limit_forward_spinbox->setEnabled(configurable_hard_current_limit);
-  current_limit_reverse_spinbox->setEnabled(configurable_hard_current_limit
-    && motor_asymmetric_checkbox->isChecked());
-  overcurrent_threshold_label->setEnabled(current_chopping_sensing);
-  overcurrent_threshold_spinbox->setEnabled(current_chopping_sensing);
+  current_limit_label->setVisible(configurable_hard_current_limit);
+  current_limit_forward_spinbox->setVisible(configurable_hard_current_limit);
+  current_limit_reverse_spinbox->setVisible(configurable_hard_current_limit);
+  overcurrent_threshold_label->setVisible(current_chopping_sensing);
+  overcurrent_threshold_spinbox->setVisible(current_chopping_sensing);
 }
 
 void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode)
@@ -852,8 +851,7 @@ void main_window::set_motor_asymmetric(bool checked)
   max_acceleration_reverse_spinbox->setEnabled(checked);
   max_deceleration_reverse_spinbox->setEnabled(checked);
   brake_duration_reverse_spinbox->setEnabled(checked);
-  current_limit_reverse_spinbox->setEnabled(checked &&
-    current_limit_forward_spinbox->isEnabled());
+  current_limit_reverse_spinbox->setEnabled(checked);
   max_current_reverse_spinbox->setEnabled(checked);
 }
 
@@ -916,7 +914,6 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
   for (uint16_t code : code_table)
   {
     uint32_t current = controller->current_limit_code_to_ma(code);
-
     mapping.insert(code, current);
   }
 
