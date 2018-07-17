@@ -18,6 +18,7 @@ static const char help[] =
   "\n"
   "Control commands:\n"
   "  --target NUM                 Set the target value (if input mode is Serial)\n"
+  "  --target-relative NUM        Add the specified number to the target value."
   "  --speed NUM                  Set the target value to 2048 plus NUM.\n"
   "  --stop                       Stop the motor\n"
   "  --run                        Run the motor\n"
@@ -82,6 +83,9 @@ struct arguments
 
   bool set_target = false;
   uint16_t target;
+
+  bool set_target_relative = false;
+  int16_t target_relative;
 
   bool stop_motor = false;
 
@@ -159,6 +163,7 @@ struct arguments
       show_ttl_port ||
       show_help ||
       set_target ||
+      set_target_relative ||
       stop_motor ||
       run_motor ||
       clear_errors ||
@@ -328,11 +333,19 @@ static arguments parse_args(int argc, char ** argv)
     else if (arg == "--target")
     {
       args.set_target = true;
+      args.set_target_relative = false;
       args.target = parse_arg_int<uint16_t>(arg_reader);
+    }
+    else if (arg == "--target-relative")
+    {
+      args.set_target = false;
+      args.set_target_relative = true;
+      args.target_relative = parse_arg_int<int16_t>(arg_reader);
     }
     else if (arg == "--speed")
     {
       args.set_target = true;
+      args.set_target_relative = false;
       int32_t speed = parse_arg_int<int16_t>(arg_reader, -2048, 2047);
       args.target = 2048 + speed;
     }
@@ -536,13 +549,26 @@ static void get_status(device_selector & selector, bool full_output)
     firmware_version, cmd_port, ttl_port, full_output);
 }
 
+static void set_target_relative(device_selector & selector,
+  int16_t target_relative)
+{
+  jrk::handle handle = ::handle(selector);
+  uint8_t buffer[2];
+  handle.get_variable_segment(JRK_VAR_TARGET, 2, buffer, 0);
+  int32_t target = buffer[0] + 256 * buffer[1];
+
+  target += target_relative;
+  if (target < 0) { target = 0; }
+  if (target > 4095) { target = 4095; }
+
+  handle.set_target(target);
+}
+
 static void get_eeprom_settings(device_selector & selector,
   const std::string & filename)
 {
   jrk::settings settings = handle(selector).get_eeprom_settings();
-
   std::string settings_string = settings.to_string();
-
   write_string_to_file_or_pipe(filename, settings_string);
 }
 
@@ -860,7 +886,7 @@ static void run(const arguments & args)
 
   if (args.run_motor)
   {
-    if (args.set_target)
+    if (args.set_target || args.set_target_relative)
     {
       // We are going to set the target later, so don't set it to some old value
       // now, especially since the old value might be buffered from a previous
@@ -877,6 +903,11 @@ static void run(const arguments & args)
   if (args.set_target)
   {
     handle(selector).set_target(args.target);
+  }
+
+  if (args.set_target_relative)
+  {
+    set_target_relative(selector, args.target_relative);
   }
 
   if (args.force_duty_cycle_target)
