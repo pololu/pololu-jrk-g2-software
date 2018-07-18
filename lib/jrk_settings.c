@@ -67,6 +67,8 @@ struct jrk_settings
   uint32_t brake_duration_reverse;
   uint16_t soft_current_limit_forward;
   uint16_t soft_current_limit_reverse;
+  uint16_t soft_current_regulation_level_forward;
+  uint16_t soft_current_regulation_level_reverse;
   bool coast_when_off;
   uint16_t error_enable;
   uint16_t error_latch;
@@ -966,6 +968,30 @@ uint16_t jrk_settings_get_soft_current_limit_reverse(const jrk_settings * settin
 {
   if (settings == NULL) { return 0; }
   return settings->soft_current_limit_reverse;
+}
+
+void jrk_settings_set_soft_current_regulation_level_forward(jrk_settings * settings, uint16_t soft_current_regulation_level_forward)
+{
+  if (settings == NULL) { return; }
+  settings->soft_current_regulation_level_forward = soft_current_regulation_level_forward;
+}
+
+uint16_t jrk_settings_get_soft_current_regulation_level_forward(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->soft_current_regulation_level_forward;
+}
+
+void jrk_settings_set_soft_current_regulation_level_reverse(jrk_settings * settings, uint16_t soft_current_regulation_level_reverse)
+{
+  if (settings == NULL) { return; }
+  settings->soft_current_regulation_level_reverse = soft_current_regulation_level_reverse;
+}
+
+uint16_t jrk_settings_get_soft_current_regulation_level_reverse(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->soft_current_regulation_level_reverse;
 }
 
 void jrk_settings_set_coast_when_off(jrk_settings * settings, bool coast_when_off)

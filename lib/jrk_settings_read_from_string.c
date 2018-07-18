@@ -802,6 +802,34 @@ static jrk_error * apply_string_pair(jrk_settings * settings,
     }
     jrk_settings_set_soft_current_limit_reverse(settings, soft_current_limit_reverse);
   }
+  else if (!strcmp(key, "soft_current_regulation_level_forward"))
+  {
+    int64_t soft_current_regulation_level_forward;
+    if (jrk_string_to_i64(value, &soft_current_regulation_level_forward))
+    {
+      return jrk_error_create("Invalid soft_current_regulation_level_forward value.");
+    }
+    if (soft_current_regulation_level_forward < 0 || soft_current_regulation_level_forward > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The soft_current_regulation_level_forward value is out of range.");
+    }
+    jrk_settings_set_soft_current_regulation_level_forward(settings, soft_current_regulation_level_forward);
+  }
+  else if (!strcmp(key, "soft_current_regulation_level_reverse"))
+  {
+    int64_t soft_current_regulation_level_reverse;
+    if (jrk_string_to_i64(value, &soft_current_regulation_level_reverse))
+    {
+      return jrk_error_create("Invalid soft_current_regulation_level_reverse value.");
+    }
+    if (soft_current_regulation_level_reverse < 0 || soft_current_regulation_level_reverse > UINT16_MAX)
+    {
+      return jrk_error_create(
+        "The soft_current_regulation_level_reverse value is out of range.");
+    }
+    jrk_settings_set_soft_current_regulation_level_reverse(settings, soft_current_regulation_level_reverse);
+  }
   else if (!strcmp(key, "coast_when_off"))
   {
     uint32_t coast_when_off;

@@ -781,7 +781,7 @@ this value, the Jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a/umc05a Jrks, the units of this setting are in milliamps.
+The units for this setting are milliamps.
 EOF
   },
   {
@@ -794,7 +794,43 @@ this value, the Jrk will trigger a "Max. current exceeded" error.
 
 A value of 0 means no limit.
 
-For the umc04a/umc05a Jrks, the units of this setting are in milliamps.
+The units for this setting are milliamps.
+EOF
+  },
+  {
+    name: 'soft_current_regulation_level_forward',
+    type: :uint16_t,
+    default: 0,
+    products: 'product == JRK_PRODUCT_UMC06A',
+    comment: <<EOF
+If this setting is non-zero and the Jrk is driving the motor forward, the Jrk
+will attempt to prevent the motor current from exceeding this value by
+limiting the duty cycle using a simple linear formula.
+
+A value of 0 disables software current regulation.
+
+This feature is not supported on the umc04a/umc05a Jrks since they have
+hardware current regulation.
+
+The units for this setting are milliamps.
+EOF
+  },
+  {
+    name: 'soft_current_regulation_level_reverse',
+    type: :uint16_t,
+    default: 0,
+    products: 'product == JRK_PRODUCT_UMC06A',
+    comment: <<EOF
+If this setting is non-zero and the Jrk is driving the motor in reverse, the
+Jrk will attempt to prevent the motor current from exceeding this value by
+limiting the duty cycle using a simple linear formula.
+
+A value of 0 disables software current regulation.
+
+This feature is not supported on the umc04a/umc05a Jrks since they have
+hardware current regulation.
+
+The units for this setting are milliamps.
 EOF
   },
   {

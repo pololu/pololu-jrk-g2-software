@@ -297,6 +297,18 @@ static void jrk_write_settings_to_buffer(const jrk_settings * settings, uint8_t 
     write_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_LIMIT_REVERSE, soft_current_limit_reverse);
   }
 
+  if (product == JRK_PRODUCT_UMC06A)
+  {
+    uint16_t soft_current_regulation_level_forward = jrk_settings_get_soft_current_regulation_level_forward(settings);
+    write_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_REGULATION_LEVEL_FORWARD, soft_current_regulation_level_forward);
+  }
+
+  if (product == JRK_PRODUCT_UMC06A)
+  {
+    uint16_t soft_current_regulation_level_reverse = jrk_settings_get_soft_current_regulation_level_reverse(settings);
+    write_uint16_t(buf + JRK_SETTING_SOFT_CURRENT_REGULATION_LEVEL_REVERSE, soft_current_regulation_level_reverse);
+  }
+
   {
     bool coast_when_off = jrk_settings_get_coast_when_off(settings);
     buf[JRK_SETTING_OPTIONS_BYTE3] |= coast_when_off << JRK_OPTIONS_BYTE3_COAST_WHEN_OFF;

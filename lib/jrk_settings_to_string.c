@@ -358,6 +358,18 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
     jrk_sprintf(&str, "soft_current_limit_reverse: %u\n", soft_current_limit_reverse);
   }
 
+  if (product == JRK_PRODUCT_UMC06A)
+  {
+    uint16_t soft_current_regulation_level_forward = jrk_settings_get_soft_current_regulation_level_forward(settings);
+    jrk_sprintf(&str, "soft_current_regulation_level_forward: %u\n", soft_current_regulation_level_forward);
+  }
+
+  if (product == JRK_PRODUCT_UMC06A)
+  {
+    uint16_t soft_current_regulation_level_reverse = jrk_settings_get_soft_current_regulation_level_reverse(settings);
+    jrk_sprintf(&str, "soft_current_regulation_level_reverse: %u\n", soft_current_regulation_level_reverse);
+  }
+
   {
     bool coast_when_off = jrk_settings_get_coast_when_off(settings);
     jrk_sprintf(&str, "coast_when_off: %s\n",

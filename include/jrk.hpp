@@ -1052,6 +1052,30 @@ namespace jrk
       return jrk_settings_get_soft_current_limit_reverse(pointer);
     }
 
+    /// Wrapper for jrk_settings_set_soft_current_regulation_level_forward().
+    void set_soft_current_regulation_level_forward(uint16_t value) noexcept
+    {
+      jrk_settings_set_soft_current_regulation_level_forward(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_soft_current_regulation_level_forward().
+    uint16_t get_soft_current_regulation_level_forward() const noexcept
+    {
+      return jrk_settings_get_soft_current_regulation_level_forward(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_soft_current_regulation_level_reverse().
+    void set_soft_current_regulation_level_reverse(uint16_t value) noexcept
+    {
+      jrk_settings_set_soft_current_regulation_level_reverse(pointer, value);
+    }
+
+    /// Wrapper for jrk_settings_get_soft_current_regulation_level_reverse().
+    uint16_t get_soft_current_regulation_level_reverse() const noexcept
+    {
+      return jrk_settings_get_soft_current_regulation_level_reverse(pointer);
+    }
+
     /// Wrapper for jrk_settings_set_coast_when_off().
     void set_coast_when_off(bool value) noexcept
     {

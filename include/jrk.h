@@ -1230,7 +1230,7 @@ uint32_t jrk_settings_get_brake_duration_reverse(const jrk_settings *);
 //
 // A value of 0 means no limit.
 //
-// For the umc04a/umc05a Jrks, the units of this setting are in milliamps.
+// The units for this setting are milliamps.
 JRK_API
 void jrk_settings_set_soft_current_limit_forward(jrk_settings *,
   uint16_t soft_current_limit_forward);
@@ -1247,7 +1247,7 @@ uint16_t jrk_settings_get_soft_current_limit_forward(const jrk_settings *);
 //
 // A value of 0 means no limit.
 //
-// For the umc04a/umc05a Jrks, the units of this setting are in milliamps.
+// The units for this setting are milliamps.
 JRK_API
 void jrk_settings_set_soft_current_limit_reverse(jrk_settings *,
   uint16_t soft_current_limit_reverse);
@@ -1256,6 +1256,48 @@ void jrk_settings_set_soft_current_limit_reverse(jrk_settings *,
 // jrk_settings_set_soft_current_limit_reverse.
 JRK_API
 uint16_t jrk_settings_get_soft_current_limit_reverse(const jrk_settings *);
+
+// Sets the soft_current_regulation_level_forward setting.
+//
+// If this setting is non-zero and the Jrk is driving the motor forward, the Jrk
+// will attempt to prevent the motor current from exceeding this value by
+// limiting the duty cycle using a simple linear formula.
+//
+// A value of 0 disables software current regulation.
+//
+// This feature is not supported on the umc04a/umc05a Jrks since they have
+// hardware current regulation.
+//
+// The units for this setting are milliamps.
+JRK_API
+void jrk_settings_set_soft_current_regulation_level_forward(jrk_settings *,
+  uint16_t soft_current_regulation_level_forward);
+
+// Gets the soft_current_regulation_level_forward setting, which is described in
+// jrk_settings_set_soft_current_regulation_level_forward.
+JRK_API
+uint16_t jrk_settings_get_soft_current_regulation_level_forward(const jrk_settings *);
+
+// Sets the soft_current_regulation_level_reverse setting.
+//
+// If this setting is non-zero and the Jrk is driving the motor in reverse, the
+// Jrk will attempt to prevent the motor current from exceeding this value by
+// limiting the duty cycle using a simple linear formula.
+//
+// A value of 0 disables software current regulation.
+//
+// This feature is not supported on the umc04a/umc05a Jrks since they have
+// hardware current regulation.
+//
+// The units for this setting are milliamps.
+JRK_API
+void jrk_settings_set_soft_current_regulation_level_reverse(jrk_settings *,
+  uint16_t soft_current_regulation_level_reverse);
+
+// Gets the soft_current_regulation_level_reverse setting, which is described in
+// jrk_settings_set_soft_current_regulation_level_reverse.
+JRK_API
+uint16_t jrk_settings_get_soft_current_regulation_level_reverse(const jrk_settings *);
 
 // Sets the coast_when_off setting.
 //
