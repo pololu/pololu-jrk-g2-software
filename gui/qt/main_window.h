@@ -194,6 +194,8 @@ public:
   void update_hard_current_limit_controls(uint32_t product);
   void set_soft_current_limit_forward(uint16_t);
   void set_soft_current_limit_reverse(uint16_t);
+  void set_soft_current_regulation_level_forward(uint16_t);
+  void set_soft_current_regulation_level_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
   void set_current_scale_calibration(int16_t);
   void set_current_samples_exponent(uint8_t);
@@ -357,6 +359,8 @@ private slots:
   void on_hard_current_limit_reverse_spinbox_valueChanged(int value);
   void on_soft_current_limit_forward_spinbox_valueChanged(int value);
   void on_soft_current_limit_reverse_spinbox_valueChanged(int value);
+  void on_soft_current_regulation_level_forward_spinbox_valueChanged(int value);
+  void on_soft_current_regulation_level_reverse_spinbox_valueChanged(int value);
   void on_current_offset_calibration_spinbox_valueChanged(int value);
   void on_current_scale_calibration_spinbox_valueChanged(int value);
   void on_current_samples_combobox_currentIndexChanged(int value);
@@ -661,6 +665,10 @@ private:
   nice_spin_box * soft_current_limit_forward_spinbox;
   nice_spin_box * soft_current_limit_reverse_spinbox;
   QLabel * soft_current_limit_means_label;
+  QLabel * soft_current_regulation_level_label;
+  nice_spin_box * soft_current_regulation_level_forward_spinbox;
+  nice_spin_box * soft_current_regulation_level_reverse_spinbox;
+  QLabel * soft_current_regulation_level_means_label;
   QLabel * current_offset_calibration_label;
   QSpinBox * current_offset_calibration_spinbox;
   QLabel * current_scale_calibration_label;

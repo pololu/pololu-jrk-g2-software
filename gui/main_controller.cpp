@@ -629,7 +629,10 @@ void main_controller::handle_settings_changed()
   window->set_brake_duration_reverse(settings.get_brake_duration_reverse());
   window->set_encoded_hard_current_limit_code_reverse(
     settings.get_encoded_hard_current_limit_reverse());
-  window->set_soft_current_limit_reverse(settings.get_soft_current_limit_reverse());
+  window->set_soft_current_limit_reverse(
+    settings.get_soft_current_limit_reverse());
+  window->set_soft_current_regulation_level_reverse(
+    settings.get_soft_current_regulation_level_reverse());
 
   window->set_max_duty_cycle_forward(settings.get_max_duty_cycle_forward());
   window->set_max_acceleration_forward(settings.get_max_acceleration_forward());
@@ -637,7 +640,10 @@ void main_controller::handle_settings_changed()
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_encoded_hard_current_limit_code_forward(
     settings.get_encoded_hard_current_limit_forward());
-  window->set_soft_current_limit_forward(settings.get_soft_current_limit_forward());
+  window->set_soft_current_limit_forward(
+    settings.get_soft_current_limit_forward());
+  window->set_soft_current_regulation_level_forward(
+    settings.get_soft_current_regulation_level_forward());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
@@ -697,7 +703,9 @@ void main_controller::recalculate_motor_asymmetric()
     (settings.get_encoded_hard_current_limit_forward() !=
       settings.get_encoded_hard_current_limit_reverse()) ||
     (settings.get_soft_current_limit_forward() !=
-      settings.get_soft_current_limit_reverse());
+      settings.get_soft_current_limit_reverse()) ||
+    (settings.get_soft_current_regulation_level_forward() !=
+      settings.get_soft_current_regulation_level_reverse());
 }
 
 void main_controller::recalculate_fbt_range()
@@ -1234,6 +1242,8 @@ void main_controller::handle_motor_asymmetric_input(bool asymmetric)
     settings.set_encoded_hard_current_limit_reverse(
       settings.get_encoded_hard_current_limit_forward());
     settings.set_soft_current_limit_reverse(settings.get_soft_current_limit_forward());
+    settings.set_soft_current_regulation_level_reverse(
+      settings.get_soft_current_regulation_level_forward());
   }
 
   settings_modified = true;
@@ -1358,6 +1368,28 @@ void main_controller::handle_soft_current_limit_reverse_input(uint16_t limit)
 {
   if (!connected()) { return; }
   settings.set_soft_current_limit_reverse(limit);
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_soft_current_regulation_level_forward_input(
+  uint16_t level)
+{
+  if (!connected()) { return; }
+  settings.set_soft_current_regulation_level_forward(level);
+  if (!motor_asymmetric)
+  {
+    settings.set_soft_current_regulation_level_reverse(level);
+  }
+  settings_modified = true;
+  handle_settings_changed();
+}
+
+void main_controller::handle_soft_current_regulation_level_reverse_input(
+  uint16_t level)
+{
+  if (!connected()) { return; }
+  settings.set_soft_current_regulation_level_reverse(level);
   settings_modified = true;
   handle_settings_changed();
 }

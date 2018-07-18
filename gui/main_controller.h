@@ -143,6 +143,8 @@ public:
   void handle_encoded_hard_current_limit_reverse_input(uint16_t);
   void handle_soft_current_limit_forward_input(uint16_t);
   void handle_soft_current_limit_reverse_input(uint16_t);
+  void handle_soft_current_regulation_level_forward_input(uint16_t);
+  void handle_soft_current_regulation_level_reverse_input(uint16_t);
   void handle_current_offset_calibration_input(int16_t);
   void handle_current_scale_calibration_input(int16_t);
   void handle_current_samples_exponent_input(uint8_t);
