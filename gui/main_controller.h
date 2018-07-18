@@ -141,8 +141,8 @@ public:
   void handle_brake_duration_reverse_input(uint32_t);
   void handle_current_limit_forward_input(uint16_t);
   void handle_current_limit_reverse_input(uint16_t);
-  void handle_max_current_forward_input(uint16_t);
-  void handle_max_current_reverse_input(uint16_t);
+  void handle_soft_current_limit_forward_input(uint16_t);
+  void handle_soft_current_limit_reverse_input(uint16_t);
   void handle_current_offset_calibration_input(int16_t);
   void handle_current_scale_calibration_input(int16_t);
   void handle_current_samples_exponent_input(uint8_t);
@@ -254,12 +254,8 @@ private:
 /**
 -  void handle_current_limit_forward_input(uint16_t);
 -  void handle_current_limit_reverse_input(uint16_t);
--  void handle_max_current_forward_input(uint16_t);
--  void handle_max_current_reverse_input(uint16_t);
 +  void handle_encoded_hard_current_limit_forward_input(uint16_t);
 +  void handle_encoded_hard_current_limit_reverse_input(uint16_t);
-+  void handle_soft_current_limit_forward_input(uint16_t);
-+  void handle_soft_current_limit_reverse_input(uint16_t);
 -  void handle_overcurrent_threshold_input(uint8_t);
 +  void handle_hard_overcurrent_threshold_input(uint8_t);
 **/

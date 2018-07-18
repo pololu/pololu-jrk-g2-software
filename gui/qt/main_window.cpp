@@ -852,7 +852,7 @@ void main_window::set_motor_asymmetric(bool checked)
   max_deceleration_reverse_spinbox->setEnabled(checked);
   brake_duration_reverse_spinbox->setEnabled(checked);
   current_limit_reverse_spinbox->setEnabled(checked);
-  max_current_reverse_spinbox->setEnabled(checked);
+  soft_current_limit_reverse_spinbox->setEnabled(checked);
 }
 
 void main_window::set_max_duty_cycle_forward(uint16_t duty_cycle)
@@ -924,14 +924,14 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
   current_limit_reverse_spinbox->set_mapping(mapping);
 }
 
-void main_window::set_max_current_forward(uint16_t current)
+void main_window::set_soft_current_limit_forward(uint16_t current)
 {
-  set_spin_box(max_current_forward_spinbox, current);
+  set_spin_box(soft_current_limit_forward_spinbox, current);
 }
 
-void main_window::set_max_current_reverse(uint16_t current)
+void main_window::set_soft_current_limit_reverse(uint16_t current)
 {
-  set_spin_box(max_current_reverse_spinbox, current);
+  set_spin_box(soft_current_limit_reverse_spinbox, current);
 }
 
 void main_window::set_current_offset_calibration(int16_t cal)
@@ -1838,16 +1838,16 @@ void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
   controller->handle_current_limit_reverse_input(value);
 }
 
-void main_window::on_max_current_forward_spinbox_valueChanged(int value)
+void main_window::on_soft_current_limit_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_max_current_forward_input(value);
+  controller->handle_soft_current_limit_forward_input(value);
 }
 
-void main_window::on_max_current_reverse_spinbox_valueChanged(int value)
+void main_window::on_soft_current_limit_reverse_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_max_current_reverse_input(value);
+  controller->handle_soft_current_limit_reverse_input(value);
 }
 void main_window::on_current_offset_calibration_spinbox_valueChanged(int value)
 {
@@ -3192,24 +3192,23 @@ QWidget * main_window::setup_motor_tab()
   current_limit_reverse_spinbox->set_decimals(2);
   current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
 
-  // TODO: change the variable names to soft_current_limit too
-  max_current_label = new QLabel(tr("Soft current limit (A):"));
-  max_current_label->setObjectName("max_current_label");
+  soft_current_limit_label = new QLabel(tr("Soft current limit (A):"));
+  soft_current_limit_label->setObjectName("soft_current_limit_label");
 
-  max_current_forward_spinbox = new nice_spin_box();
-  max_current_forward_spinbox->setObjectName("max_current_forward_spinbox");
-  max_current_forward_spinbox->set_decimals(3);
-  max_current_forward_spinbox->setRange(0, 65535);
-  max_current_forward_spinbox->setMinimumWidth(minimum_current_box_width);
+  soft_current_limit_forward_spinbox = new nice_spin_box();
+  soft_current_limit_forward_spinbox->setObjectName("soft_current_limit_forward_spinbox");
+  soft_current_limit_forward_spinbox->set_decimals(3);
+  soft_current_limit_forward_spinbox->setRange(0, 65535);
+  soft_current_limit_forward_spinbox->setMinimumWidth(minimum_current_box_width);
 
-  max_current_reverse_spinbox = new nice_spin_box();
-  max_current_reverse_spinbox->setObjectName("max_current_reverse_spinbox");
-  max_current_reverse_spinbox->set_decimals(3);
-  max_current_reverse_spinbox->setRange(0, 65535);
-  max_current_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
+  soft_current_limit_reverse_spinbox = new nice_spin_box();
+  soft_current_limit_reverse_spinbox->setObjectName("soft_current_limit_reverse_spinbox");
+  soft_current_limit_reverse_spinbox->set_decimals(3);
+  soft_current_limit_reverse_spinbox->setRange(0, 65535);
+  soft_current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
 
-  max_current_means_label = new QLabel(tr("(0 means no limit)"));
-  max_current_means_label->setObjectName("max_current_means_label");
+  soft_current_limit_means_label = new QLabel(tr("(0 means no limit)"));
+  soft_current_limit_means_label->setObjectName("soft_current_limit_means_label");
 
   current_offset_calibration_label = new QLabel(tr("Current offset calibration:"));
   current_offset_calibration_label->setObjectName("current_offset_calibration_label");
@@ -3260,10 +3259,10 @@ QWidget * main_window::setup_motor_tab()
   motor_controls_layout->addWidget(current_limit_label, ++row, 0);
   motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2);
-  motor_controls_layout->addWidget(max_current_label, ++row, 0);
-  motor_controls_layout->addWidget(max_current_forward_spinbox, row, 1);
-  motor_controls_layout->addWidget(max_current_reverse_spinbox, row, 2);
-  motor_controls_layout->addWidget(max_current_means_label, row, 3);
+  motor_controls_layout->addWidget(soft_current_limit_label, ++row, 0);
+  motor_controls_layout->addWidget(soft_current_limit_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(soft_current_limit_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(soft_current_limit_means_label, row, 3);
   motor_controls_layout->addItem(setup_vertical_spacer(), ++row, 0);
   motor_controls_layout->addWidget(current_offset_calibration_label, ++row, 0);
   motor_controls_layout->addWidget(current_offset_calibration_spinbox, row, 1);

@@ -32,8 +32,8 @@ void main_controller::start()
 // Returns the device that matches the specified OS ID from the list, or a null
 // device if none match.
 static jrk::device device_with_os_id(
-  std::vector<jrk::device> const & device_list,
-  std::string const & id)
+  const std::vector<jrk::device> & device_list,
+  const std::string & id)
 {
   for (jrk::device const & candidate : device_list)
   {
@@ -324,7 +324,7 @@ void main_controller::update()
       {
         reload_variables();
       }
-      catch (std::exception const & e)
+      catch (const std::exception & e)
       {
         // Ignore the exception.  The model provides other ways to tell that
         // the variable update failed, and the exact message is probably
@@ -629,7 +629,7 @@ void main_controller::handle_settings_changed()
   window->set_brake_duration_reverse(settings.get_brake_duration_reverse());
   window->set_current_limit_code_reverse(
     settings.get_encoded_hard_current_limit_reverse());
-  window->set_max_current_reverse(settings.get_soft_current_limit_reverse());
+  window->set_soft_current_limit_reverse(settings.get_soft_current_limit_reverse());
 
   window->set_max_duty_cycle_forward(settings.get_max_duty_cycle_forward());
   window->set_max_acceleration_forward(settings.get_max_acceleration_forward());
@@ -637,8 +637,7 @@ void main_controller::handle_settings_changed()
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
   window->set_current_limit_code_forward(
     settings.get_encoded_hard_current_limit_forward());
-
-  window->set_max_current_forward(settings.get_soft_current_limit_forward());
+  window->set_soft_current_limit_forward(settings.get_soft_current_limit_forward());
 
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
@@ -1341,7 +1340,7 @@ void main_controller::handle_current_limit_reverse_input(uint16_t limit)
   handle_settings_changed();
 }
 
-void main_controller::handle_max_current_forward_input(uint16_t limit)
+void main_controller::handle_soft_current_limit_forward_input(uint16_t limit)
 {
   if (!connected()) { return; }
   settings.set_soft_current_limit_forward(limit);
@@ -1353,10 +1352,10 @@ void main_controller::handle_max_current_forward_input(uint16_t limit)
   handle_settings_changed();
 }
 
-void main_controller::handle_max_current_reverse_input(uint16_t current)
+void main_controller::handle_soft_current_limit_reverse_input(uint16_t limit)
 {
   if (!connected()) { return; }
-  settings.set_soft_current_limit_reverse(current);
+  settings.set_soft_current_limit_reverse(limit);
   settings_modified = true;
   handle_settings_changed();
 }
