@@ -642,7 +642,7 @@ void main_controller::handle_settings_changed()
   window->set_current_offset_calibration(settings.get_current_offset_calibration());
   window->set_current_scale_calibration(settings.get_current_scale_calibration());
   window->set_current_samples_exponent(settings.get_current_samples_exponent());
-  window->set_overcurrent_threshold(settings.get_hard_overcurrent_threshold());
+  window->set_hard_overcurrent_threshold(settings.get_hard_overcurrent_threshold());
 
   window->set_error_enable(settings.get_error_enable(), settings.get_error_latch());
   window->set_error_hard(settings.get_error_hard());
@@ -1386,7 +1386,7 @@ void main_controller::handle_current_samples_exponent_input(uint8_t exponent)
   handle_settings_changed();
 }
 
-void main_controller::handle_overcurrent_threshold_input(uint8_t threshold)
+void main_controller::handle_hard_overcurrent_threshold_input(uint8_t threshold)
 {
   if (!connected()) { return; }
   settings.set_hard_overcurrent_threshold(threshold);

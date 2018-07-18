@@ -364,8 +364,8 @@ void main_window::adjust_ui_for_product(uint32_t product)
   hard_current_limit_label->setVisible(configurable_hard_current_limit);
   hard_current_limit_forward_spinbox->setVisible(configurable_hard_current_limit);
   hard_current_limit_reverse_spinbox->setVisible(configurable_hard_current_limit);
-  overcurrent_threshold_label->setVisible(current_chopping_sensing);
-  overcurrent_threshold_spinbox->setVisible(current_chopping_sensing);
+  hard_overcurrent_threshold_label->setVisible(current_chopping_sensing);
+  hard_overcurrent_threshold_spinbox->setVisible(current_chopping_sensing);
 }
 
 void main_window::set_manual_target_mode(uint8_t input_mode, uint8_t feedback_mode)
@@ -949,9 +949,9 @@ void main_window::set_current_samples_exponent(uint8_t exponent)
   set_u8_combobox(current_samples_combobox, exponent);
 }
 
-void main_window::set_overcurrent_threshold(uint8_t threshold)
+void main_window::set_hard_overcurrent_threshold(uint8_t threshold)
 {
-  set_spin_box(overcurrent_threshold_spinbox, threshold);
+  set_spin_box(hard_overcurrent_threshold_spinbox, threshold);
 }
 
 void main_window::set_max_duty_cycle_while_feedback_out_of_range(uint16_t value)
@@ -1868,10 +1868,10 @@ void main_window::on_current_samples_combobox_currentIndexChanged(int index)
   controller->handle_current_samples_exponent_input(exponent);
 }
 
-void main_window::on_overcurrent_threshold_spinbox_valueChanged(int value)
+void main_window::on_hard_overcurrent_threshold_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_overcurrent_threshold_input(value);
+  controller->handle_hard_overcurrent_threshold_input(value);
 }
 
 void main_window::on_max_duty_cycle_while_feedback_out_of_range_spinbox_valueChanged(
@@ -3229,12 +3229,12 @@ QWidget * main_window::setup_motor_tab()
   current_samples_combobox = setup_exponent_combobox(10);
   current_samples_combobox->setObjectName("current_samples_combobox");
 
-  overcurrent_threshold_label = new QLabel(tr("Hard overcurrent threshold:"));
-  overcurrent_threshold_label->setObjectName("overcurrent_threshold_label");
+  hard_overcurrent_threshold_label = new QLabel(tr("Hard overcurrent threshold:"));
+  hard_overcurrent_threshold_label->setObjectName("hard_overcurrent_threshold_label");
 
-  overcurrent_threshold_spinbox = new QSpinBox();
-  overcurrent_threshold_spinbox->setObjectName("overcurrent_threshold_spinbox");
-  overcurrent_threshold_spinbox->setRange(1, 255);
+  hard_overcurrent_threshold_spinbox = new QSpinBox();
+  hard_overcurrent_threshold_spinbox->setObjectName("hard_overcurrent_threshold_spinbox");
+  hard_overcurrent_threshold_spinbox->setRange(1, 255);
 
   int row = 0;
   motor_controls_layout->addWidget(motor_asymmetric_checkbox, row, 2, 1, 2);
@@ -3269,8 +3269,8 @@ QWidget * main_window::setup_motor_tab()
   motor_controls_layout->addWidget(current_scale_calibration_spinbox, row, 1);
   motor_controls_layout->addWidget(current_samples_label, ++row, 0);
   motor_controls_layout->addWidget(current_samples_combobox, row, 1);
-  motor_controls_layout->addWidget(overcurrent_threshold_label, ++row, 0);
-  motor_controls_layout->addWidget(overcurrent_threshold_spinbox, row, 1);
+  motor_controls_layout->addWidget(hard_overcurrent_threshold_label, ++row, 0);
+  motor_controls_layout->addWidget(hard_overcurrent_threshold_spinbox, row, 1);
 
   motor_controls_layout->setAlignment(Qt::AlignLeft);
 
