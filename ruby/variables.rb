@@ -195,9 +195,15 @@ EOF
     name: 'raw_current',
     type: :uint16_t,
     comment: <<EOF
-This is an analog voltage reading from the Jrk's current sense pin.  The
-units of the reading depend on what hard current limit is being used
-(jrk_variable_get_encoded_hard_current_limit()).
+This is an analog voltage reading from the Jrk's current sense pin.
+
+For the umc04a/umc05a models, the units of the reading depend on what hard
+current limit is being used (jrk_variable_get_encoded_hard_current_limit()).
+
+For the umc06a, the units are always mV / 16.
+
+Either way, use jrk_calculate_raw_current_mv64() to get a raw current
+reading with reliable units.
 EOF
   },
   {

@@ -961,8 +961,8 @@ uint8_t jrk_settings_get_current_samples_exponent(const jrk_settings *);
 // starting up) but you still want to it to be an error when your motor leads
 // are shorted out.
 //
-// This setting is not used on the umc06a since it cannot sense when the
-// current chopping takes effect.
+// This setting is not used on the umc06a since it cannot sense when hardware
+// current chopping happens.
 JRK_API
 void jrk_settings_set_hard_overcurrent_threshold(jrk_settings *,
   uint8_t hard_overcurrent_threshold);

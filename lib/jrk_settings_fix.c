@@ -373,6 +373,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint8_t hard_overcurrent_threshold = jrk_settings_get_hard_overcurrent_threshold(settings);
     if (hard_overcurrent_threshold < 1)
@@ -504,6 +505,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     jrk_settings_set_max_duty_cycle_reverse(settings, max_duty_cycle_reverse);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint16_t encoded_hard_current_limit_forward = jrk_settings_get_encoded_hard_current_limit_forward(settings);
     if (encoded_hard_current_limit_forward > 95)
@@ -516,6 +518,7 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint16_t encoded_hard_current_limit_reverse = jrk_settings_get_encoded_hard_current_limit_reverse(settings);
     if (encoded_hard_current_limit_reverse > 95)

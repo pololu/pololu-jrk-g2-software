@@ -10,6 +10,15 @@ def puts_long_c_comment(stream, comment)
   end
 end
 
+def product_if_statement(info)
+  if info[:products]
+    "if (#{info[:products]})"
+  else
+    nil
+  end
+end
+
+
 def setting_integer_type(setting_info)
   if setting_info[:type] == :enum
     :uint8_t
@@ -112,7 +121,18 @@ def generate_settings_defaults_code(stream)
     name = setting_info.fetch(:name)
     default = setting_info[:default]
     next unless default && default != 0 && !setting_info[:default_is_zero]
-    stream.puts "jrk_settings_set_#{name}(settings, #{default});"
+    if_stmt = product_if_statement(setting_info)
+    set_stmt = "jrk_settings_set_#{name}(settings, #{default});"
+    s = []
+    if if_stmt
+      s << if_stmt
+      s << "{"
+      s << "  " + set_stmt
+      s << "}"
+    else
+      s << set_stmt
+    end
+    s.compact.each { |l| stream.puts l }
   end
 end
 
@@ -132,6 +152,7 @@ def generate_settings_fixing_code(stream)
     end
 
     s = []
+    s << product_if_statement(setting_info)
     s << "{"
     s << "  #{integer_type} #{name} = jrk_settings_get_#{name}(settings);"
 
@@ -183,8 +204,7 @@ def generate_settings_fixing_code(stream)
     s << "  jrk_settings_set_#{name}(settings, #{name});"
     s << "}"
     s << ''
-
-    s.each { |l| stream.puts l }
+    s.compact.each { |l| stream.puts l }
   end
 end
 
@@ -202,16 +222,19 @@ def generate_buffer_to_settings_code(stream)
     shift_mask << " >> #{bit_addr}" if bit_addr != 0
     shift_mask << " & #{mask}" if mask
 
-    stream.puts "{"
+    s = []
+    s << product_if_statement(setting_info)
+    s << "{"
     if [:bool, :uint8_t, :int8_t].include?(type)
-      stream.puts "  #{type} #{name} = buf[#{addr}]#{shift_mask};"
+      s << "  #{type} #{name} = buf[#{addr}]#{shift_mask};"
     else
       raise NotImplementedError if bit_addr != 0 || mask
-      stream.puts "  #{type} #{name} = read_#{type}(buf + #{addr});"
+      s << "  #{type} #{name} = read_#{type}(buf + #{addr});"
     end
-    stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
-    stream.puts "}"
-    stream.puts
+    s << "  jrk_settings_set_#{name}(settings, #{name});"
+    s << "}"
+    s << ""
+    s.compact.each { |l| stream.puts l }
   end
 end
 
@@ -242,15 +265,18 @@ def generate_settings_to_buffer_code(stream)
       op = "|="
     end
 
-    stream.puts "{"
-    stream.puts "  #{type} #{name} = jrk_settings_get_#{name}(settings);"
+    s = []
+    s << product_if_statement(setting_info)
+    s << "{"
+    s << "  #{type} #{name} = jrk_settings_get_#{name}(settings);"
     if [:bool, :uint8_t, :int8_t].include?(type)
-      stream.puts "  buf[#{addr}] #{op} #{mask_shift_prefix}#{name}#{mask_shift};"
+      s << "  buf[#{addr}] #{op} #{mask_shift_prefix}#{name}#{mask_shift};"
     else
-      stream.puts "  write_#{type}(buf + JRK_SETTING_#{name.upcase}, #{name});"
+      s << "  write_#{type}(buf + JRK_SETTING_#{name.upcase}, #{name});"
     end
-    stream.puts "}"
-    stream.puts
+    s << "}"
+    s << ""
+    s.compact.each { |l| stream.puts l }
   end
 end
 
@@ -259,35 +285,37 @@ def generate_settings_file_parsing_code(stream)
     name = setting_info.fetch(:name)
     type = setting_info.fetch(:type)
 
-    stream.puts "else if (!strcmp(key, \"#{name}\"))"
-    stream.puts "{"
+    s = []
+    s << "else if (!strcmp(key, \"#{name}\"))"
+    s << "{"
     if type == :enum
-      stream.puts "  uint32_t #{name};"
-      stream.puts "  if (!jrk_name_to_code(jrk_#{name}_names_short, value, &#{name}))"
-      stream.puts "  {"
-      stream.puts "    return jrk_error_create(\"Unrecognized #{name} value.\");"
-      stream.puts "  }"
+      s << "  uint32_t #{name};"
+      s << "  if (!jrk_name_to_code(jrk_#{name}_names_short, value, &#{name}))"
+      s << "  {"
+      s << "    return jrk_error_create(\"Unrecognized #{name} value.\");"
+      s << "  }"
     elsif type == :bool
-      stream.puts "  uint32_t #{name};"
-      stream.puts "  if (!jrk_name_to_code(jrk_bool_names, value, &#{name}))"
-      stream.puts "  {"
-      stream.puts "    return jrk_error_create(\"Unrecognized #{name} value.\");"
-      stream.puts "  }"
+      s << "  uint32_t #{name};"
+      s << "  if (!jrk_name_to_code(jrk_bool_names, value, &#{name}))"
+      s << "  {"
+      s << "    return jrk_error_create(\"Unrecognized #{name} value.\");"
+      s << "  }"
     else
       int_type_min, int_type_max = setting_int_type_range(setting_info)
-      stream.puts "  int64_t #{name};"
-      stream.puts "  if (jrk_string_to_i64(value, &#{name}))"
-      stream.puts "  {"
-      stream.puts "    return jrk_error_create(\"Invalid #{name} value.\");"
-      stream.puts "  }"
-      stream.puts "  if (#{name} < #{int_type_min} || #{name} > #{int_type_max})"
-      stream.puts "  {"
-      stream.puts "    return jrk_error_create("
-      stream.puts "      \"The #{name} value is out of range.\");"
-      stream.puts "  }"
+      s << "  int64_t #{name};"
+      s << "  if (jrk_string_to_i64(value, &#{name}))"
+      s << "  {"
+      s << "    return jrk_error_create(\"Invalid #{name} value.\");"
+      s << "  }"
+      s << "  if (#{name} < #{int_type_min} || #{name} > #{int_type_max})"
+      s << "  {"
+      s << "    return jrk_error_create("
+      s << "      \"The #{name} value is out of range.\");"
+      s << "  }"
     end
-    stream.puts "  jrk_settings_set_#{name}(settings, #{name});"
-    stream.puts "}"
+    s << "  jrk_settings_set_#{name}(settings, #{name});"
+    s << "}"
+    s.compact.each { |l| stream.puts l }
   end
 end
 
@@ -297,19 +325,22 @@ def generate_settings_file_printing_code(stream)
     type = setting_info.fetch(:type)
     int_type = setting_integer_type(setting_info)
     pf = setting_printf_format(setting_info)
-    stream.puts "{"
-    stream.puts "  #{int_type} #{name} = jrk_settings_get_#{name}(settings);"
+    s = []
+    s << product_if_statement(setting_info)
+    s << "{"
+    s << "  #{int_type} #{name} = jrk_settings_get_#{name}(settings);"
     if type == :enum
-      stream.puts "  const char * value_str = \"\";"
-      stream.puts "  jrk_code_to_name(jrk_#{name}_names_short, #{name}, &value_str);"
-      stream.puts "  jrk_sprintf(&str, \"#{name}: %s\\n\", value_str);"
+      s << "  const char * value_str = \"\";"
+      s << "  jrk_code_to_name(jrk_#{name}_names_short, #{name}, &value_str);"
+      s << "  jrk_sprintf(&str, \"#{name}: %s\\n\", value_str);"
     elsif type == :bool
-      stream.puts "  jrk_sprintf(&str, \"#{name}: %s\\n\","
-      stream.puts "    #{name} ? \"true\" : \"false\");"
+      s << "  jrk_sprintf(&str, \"#{name}: %s\\n\","
+      s << "    #{name} ? \"true\" : \"false\");"
     else
-      stream.puts "  jrk_sprintf(&str, \"#{name}: %#{pf}\\n\", #{name});"
+      s << "  jrk_sprintf(&str, \"#{name}: %#{pf}\\n\", #{name});"
     end
-    stream.puts "}"
-    stream.puts
+    s << "}"
+    s << ""
+    s.compact.each { |l| stream.puts l }
   end
 end

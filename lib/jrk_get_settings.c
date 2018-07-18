@@ -4,6 +4,8 @@
 
 static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * settings)
 {
+  uint32_t product = jrk_settings_get_product(settings);
+
   // Beginning of auto-generated buffer-to-settings code.
 
   {
@@ -216,6 +218,7 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     jrk_settings_set_current_samples_exponent(settings, current_samples_exponent);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint8_t hard_overcurrent_threshold = buf[JRK_SETTING_HARD_OVERCURRENT_THRESHOLD];
     jrk_settings_set_hard_overcurrent_threshold(settings, hard_overcurrent_threshold);
@@ -271,11 +274,13 @@ static void write_buffer_to_settings(const uint8_t * buf, jrk_settings * setting
     jrk_settings_set_max_duty_cycle_reverse(settings, max_duty_cycle_reverse);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint16_t encoded_hard_current_limit_forward = read_uint16_t(buf + JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_FORWARD);
     jrk_settings_set_encoded_hard_current_limit_forward(settings, encoded_hard_current_limit_forward);
   }
 
+  if (product != JRK_PRODUCT_UMC06A)
   {
     uint16_t encoded_hard_current_limit_reverse = read_uint16_t(buf + JRK_SETTING_ENCODED_HARD_CURRENT_LIMIT_REVERSE);
     jrk_settings_set_encoded_hard_current_limit_reverse(settings, encoded_hard_current_limit_reverse);

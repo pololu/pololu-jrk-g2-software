@@ -550,6 +550,7 @@ EOF
     type: :uint8_t,
     default: 1,
     min: 1,
+    products: 'product != JRK_PRODUCT_UMC06A',
     comment: <<EOF
 This is the number of consecutive PID periods where the the hardware current
 chopping must occur before the Jrk triggers a "Hard overcurrent\" error.
@@ -557,6 +558,9 @@ The default of 1 means that any current chopping is an error.  You can set it
 to a higher value if you expect some current chopping to happen (e.g. when
 starting up) but you still want to it to be an error when your motor leads
 are shorted out.
+
+This setting is not used on the umc06a since it cannot sense when hardware
+current chopping happens.
 EOF
   },
   {
@@ -578,8 +582,10 @@ For the umc04a/umc05a Jrk models, this setting is defined by the formula:
 
   current_offset_calibration = (voltage offset in millivolts - 50) * 16
 
-This setting should be between -800 (for an offset of 0 mV) and 800 (for an
-offset of 100 mV).
+For the umc04a/umc05a Jrk models, this setting should be between -800
+(for an offset of 0 mV) and 800 (for an offset of 100 mV).
+
+For the umc06a, this setting can be any int16_t value and has units of mV/16.
 EOF
   },
   {
@@ -590,12 +596,17 @@ EOF
 You can use this current calibration setting to correct current measurements
 and current limit settings that are off by a constant percentage.
 
-The algorithm for calculating currents in amps involves multiplying the
-current by (1875 + current_scale_calibration).
+For the umc04a/umc05a models, the algorithm for calculating currents in
+milliamps involves multiplying the current by
+(1875 + current_scale_calibration).
+This setting must be between -1875 and 1875.
+
+For the umc06a models, the algorithm for calculating currents in
+milliamps involves multiplying the current by
+(1136 + current_scale_calibration).
+This setting must be between -1136 and 1136.
 
 The default current_scale_calibration value is 0.
-A current_scale_calibration value of 19 would increase the current
-readings by about 1%.
 EOF
   },
   {
@@ -706,11 +717,15 @@ EOF
     type: :uint16_t,
     # the default is actually different for each device
     max: 95,
+    products: 'product != JRK_PRODUCT_UMC06A',
     comment: <<EOF
 Sets the current limit to be used when driving forward.
 
 This setting is not actually a current, it is an encoded value telling
 the Jrk how to set up its current limiting hardware.
+
+This setting is not used for the umc06a, since it does not have a
+configurable hardware current limiting.
 
 The correspondence between this setting and the actual current limit
 in milliamps depends on what product you are using.  See also:
@@ -724,6 +739,7 @@ EOF
     name: 'encoded_hard_current_limit_reverse',
     type: :uint16_t,
     max: 95,
+    products: 'product != JRK_PRODUCT_UMC06A',
     comment:
       "Sets the current limit to be used when driving in reverse.\n" \
       "See the documentation of encoded_hard_current_limit_forward."
