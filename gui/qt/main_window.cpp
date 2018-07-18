@@ -361,9 +361,9 @@ void main_window::adjust_ui_for_product(uint32_t product)
     current_chopping_sensing = false;
   }
 
-  current_limit_label->setVisible(configurable_hard_current_limit);
-  current_limit_forward_spinbox->setVisible(configurable_hard_current_limit);
-  current_limit_reverse_spinbox->setVisible(configurable_hard_current_limit);
+  hard_current_limit_label->setVisible(configurable_hard_current_limit);
+  hard_current_limit_forward_spinbox->setVisible(configurable_hard_current_limit);
+  hard_current_limit_reverse_spinbox->setVisible(configurable_hard_current_limit);
   overcurrent_threshold_label->setVisible(current_chopping_sensing);
   overcurrent_threshold_spinbox->setVisible(current_chopping_sensing);
 }
@@ -851,7 +851,7 @@ void main_window::set_motor_asymmetric(bool checked)
   max_acceleration_reverse_spinbox->setEnabled(checked);
   max_deceleration_reverse_spinbox->setEnabled(checked);
   brake_duration_reverse_spinbox->setEnabled(checked);
-  current_limit_reverse_spinbox->setEnabled(checked);
+  hard_current_limit_reverse_spinbox->setEnabled(checked);
   soft_current_limit_reverse_spinbox->setEnabled(checked);
 }
 
@@ -895,17 +895,17 @@ void main_window::set_brake_duration_reverse(uint32_t brake_duration)
   set_spin_box(brake_duration_reverse_spinbox, brake_duration);
 }
 
-void main_window::set_current_limit_code_forward(uint16_t current_limit)
+void main_window::set_encoded_hard_current_limit_code_forward(uint16_t limit)
 {
-  set_spin_box(current_limit_forward_spinbox, current_limit);
+  set_spin_box(hard_current_limit_forward_spinbox, limit);
 }
 
-void main_window::set_current_limit_code_reverse(uint16_t current_limit)
+void main_window::set_encoded_hard_current_limit_code_reverse(uint16_t limit)
 {
-  set_spin_box(current_limit_reverse_spinbox, current_limit);
+  set_spin_box(hard_current_limit_reverse_spinbox, limit);
 }
 
-void main_window::get_recommended_current_limit_codes(uint32_t product)
+void main_window::update_hard_current_limit_controls(uint32_t product)
 {
   const std::vector<uint16_t> code_table =
     jrk::get_recommended_encoded_hard_current_limits(product);
@@ -920,8 +920,8 @@ void main_window::get_recommended_current_limit_codes(uint32_t product)
   // Mapping will be empty for products without a configurable hard
   // current limit (e.g. umc06a).
 
-  current_limit_forward_spinbox->set_mapping(mapping);
-  current_limit_reverse_spinbox->set_mapping(mapping);
+  hard_current_limit_forward_spinbox->set_mapping(mapping);
+  hard_current_limit_reverse_spinbox->set_mapping(mapping);
 }
 
 void main_window::set_soft_current_limit_forward(uint16_t current)
@@ -1826,16 +1826,16 @@ void main_window::on_brake_duration_reverse_spinbox_valueChanged(int value)
   controller->handle_brake_duration_reverse_input(value);
 }
 
-void main_window::on_current_limit_forward_spinbox_valueChanged(int value)
+void main_window::on_hard_current_limit_forward_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_current_limit_forward_input(value);
+  controller->handle_encoded_hard_current_limit_forward_input(value);
 }
 
-void main_window::on_current_limit_reverse_spinbox_valueChanged(int value)
+void main_window::on_hard_current_limit_reverse_spinbox_valueChanged(int value)
 {
   if (suppress_events) { return; }
-  controller->handle_current_limit_reverse_input(value);
+  controller->handle_encoded_hard_current_limit_reverse_input(value);
 }
 
 void main_window::on_soft_current_limit_forward_spinbox_valueChanged(int value)
@@ -3171,9 +3171,8 @@ QWidget * main_window::setup_motor_tab()
   brake_duration_reverse_spinbox->setRange(0, JRK_MAX_ALLOWED_BRAKE_DURATION);
   brake_duration_reverse_spinbox->setSingleStep(JRK_BRAKE_DURATION_UNITS);
 
-  // TODO: change the variable names to hard_current_limit too
-  current_limit_label = new QLabel(tr("Hard current limit (A):"));
-  current_limit_label->setObjectName("current_limit_label");
+  hard_current_limit_label = new QLabel(tr("Hard current limit (A):"));
+  hard_current_limit_label->setObjectName("current_limit_label");
 
   size_t minimum_current_box_width;
   {
@@ -3182,15 +3181,15 @@ QWidget * main_window::setup_motor_tab()
     minimum_current_box_width = tmp_box.sizeHint().width();
   }
 
-  current_limit_forward_spinbox = new nice_spin_box();
-  current_limit_forward_spinbox->setObjectName("current_limit_forward_spinbox");
-  current_limit_forward_spinbox->set_decimals(2);
-  current_limit_forward_spinbox->setMinimumWidth(minimum_current_box_width);
+  hard_current_limit_forward_spinbox = new nice_spin_box();
+  hard_current_limit_forward_spinbox->setObjectName("hard_current_limit_forward_spinbox");
+  hard_current_limit_forward_spinbox->set_decimals(2);
+  hard_current_limit_forward_spinbox->setMinimumWidth(minimum_current_box_width);
 
-  current_limit_reverse_spinbox = new nice_spin_box();
-  current_limit_reverse_spinbox->setObjectName("current_limit_reverse_spinbox");
-  current_limit_reverse_spinbox->set_decimals(2);
-  current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
+  hard_current_limit_reverse_spinbox = new nice_spin_box();
+  hard_current_limit_reverse_spinbox->setObjectName("hard_current_limit_reverse_spinbox");
+  hard_current_limit_reverse_spinbox->set_decimals(2);
+  hard_current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
 
   soft_current_limit_label = new QLabel(tr("Soft current limit (A):"));
   soft_current_limit_label->setObjectName("soft_current_limit_label");
@@ -3256,9 +3255,9 @@ QWidget * main_window::setup_motor_tab()
   motor_controls_layout->addWidget(brake_duration_label, ++row, 0);
   motor_controls_layout->addWidget(brake_duration_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(brake_duration_reverse_spinbox, row, 2);
-  motor_controls_layout->addWidget(current_limit_label, ++row, 0);
-  motor_controls_layout->addWidget(current_limit_forward_spinbox, row, 1);
-  motor_controls_layout->addWidget(current_limit_reverse_spinbox, row, 2);
+  motor_controls_layout->addWidget(hard_current_limit_label, ++row, 0);
+  motor_controls_layout->addWidget(hard_current_limit_forward_spinbox, row, 1);
+  motor_controls_layout->addWidget(hard_current_limit_reverse_spinbox, row, 2);
   motor_controls_layout->addWidget(soft_current_limit_label, ++row, 0);
   motor_controls_layout->addWidget(soft_current_limit_forward_spinbox, row, 1);
   motor_controls_layout->addWidget(soft_current_limit_reverse_spinbox, row, 2);

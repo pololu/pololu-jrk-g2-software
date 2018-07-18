@@ -189,9 +189,9 @@ public:
   void set_max_deceleration_reverse(uint16_t);
   void set_brake_duration_forward(uint32_t);
   void set_brake_duration_reverse(uint32_t);
-  void set_current_limit_code_forward(uint16_t);
-  void set_current_limit_code_reverse(uint16_t);
-  void get_recommended_current_limit_codes(uint32_t);
+  void set_encoded_hard_current_limit_code_forward(uint16_t);
+  void set_encoded_hard_current_limit_code_reverse(uint16_t);
+  void update_hard_current_limit_controls(uint32_t product);
   void set_soft_current_limit_forward(uint16_t);
   void set_soft_current_limit_reverse(uint16_t);
   void set_current_offset_calibration(int16_t);
@@ -353,8 +353,8 @@ private slots:
   void on_max_deceleration_reverse_spinbox_valueChanged(int value);
   void on_brake_duration_forward_spinbox_valueChanged(int value);
   void on_brake_duration_reverse_spinbox_valueChanged(int value);
-  void on_current_limit_forward_spinbox_valueChanged(int value);
-  void on_current_limit_reverse_spinbox_valueChanged(int value);
+  void on_hard_current_limit_forward_spinbox_valueChanged(int value);
+  void on_hard_current_limit_reverse_spinbox_valueChanged(int value);
   void on_soft_current_limit_forward_spinbox_valueChanged(int value);
   void on_soft_current_limit_reverse_spinbox_valueChanged(int value);
   void on_current_offset_calibration_spinbox_valueChanged(int value);
@@ -653,10 +653,10 @@ private:
   QLabel * brake_duration_label;
   QSpinBox * brake_duration_forward_spinbox;
   QSpinBox * brake_duration_reverse_spinbox;
-  QLabel * current_limit_label;
-  nice_spin_box * current_limit_forward_spinbox;
-  nice_spin_box * current_limit_reverse_spinbox;
-  QLabel * current_limit_means_label;
+  QLabel * hard_current_limit_label;
+  nice_spin_box * hard_current_limit_forward_spinbox;
+  nice_spin_box * hard_current_limit_reverse_spinbox;
+  QLabel * hard_current_limit_means_label;
   QLabel * soft_current_limit_label;
   nice_spin_box * soft_current_limit_forward_spinbox;
   nice_spin_box * soft_current_limit_reverse_spinbox;
@@ -736,10 +736,6 @@ private:
 
 // TODO: fix these names in the main_window class for settings that were renamed:
 /**
--  void set_current_limit_code_forward(uint16_t);
--  void set_current_limit_code_reverse(uint16_t);
-+  void set_encoded_hard_current_limit_forward(uint16_t);
-+  void set_encoded_hard_current_limit_reverse(uint16_t);
 -  void set_overcurrent_threshold(uint8_t);
 +  void set_hard_overcurrent_threshold(uint8_t);
 **/

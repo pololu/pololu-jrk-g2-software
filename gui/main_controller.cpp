@@ -622,12 +622,12 @@ void main_controller::handle_settings_changed()
 
   window->set_motor_asymmetric(motor_asymmetric);
 
-  window->get_recommended_current_limit_codes(settings.get_product());
+  window->update_hard_current_limit_controls(settings.get_product());
   window->set_max_duty_cycle_reverse(settings.get_max_duty_cycle_reverse());
   window->set_max_acceleration_reverse(settings.get_max_acceleration_reverse());
   window->set_max_deceleration_reverse(settings.get_max_deceleration_reverse());
   window->set_brake_duration_reverse(settings.get_brake_duration_reverse());
-  window->set_current_limit_code_reverse(
+  window->set_encoded_hard_current_limit_code_reverse(
     settings.get_encoded_hard_current_limit_reverse());
   window->set_soft_current_limit_reverse(settings.get_soft_current_limit_reverse());
 
@@ -635,7 +635,7 @@ void main_controller::handle_settings_changed()
   window->set_max_acceleration_forward(settings.get_max_acceleration_forward());
   window->set_max_deceleration_forward(settings.get_max_deceleration_forward());
   window->set_brake_duration_forward(settings.get_brake_duration_forward());
-  window->set_current_limit_code_forward(
+  window->set_encoded_hard_current_limit_code_forward(
     settings.get_encoded_hard_current_limit_forward());
   window->set_soft_current_limit_forward(settings.get_soft_current_limit_forward());
 
@@ -1320,7 +1320,8 @@ void main_controller::handle_brake_duration_reverse_input(uint32_t deceleration)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_forward_input(uint16_t limit)
+void main_controller::handle_encoded_hard_current_limit_forward_input(
+  uint16_t limit)
 {
   if (!connected()) { return; }
   settings.set_encoded_hard_current_limit_forward(limit);
@@ -1332,7 +1333,8 @@ void main_controller::handle_current_limit_forward_input(uint16_t limit)
   handle_settings_changed();
 }
 
-void main_controller::handle_current_limit_reverse_input(uint16_t limit)
+void main_controller::handle_encoded_hard_current_limit_reverse_input(
+  uint16_t limit)
 {
   if (!connected()) { return; }
   settings.set_encoded_hard_current_limit_reverse(limit);
