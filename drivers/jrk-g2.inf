@@ -11,12 +11,13 @@ p00B7m00="Pololu Jrk G2 18v27"
 p00B9m00="Pololu Jrk G2 24v21"
 p00BFm00="Pololu Jrk G2 18v19"
 p00C1m00="Pololu Jrk G2 24v13"
+p00C5m00="Pololu Jrk G2 21v3"
 
 [DefaultInstall]
 CopyINF=jrk-g2.inf
 
 [Version]
-DriverVer=04/13/2018,1.0.0
+DriverVer=07/18/2018,1.1.1
 Signature=$Windows NT$
 Class=USBDevice
 ClassGuid={88BAE032-5A81-49F0-BC3D-A4FF138216D6}
@@ -43,18 +44,21 @@ HKR,,Configurable,,1
 %p00B9m00%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_00
 %p00BFm00%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_00
 %p00C1m00%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_00
+%p00C5m00%=DriverInstall, USB\VID_1FFB&PID_00C5&MI_00
 
 [Models.NTamd64]
 %p00B7m00%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_00
 %p00B9m00%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_00
 %p00BFm00%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_00
 %p00C1m00%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_00
+%p00C5m00%=DriverInstall, USB\VID_1FFB&PID_00C5&MI_00
 
 [Models.NTarm]
 %p00B7m00%=DriverInstall, USB\VID_1FFB&PID_00B7&MI_00
 %p00B9m00%=DriverInstall, USB\VID_1FFB&PID_00B9&MI_00
 %p00BFm00%=DriverInstall, USB\VID_1FFB&PID_00BF&MI_00
 %p00C1m00%=DriverInstall, USB\VID_1FFB&PID_00C1&MI_00
+%p00C5m00%=DriverInstall, USB\VID_1FFB&PID_00C5&MI_00
 
 [DriverInstall]
 Include=Winusb.inf
