@@ -1,7 +1,7 @@
 # Jrk G2 software
 
-Version: 1.2.0<br>
-Release date: 2018-06-25<br>
+Version: 1.3.0<br>
+Release date: 2018-07-20<br>
 [www.pololu.com](https://www.pololu.com/)
 
 This repository contains the source code of the configuration and control software for
@@ -20,6 +20,14 @@ from source.
 
 ## Version history
 
+- 1.3.0 (2018-07-20):
+  - Added support for the new Jrk G2 21v3.
+  - Added `jrk_reinitialize_and_reset_errors` which behaves like the
+    reinitialize command from the original Jrks: it clears all the latched
+    errors and sets the "Awaiting command" error if the input mode is serial.
+  - Changed `jrk_restore_defaults` to use `jrk_reinitialize_and_reset_errors`
+    so that the software still stop the motor when you restore to the
+    default settings.
 - 1.2.0 (2018-06-25):
   - Jrk G2 Configuration Utility (jrk2gui):
     - Major changes to the graph window:
