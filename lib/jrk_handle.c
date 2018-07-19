@@ -551,7 +551,7 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle)
 
   if (error == NULL)
   {
-    error = jrk_reinitialize(handle);
+    error = jrk_reinitialize_and_reset_errors(handle);
   }
 
   // The request returns before the settings are actually initialized.
@@ -596,17 +596,12 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle)
   return error;
 }
 
-jrk_error * jrk_reinitialize(jrk_handle * handle)
+jrk_error * jrk_reinitialize_core(jrk_handle * handle, uint16_t flags)
 {
   if (handle == NULL)
   {
     return jrk_error_create("Handle is null.");
   }
-
-  // In this function, we preserve errors.  If we ever want the behavior of the
-  // old jrks for some reason, make a new function called
-  // jrk_reinitialize_and_reset_errors.
-  uint16_t flags = 1 << JRK_REINITIALIZE_FLAG_PRESERVE_ERRORS;
 
   jrk_error * error = jrk_usb_error(libusbp_control_transfer(handle->usb_handle,
     0x40, JRK_CMD_REINITIALIZE, flags, 0, NULL, 0, NULL));
@@ -618,6 +613,17 @@ jrk_error * jrk_reinitialize(jrk_handle * handle)
   }
 
   return error;
+}
+
+jrk_error * jrk_reinitialize(jrk_handle * handle)
+{
+  uint16_t flags = 1 << JRK_REINITIALIZE_FLAG_PRESERVE_ERRORS;
+  return jrk_reinitialize_core(handle, flags);
+}
+
+jrk_error * jrk_reinitialize_and_reset_errors(jrk_handle * handle)
+{
+  return jrk_reinitialize_core(handle, 0);
 }
 
 jrk_error * jrk_start_bootloader(jrk_handle * handle)

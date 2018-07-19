@@ -1660,6 +1660,12 @@ namespace jrk
       throw_if_needed(jrk_reinitialize(pointer));
     }
 
+    /// Wrapper for jrk_reinitialize_and_reset_errors().
+    void reinitialize_and_reset_errors()
+    {
+      throw_if_needed(jrk_reinitialize_and_reset_errors(pointer));
+    }
+
     /// Wrapperfor jrk_start_bootloader()
     void start_bootloader()
     {

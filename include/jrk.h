@@ -2197,7 +2197,7 @@ jrk_error * jrk_set_ram_setting_segment(jrk_handle *,
   size_t index, size_t length, const uint8_t * input);
 
 /// Resets the jrk's settings in RAM and EEPROM to their factory default values.
-/// Part of this process is calling jrk_reinitialize().
+/// Part of this process is calling jrk_reinitialize_and_reset_errors().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_restore_defaults(jrk_handle * handle);
 
@@ -2206,6 +2206,14 @@ jrk_error * jrk_restore_defaults(jrk_handle * handle);
 /// happens at the end of the PID period.
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_reinitialize(jrk_handle * handle);
+
+/// This is just like jrk_reinitialize() but it does not send the
+/// "Preserve errors" flag to the Jrk.  This means that all the latched errors
+/// will get cleared, and if the new input mode is serial then the
+/// "Awaiting command" error bit will be set.  This is how the Reinitialize
+/// command behaved on the original Jrk controllers.
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_reinitialize_and_reset_errors(jrk_handle *);
 
 /// Sends a "Start bootloader" command, which tells the Jrk to get into
 /// bootloader mode.
