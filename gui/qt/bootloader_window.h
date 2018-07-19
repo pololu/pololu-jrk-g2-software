@@ -35,8 +35,8 @@ private:
   void set_interface_enabled(bool enabled);
   void set_status(const char * status, uint32_t progress, uint32_t max_progress);
   void clear_status();
-  void show_error_message(const std::string &);
   bool confirm_warning(const std::string &);
+  void show_error_message(const std::string &);
 
 private slots:
   void on_update_timer_timeout();
