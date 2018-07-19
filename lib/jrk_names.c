@@ -15,7 +15,7 @@ const jrk_name jrk_product_names_short[] =
   { "24v21", JRK_PRODUCT_UMC04A_40V },
   { "18v19", JRK_PRODUCT_UMC05A_30V },
   { "24v13", JRK_PRODUCT_UMC05A_40V },
-  { "TB9051FTG", JRK_PRODUCT_UMC06A },  // TODO: real name
+  { "21v3", JRK_PRODUCT_UMC06A },
   { NULL, 0 },
 };
 
@@ -25,7 +25,7 @@ const jrk_name jrk_product_names_ui[] =
   { "Jrk G2 24v21", JRK_PRODUCT_UMC04A_40V },
   { "Jrk G2 18v19", JRK_PRODUCT_UMC05A_30V },
   { "Jrk G2 24v13", JRK_PRODUCT_UMC05A_40V },
-  { "Jrk G2 TB9051FTG", JRK_PRODUCT_UMC06A },  // TODO: real name
+  { "Jrk G2 21v3", JRK_PRODUCT_UMC06A },
   { NULL, 0 },
 };
 

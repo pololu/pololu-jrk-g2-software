@@ -67,8 +67,8 @@ const std::vector<bootloader_type> bootloader_types = {
     /* id */ ID_JRK_UMC06A_BOOTLOADER,
     /* usb_vendor_id */ 0x1FFB,
     /* usb_product_id */ 0x00C4,
-    /* name */ "Jrk G2 TB9051FTG Bootloader",  // TODO: real name
-    /* short_name */ "TB9051FTG",  // TODO: real name
+    /* name */ "Jrk G2 21v3 Bootloader",
+    /* short_name */ "21v3",
     /* app_address */ 0x2000,
     /* app_size */ 0x6000,
     /* write_block_size */ 0x40,
