@@ -2307,7 +2307,7 @@ QWidget * main_window::setup_graph()
 QWidget * main_window::setup_variables_box()
 {
   variables_box = new QGroupBox();
-  variables_box->setTitle(tr("Variables"));  // TODO: better name?
+  variables_box->setTitle(tr("Variables"));
 
   QGridLayout * layout = variables_layout = new QGridLayout();
 
@@ -2362,8 +2362,6 @@ QWidget * main_window::setup_variables_box()
     &current_label, &current_value);
   current_label->setText(tr("Current:"));
 
-  // TODO: what kind of current chopping thing do we want to show here?
-  // it's not really a log any more
   setup_read_only_text_field(layout, row++, value_size,
     &current_chopping_count_label, &current_chopping_count_value);
   current_chopping_count_label->setText(tr("Current chopping count:"));

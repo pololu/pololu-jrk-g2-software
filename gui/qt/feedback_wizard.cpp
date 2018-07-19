@@ -484,7 +484,6 @@ bool feedback_wizard::determine_settings()
       this);
     return false;
   }
-  // TODO: check this threshold with other people, make sure it is OK
   if (distance < 32)
   {
     show_error_message("The two feedback values are too close." + try_again,
@@ -922,8 +921,6 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
   QLabel * duty_cycle_input_label = new QLabel(tr("  Speed limit:"));
 
   duty_cycle_input = new QSpinBox();
-  // TODO: when they reach the max duty cycle setting, show a message:
-  //  (Jan wants)
   duty_cycle_input->setRange(0, max_duty_cycle_percent);
   duty_cycle_input->setValue(max_duty_cycle_percent / 4);
   duty_cycle_input->setSingleStep(1);
@@ -969,7 +966,6 @@ QGroupBox * feedback_wizard::setup_motor_control_box()
   layout->addWidget(motor_status_value);
 
   motor_control_box = new QGroupBox();
-  // TODO: this title is only appropriate on step 1, right?
   motor_control_box->setTitle(tr("Test motor direction (optional)"));
   motor_control_box->setLayout(layout);
 

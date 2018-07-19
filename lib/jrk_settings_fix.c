@@ -785,9 +785,6 @@ static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings
     jrk_settings_set_current_offset_calibration(settings, offset_calibration);
     jrk_settings_set_current_scale_calibration(settings, scale_calibration);
   }
-
-
-  // TODO: fix invalid pin configurations here
 }
 
 jrk_error * jrk_settings_fix(jrk_settings * settings, char ** warnings)
