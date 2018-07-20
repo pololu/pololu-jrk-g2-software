@@ -2088,6 +2088,10 @@ void main_window::setup_ui()
 
   central_widget->setLayout(main_window_layout);
 
+  // Without this line, some unneeded current controls would be visible
+  // in the "Motor" tab, making the window taller than necessary.
+  adjust_ui_for_product(JRK_PRODUCT_UMC04A_30V);
+
   QMetaObject::connectSlotsByName(this);
 }
 
