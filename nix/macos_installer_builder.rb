@@ -8,24 +8,26 @@ ConfigName = ENV.fetch('config_name')
 OutDir = Pathname(ENV.fetch('out'))
 PayloadDir = Pathname(ENV.fetch('payload'))
 SrcDir = Pathname(ENV.fetch('src'))
-
 Version = File.read(PayloadDir + 'version.txt')
+
+StagingDir = Pathname('pololu-jrk-g2-macos-files')
+OutTar = OutDir + "#{StagingDir}.tar"
 AppName = 'Pololu Jrk G2'
 PkgFile = "pololu-jrk-g2-#{Version}-#{ConfigName}.pkg"
 PkgId = 'com.pololu.jrk2'
 AppExe = 'jrk2gui'
 CliExe = 'jrk2cmd'
 
-StagingDir = Pathname('release')
-AppDir = StagingDir + "#{AppName}.app"
+ReleaseDir = Pathname('release')
+AppDir = ReleaseDir + "#{AppName}.app"
 ContentsDir = AppDir + 'Contents'
 BinDir = ContentsDir + 'MacOS'
 AppResDir = ContentsDir + 'Resources'
 PathDir = Pathname('path')
 ResDir = Pathname('resources')
 
-mkdir_p OutDir
-cd OutDir
+mkdir_p StagingDir
+cd StagingDir
 mkdir_p BinDir
 mkdir_p AppResDir
 mkdir_p PathDir
@@ -94,7 +96,7 @@ This package will install two programs:
 EOF
 end
 
-File.open(OutDir + 'distribution.xml', 'w') do |f|
+File.open('distribution.xml', 'w') do |f|
   f.puts <<EOF
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <installer-gui-script minSpecVersion="2">
@@ -125,7 +127,7 @@ File.open(OutDir + 'distribution.xml', 'w') do |f|
 EOF
 end
 
-File.open(OutDir + 'build.sh', 'w') do |f|
+File.open('build.sh', 'w') do |f|
   f.puts <<EOF
 set -ue
 
@@ -134,7 +136,7 @@ pkgbuild --analyze --root zzz nocomponents.plist
 pkgbuild \\
   --identifier #{PkgId}.app \\
   --version "#{Version}" \\
-  --root "#{StagingDir}" \\
+  --root "#{ReleaseDir}" \\
   --install-location /Applications \\
   --component-plist nocomponents.plist \\
  app.pkg
@@ -155,3 +157,10 @@ productbuild \\
   "#{PkgFile}"
 EOF
 end
+
+mkdir_p OutDir
+chmod_R 'u+w', '.'
+chmod 'u+x', 'build.sh'
+cd '..'
+success = system("tar cfv #{OutTar} #{StagingDir}")
+raise "tar failed: error #{$?.exitstatus}" if !success
