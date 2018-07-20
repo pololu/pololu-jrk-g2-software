@@ -366,8 +366,14 @@ void main_window::adjust_ui_for_product(uint32_t product)
   hard_current_limit_label->setVisible(configurable_hard_current_limit);
   hard_current_limit_forward_spinbox->setVisible(configurable_hard_current_limit);
   hard_current_limit_reverse_spinbox->setVisible(configurable_hard_current_limit);
+
   hard_overcurrent_threshold_label->setVisible(current_chopping_sensing);
   hard_overcurrent_threshold_spinbox->setVisible(current_chopping_sensing);
+  current_chopping_count_label->setVisible(current_chopping_sensing);
+  current_chopping_count_value->setVisible(current_chopping_sensing);
+  clear_current_chopping_count_action->setVisible(current_chopping_sensing);
+  // Note: Would be nice to hide custom_plot->current_chopping plot too.
+
   soft_current_regulation_level_label->setVisible(soft_current_regulation);
   soft_current_regulation_level_forward_spinbox->setVisible(soft_current_regulation);
   soft_current_regulation_level_reverse_spinbox->setVisible(soft_current_regulation);
