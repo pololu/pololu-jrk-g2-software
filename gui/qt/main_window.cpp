@@ -3211,6 +3211,9 @@ QWidget * main_window::setup_motor_tab()
 
   hard_current_limit_label = new QLabel(tr("Hard current limit (A):"));
   hard_current_limit_label->setObjectName("current_limit_label");
+  hard_current_limit_label->setToolTip(
+    "The Jrk's motor driver uses current chopping to keep the current "
+    "under this level.");
 
   size_t minimum_current_box_width;
   {
@@ -3223,26 +3226,33 @@ QWidget * main_window::setup_motor_tab()
   hard_current_limit_forward_spinbox->setObjectName("hard_current_limit_forward_spinbox");
   hard_current_limit_forward_spinbox->set_decimals(2);
   hard_current_limit_forward_spinbox->setMinimumWidth(minimum_current_box_width);
+  hard_current_limit_forward_spinbox->setToolTip(hard_current_limit_label->toolTip());
 
   hard_current_limit_reverse_spinbox = new nice_spin_box();
   hard_current_limit_reverse_spinbox->setObjectName("hard_current_limit_reverse_spinbox");
   hard_current_limit_reverse_spinbox->set_decimals(2);
   hard_current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
+  hard_current_limit_reverse_spinbox->setToolTip(hard_current_limit_label->toolTip());
 
   soft_current_limit_label = new QLabel(tr("Soft current limit (A):"));
   soft_current_limit_label->setObjectName("soft_current_limit_label");
+  soft_current_limit_label->setToolTip(
+    "When the measured current exceeds this threshold, the Jrk reports a "
+    "\"Soft overcurrent\" error (if it is enabled).");
 
   soft_current_limit_forward_spinbox = new nice_spin_box();
   soft_current_limit_forward_spinbox->setObjectName("soft_current_limit_forward_spinbox");
   soft_current_limit_forward_spinbox->set_decimals(3);
   soft_current_limit_forward_spinbox->setRange(0, 65535);
   soft_current_limit_forward_spinbox->setMinimumWidth(minimum_current_box_width);
+  soft_current_limit_forward_spinbox->setToolTip(soft_current_limit_label->toolTip());
 
   soft_current_limit_reverse_spinbox = new nice_spin_box();
   soft_current_limit_reverse_spinbox->setObjectName("soft_current_limit_reverse_spinbox");
   soft_current_limit_reverse_spinbox->set_decimals(3);
   soft_current_limit_reverse_spinbox->setRange(0, 65535);
   soft_current_limit_reverse_spinbox->setMinimumWidth(minimum_current_box_width);
+  soft_current_limit_reverse_spinbox->setToolTip(soft_current_limit_label->toolTip());
 
   soft_current_limit_means_label = new QLabel(tr("(0 means no limit)"));
   soft_current_limit_means_label->setObjectName("soft_current_limit_means_label");
@@ -3251,6 +3261,9 @@ QWidget * main_window::setup_motor_tab()
     new QLabel(tr("Soft current regulation level (A):"));
   soft_current_regulation_level_label->setObjectName(
     "soft_current_regulation_level_label");
+  soft_current_regulation_level_label->setToolTip(
+    "Each PID period, the Jrk firmware limits the duty cycle "
+    "in an attempt to keep the current below this level.");
 
   soft_current_regulation_level_forward_spinbox = new nice_spin_box();
   soft_current_regulation_level_forward_spinbox->setObjectName(
@@ -3259,6 +3272,8 @@ QWidget * main_window::setup_motor_tab()
   soft_current_regulation_level_forward_spinbox->setRange(0, 65535);
   soft_current_regulation_level_forward_spinbox->setMinimumWidth(
     minimum_current_box_width);
+  soft_current_regulation_level_forward_spinbox->setToolTip(
+    soft_current_regulation_level_label->toolTip());
 
   soft_current_regulation_level_reverse_spinbox = new nice_spin_box();
   soft_current_regulation_level_reverse_spinbox->setObjectName(
@@ -3267,9 +3282,11 @@ QWidget * main_window::setup_motor_tab()
   soft_current_regulation_level_reverse_spinbox->setRange(0, 65535);
   soft_current_regulation_level_reverse_spinbox->setMinimumWidth(
     minimum_current_box_width);
+  soft_current_regulation_level_reverse_spinbox->setToolTip(
+    soft_current_regulation_level_label->toolTip());
 
   soft_current_regulation_level_means_label =
-    new QLabel(tr("(0 means no limit)"));
+    new QLabel(tr("(0 means disabled)"));
   soft_current_regulation_level_means_label->setObjectName(
     "soft_current_regulation_level_means_label");
 
