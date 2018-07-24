@@ -18,7 +18,7 @@ static const char help[] =
   "\n"
   "Control commands:\n"
   "  --target NUM                 Set the target value (if input mode is Serial)\n"
-  "  --target-relative NUM        Add the specified number to the target value."
+  "  --target-relative NUM        Add the specified number to the target value.\n"
   "  --speed NUM                  Set the target value to 2048 plus NUM.\n"
   "  --stop                       Stop the motor\n"
   "  --run                        Run the motor\n"
