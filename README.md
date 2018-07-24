@@ -28,6 +28,7 @@ from source.
   - Changed `jrk_restore_defaults` to use `jrk_reinitialize_and_reset_errors`
     so that the software still stop the motor when you restore to the
     default settings.
+  - Added `--target-relative` option to jrk2cmd.
 - 1.2.0 (2018-06-25):
   - Jrk G2 Configuration Utility (jrk2gui):
     - Major changes to the graph window:
