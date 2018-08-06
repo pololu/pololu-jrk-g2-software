@@ -1,7 +1,7 @@
 # Jrk G2 software
 
-Version: 1.3.0<br>
-Release date: 2018-07-20<br>
+Version: 1.3.1<br>
+Release date: (unreleased)<br>
 [www.pololu.com](https://www.pololu.com/)
 
 This repository contains the source code of the configuration and control software for
@@ -20,6 +20,16 @@ from source.
 
 ## Version history
 
+- 1.3.1 (unreleased):
+  - If the product specified in the settings file does not match the Jrk you
+    are applying those settings to, the software will now fix the settings to
+    have default values for the hard current limit, VIN calibration setting,
+    and current calibration settings.  This makes it much easier to create a
+    settings file that can work with different Jrk products without
+    requiring the user to edit the file.
+  - Three new API functions: `jrk_settings_fix_and_change_product`,
+    `jrk_settings_set_firmware_version`, and
+    `jrk_settings_get_firmware_version`.
 - 1.3.0 (2018-07-20):
   - Added support for the new Jrk G2 21v3.
   - Added `jrk_reinitialize_and_reset_errors` which behaves like the

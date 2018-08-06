@@ -2,7 +2,7 @@
 
 static void jrk_settings_fix_core(jrk_settings * settings, jrk_string * warnings)
 {
-  uint8_t product = jrk_settings_get_product(settings);
+  uint32_t product = jrk_settings_get_product(settings);
 
   // Beginning of auto-generated settings fixing code.
 
@@ -833,4 +833,32 @@ jrk_error * jrk_settings_fix(jrk_settings * settings, char ** warnings)
   }
 
   return NULL;
+}
+
+jrk_error * jrk_settings_fix_and_change_product(jrk_settings * settings,
+  uint32_t product, uint16_t firmware_version, char ** warnings)
+{
+  if (warnings) { *warnings = NULL; }
+
+  if (settings == NULL)
+  {
+    return jrk_error_create("Jrk settings pointer is null.");
+  }
+
+  jrk_settings_set_firmware_version(settings, firmware_version);
+
+  if (product != jrk_settings_get_product(settings))
+  {
+    jrk_settings_set_product(settings, product);
+
+    // For now, we just restore product-specific settings like the encoded
+    // hard current limits to their defaults.  In the future, it might be nice
+    // to actually try to pick new current limits that are close to the
+    // original, though this makes this function be lossy and you could get
+    // unexpected results if you try to do round trips of your settings from
+    // one product to another and back.
+    jrk_settings_set_product_specific_defaults(settings);
+  }
+
+  return jrk_settings_fix(settings, warnings);
 }

@@ -9,7 +9,7 @@ struct jrk_device
   char * serial_number;
   char * os_id;
   uint16_t firmware_version;
-  uint8_t product;
+  uint32_t product;
 };
 
 jrk_error * jrk_list_connected_devices(

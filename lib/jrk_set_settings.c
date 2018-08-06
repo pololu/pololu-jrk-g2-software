@@ -434,16 +434,17 @@ jrk_error * jrk_set_eeprom_settings(jrk_handle * handle, const jrk_settings * se
     error = jrk_settings_copy(settings, &fixed_settings);
   }
 
-  // Set the product code of the settings and fix the settings silently to make
-  // sure we don't apply invalid settings to the device.  A good app will set
-  // the product and call jrk_settings_fix on its own before calling this
-  // function, so there should be nothing to fix here.
+  // Fix the settings silently to make sure we don't apply invalid settings to
+  // the device.
+  // A good app call jrk_settings_fix or jrk_settings_fix_and_change_product
+  // on its own before calling this so there should be nothing to fix here.
   if (error == NULL)
   {
-    uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
-    jrk_settings_set_product(fixed_settings, product);
-
-    error = jrk_settings_fix(fixed_settings, NULL);
+    const jrk_device * device = jrk_handle_get_device(handle);
+    uint32_t product = jrk_device_get_product(device);
+    uint16_t firmware_version = jrk_device_get_firmware_version(device);
+    error = jrk_settings_fix_and_change_product(
+      fixed_settings, product, firmware_version, NULL);
   }
 
   // Construct a buffer holding the bytes we want to write.
@@ -494,16 +495,17 @@ jrk_error * jrk_set_ram_settings(jrk_handle * handle, const jrk_settings * setti
     error = jrk_settings_copy(settings, &fixed_settings);
   }
 
-  // Set the product code of the settings and fix the settings silently to make
-  // sure we don't apply invalid settings to the device.  A good app will set
-  // the product and call jrk_settings_fix on its own before calling this
-  // function, so there should be nothing to fix here.
+  // Fix the settings silently to make sure we don't apply invalid settings to
+  // the device.
+  // A good app call jrk_settings_fix or jrk_settings_fix_and_change_product
+  // on its own before calling this so there should be nothing to fix here.
   if (error == NULL)
   {
-    uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
-    jrk_settings_set_product(fixed_settings, product);
-
-    error = jrk_settings_fix(fixed_settings, NULL);
+    const jrk_device * device = jrk_handle_get_device(handle);
+    uint32_t product = jrk_device_get_product(device);
+    uint16_t firmware_version = jrk_device_get_firmware_version(device);
+    error = jrk_settings_fix_and_change_product(
+      fixed_settings, product, firmware_version, NULL);
   }
 
   // Construct a buffer holding the bytes we want to write.

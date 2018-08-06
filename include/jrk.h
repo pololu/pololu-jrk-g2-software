@@ -193,6 +193,8 @@ void jrk_settings_free(jrk_settings *);
 /// specify what product the settings are for by calling
 /// jrk_settings_set_product().  If the product is not set to a valid non-zero
 /// value, this function will do nothing.
+///
+/// This function does not change the firmware version field.
 void jrk_settings_fill_with_defaults(jrk_settings * settings);
 
 /// Fixes the settings to be valid and consistent.
@@ -206,6 +208,23 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings);
 /// freed by the caller using jrk_string_free().
 JRK_API JRK_WARN_UNUSED
 jrk_error * jrk_settings_fix(jrk_settings *, char ** warnings);
+
+/// Changes the product and firmware version, adapts any product-specific
+/// settings (like encoded hard current limits) as appropriate, and then
+/// runs jrk_settings_fix.
+///
+/// This function is appropriate to use when you want to apply settings to a
+/// device but the settings object might have come from a different type of
+/// Jrk.
+///
+/// The product argument should be one of the JRK_PRODUCT_* macros.  You
+/// can get the product value of a device using jrk_device_get_product().
+///
+/// The firmware version should be zero or a firmare version returned by
+/// jrk_device_get_firmware_version().
+JRK_API JRK_WARN_UNUSED
+jrk_error * jrk_settings_fix_and_change_product(jrk_settings *,
+  uint32_t product, uint16_t firmware_version, char ** warnings);
 
 /// Gets the settings as a YAML string, also known as a settings file.  If this
 /// function is successful, the string must be freed by the caller using
@@ -228,12 +247,32 @@ jrk_error * jrk_settings_read_from_string(const char * string,
 
 /// Sets the product, which specifies what Jrk product these settings are for.
 /// The value should be one of the JRK_PRODUCT_* macros.
+///
+/// Note that this is just a simple setter function that changes the product
+/// ID stored in the settings and nothing else.  If you have a settings object
+/// originally made for one product and you want to convert it to be for another
+/// product, while adapting/fixing any settings as appropriate, see
+/// jrk_settings_fix_and_change_product.
 JRK_API
 void jrk_settings_set_product(jrk_settings *, uint32_t product);
 
 /// Gets the product, as described in jrk_settings_set_product().
 JRK_API
 uint32_t jrk_settings_get_product(const jrk_settings *);
+
+/// Sets the firmware version, which specifies what Jrk firmware version these
+/// settings are for.
+///
+/// The firmware version can be 0 to indicate that it is unknown.  Otherwise,
+/// it should be a firmware version from jrk_device_get_firmware_version().
+JRK_API
+void jrk_settings_set_firmware_version(jrk_settings *,
+  uint16_t firmware_version);
+
+/// Gets the firmware version, as described in
+/// jrk_settings_set_firmware_version().
+JRK_API
+uint16_t jrk_settings_get_firmware_version(const jrk_settings *);
 
 // Beginning of auto-generated settings accessor prototypes.
 

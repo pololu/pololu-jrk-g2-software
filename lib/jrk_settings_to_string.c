@@ -20,7 +20,7 @@ jrk_error * jrk_settings_to_string(const jrk_settings * settings, char ** string
   jrk_sprintf(&str, "# Pololu jrk settings file.\n");
   jrk_sprintf(&str, "# " DOCUMENTATION_URL "\n");
 
-  uint8_t product = jrk_settings_get_product(settings);
+  uint32_t product = jrk_settings_get_product(settings);
 
   {
     const char * product_str = jrk_look_up_product_name_short(product);

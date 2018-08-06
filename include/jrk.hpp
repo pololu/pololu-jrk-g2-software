@@ -287,6 +287,17 @@ namespace jrk
       if (warnings) { *warnings = std::string(cstr); }
     }
 
+    /// Wrapper for jrk_settings_fix_and_change_product().
+    void fix_and_change_product(uint32_t product, uint16_t firmware_version,
+      std::string * warnings = NULL)
+    {
+      char * cstr = NULL;
+      char ** cstr_pointer = warnings ? &cstr : NULL;
+      throw_if_needed(jrk_settings_fix_and_change_product(
+        pointer, product, firmware_version, cstr_pointer));
+      if (warnings) { *warnings = std::string(cstr); }
+    }
+
     /// Wrapper for jrk_settings_to_string().
     std::string to_string() const
     {
@@ -316,6 +327,18 @@ namespace jrk
     uint32_t get_product() const noexcept
     {
       return jrk_settings_get_product(pointer);
+    }
+
+    /// Wrapper for jrk_settings_set_firmware_version().
+    void set_firmware_version(uint32_t version) noexcept
+    {
+      jrk_settings_set_firmware_version(pointer, version);
+    }
+
+    /// Wrapper for jrk_settings_get_firmware_version().
+    uint32_t get_firmware_version() const noexcept
+    {
+      return jrk_settings_get_firmware_version(pointer);
     }
 
     // Beginning of auto-generated settings C++ accessors.

@@ -73,8 +73,9 @@ extern const jrk_name jrk_fbt_timing_clock_names_no_units[];
 
 extern const jrk_name jrk_pin_func_names[];
 
-// Internal settings conversion functions.
+// Internal settings functions.
 
+void jrk_settings_set_product_specific_defaults(jrk_settings *);
 uint32_t jrk_baud_rate_from_brg(uint16_t brg);
 uint16_t jrk_baud_rate_to_brg(uint32_t baud_rate);
 

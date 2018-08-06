@@ -121,18 +121,7 @@ def generate_settings_defaults_code(stream)
     name = setting_info.fetch(:name)
     default = setting_info[:default]
     next unless default && default != 0 && !setting_info[:default_is_zero]
-    if_stmt = product_if_statement(setting_info)
-    set_stmt = "jrk_settings_set_#{name}(settings, #{default});"
-    s = []
-    if if_stmt
-      s << if_stmt
-      s << "{"
-      s << "  " + set_stmt
-      s << "}"
-    else
-      s << set_stmt
-    end
-    s.compact.each { |l| stream.puts l }
+    stream.puts "jrk_settings_set_#{name}(settings, #{default});"
   end
 end
 

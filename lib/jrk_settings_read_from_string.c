@@ -1205,7 +1205,7 @@ jrk_error * jrk_settings_read_from_string(const char * string,
     }
   }
 
-  // Proces the YAML document.
+  // Process the YAML document.
   if (error == NULL)
   {
     error = read_from_yaml_doc(&doc, new_settings);

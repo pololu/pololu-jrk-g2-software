@@ -426,8 +426,6 @@ jrk_error * jrk_get_eeprom_settings(jrk_handle * handle, jrk_settings ** setting
 
   jrk_error * error = NULL;
 
-  uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
-
   // Allocate the new settings object.
   jrk_settings * new_settings = NULL;
   if (error == NULL)
@@ -438,7 +436,11 @@ jrk_error * jrk_get_eeprom_settings(jrk_handle * handle, jrk_settings ** setting
   // Specify what product these settings are for.
   if (error == NULL)
   {
+    const jrk_device * device = jrk_handle_get_device(handle);
+    uint32_t product = jrk_device_get_product(device);
+    uint16_t firmware_version = jrk_device_get_firmware_version(device);
     jrk_settings_set_product(new_settings, product);
+    jrk_settings_set_firmware_version(new_settings, firmware_version);
   }
 
   // Set the context here because any error from jrk_get_setting_segment will
@@ -496,8 +498,6 @@ jrk_error * jrk_get_ram_settings(jrk_handle * handle, jrk_settings ** settings)
 
   jrk_error * error = NULL;
 
-  uint8_t product = jrk_device_get_product(jrk_handle_get_device(handle));
-
   // Allocate the new settings object.
   jrk_settings * new_settings = NULL;
   if (error == NULL)
@@ -508,7 +508,11 @@ jrk_error * jrk_get_ram_settings(jrk_handle * handle, jrk_settings ** settings)
   // Specify what product these settings are for.
   if (error == NULL)
   {
+    const jrk_device * device = jrk_handle_get_device(handle);
+    uint32_t product = jrk_device_get_product(device);
+    uint16_t firmware_version = jrk_device_get_firmware_version(device);
     jrk_settings_set_product(new_settings, product);
+    jrk_settings_set_firmware_version(new_settings, firmware_version);
   }
 
   // Set the context here because any error from jrk_get_setting_segment will

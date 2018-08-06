@@ -579,14 +579,10 @@ static void set_eeprom_settings(device_selector & selector,
   jrk::settings settings = jrk::settings::read_from_string(settings_string);
 
   jrk::device device = selector.select_device();
-
-  // Set the product of the settings object to match that of the device so we
-  // can fix it properly.
-  uint8_t product = device.get_product();
-  jrk_settings_set_product(settings.get_pointer(), product);
-
+  uint32_t product = device.get_product();
+  uint16_t firmware_version = device.get_firmware_version();
   std::string warnings;
-  settings.fix(&warnings);
+  settings.fix_and_change_product(product, firmware_version, &warnings);
   std::cerr << warnings;
 
   jrk::handle handle(device);
@@ -598,9 +594,7 @@ static void get_ram_settings(device_selector & selector,
   const std::string & filename)
 {
   jrk::settings settings = handle(selector).get_ram_settings();
-
   std::string settings_string = settings.to_string();
-
   write_string_to_file_or_pipe(filename, settings_string);
 }
 
@@ -611,14 +605,10 @@ static void set_ram_settings(device_selector & selector,
   jrk::settings settings = jrk::settings::read_from_string(settings_string);
 
   jrk::device device = selector.select_device();
-
-  // Set the product of the settings object to match that of the device so we
-  // can fix it properly.
-  uint8_t product = device.get_product();
-  jrk_settings_set_product(settings.get_pointer(), product);
-
+  uint32_t product = device.get_product();
+  uint16_t firmware_version = device.get_firmware_version();
   std::string warnings;
-  settings.fix(&warnings);
+  settings.fix_and_change_product(product, firmware_version, &warnings);
   std::cerr << warnings;
 
   jrk::handle handle(device);

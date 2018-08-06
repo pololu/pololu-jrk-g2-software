@@ -1568,6 +1568,9 @@ bool main_controller::apply_settings()
 
     jrk::settings fixed_settings = settings;
     std::string warnings;
+    assert(device_handle.get_device().get_product() == settings.get_product());
+    assert(device_handle.get_device().get_firmware_version() ==
+      settings.get_firmware_version());
     fixed_settings.fix(&warnings);
     if (warnings.empty() ||
       window->confirm(warnings.append("\nAccept these changes and apply settings?")))
@@ -1667,7 +1670,10 @@ void main_controller::open_settings_from_file(std::string filename)
     std::string settings_string = read_string_from_file(filename);
     jrk::settings fixed_settings = jrk::settings::read_from_string(settings_string);
     std::string warnings;
-    fixed_settings.fix(&warnings);
+    jrk::device device = device_handle.get_device();
+    uint32_t product = device.get_product();
+    uint16_t firmware_version = device.get_firmware_version();
+    fixed_settings.fix_and_change_product(product, firmware_version, &warnings);
     if (warnings.empty() ||
       window->confirm(warnings.append("\nAccept these changes and load settings?")))
     {

@@ -3,6 +3,7 @@
 struct jrk_settings
 {
   uint32_t product;
+  uint16_t firmware_version;
 
   // Beginning of auto-generated settings struct members.
 
@@ -88,15 +89,40 @@ struct jrk_settings
   // End of auto-generated settings struct members.
 };
 
+void jrk_settings_set_product_specific_defaults(jrk_settings * settings)
+{
+  uint32_t product = jrk_settings_get_product(settings);
+  assert(product);
+
+  uint16_t limit = 0;
+  switch (product)
+  {
+  case JRK_PRODUCT_UMC04A_30V: limit = 87; break;
+  case JRK_PRODUCT_UMC04A_40V: limit = 63; break;
+  case JRK_PRODUCT_UMC05A_30V: limit = 86; break;
+  case JRK_PRODUCT_UMC05A_40V: limit = 62; break;
+  }
+  jrk_settings_set_encoded_hard_current_limit_forward(settings, limit);
+  jrk_settings_set_encoded_hard_current_limit_reverse(settings, limit);
+
+  // These are actually unit-specific settings but it makes sense to reset
+  // these too because (for jrk_settings_fix_and_change_product).
+  jrk_settings_set_vin_calibration(settings, 0);
+  jrk_settings_set_current_offset_calibration(settings, 0);
+  jrk_settings_set_current_scale_calibration(settings, 0);
+}
+
 void jrk_settings_fill_with_defaults(jrk_settings * settings)
 {
   if (settings == NULL) { return; }
 
   uint32_t product = jrk_settings_get_product(settings);
+  uint16_t firmware_version = jrk_settings_get_firmware_version(settings);
 
-  // Reset all fields to zero and then restore the product.
+  // Reset all fields to zero and then restore the product/version.
   memset(settings, 0, sizeof(jrk_settings));
   jrk_settings_set_product(settings, product);
+  jrk_settings_set_firmware_version(settings, firmware_version);
 
   // The product should be set beforehand, and if it is not then quit.
   if (product == 0)
@@ -121,11 +147,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
   jrk_settings_set_pid_period(settings, 10);
   jrk_settings_set_integral_limit(settings, 1000);
   jrk_settings_set_current_samples_exponent(settings, 7);
-  if (product != JRK_PRODUCT_UMC06A)
-  {
-    jrk_settings_set_hard_overcurrent_threshold(settings, 1);
-  }
-  jrk_settings_set_max_duty_cycle_while_feedback_out_of_range(settings, 600);
+  jrk_settings_set_hard_overcurrent_threshold(settings, 1);
   jrk_settings_set_max_acceleration_forward(settings, 600);
   jrk_settings_set_max_acceleration_reverse(settings, 600);
   jrk_settings_set_max_deceleration_forward(settings, 600);
@@ -139,16 +161,7 @@ void jrk_settings_fill_with_defaults(jrk_settings * settings)
 
   // End of auto-generated settings defaults.
 
-  uint16_t limit = 0;
-  switch (product)
-  {
-  case JRK_PRODUCT_UMC04A_30V: limit = 87; break;
-  case JRK_PRODUCT_UMC04A_40V: limit = 63; break;
-  case JRK_PRODUCT_UMC05A_30V: limit = 86; break;
-  case JRK_PRODUCT_UMC05A_40V: limit = 62; break;
-  }
-  jrk_settings_set_encoded_hard_current_limit_forward(settings, limit);
-  jrk_settings_set_encoded_hard_current_limit_reverse(settings, limit);
+  jrk_settings_set_product_specific_defaults(settings);
 }
 
 jrk_error * jrk_settings_create(jrk_settings ** settings)
@@ -234,6 +247,19 @@ uint32_t jrk_settings_get_product(const jrk_settings * settings)
 {
   if (settings == NULL) { return 0; }
   return settings->product;
+}
+
+void jrk_settings_set_firmware_version(jrk_settings * settings,
+  uint16_t version)
+{
+  if (settings == NULL) { return; }
+  settings->firmware_version = version;
+}
+
+uint16_t jrk_settings_get_firmware_version(const jrk_settings * settings)
+{
+  if (settings == NULL) { return 0; }
+  return settings->firmware_version;
 }
 
 // Beginning of auto-generated settings accessors.
