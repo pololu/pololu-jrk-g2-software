@@ -329,13 +329,13 @@ set -ue
 
 MSBUILD="/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe"
 SIGNTOOL="/c/Program Files (x86)/Windows Kits/10/bin/x64/signtool.exe"
-SIGNFLAGS="-fd sha256 -tr http://timestamp.globalsign.com/?signature=sha2 -td sha256"
+SIGNFLAGS="-fd sha256 -tr http://timestamp.comodoca.com -td sha256"
 
 "$MSBUILD" -t:rebuild -p:Configuration=Release -p:TreatWarningsAsErrors=True \\
   app.wixproj
 
 cp bin/Release/en-us/*.msi .
 
-"$SIGNTOOL" sign -n "Pololu Corporation" $SIGNFLAGS -d "Pololu Jrk G2 Setup" *.msi
+"$SIGNTOOL" sign -sha1 51295232DC28FECCC348BB4011F80B6A1C0E6609 $SIGNFLAGS -d "Pololu Jrk G2 Setup" *.msi
 EOF
 end
