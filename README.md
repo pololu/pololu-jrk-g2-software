@@ -30,6 +30,7 @@ from source.
   - Three new API functions: `jrk_settings_fix_and_change_product`,
     `jrk_settings_set_firmware_version`, and
     `jrk_settings_get_firmware_version`.
+  - Switch to a new code/driver signing certificate for Windows.
 - 1.3.0 (2018-07-20):
   - Added support for the new Jrk G2 21v3.
   - Added `jrk_reinitialize_and_reset_errors` which behaves like the
