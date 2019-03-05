@@ -33,8 +33,8 @@ set (LIB_NAME "pololu-jrk2")
 set (DOCUMENTATION_URL "https://www.pololu.com/docs/0J73")
 
 set (SOFTWARE_VERSION_MAJOR 1)
-set (SOFTWARE_VERSION_MINOR 3)
-set (SOFTWARE_VERSION_PATCH 1)
+set (SOFTWARE_VERSION_MINOR 4)
+set (SOFTWARE_VERSION_PATCH 0)
 
 option (BUILD_SHARED_LIBS "Build a shared library" TRUE)
 if (NOT BUILD_SHARED_LIBS)
