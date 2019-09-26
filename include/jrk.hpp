@@ -2,11 +2,11 @@
 
 /// \file jrk.hpp
 ///
-/// This file provides the C++ API for libpololu-jrk, a library that supports
-/// communciating with the Pololu Jrk USB Stepper Motor Controller.  The classes
+/// This file provides the C++ API for libpololu-jrk2, a library that supports
+/// communciating with the Pololu Jrk G2 motor controllers.  The classes
 /// and functions here are just thin wrappers around the C API defined in jrk.h.
 ///
-/// Note: There are some C functions in libpololu-jrk that are not wrapped here
+/// Note: There are some C functions in libpololu-jrk2 that are not wrapped here
 /// because they can easily be called from C++.
 
 #pragma once
@@ -1484,8 +1484,7 @@ namespace jrk
     }
 
     /// Get an operating system-specific identifier for this device as an
-    /// ASCII-encoded string.  The string will be valid at least as long as the
-    /// device object.  If the device is NULL, returns an empty string.
+    /// ASCII-encoded string.  If the device is NULL, returns an empty string.
     std::string get_os_id() const noexcept
     {
       return jrk_device_get_os_id(pointer);
@@ -1538,7 +1537,7 @@ namespace jrk
   }
 
   /// Represents an open handle that can be used to read and write data from a
-  /// device.  Can also be in a null state where it does not represent a device.
+  /// device.  Can also be in a null state where it does not represent a handle.
   class handle : public unique_pointer_wrapper<jrk_handle>
   {
   public:
@@ -1561,7 +1560,7 @@ namespace jrk
       pointer_reset();
     }
 
-    /// Wrapper for jrk_handle_get_device();
+    /// Wrapper for jrk_handle_get_device().
     device get_device() const
     {
       return device(pointer_copy(jrk_handle_get_device(pointer)));
@@ -1689,7 +1688,7 @@ namespace jrk
       throw_if_needed(jrk_reinitialize_and_reset_errors(pointer));
     }
 
-    /// Wrapperfor jrk_start_bootloader()
+    /// Wrapper for jrk_start_bootloader()
     void start_bootloader()
     {
       throw_if_needed(jrk_start_bootloader(pointer));

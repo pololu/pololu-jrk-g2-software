@@ -101,7 +101,7 @@ const char * jrk_look_up_device_reset_name_ui(uint8_t device_reset);
 /// functions return a jrk_error pointer.  The convention is that a NULL pointer
 /// indicates success.  If the pointer is not NULL, the caller can use the
 /// pointer to get information about the error, and then must free the error at
-/// some point by calling jrk_error_free.
+/// some point by calling jrk_error_free().
 typedef struct jrk_error jrk_error;
 
 /// Each ::jrk_error can have 0 or more error codes that give additional
