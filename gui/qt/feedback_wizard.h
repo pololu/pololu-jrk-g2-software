@@ -147,6 +147,7 @@ private:
   // The jrk's current settings.
   uint8_t feedback_mode;
   bool original_motor_invert;
+  bool original_invert;
   uint8_t max_duty_cycle_percent;
 
   // Input variable from the device.

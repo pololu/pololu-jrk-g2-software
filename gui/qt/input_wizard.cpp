@@ -62,9 +62,14 @@ input_wizard::input_wizard(QWidget * parent, uint8_t input_mode,
   setPage(LEARN, setup_learn_page());
   setPage(CONCLUSION, setup_conclusion_page());
 
-  QSize size = sizeHint();
-  size.setHeight(size.height() * 4 / 3);
-  setFixedSize(size);
+  // Note: sizeHint().width() is always 500 on Windows, regardless of DPI, but
+  // using it here is not so bad because Qt's size units themselves get adjusted
+  // based on the DPI.  For example, at 150%, 175%, and 200% DPI, specifying a
+  // a width of 800 actually gives you a window about 1600 pixels wide.
+  setMinimumSize(
+    sizeHint().width(),
+    conclusion_page->sizeHint().height() * 8 / 5
+  );
 
   // Make CustomButton1 be a skip button, so the user can skip the neutral step.
   skip_button = new QPushButton();

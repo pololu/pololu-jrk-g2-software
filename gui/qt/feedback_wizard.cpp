@@ -69,7 +69,7 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   const jrk::settings & settings = controller->cached_settings;
   feedback_mode = settings.get_feedback_mode();
   result.motor_invert = original_motor_invert = settings.get_motor_invert();
-  result.invert = settings.get_feedback_invert();
+  result.invert = original_invert = settings.get_feedback_invert();
 
   max_duty_cycle_percent = std::min(
     settings.get_max_duty_cycle_forward(),
@@ -83,10 +83,22 @@ feedback_wizard::feedback_wizard(QWidget * parent, main_controller * controller)
   setPage(LEARN, setup_learn_page());
   setPage(CONCLUSION, setup_conclusion_page());
 
-  QSize size = sizeHint();
-  size.setWidth(size.width() * 4 / 3);
-  size.setHeight(size.height() * 4 / 3);
-  setFixedSize(size);
+  // Configure the Learn page in its tallest mode and get its sizeHint().
+  learn_step = MAXMIN;
+  result.invert = false;
+  update_learn_page();
+  QSize learn_page_hint = learn_page->sizeHint();
+  learn_step = MOTOR_DIR;
+  result.invert = original_invert;
+
+  // Note: sizeHint().width() is always 500 on Windows, regardless of DPI, but
+  // using it here is not so bad because Qt's size units themselves get adjusted
+  // based on the DPI.  For example, at 150%, 175%, and 200% DPI, specifying a
+  // a width of 800 actually gives you a window about 1600 pixels wide.
+  setMinimumSize(
+    sizeHint().width() * 4 / 3,
+    learn_page_hint.height() * 3 / 2
+  );
 
   // Custom text for the buttons, so that it doesn't change when they are on
   // macOS and so we can make it clear that the 'Finish' button also applies
