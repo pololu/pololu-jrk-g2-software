@@ -1,7 +1,5 @@
 # Jrk G2 software
 
-Version: 1.4.0<br>
-Release date: 2019-03-05<br>
 [www.pololu.com](https://www.pololu.com/)
 
 This repository contains the source code of the configuration and control software for
@@ -20,6 +18,10 @@ from source.
 
 ## Version history
 
+- 1.4.1 (2023-07-05):
+  - Fixed the feedback wizard so it is readable at 125% DPI on Windows.
+    Also improved the size calculations for both wizards and got rid of
+    the fixed size, specifying a *minimum* size instead.
 - 1.4.0 (2019-03-05):
   - If the product specified in the settings file does not match the Jrk you
     are applying those settings to, the software will now fix the settings to
